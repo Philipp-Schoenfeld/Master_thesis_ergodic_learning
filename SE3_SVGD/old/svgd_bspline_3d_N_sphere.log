@@ -1,0 +1,11 @@
+3D SVGD (B-Spline) | 30 particles, T=100, K=29, 100000 iters
+Fourier: K=5, total modes=125
+Weights: ergodic=1705.2602796178128, smooth=11.17039814415494, boundary=18.573679572888505, obstacle=50000.0
+Adam: lr=0.014424807735718683, beta1=0.9, beta2=0.999
+-----------------------------------------------------------------
+Running strategy: linear
+  -> Best total energy: 1.869 | Best pure ergodic: 0.00097 (Time: 1179.59s)
+
+Running strategy: n_shape
+  -> Best total energy: 1.800 | Best pure ergodic: 0.00097 (Time: 1168.26s)
+

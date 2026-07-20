@@ -1,0 +1,21 @@
+2D Flow Matching (RBF) | 10 particles, T=100, K=64, 500 iters
+Weights: ergodic=600.0, smooth=15.0, boundary=30.0, obstacle=50000.0
+-----------------------------------------------------------------
+Running strategy: linear
+  -> Best energy: 4.790 (Time: 13.33s)
+
+Running strategy: n_shape
+  -> Best energy: 3.028 (Time: 12.23s)
+
+Running strategy: polynomial
+  -> Best energy: 2.621 (Time: 12.51s)
+
+Running strategy: random
+  -> Best energy: 392.189 (Time: 12.26s)
+
+Running strategy: rrt
+Debug:   RRT: Planner range detected to be 0.282843
+Info:    RRT: Starting planning with 1 states already in datastructure
+Info:    RRT: Created 21 states
+  -> Best energy: 5.553 (Time: 12.32s)
+

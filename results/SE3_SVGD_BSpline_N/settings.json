@@ -1,0 +1,9 @@
+{
+    "T": 100,
+    "N_PARTICLES": 30,
+    "N_ITERS": 300000,
+    "NUM_CONTROL_POINTS": 60,
+    "W_ERGODIC": 1200.0,
+    "W_SMOOTH": 15.0,
+    "W_BOUNDARY": 30.0
+}

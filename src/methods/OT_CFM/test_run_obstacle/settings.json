@@ -1,0 +1,14 @@
+{
+    "T": 100,
+    "N_PARTICLES": 10,
+    "N_EPOCHS": 1000,
+    "BATCH_SIZE": 1024,
+    "LR": 0.002,
+    "HIDDEN_DIM": 256,
+    "N_LAYERS": 4,
+    "DELTA": 0.05,
+    "SINKHORN_EPS": 0.05,
+    "LAMBDA_NFZ": 100.0,
+    "LAMBDA_ACC": 0.01,
+    "train_time_s": 228.52710819244385
+}

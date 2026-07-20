@@ -1,0 +1,21 @@
+2D Flow Matching (Chebyshev) | 10 particles, T=100, K=64, 500 iters
+Weights: ergodic=600.0, smooth=15.0, boundary=30.0, obstacle=50000.0
+-----------------------------------------------------------------
+Running strategy: linear
+  -> Best energy: 2613.158 (Time: 13.02s)
+
+Running strategy: n_shape
+  -> Best energy: 1926.779 (Time: 12.19s)
+
+Running strategy: polynomial
+  -> Best energy: 1182.960 (Time: 12.03s)
+
+Running strategy: random
+  -> Best energy: 173675.210 (Time: 12.47s)
+
+Running strategy: rrt
+Debug:   RRT: Planner range detected to be 0.282843
+Info:    RRT: Starting planning with 1 states already in datastructure
+Info:    RRT: Created 75 states
+  -> Best energy: 527.395 (Time: 12.15s)
+

@@ -1,0 +1,27 @@
+{
+    "CE_Ergodic": {
+        "error": "No module named 'init_strategies'"
+    },
+    "LB_Ergodic": {
+        "error": "No module named 'init_strategies'"
+    },
+    "SE3_SVGD": {
+        "error": "No module named 'init_strategies'"
+    },
+    "SigKernel_CMA": {
+        "error": "No module named 'init_strategies'"
+    },
+    "Stein_Flow_matching": {
+        "error": "No module named 'init_strategies'"
+    },
+    "OT_CFM": {
+        "error": "No module named 'init_strategies'"
+    },
+    "Unified_Pipeline": {
+        "unified": {
+            "mean_cost": 126.24348825244405,
+            "best_cost": 11.666457765101821,
+            "time_s": 65.2090744972229
+        }
+    }
+}

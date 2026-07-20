@@ -1,0 +1,15 @@
+{
+    "target_shape": "II",
+    "degree": 4,
+    "num_control_points": 16,
+    "T": 100,
+    "N_PARTICLES": 10,
+    "CFM_EPOCHS": 1500,
+    "SVGD_ITERS": 150,
+    "W_ERGODIC": 600.0,
+    "W_SMOOTH": 15.0,
+    "W_BOUNDARY": 30.0,
+    "USE_LOG_SURROGATE": true,
+    "USE_SIG_KERNEL": true,
+    "use_obstacle": false
+}

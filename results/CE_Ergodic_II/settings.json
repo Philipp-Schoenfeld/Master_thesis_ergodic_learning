@@ -1,0 +1,7 @@
+{
+    "T_WAYPOINTS": 100,
+    "DT": 0.02,
+    "M_PRIMITIVES": 10,
+    "CE_ITERS": 20,
+    "CE_SAMPLES": 100
+}

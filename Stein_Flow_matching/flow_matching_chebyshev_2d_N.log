@@ -1,0 +1,10 @@
+2D Flow Matching (Chebyshev) | 10 particles, T=100, K=144, 800000 iters
+Weights: ergodic=600.0, smooth=15.0, boundary=30.0, obstacle=50000.0
+-----------------------------------------------------------------
+Running strategy: linear
+  -> Best energy: 8.876 (Time: 23327.19s)
+
+Running strategy: n_shape
+  -> Best energy: 10.487 (Time: 45941.92s)
+
+Running strategy: polynomial

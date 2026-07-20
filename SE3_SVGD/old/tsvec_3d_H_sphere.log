@@ -1,0 +1,11 @@
+3D TSVEC  |  10 particles, T=100, K_Fourier=5, 200 iters
+Fourier modes: 125
+Weights:  ergodic=600.0, smooth=15.0, boundary=30.0, obstacle=50000.0
+Adam:     lr=0.002, β1=0.9, β2=0.999
+-----------------------------------------------------------------
+Running strategy: linear
+  -> Best energy: 6.350 (Time: 6.03s)
+
+Running strategy: n_shape
+  -> Best energy: 4.254 (Time: 6.51s)
+

@@ -1,0 +1,10 @@
+{
+    "T": 100,
+    "DIM": 3,
+    "N_PARTICLES": 10,
+    "N_ITERS": 200,
+    "K_FOURIER": 5,
+    "W_ERGODIC": 600.0,
+    "W_SMOOTH": 15.0,
+    "W_BOUNDARY": 30.0
+}

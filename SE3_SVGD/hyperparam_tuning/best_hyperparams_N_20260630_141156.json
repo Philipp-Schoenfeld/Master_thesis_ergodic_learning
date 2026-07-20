@@ -1,0 +1,13 @@
+{
+    "best_metric": 0.0005777978963045118,
+    "best_params": {
+        "n_iters": 1000,
+        "num_control_points": 39,
+        "w_ergodic": 177.79520168482478,
+        "w_smooth": 1.0337070689405434,
+        "w_boundary": 396.1372764131079,
+        "adam_lr": 0.012716022467312228
+    },
+    "shape": "N",
+    "strategy": "n_shape"
+}

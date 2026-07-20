@@ -1,0 +1,40 @@
+[project]
+name = "bsplinax"
+version = "0.1.0"
+description = "B-spline basis functions and derivatives in JAX"
+authors = [{ name="Joao Carvalho", email="joao@robot-learning.de" }]
+license = "MIT"
+readme = "README.md"
+requires-python = ">=3.13"
+
+[tool.poetry.dependencies]
+python = ">=3.13"
+jax = "^0.7.1"  # adjust to your jax version
+jaxlib = "^0.7.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.0"
+
+[build-system]
+requires = ["poetry-core>=1.3.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = false
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
