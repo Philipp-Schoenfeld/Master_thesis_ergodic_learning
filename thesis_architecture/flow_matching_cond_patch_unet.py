@@ -24,8 +24,58 @@ if _here not in sys.path:
     sys.path.insert(0, _here)
 
 from flow_matching_patch_unet import (
-    PatchifyLayer, SinusoidalTimeEmbedding, UNetBackbone, OutputMLPHead,
+    SinusoidalTimeEmbedding, UNetBackbone, OutputMLPHead,
 )
+
+
+# ---------------------------------------------------------------------------
+# 1. Patchification Layer
+# ---------------------------------------------------------------------------
+
+class PatchifyLayer(nn.Module):
+    """
+    Tokenisation via 1D CNN.
+
+    Maps raw nd-dimensional control-point coordinates → D-dimensional tokens.
+
+    The description specifies a kernel of (1, nd): width-1 over the sequence
+    axis, spanning all nd feature channels of a single control point.  In
+    Conv1d terms (where nd is the channel dimension and nξ is the sequence
+    length) this is:
+
+        Conv1d(in_channels=nd, out_channels=D, kernel_size=1, stride=1)
+
+    — i.e. a pointwise linear projection applied independently at each of the
+    nξ positions, inflating nd → D without mixing neighbouring control points.
+    This exactly preserves the output length nξ.
+    """
+
+    def __init__(self, nd: int, D: int):
+        super().__init__()
+        self.nd = nd
+        self.D  = D
+        # kernel_size=1, stride=1: pointwise projection nd → D per control point
+        self.conv = nn.Conv1d(
+            in_channels=nd,
+            out_channels=D,
+            kernel_size=1,
+            stride=1,
+            padding=0,
+        )
+        self.norm = nn.LayerNorm(D)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Args:
+            x: (B, nξ, nd)  — B-spline control points
+        Returns:
+            tokens: (B, D, nξ)  — D-dim embedding per control point
+        """
+        # Permute to (B, nd, nξ) for Conv1d, then project each position nd → D
+        h = self.conv(x.permute(0, 2, 1))               # (B, D, nξ)
+        # LayerNorm over the channel (D) dimension
+        h = self.norm(h.permute(0, 2, 1)).permute(0, 2, 1)  # (B, D, nξ)
+        return h
 
 
 # ---------------------------------------------------------------------------
