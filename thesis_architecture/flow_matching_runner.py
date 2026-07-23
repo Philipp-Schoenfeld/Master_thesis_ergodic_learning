@@ -71,14 +71,56 @@ def _load_ergodic_raw(n, nxi):
     return np.array(trajs)   # (n, nxi, 2)
 
 
+def _make_N_base(nxi):
+    # N waypoints
+    n_pts = np.array([
+        [0.25, 0.15],
+        [0.25, 0.85],
+        [0.75, 0.15],
+        [0.75, 0.85],
+    ])
+    diffs = np.diff(n_pts, axis=0)
+    dists = np.linalg.norm(diffs, axis=1)
+    cum = np.concatenate(([0], np.cumsum(dists)))
+    cum = cum / cum[-1]
+    t = np.linspace(0, 1, nxi)
+    x = np.interp(t, cum, n_pts[:, 0])
+    y = np.interp(t, cum, n_pts[:, 1])
+    return np.stack([x, y], axis=-1)
+
+
+def _make_N_base(nxi):
+    # N waypoints
+    n_pts = np.array([
+        [0.25, 0.15],
+        [0.25, 0.85],
+        [0.75, 0.15],
+        [0.75, 0.85],
+    ])
+    diffs = np.diff(n_pts, axis=0)
+    dists = np.linalg.norm(diffs, axis=1)
+    cum = np.concatenate(([0], np.cumsum(dists)))
+    cum = cum / cum[-1]
+    t = np.linspace(0, 1, nxi)
+    x = np.interp(t, cum, n_pts[:, 0])
+    y = np.interp(t, cum, n_pts[:, 1])
+    return np.stack([x, y], axis=-1)
+
+
 # ===========================================================================
 # Dataset loaders  (unconditional: return x1, base)
 # ===========================================================================
 
 def _load_poly_N(nxi, nd, batch_size, noise_std, device, **kw):
     assert nd == 2
-    pts, base = poly_init(N=batch_size, T=nxi, degree=5, noise_std=noise_std)
-    x1 = torch.tensor(pts.reshape(batch_size, nxi, nd), dtype=torch.float32).to(device)
+    base = _make_N_base(nxi)
+    particles = []
+    for _ in range(batch_size):
+        noise = np.random.normal(0.0, noise_std, (nxi, 2))
+        traj = np.clip(base + noise, 0.02, 0.98)
+        particles.append(traj.ravel())
+    x1 = torch.tensor(np.array(particles).reshape(batch_size, nxi, nd),
+                      dtype=torch.float32).to(device)
     return x1, base
 
 
@@ -167,11 +209,13 @@ def _load_all_shapes(nxi, nd, batch_size, noise_std, device, **kw):
     all_x1, all_ref = [], []
 
     # --- N-shape ---
-    _, bN = poly_init(N=0, T=nxi, degree=5, noise_std=noise_std)
+    bN = _make_N_base(nxi)
     if counts[0] > 0:
-        pN, _ = poly_init(N=counts[0], T=nxi, degree=5, noise_std=noise_std)
-        x1N = pN.reshape(counts[0], nxi, nd)
-        all_x1.append(x1N)
+        n_particles = []
+        for _ in range(counts[0]):
+            noise = np.random.normal(0.0, noise_std, (nxi, 2))
+            n_particles.append(np.clip(bN + noise, 0.02, 0.98))
+        all_x1.append(np.array(n_particles))
         all_ref.append(np.tile(bN[None], (counts[0], 1, 1)))
 
     # --- H-shape ---
@@ -491,7 +535,17 @@ def run_single(args):
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"  {args.model}: {params:,} params")
 
-    train(model, x1, MODEL_LOSS_FNS[args.model], args.epochs, args.lr, args.log_every)
+    if args.load_model and os.path.isfile(args.load_model):
+        print(f"  Loading pretrained model from {args.load_model}")
+        ckpt = torch.load(args.load_model, map_location=device, weights_only=True)
+        model.load_state_dict(ckpt['model_state_dict'])
+        print(f"  Loaded successfully.")
+    else:
+        train(model, x1, MODEL_LOSS_FNS[args.model], args.epochs, args.lr, args.log_every)
+        if args.save_model:
+            os.makedirs(os.path.dirname(args.save_model) if os.path.dirname(args.save_model) else '.', exist_ok=True)
+            torch.save({'model_state_dict': model.state_dict(), 'nxi': args.nxi, 'nd': args.nd, 'D': args.D}, args.save_model)
+            print(f"  Model saved to {args.save_model}")
 
     gen_t, _ = euler_generate(model=model, num_samples=args.n_gen,
                               nxi=args.nxi, nd=args.nd, steps=args.steps,
@@ -559,10 +613,27 @@ def run_conditional(args):
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"  {model_name}      : {params:,} params\n")
 
-    print(f"[{model_name}] Starting training...")
-    train(model, x1.clone(), MODEL_LOSS_FNS[model_name], args.epochs, args.lr,
-          args.log_every, ref_cps=ref_cps.clone())
-    print(f"[{model_name}] Finished training!")
+    if args.load_model and os.path.isfile(args.load_model):
+        print(f"  Loading pretrained model from {args.load_model}")
+        ckpt = torch.load(args.load_model, map_location=device, weights_only=True)
+        model.load_state_dict(ckpt['model_state_dict'])
+        print(f"  Loaded successfully (trained for {ckpt.get('epochs', '?')} epochs)")
+    else:
+        print(f"[{model_name}] Starting training...")
+        train(model, x1.clone(), MODEL_LOSS_FNS[model_name], args.epochs, args.lr,
+              args.log_every, ref_cps=ref_cps.clone())
+        print(f"[{model_name}] Finished training!")
+        if args.save_model:
+            os.makedirs(os.path.dirname(args.save_model) if os.path.dirname(args.save_model) else '.', exist_ok=True)
+            torch.save({
+                'model_state_dict': model.state_dict(),
+                'nxi': args.nxi,
+                'nd': args.nd,
+                'D': args.D,
+                'epochs': args.epochs,
+                'lr': args.lr
+            }, args.save_model)
+            print(f"  Model saved to {args.save_model}")
 
     # ------------------------------------------------------------------
     # Generate: condition on each shape's reference CPs
@@ -632,7 +703,16 @@ def run_overfit(args):
         params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         print(f"  Params: {params:,}")
         
-        train(model, x1, MODEL_LOSS_FNS[m_name], args.epochs, args.lr, args.log_every, ref_cps=ref_cps)
+        if args.load_model and os.path.isfile(f"{args.load_model}_{m_name}.pt"):
+            print(f"  Loading pretrained {m_name} from {args.load_model}_{m_name}.pt")
+            ckpt = torch.load(f"{args.load_model}_{m_name}.pt", map_location=device, weights_only=True)
+            model.load_state_dict(ckpt['model_state_dict'])
+        else:
+            train(model, x1, MODEL_LOSS_FNS[m_name], args.epochs, args.lr, args.log_every, ref_cps=ref_cps)
+            if args.save_model:
+                os.makedirs(os.path.dirname(args.save_model) if os.path.dirname(args.save_model) else '.', exist_ok=True)
+                torch.save({'model_state_dict': model.state_dict()}, f"{args.save_model}_{m_name}.pt")
+                print(f"  Saved to {args.save_model}_{m_name}.pt")
         trained_models[m_name] = (model, params)
 
     print("\nGenerating conditioned trajectories...")
@@ -666,7 +746,7 @@ def parse_args():
     p.add_argument('--nxi',         type=int,   default=20)
     p.add_argument('--nd',          type=int,   default=2)
     p.add_argument('--D',           type=int,   default=384)
-    p.add_argument('--epochs',      type=int,   default=5000)
+    p.add_argument('--epochs',      type=int,   default=10000)
     p.add_argument('--lr',          type=float, default=1e-3)
     p.add_argument('--n_gen',       type=int,   default=1)
     p.add_argument('--bspline_pts', type=int,   default=512)
@@ -675,6 +755,8 @@ def parse_args():
     p.add_argument('--batch_size',  type=int,   default=16)
     p.add_argument('--steps',       type=int,   default=100)
     p.add_argument('--log_every',   type=int,   default=500)
+    p.add_argument('--save_model',  type=str,   default=None, help='Path to save trained model (.pt)')
+    p.add_argument('--load_model',  type=str,   default=None, help='Path to load pretrained model (.pt), skips training')
     return p.parse_args()
 
 
