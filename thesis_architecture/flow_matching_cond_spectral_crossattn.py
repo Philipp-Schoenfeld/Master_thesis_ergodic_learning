@@ -48,27 +48,38 @@ class SinusoidalTimeEmbedding(nn.Module):
 # 2. Sinusoidal Frequency Positional Encoding
 # ---------------------------------------------------------------------------
 
-class FrequencyPositionalEncoding(nn.Module):
+class FrequencyPositionalEncoding2D(nn.Module):
     """
-    Sinusoidal positional encoding for spectral frequency bands.
-    Encodes the position k/S of each frequency band (bass vs. treble).
+    2D Sinusoidal positional encoding for spectral frequency bands.
+    Encodes the 2D indices (k1, k2) by adding two 1D positional encodings.
     """
 
     def __init__(self, D: int, max_len: int = 256):
         super().__init__()
-        pe = torch.zeros(max_len, D)
+        assert D % 2 == 0, "D must be even for sinusoidal encoding."
+        pe_1d = torch.zeros(max_len, D)
         position = torch.arange(0, max_len, dtype=torch.float32).unsqueeze(1)
         div_term = torch.exp(
             torch.arange(0, D, 2, dtype=torch.float32)
             * -(math.log(10_000.0) / D)
         )
-        pe[:, 0::2] = torch.sin(position * div_term)
-        pe[:, 1::2] = torch.cos(position * div_term)
-        self.register_buffer("pe", pe.unsqueeze(0))              # (1, max_len, D)
+        pe_1d[:, 0::2] = torch.sin(position * div_term)
+        pe_1d[:, 1::2] = torch.cos(position * div_term)
+        self.register_buffer("pe_1d", pe_1d)              # (max_len, D)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """x: (B, S, D) -> (B, S, D) with positional encoding added."""
-        return x + self.pe[:, :x.size(1), :]
+    def forward(self, x: torch.Tensor, k_indices: torch.Tensor) -> torch.Tensor:
+        """
+        x: (B, S, D) - token embeddings
+        k_indices: (B, S, 2) - integer indices for k1 and k2
+        Returns: (B, S, D) with positional encoding added.
+        """
+        k1 = k_indices[:, :, 0]  # (B, S)
+        k2 = k_indices[:, :, 1]  # (B, S)
+        
+        pe_k1 = self.pe_1d[k1]  # (B, S, D)
+        pe_k2 = self.pe_1d[k2]  # (B, S, D)
+        
+        return x + pe_k1 + pe_k2
 
 
 # ---------------------------------------------------------------------------
@@ -79,7 +90,7 @@ class SpectralTokenizer(nn.Module):
     """
     Translates spectral coefficients into frequency tokens for cross-attention.
 
-    Input:  (B, S) spectral coefficients
+    Input:  (B, S) spectral coefficients, (B, S, 2) k_indices
     Output: (B, S, D) frequency tokens (ungepooled, for use as K/V)
     """
 
@@ -91,19 +102,20 @@ class SpectralTokenizer(nn.Module):
         self.freq_mlp = nn.Sequential(
             nn.Linear(1, D), nn.SiLU(), nn.Linear(D, D),
         )
-        # Frequency positional encoding (bass = low index, treble = high index)
-        self.freq_pos_enc = FrequencyPositionalEncoding(D=D, max_len=S)
+        # 2D Frequency positional encoding (max_len=256 to support arbitrary index ranges)
+        self.freq_pos_enc = FrequencyPositionalEncoding2D(D=D, max_len=256)
         # LayerNorm for stable outputs
         self.norm = nn.LayerNorm(D)
 
-    def forward(self, c: torch.Tensor) -> torch.Tensor:
+    def forward(self, c: torch.Tensor, k_indices: torch.Tensor) -> torch.Tensor:
         """
         c: (B, S) spectral coefficients
+        k_indices: (B, S, 2) 2D frequency indices
         Returns: (B, S, D) frequency tokens
         """
         tokens = c.unsqueeze(-1)                                 # (B, S, 1)
         tokens = self.freq_mlp(tokens)                           # (B, S, D)
-        tokens = self.freq_pos_enc(tokens)                       # (B, S, D) + pos
+        tokens = self.freq_pos_enc(tokens, k_indices)            # (B, S, D) + pos
         tokens = self.norm(tokens)                               # (B, S, D)
         return tokens
 
@@ -149,8 +161,41 @@ class ConvResBlock(nn.Module):
         return self.act(h + self.residual(x))
 
 
+class CrossAttentionBlock(nn.Module):
+    def __init__(self, q_dim: int, kv_dim: int, n_heads: int = 8):
+        super().__init__()
+        self.cross_attn = nn.MultiheadAttention(
+            embed_dim=q_dim, num_heads=n_heads, batch_first=True,
+        )
+        self.cross_attn_norm = nn.LayerNorm(q_dim)
+        nn.init.zeros_(self.cross_attn.out_proj.weight)
+        nn.init.zeros_(self.cross_attn.out_proj.bias)
+
+        self.kv_proj = nn.Sequential(
+            nn.Linear(kv_dim, q_dim), nn.SiLU(), nn.Linear(q_dim, q_dim),
+        )
+
+    def forward(self, x: torch.Tensor, kv: torch.Tensor) -> torch.Tensor:
+        """
+        x: (B, q_dim, L)
+        kv: (B, S, kv_dim)
+        Returns: (B, q_dim, L)
+        """
+        if kv is None:
+            return x
+        
+        B, C, L = x.shape
+        q = x.permute(0, 2, 1)                      # (B, L, C)
+        
+        kv_proj = self.kv_proj(kv)                  # (B, S, C)
+        ca_out, _ = self.cross_attn(q, kv_proj, kv_proj)
+        q = self.cross_attn_norm(q + ca_out)        # (B, L, C)
+        
+        return q.permute(0, 2, 1)                   # (B, C, L)
+
+
 # ---------------------------------------------------------------------------
-# 5. U-Net Backbone with Cross-Attention Bottleneck
+# 5. U-Net Backbone with Cross-Attention Bottleneck and Decoders
 # ---------------------------------------------------------------------------
 
 class UNetBackboneSpectral(nn.Module):
@@ -186,19 +231,10 @@ class UNetBackboneSpectral(nn.Module):
         nn.init.zeros_(self.self_attn.out_proj.weight)
         nn.init.zeros_(self.self_attn.out_proj.bias)
 
-        # ── Cross-Attention: Q=B-spline tokens, KV=spectral tokens ──
-        self.cross_attn = nn.MultiheadAttention(
-            embed_dim=D4, num_heads=n_heads, batch_first=True,
-        )
-        self.cross_attn_norm = nn.LayerNorm(D4)
-        # Zero-init output projection (adaLN-Zero principle)
-        nn.init.zeros_(self.cross_attn.out_proj.weight)
-        nn.init.zeros_(self.cross_attn.out_proj.bias)
-
-        # ── KV projection: spectral tokens D -> D*4 ──
-        self.spectral_kv_proj = nn.Sequential(
-            nn.Linear(D, D4), nn.SiLU(), nn.Linear(D4, D4),
-        )
+        # ── Cross-Attention Blocks ──
+        self.bot_cross_attn = CrossAttentionBlock(q_dim=D4, kv_dim=D, n_heads=n_heads)
+        self.dec1_cross_attn = CrossAttentionBlock(q_dim=D*2, kv_dim=D, n_heads=n_heads)
+        self.dec2_cross_attn = CrossAttentionBlock(q_dim=D, kv_dim=D, n_heads=n_heads)
 
         # ── Decoder ──
         self.dec1 = ConvResBlock(D4 + D*2, D*2, cond_dim=D, kernel_size=kernel_size, stride=1)
@@ -226,16 +262,10 @@ class UNetBackboneSpectral(nn.Module):
         b_seq = b.permute(0, 2, 1)                              # (B, L=5, D*4)
         sa_out, _ = self.self_attn(b_seq, b_seq, b_seq)          # (B, L, D*4)
         b_seq = self.self_attn_norm(b_seq + sa_out)              # residual + norm
+        b = b_seq.permute(0, 2, 1)                              # (B, D*4, 5)
 
         # ── Cross-Attention: Q=B-spline, KV=Spectral ──
-        if spectral_tokens is not None:
-            # Project spectral tokens from D to D*4
-            kv = self.spectral_kv_proj(spectral_tokens)          # (B, S, D*4)
-            ca_out, _ = self.cross_attn(b_seq, kv, kv)           # (B, L, D*4)
-            b_seq = self.cross_attn_norm(b_seq + ca_out)         # residual + norm
-
-        # Reshape back to (B, D*4, L) for conv
-        b = b_seq.permute(0, 2, 1)                              # (B, D*4, 5)
+        b = self.bot_cross_attn(b, spectral_tokens)              # (B, D*4, 5)
 
         # ── Bottleneck block 2 ──
         b = self.bot2(b, time_cond)                              # (B, D*4, 5)
@@ -243,8 +273,11 @@ class UNetBackboneSpectral(nn.Module):
         # ── Decoder ──
         b_up  = F.interpolate(b, size=e2.shape[-1], mode='linear', align_corners=False)
         d1    = self.dec1(torch.cat([b_up, e2], dim=1), time_cond)  # (B, D*2, 10)
+        d1 = self.dec1_cross_attn(d1, spectral_tokens)
+
         d1_up = F.interpolate(d1, size=e1.shape[-1], mode='linear', align_corners=False)
         d2    = self.dec2(torch.cat([d1_up, e1], dim=1), time_cond) # (B, D, 20)
+        d2 = self.dec2_cross_attn(d2, spectral_tokens)
         return d2
 
 
@@ -355,11 +388,13 @@ class SpectralCrossAttnFlowNetwork(nn.Module):
 
     def forward(self, x: torch.Tensor, t: torch.Tensor,
                 spectral_coeffs: torch.Tensor,
+                k_indices: torch.Tensor,
                 cond_drop_mask: torch.Tensor = None):
         """
         x:               (B, nxi, nd) — noisy trajectory
         t:               (B,) — diffusion time
         spectral_coeffs: (B, S) — spectral condition
+        k_indices:       (B, S, 2) — spectral frequencies 2D
         cond_drop_mask:  (B,) bool — True = drop condition (CFG)
 
         Returns:
@@ -374,7 +409,7 @@ class SpectralCrossAttnFlowNetwork(nn.Module):
         time_cond = self.time_emb(t)                             # (B, D)
 
         # ── Spectral condition ──
-        spec_tokens = self.spectral_tokenizer(spectral_coeffs)   # (B, S, D)
+        spec_tokens = self.spectral_tokenizer(spectral_coeffs, k_indices)   # (B, S, D)
 
         # ── CFG Dropout: replace with null tokens ──
         if cond_drop_mask is not None:
@@ -401,13 +436,15 @@ def compute_spectral_cfm_loss(
     model: nn.Module,
     x1_batch: torch.Tensor,
     spectral_batch: torch.Tensor,
-    p_drop: float = 0.1,
+    k_idx_batch: torch.Tensor,
+    p_drop: float = 0.0,
 ) -> torch.Tensor:
     """
     Conditional CFM loss with spectral conditioning and CFG dropout.
 
     x1_batch:       (B, nxi, nd) — target trajectories
     spectral_batch: (B, S) — spectral coefficients (condition)
+    k_idx_batch:    (B, S, 2) — frequencies
     p_drop:         probability of dropping condition (CFG)
     """
     B = x1_batch.shape[0]
@@ -421,7 +458,7 @@ def compute_spectral_cfm_loss(
     # CFG condition dropout
     cond_drop_mask = (torch.rand(B, device=device) < p_drop)
 
-    v_t, lambda0 = model(xt, t, spectral_batch, cond_drop_mask=cond_drop_mask)
+    v_t, lambda0 = model(xt, t, spectral_batch, k_idx_batch, cond_drop_mask=cond_drop_mask)
 
     # Flow matching loss (MSE on velocity field)
     loss = torch.mean((v_t - ut) ** 2)
@@ -439,6 +476,7 @@ def compute_spectral_cfm_loss(
 def generate_spectral_trajectories(
     model: nn.Module,
     spectral_coeffs: torch.Tensor,   # (S,) or (num_samples, S)
+    k_indices: torch.Tensor,         # (S, 2) or (num_samples, S, 2)
     num_samples: int = 1,
     nxi: int = 20,
     nd:  int = 2,
@@ -458,6 +496,10 @@ def generate_spectral_trajectories(
         spectral_coeffs = spectral_coeffs.unsqueeze(0).expand(num_samples, -1).contiguous()
     spectral_coeffs = spectral_coeffs.to(device)
 
+    if k_indices.ndim == 2:
+        k_indices = k_indices.unsqueeze(0).expand(num_samples, -1, -1).contiguous()
+    k_indices = k_indices.to(device)
+
     x  = torch.randn(num_samples, nxi, nd, device=device)
     dt = 1.0 / steps
 
@@ -467,6 +509,7 @@ def generate_spectral_trajectories(
         torch.ones(num_samples,  dtype=torch.bool, device=device),
     ], dim=0)
     spec_batch = torch.cat([spectral_coeffs, spectral_coeffs], dim=0)
+    k_idx_batch = torch.cat([k_indices, k_indices], dim=0)
 
     lambda0_accum = None
 
@@ -476,7 +519,7 @@ def generate_spectral_trajectories(
         x_batch = torch.cat([x, x], dim=0)
 
         v_batch, lam_batch = model(
-            x_batch, t_batch, spec_batch, cond_drop_mask=mask_batch,
+            x_batch, t_batch, spec_batch, k_idx_batch, cond_drop_mask=mask_batch,
         )
         v_cond, v_null = v_batch.chunk(2, dim=0)
 

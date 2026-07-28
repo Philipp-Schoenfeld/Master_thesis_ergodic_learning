@@ -65,7 +65,9 @@ def trajectory_to_spectral(traj, S=50):
     of the target ergodic distribution.
 
     traj: (nxi, 2) numpy array
-    Returns: (S,) numpy array of spectral amplitudes
+    Returns: 
+        amplitudes: (S,) numpy array of spectral amplitudes
+        k_indices: (S, 2) numpy array of integer frequencies
     """
     # Treat trajectory as complex signal: x + iy
     signal = traj[:, 0] + 1j * traj[:, 1]
@@ -84,7 +86,14 @@ def trajectory_to_spectral(traj, S=50):
     if max_val > 1e-8:
         amplitudes = amplitudes / max_val
 
-    return amplitudes
+    # Generate dummy 2D indices (k1, k2) for the spectral coefficients
+    K = int(np.ceil(np.sqrt(S)))
+    k_indices = np.zeros((S, 2), dtype=np.int64)
+    for i in range(S):
+        k_indices[i, 0] = i % K
+        k_indices[i, 1] = i // K
+
+    return amplitudes, k_indices
 
 
 # ===========================================================================
@@ -164,37 +173,41 @@ def _build_dataset(shapes, holdout_labels, copies_per_char, S, device):
         else:
             train_shapes[lbl] = base
 
-    all_x1, all_spec = [], []
+    all_x1, all_spec, all_k_idx = [], [], []
     for lbl, base in train_shapes.items():
         # Compute spectral coefficients ONCE per base shape (condition = clean)
-        spec = trajectory_to_spectral(base, S=S)
+        spec, k_idx = trajectory_to_spectral(base, S=S)
 
         tiled = np.tile(base[None], (copies_per_char, 1, 1))
         spec_tiled = np.tile(spec[None], (copies_per_char, 1))
+        k_idx_tiled = np.tile(k_idx[None], (copies_per_char, 1, 1))
 
         all_x1.append(tiled.copy())
         all_spec.append(spec_tiled.copy())
+        all_k_idx.append(k_idx_tiled.copy())
 
     x1_np   = np.concatenate(all_x1, axis=0)
     spec_np = np.concatenate(all_spec, axis=0)
+    k_idx_np = np.concatenate(all_k_idx, axis=0)
 
     perm = np.random.permutation(len(x1_np))
     x1   = torch.tensor(x1_np[perm],   dtype=torch.float32).to(device)
     spec = torch.tensor(spec_np[perm], dtype=torch.float32).to(device)
+    k_idx = torch.tensor(k_idx_np[perm], dtype=torch.long).to(device)
 
     # Also precompute spectral coefficients for holdout shapes
     holdout_spec = {}
     for lbl, base in holdout_shapes.items():
         holdout_spec[lbl] = trajectory_to_spectral(base, S=S)
 
-    return x1, spec, train_shapes, holdout_shapes, holdout_spec
+    return x1, spec, k_idx, train_shapes, holdout_shapes, holdout_spec
 
 
 # ===========================================================================
 # Training
 # ===========================================================================
 
-def train(model, x1_clean, spec_cond, loss_fn, args):
+def train(model, x1_clean, spec_cond, k_idx_cond, loss_fn, args):
     opt       = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.epochs,
                                                             eta_min=1e-5)
@@ -222,7 +235,7 @@ def train(model, x1_clean, spec_cond, loss_fn, args):
                 device_type='cuda' if use_cuda else 'cpu',
                 dtype=torch.bfloat16,
             ):
-                loss = loss_fn(model, x1[idx], spec_cond[idx], p_drop=args.p_drop)
+                loss = loss_fn(model, x1[idx], spec_cond[idx], k_idx_cond[idx], p_drop=args.p_drop)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             opt.step()
@@ -284,11 +297,12 @@ def visualise_set(model, shapes_dict, spectral_dict, title_prefix, save_path,
     for idx, lbl in enumerate(labels):
         ax = axes[idx // n_cols][idx % n_cols]
         base = shapes_dict[lbl]
-        spec = spectral_dict[lbl]
+        spec, k_idx = spectral_dict[lbl]
         spec_t = torch.tensor(spec, dtype=torch.float32)
+        k_idx_t = torch.tensor(k_idx, dtype=torch.long)
 
         gen, lam = generate_spectral_trajectories(
-            model, spec_t,
+            model, spec_t, k_idx_t,
             num_samples=args.n_gen, nxi=args.nxi, nd=args.nd,
             steps=args.steps, device=str(device),
             cfg_weight=args.cfg_weight,
@@ -334,7 +348,7 @@ def run(args):
     all_shapes = _load_shapes(args.nxi)
     print(f"  Loaded {len(all_shapes)} shapes from DB")
 
-    x1, spec_cond, train_shapes, holdout_shapes, holdout_spec = _build_dataset(
+    x1, spec_cond, k_idx_cond, train_shapes, holdout_shapes, holdout_spec = _build_dataset(
         all_shapes, HOLDOUT_LABELS,
         copies_per_char=args.copies_per_char,
         S=args.S, device=device,
@@ -363,7 +377,7 @@ def run(args):
         model.load_state_dict(ckpt['model_state_dict'])
         print(f"  Loaded checkpoint from {args.load_model}")
     else:
-        train(model, x1, spec_cond, compute_spectral_cfm_loss, args)
+        train(model, x1, spec_cond, k_idx_cond, compute_spectral_cfm_loss, args)
         print("  Training complete!")
 
         save_path = args.save_model
@@ -413,7 +427,7 @@ def parse_args():
     # lambda head
     p.add_argument('--n_lambda', type=int, default=6,
                    help="Dimension of Lagrange multiplier output")
-    p.add_argument('--predict_lambda', action='store_true', default=True,
+    p.add_argument('--predict_lambda', action='store_true', default=False,
                    help="Enable lambda prediction head")
     p.add_argument('--no_predict_lambda', dest='predict_lambda',
                    action='store_false',
@@ -425,8 +439,8 @@ def parse_args():
     p.add_argument('--copies_per_char', type=int,   default=50)
     p.add_argument('--noise_std',       type=float, default=0.015)
     # CFG
-    p.add_argument('--p_drop',     type=float, default=0.1)
-    p.add_argument('--cfg_weight', type=float, default=2.0)
+    p.add_argument('--p_drop',     type=float, default=0.0)
+    p.add_argument('--cfg_weight', type=float, default=1.0)
     # generation / visualisation
     p.add_argument('--n_gen',       type=int, default=3)
     p.add_argument('--steps',       type=int, default=100)
