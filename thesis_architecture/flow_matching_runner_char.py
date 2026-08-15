@@ -15,6 +15,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import torch
 
+try:
+    import wandb
+    _WANDB_OK = True
+except ImportError:
+    _WANDB_OK = False
+
 _here = os.path.dirname(os.path.abspath(__file__))
 _root = os.path.join(_here, '..')
 for _p in (os.path.join(_root, 'bsplinax-main'), os.path.join(_root, 'src')):
@@ -102,20 +108,22 @@ def _load_shapes(nxi):
     """
     Load all shapes from the database.
 
-    Returns dict: label → (nxi, 2) numpy array (clean reference trajectory).
+    Returns dict: label_key -> (nxi, 2) numpy array (clean reference trajectory).
+    Uses row ID if duplicate labels exist to prevent silent overwriting.
     """
     conn = sqlite3.connect(_DB_PATH)
     cur  = conn.cursor()
-    cur.execute("SELECT trajectory, shape, label FROM runs ORDER BY id ASC")
+    cur.execute("SELECT trajectory, shape, label, id FROM runs ORDER BY id ASC")
     rows = cur.fetchall()
     conn.close()
 
     shapes = {}
-    for blob, sh, label in rows:
+    for blob, sh, label, row_id in rows:
         dims = tuple(map(int, sh.split(',')))
         xy = np.frombuffer(blob, dtype=np.float32).reshape(dims)[:, :2]
         idx = np.linspace(0, len(xy) - 1, nxi).astype(int)
-        shapes[label] = xy[idx]          # (nxi, 2)
+        key = label if label not in shapes else f"{label}#{row_id}"
+        shapes[key] = xy[idx]          # (nxi, 2)
 
     return shapes
 
@@ -128,12 +136,13 @@ def _build_dataset(shapes, holdout_labels, copies_per_char, noise_std, device):
     -------
     x1       : (N, nxi, 2) float32 — augmented target trajectories
     ref_cps  : (N, nxi, 2) float32 — clean reference trajectories
-    train_shapes : dict  label → base array  (training only)
-    holdout_shapes : dict  label → base array
+    train_shapes : dict  label -> base array  (training only)
+    holdout_shapes : dict  label -> base array
     """
     train_shapes, holdout_shapes = {}, {}
     for lbl, base in shapes.items():
-        if lbl in holdout_labels:
+        base_lbl = lbl.split('#')[0]
+        if base_lbl in holdout_labels:
             holdout_shapes[lbl] = base
         else:
             train_shapes[lbl] = base
@@ -159,23 +168,49 @@ def _build_dataset(shapes, holdout_labels, copies_per_char, noise_std, device):
 # Training
 # ===========================================================================
 
-def train(model, x1, ref_cps, loss_fn, epochs, lr, mini_batch):
-    opt       = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=epochs,
+def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
+    """Save a resumable mid-training checkpoint."""
+    os.makedirs(os.path.dirname(args.save_model) or '.', exist_ok=True)
+    stem = os.path.splitext(args.save_model)[0]
+    path = f"{stem}_ep{epoch+1:04d}.pt"
+    torch.save({
+        'model_state_dict':     model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'scheduler_state_dict': scheduler.state_dict(),
+        'epoch': epoch,
+        'loss':  loss,
+        'nxi': args.nxi, 'nd': args.nd, 'D': args.D,
+    }, path)
+    return path
+
+
+def train(model, x1, ref_cps, loss_fn, args):
+    opt       = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.epochs,
                                                             eta_min=1e-5)
     model.train()
     use_cuda = x1.device.type == 'cuda'
     N = x1.shape[0]
+    start_epoch = 0
+
+    # ── Resume from checkpoint if available ──
+    if args.resume and os.path.isfile(args.resume):
+        ckpt = torch.load(args.resume, map_location=x1.device, weights_only=True)
+        model.load_state_dict(ckpt['model_state_dict'])
+        opt.load_state_dict(ckpt['optimizer_state_dict'])
+        scheduler.load_state_dict(ckpt['scheduler_state_dict'])
+        start_epoch = ckpt['epoch'] + 1
+        print(f"  Resumed from epoch {start_epoch} (loss={ckpt['loss']:.5f})")
 
     from tqdm import tqdm
-    pbar = tqdm(range(epochs), desc="Training", unit="ep")
+    pbar = tqdm(range(start_epoch, args.epochs), desc="Training", unit="ep")
 
     for ep in pbar:
         perm = torch.randperm(N, device=x1.device)
         ep_loss, nb = 0.0, 0
 
-        for i in range(0, N, mini_batch):
-            idx = perm[i : i + mini_batch]
+        for i in range(0, N, args.mini_batch):
+            idx = perm[i : i + args.mini_batch]
             opt.zero_grad()
             with torch.autocast(
                 device_type='cuda' if use_cuda else 'cpu',
@@ -190,9 +225,18 @@ def train(model, x1, ref_cps, loss_fn, epochs, lr, mini_batch):
 
         scheduler.step()
         avg = ep_loss / max(nb, 1)
-        if ep % 10 == 0 or ep == epochs - 1:
-            pbar.set_postfix(loss=f"{avg:.5f}",
-                             lr=f"{scheduler.get_last_lr()[0]:.2e}")
+        lr_now = scheduler.get_last_lr()[0]
+        if ep % 10 == 0 or ep == args.epochs - 1:
+            pbar.set_postfix(loss=f"{avg:.5f}", lr=f"{lr_now:.2e}")
+
+        # ── W&B logging ──
+        if getattr(args, 'use_wandb', False) and _WANDB_OK:
+            wandb.log({'train/loss': avg, 'train/lr': lr_now, 'epoch': ep + 1})
+
+        # ── Periodic checkpoint save ──
+        if args.save_every > 0 and (ep + 1) % args.save_every == 0:
+            _save_checkpoint(model, opt, scheduler, ep, avg, args)
+            print(f"  [ep {ep+1}] checkpoint saved (loss={avg:.5f})")
 
 
 # ===========================================================================
@@ -301,9 +345,19 @@ def run(args):
         model.load_state_dict(ckpt['model_state_dict'])
         print(f"  Loaded checkpoint from {args.load_model}")
     else:
-        train(model, x1, ref_cps, compute_cond_cfm_loss,
-              args.epochs, args.lr, args.mini_batch)
+        if args.use_wandb:
+            if not _WANDB_OK:
+                print("  Warning: wandb not installed — run 'pip install wandb'. Skipping.")
+            else:
+                wandb.init(
+                    project=args.wandb_project,
+                    name=args.run_name,
+                    config=vars(args),
+                )
+        train(model, x1, ref_cps, compute_cond_cfm_loss, args)
         print("  Training complete!")
+        if args.use_wandb and _WANDB_OK:
+            wandb.finish()
 
         save_path = args.save_model
         os.makedirs(os.path.dirname(save_path) or '.', exist_ok=True)
@@ -358,6 +412,17 @@ def parse_args():
                    default=os.path.join(_here, 'checkpoints',
                                         'cond_mpd_char_traj.pt'))
     p.add_argument('--load_model', type=str, default=None)
+    p.add_argument('--resume', type=str, default=None,
+                   help="Resume from a mid-training checkpoint")
+    p.add_argument('--save_every', type=int, default=200,
+                   help="Save a resumable checkpoint every N epochs (0 = disabled)")
+    # W&B
+    p.add_argument('--use_wandb',      action='store_true', default=False,
+                   help="Enable Weights & Biases logging")
+    p.add_argument('--wandb_project',  type=str, default='flow-matching',
+                   help="W&B project name")
+    p.add_argument('--run_name',       type=str, default=None,
+                   help="W&B run name (auto-generated if omitted)")
     return p.parse_args()
 
 

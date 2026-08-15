@@ -1,0 +1,25 @@
+# Requirements for flow_matching_runner_spectral.py
+# Tested with Python 3.12 on local machine.
+#
+# PyTorch — install manually with the correct CUDA version for the cluster:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu118
+# (check https://pytorch.org/get-started/locally/ for the right cu-version)
+torch>=2.1.0
+
+# Numerics / plotting
+numpy>=1.26.0
+matplotlib>=3.9.0
+tqdm>=4.66.0
+
+# JAX — required by bsplinax (B-spline basis evaluation)
+# Install CPU-only on cluster (bsplinax only runs on CPU for basis precomputation):
+#   pip install jax jaxlib
+jax>=0.4.30
+jaxlib>=0.4.30
+
+# bsplinax — local package, install from the repo root:
+#   pip install -e ../bsplinax-main
+# (no PyPI entry — must be installed from the copied folder)
+
+# Experiment tracking
+wandb>=0.17.0

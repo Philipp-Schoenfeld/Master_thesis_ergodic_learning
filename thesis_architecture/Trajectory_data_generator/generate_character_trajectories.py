@@ -186,6 +186,15 @@ def make_infinity(num_points=200):
     y = np.sin(t) * np.cos(t) / denom
     return normalize_to_unit(np.column_stack([x, y]))
 
+def make_hypotrochoid(R, r, d, num_points=200):
+    import math
+    R, r = int(R), int(r)
+    period = 2 * np.pi * r / math.gcd(R, r)
+    t = np.linspace(0, period, num_points, endpoint=False)
+    x = (R - r) * np.cos(t) + d * np.cos((R - r) / r * t)
+    y = (R - r) * np.sin(t) - d * np.sin((R - r) / r * t)
+    return normalize_to_unit(np.column_stack([x, y]))
+
 # Symbol waypoints (normalized later via sample_path)
 symbol_waypoints = {
     'cross':       [(0.5,0), (0.5,1), (0.5,0.5), (0,0.5), (1,0.5)],
@@ -222,7 +231,7 @@ def make_random_lines(seed, n_waypoints, num_points=200):
 def generate_all_shapes(num_points=200):
     """
     Returns an OrderedDict: label → (num_points, 2) numpy array.
-    Total: 60 characters + 90 procedural = 150 shapes.
+    Total: 1000 shapes carefully balanced for topological diversity.
     """
     from collections import OrderedDict
     shapes = OrderedDict()
@@ -232,57 +241,70 @@ def generate_all_shapes(num_points=200):
     for name, wps in all_chars.items():
         shapes[name] = sample_path(wps, num_points)
 
-    # ── Regular polygons (8): triangle → decagon ──
-    for n in range(3, 11):
+    # ── Regular polygons (10) ──
+    for n in range(3, 13):
         shapes[f'poly_{n}'] = make_regular_polygon(n, num_points)
 
-    # ── Stars (6): 3- through 8-pointed ──
-    for n in range(3, 9):
-        shapes[f'star_{n}'] = make_star(n, inner_ratio=0.4, num_points=num_points)
+    # ── Stars (30) ──
+    for n in range(3, 13):
+        for ir in [0.3, 0.4, 0.5]:
+            shapes[f'star_{n}_ir{int(ir*10)}'] = make_star(n, inner_ratio=ir, num_points=num_points)
 
-    # ── Spirals (6) ──
-    for turns in [1, 2, 3]:
+    # ── Spirals (10) ──
+    for turns in [1, 2, 3, 4, 5]:
         shapes[f'spiral_{turns}cw']  = make_spiral(turns,  1, num_points)
-    for turns in [1, 2]:
+    for turns in [1, 2, 3, 4]:
         shapes[f'spiral_{turns}ccw'] = make_spiral(turns, -1, num_points)
-    shapes['log_spiral'] = make_log_spiral(2, num_points)
+    shapes['log_spiral'] = make_log_spiral(3, num_points)
 
-    # ── Lissajous curves (8) ──
-    for (a, b) in [(1,2), (1,3), (2,3), (3,2), (3,4), (2,5), (3,5), (4,5)]:
-        shapes[f'lissajous_{a}_{b}'] = make_lissajous(a, b, num_points=num_points)
+    # ── Lissajous curves (60) ──
+    for a in range(1, 6):
+        for b in range(1, 6):
+            if a == b: continue
+            for d_idx, delta in enumerate([0, np.pi/4, np.pi/2]):
+                shapes[f'lissajous_{a}_{b}_d{d_idx}'] = make_lissajous(a, b, delta=delta, num_points=num_points)
 
-    # ── Waves (6) ──
-    for p in [1, 2, 3]:
+    # ── Waves & Stairs (30) ──
+    for p in range(1, 11):
         shapes[f'sine_{p}'] = make_sine_wave(p, num_points)
-    for z in [3, 5]:
+    for z in range(3, 13):
         shapes[f'zigzag_{z}'] = make_zigzag(z, num_points)
-    shapes['staircase'] = make_staircase(5, num_points)
+    for s in range(3, 13):
+        shapes[f'staircase_{s}'] = make_staircase(s, num_points)
 
-    # ── Symbols (8) ──
+    # ── Symbols (10) ──
     shapes['heart']    = make_heart(num_points)
     shapes['infinity'] = make_infinity(num_points)
     for name, wps in symbol_waypoints.items():
         shapes[name] = sample_path(wps, num_points)
 
-    # ── Random convex polygons (60) ──
-    for i in range(60):
-        n_verts = 4 + (i % 5)  # 4,5,6,7,8 vertices cycling
+    # ── Hypotrochoids (100) ──
+    rng_hypo = np.random.RandomState(42)
+    for i in range(100):
+        R = rng_hypo.randint(3, 12)
+        r = rng_hypo.randint(1, R)
+        d = rng_hypo.uniform(0.5, 2.0) * r
+        shapes[f'hypo_{i}_R{R}_r{r}'] = make_hypotrochoid(R, r, d, num_points=num_points)
+
+    # ── Random convex polygons (150) ──
+    for i in range(150):
+        n_verts = 4 + (i % 8)
         shapes[f'rand_poly_{i}'] = make_random_convex_polygon(
             seed=100 + i, n_verts=n_verts, num_points=num_points)
 
-    # ── Random Bézier curves (80) ──
-    for i in range(80):
-        n_cp = 3 + (i % 4)  # 3,4,5,6 control points cycling
+    # ── Random Bézier curves (300) ──
+    for i in range(300):
+        n_cp = 3 + (i % 6)
         shapes[f'rand_bezier_{i}'] = make_random_bezier(
             seed=200 + i, n_control=n_cp, num_points=num_points)
 
-    # ── Random connected line segments (58) ──
-    for i in range(58):
-        n_wp = 4 + (i % 4)  # 4,5,6,7 waypoints cycling
+    # ── Random connected line segments (242) ──
+    for i in range(242):
+        n_wp = 4 + (i % 6)
         shapes[f'rand_lines_{i}'] = make_random_lines(
             seed=300 + i, n_waypoints=n_wp, num_points=num_points)
 
-    assert len(shapes) == 300, f"Expected 300 shapes, got {len(shapes)}"
+    assert len(shapes) == 1000, f"Expected 1000 shapes, got {len(shapes)}"
     return shapes
 
 # =============================================================================
@@ -291,14 +313,14 @@ def generate_all_shapes(num_points=200):
 
 def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    num_points = 200
+    num_points = 500
 
     shapes = generate_all_shapes(num_points)
     print(f"Generated {len(shapes)} shapes")
 
-    # ── Visualization (20 × 15 grid) ──
-    n_rows, n_cols = 20, 15
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(30, 40))
+    # ── Visualization (40 × 25 grid) ──
+    n_rows, n_cols = 40, 25
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(50, 80))
     axes = axes.flatten()
 
     for idx, (name, pts) in enumerate(shapes.items()):

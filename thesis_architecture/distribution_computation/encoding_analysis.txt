@@ -1,0 +1,114 @@
+================================================================================
+DISTRIBUTION ENCODING ANALYSIS: MATHEMATICS & VISUAL INSIGHTS
+================================================================================
+This document provides a detailed breakdown of the 6 encoding strategies implemented 
+in the distribution computation pipeline. For each method, we detail the mathematical 
+formulation for encoding and reverting (decoding), followed by empirical insights 
+gained from the visual results (pipeline_*.png).
+
+--------------------------------------------------------------------------------
+1. Gaussian Mixture Models (GMM)
+--------------------------------------------------------------------------------
+[Mathematics]
+- Encode: The continuous target density \mu(x) is sampled to create a discrete dataset. 
+  Expectation-Maximization (EM) is used to fit K Gaussian components.
+  Encoded Representation: A set of {weights (w_i), means (\mu_i), covariances (\Sigma_i)} for i=1..K.
+- Revert: The density is reconstructed by evaluating the analytical GMM equation over a grid:
+  p(x) = \sum_{i=1}^K w_i * (2\pi)^{-d/2} |\Sigma_i|^{-1/2} exp(-0.5 * (x-\mu_i)^T \Sigma_i^{-1} (x-\mu_i))
+
+[Visual Insights]
+- Smoothness: The reverted distributions are perfectly smooth and continuous.
+- Topology Mismatch: GMMs inherently struggle with sharp corners and rigid geometric shapes 
+  (like the analytical polygons and Korean characters). They tend to approximate straight 
+  lines as overlapping "bubbles". 
+- Conclusion: Excellent for smooth distributions or when exact gradients (score functions) 
+  are strictly required, but topologically inaccurate for complex rigid structures.
+
+--------------------------------------------------------------------------------
+2. Spectral Coefficients (Cosine Transform)
+--------------------------------------------------------------------------------
+[Mathematics]
+- Encode: The spatial density is transformed into the frequency domain using a 
+  2D Discrete Cosine Transform (DCT). 
+  C(k_x, k_y) = \alpha(k_x)\alpha(k_y) \sum_x \sum_y p(x,y) cos(\pi k_x (2x+1) / 2N) cos(\pi k_y (2y+1) / 2M)
+  The matrix is truncated to the first KxK low-frequency coefficients.
+- Revert: The truncated matrix is zero-padded back to the original resolution, and 
+  an Inverse DCT is applied to reconstruct the spatial grid.
+
+[Visual Insights]
+- Compression: Visually, the encoded representation (heatmap) captures the "global blueprint" 
+  in very few coefficients (e.g., 10x10).
+- Gibbs Phenomenon (Ringing): The reverted images clearly show wave-like artifacts (ringing) 
+  radiating outward from sharp boundaries. Because high frequencies were truncated, 
+  perfectly sharp edges (like the 'A' or analytical shapes) cannot be faithfully reconstructed.
+- Conclusion: Mathematically elegant and highly compressed. Perfect for conditioning neural 
+  networks (Flow Matching) via cross-attention, provided the network learns to ignore the ringing.
+
+--------------------------------------------------------------------------------
+3. Analytical Implicit Functions (SDF Contours)
+--------------------------------------------------------------------------------
+[Mathematics]
+- Encode: Marching Squares algorithm extracts iso-contours at a specific density threshold, 
+  resulting in a set of line segments (Polygons).
+- Revert: For every point x in space, the squared distance d(x)^2 to the nearest line 
+  segment is calculated. The density is restored using an exponential falloff:
+  p(x) \propto exp(-d(x)^2 / (2\sigma^2))
+
+[Visual Insights]
+- Geometric Precision: The encoded representation isolates the exact topological skeleton 
+  (the red lines). 
+- Perfect Boundaries: The reverted density perfectly matches the original sharp boundaries 
+  without any ringing or bubbly artifacts. 
+- Conclusion: The absolute best method for creating training datasets of rigid geometries 
+  (mazes, outlines), but cannot easily represent varying density volumes (e.g., a fading cloud).
+
+--------------------------------------------------------------------------------
+4. Discrete Grid (Heatmap Rasterization)
+--------------------------------------------------------------------------------
+[Mathematics]
+- Encode: The high-resolution continuous density is downsampled (e.g., via local averaging) 
+  into a low-resolution grid (e.g., 16x16).
+- Revert: The low-resolution grid is upsampled back to high resolution using Bicubic 
+  Interpolation (a 3rd-order spline interpolation).
+
+[Visual Insights]
+- Pixelation: The encoded image is highly pixelated, looking like a retro 8-bit image.
+- Blurring: The bicubic reversion smooths out the pixels but completely destroys fine 
+  high-frequency details. Two parallel lines that fall into the same 16x16 pixel will merge 
+  into one blob.
+- Conclusion: Very easy to feed into Convolutional Neural Networks (CNNs), but scales terribly 
+  if high spatial precision is required.
+
+--------------------------------------------------------------------------------
+5. Point Clouds (Particle Sets)
+--------------------------------------------------------------------------------
+[Mathematics]
+- Encode: Rejection sampling (or MCMC) is used to draw N discrete particles that follow 
+  the target density \mu(x). Representation is simply an (N, 2) array of coordinates.
+- Revert: Kernel Density Estimation (KDE) is applied. A Gaussian kernel with bandwidth h 
+  is placed at every particle location and summed up:
+  p(x) = (1 / Nh) \sum_{i=1}^N K((x - x_i) / h)
+
+[Visual Insights]
+- Granularity: The encoded scatter plot shows how density is represented simply by particle proximity.
+- Noise: The reverted KDE map is surprisingly accurate for global shapes but retains a 
+  grainy, noisy texture. It lacks the mathematical purity of GMMs or Spectral methods.
+- Conclusion: Excellent for interfacing with physical simulations or real-world sensor data 
+  (LiDAR), but suboptimal as a pure mathematical target for Flow Matching.
+
+--------------------------------------------------------------------------------
+6. Hybrid (Spectral + Spatial Grid)
+--------------------------------------------------------------------------------
+[Mathematics]
+- Encode: Combines a very low-resolution Discrete Grid (e.g., 16x16) with very low-frequency 
+  Spectral Coefficients (e.g., 8x8).
+- Revert: Both representations are reverted individually (Bicubic upsampling for the grid, 
+  Inverse DCT for the spectrum) and their probability masses are averaged.
+
+[Visual Insights]
+- Best of Both Worlds: The reverted image mitigates the ringing artifacts of pure spectral 
+  methods (smoothed by the grid) while retaining more structural awareness than a pure 
+  low-res grid (guided by the frequencies).
+- Conclusion: Highly promising for advanced network architectures. Allows a neural network 
+  to use Spectral tokens for global context and Spatial tokens for local corner-precision.
+================================================================================

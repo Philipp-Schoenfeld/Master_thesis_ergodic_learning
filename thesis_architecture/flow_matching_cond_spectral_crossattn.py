@@ -90,33 +90,36 @@ class SpectralTokenizer(nn.Module):
     """
     Translates spectral coefficients into frequency tokens for cross-attention.
 
-    Input:  (B, S) spectral coefficients, (B, S, 2) k_indices
-    Output: (B, S, D) frequency tokens (ungepooled, for use as K/V)
+    Input:  (B, S, 2) ergodic Fourier coefficients — channel 0 is c_k (coverage
+            statistic), channel 1 is Lambda_k (spectral discount weight).
+    Input:  (B, S, 2) k_indices — (k1, k2) cosine frequency pairs.
+    Output: (B, S, D) frequency tokens (un-pooled, for use as K/V in cross-attention).
     """
 
     def __init__(self, S: int, D: int):
         super().__init__()
         self.S = S
         self.D = D
-        # Per-frequency MLP: project each scalar coefficient to D dimensions
+        # Per-frequency MLP: project each [c_k, Lambda_k] pair to D dimensions.
+        # Input dim is 2: channel 0 is the ergodic coverage statistic c_k ∈ [-1,1],
+        # channel 1 is the spectral discount weight Lambda_k ∈ (0,1].
         self.freq_mlp = nn.Sequential(
-            nn.Linear(1, D), nn.SiLU(), nn.Linear(D, D),
+            nn.Linear(2, D), nn.SiLU(), nn.Linear(D, D),
         )
         # 2D Frequency positional encoding (max_len=256 to support arbitrary index ranges)
         self.freq_pos_enc = FrequencyPositionalEncoding2D(D=D, max_len=256)
         # LayerNorm for stable outputs
         self.norm = nn.LayerNorm(D)
 
-    def forward(self, c: torch.Tensor, k_indices: torch.Tensor) -> torch.Tensor:
+    def forward(self, spec_ri: torch.Tensor, k_indices: torch.Tensor) -> torch.Tensor:
         """
-        c: (B, S) spectral coefficients
-        k_indices: (B, S, 2) 2D frequency indices
-        Returns: (B, S, D) frequency tokens
+        spec_ri:   (B, S, 2) — [c_k, Lambda_k] per ergodic frequency
+        k_indices: (B, S, 2) — (k1,k2) cosine frequency pairs from the ergodic basis
+        Returns:   (B, S, D) frequency tokens
         """
-        tokens = c.unsqueeze(-1)                                 # (B, S, 1)
-        tokens = self.freq_mlp(tokens)                           # (B, S, D)
-        tokens = self.freq_pos_enc(tokens, k_indices)            # (B, S, D) + pos
-        tokens = self.norm(tokens)                               # (B, S, D)
+        tokens = self.freq_mlp(spec_ri)                              # (B, S, D)
+        tokens = self.freq_pos_enc(tokens, k_indices)                # (B, S, D) + pos
+        tokens = self.norm(tokens)                                   # (B, S, D)
         return tokens
 
 
@@ -168,8 +171,6 @@ class CrossAttentionBlock(nn.Module):
             embed_dim=q_dim, num_heads=n_heads, batch_first=True,
         )
         self.cross_attn_norm = nn.LayerNorm(q_dim)
-        nn.init.zeros_(self.cross_attn.out_proj.weight)
-        nn.init.zeros_(self.cross_attn.out_proj.bias)
 
         self.kv_proj = nn.Sequential(
             nn.Linear(kv_dim, q_dim), nn.SiLU(), nn.Linear(q_dim, q_dim),
@@ -188,8 +189,11 @@ class CrossAttentionBlock(nn.Module):
         q = x.permute(0, 2, 1)                      # (B, L, C)
         
         kv_proj = self.kv_proj(kv)                  # (B, S, C)
-        ca_out, _ = self.cross_attn(q, kv_proj, kv_proj)
-        q = self.cross_attn_norm(q + ca_out)        # (B, L, C)
+        
+        # Pre-norm architecture for stability
+        q_norm = self.cross_attn_norm(q)
+        ca_out, _ = self.cross_attn(q_norm, kv_proj, kv_proj)
+        q = q + ca_out                              # Clean residual skip connection
         
         return q.permute(0, 2, 1)                   # (B, C, L)
 
@@ -227,9 +231,6 @@ class UNetBackboneSpectral(nn.Module):
             embed_dim=D4, num_heads=n_heads, batch_first=True,
         )
         self.self_attn_norm = nn.LayerNorm(D4)
-        # Zero-init output projection for stable residual
-        nn.init.zeros_(self.self_attn.out_proj.weight)
-        nn.init.zeros_(self.self_attn.out_proj.bias)
 
         # ── Cross-Attention Blocks ──
         self.bot_cross_attn = CrossAttentionBlock(q_dim=D4, kv_dim=D, n_heads=n_heads)
@@ -260,8 +261,11 @@ class UNetBackboneSpectral(nn.Module):
         # Reshape to (B, L, D*4) for attention
         B_size, C, L = b.shape
         b_seq = b.permute(0, 2, 1)                              # (B, L=5, D*4)
-        sa_out, _ = self.self_attn(b_seq, b_seq, b_seq)          # (B, L, D*4)
-        b_seq = self.self_attn_norm(b_seq + sa_out)              # residual + norm
+        
+        # Pre-norm architecture
+        b_seq_norm = self.self_attn_norm(b_seq)
+        sa_out, _ = self.self_attn(b_seq_norm, b_seq_norm, b_seq_norm)  # (B, L, D*4)
+        b_seq = b_seq + sa_out                                  # Clean residual
         b = b_seq.permute(0, 2, 1)                              # (B, D*4, 5)
 
         # ── Cross-Attention: Q=B-spline, KV=Spectral ──
@@ -393,8 +397,8 @@ class SpectralCrossAttnFlowNetwork(nn.Module):
         """
         x:               (B, nxi, nd) — noisy trajectory
         t:               (B,) — diffusion time
-        spectral_coeffs: (B, S) — spectral condition
-        k_indices:       (B, S, 2) — spectral frequencies 2D
+        spectral_coeffs: (B, S, 2) — spectral condition [real, imag per coefficient]
+        k_indices:       (B, S, 2) — (k1,k2) cosine frequency pairs from the ergodic basis
         cond_drop_mask:  (B,) bool — True = drop condition (CFG)
 
         Returns:
@@ -443,7 +447,7 @@ def compute_spectral_cfm_loss(
     Conditional CFM loss with spectral conditioning and CFG dropout.
 
     x1_batch:       (B, nxi, nd) — target trajectories
-    spectral_batch: (B, S) — spectral coefficients (condition)
+    spectral_batch: (B, S, 2) — spectral coefficients [real, imag] (condition)
     k_idx_batch:    (B, S, 2) — frequencies
     p_drop:         probability of dropping condition (CFG)
     """
@@ -463,8 +467,9 @@ def compute_spectral_cfm_loss(
     # Flow matching loss (MSE on velocity field)
     loss = torch.mean((v_t - ut) ** 2)
 
-    # Lambda loss is NOT computed here — it requires ground-truth lambdas
-    # which are only available when paired with a TSVEC solver.
+    # Lambda loss is NOT computed here — ground-truth lambdas require the output
+    # of a paired ergodic trajectory optimizer (e.g. SVGD or flow-matching solver)
+    # to provide optimal Lagrange multipliers for each training trajectory.
     return loss
 
 
@@ -475,7 +480,7 @@ def compute_spectral_cfm_loss(
 @torch.no_grad()
 def generate_spectral_trajectories(
     model: nn.Module,
-    spectral_coeffs: torch.Tensor,   # (S,) or (num_samples, S)
+    spectral_coeffs: torch.Tensor,   # (S, 2) or (num_samples, S, 2)
     k_indices: torch.Tensor,         # (S, 2) or (num_samples, S, 2)
     num_samples: int = 1,
     nxi: int = 20,
@@ -492,8 +497,8 @@ def generate_spectral_trajectories(
         lambda0: (num_samples, n_lambda) or None — predicted Lagrange multipliers
     """
     model.eval()
-    if spectral_coeffs.ndim == 1:
-        spectral_coeffs = spectral_coeffs.unsqueeze(0).expand(num_samples, -1).contiguous()
+    if spectral_coeffs.ndim == 2:  # (S, 2) — single shape
+        spectral_coeffs = spectral_coeffs.unsqueeze(0).expand(num_samples, -1, -1).contiguous()
     spectral_coeffs = spectral_coeffs.to(device)
 
     if k_indices.ndim == 2:

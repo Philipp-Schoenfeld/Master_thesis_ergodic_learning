@@ -1,0 +1,14 @@
+{
+ "CFM (C75, ep432)": {
+  "off": "/home/stud_schonfeld/Master_thesis/thesis_architecture/Trajectory_data_generator/viz_rerun/viz_cond_particles_crossattn_flow_matching_particle_ergodic_date_08_12_23h41min_nxi25_D384_N256_C75_flip0.0_ep0432_offobstacle_20260814_11h51min.png",
+  "on": "/home/stud_schonfeld/Master_thesis/thesis_architecture/Trajectory_data_generator/viz_rerun/viz_cond_particles_crossattn_flow_matching_particle_ergodic_date_08_12_23h41min_nxi25_D384_N256_C75_flip0.0_ep0432_onobstacle_20260814_11h51min.png"
+ },
+ "CFM + Ergodic Loss": {
+  "off": "/home/stud_schonfeld/Master_thesis/thesis_architecture/Trajectory_data_generator/viz_rerun/viz_cond_particles_crossattn_flow_matching_particle_ergodic_date_08_12_11h07min_nxi25_D384_N256_C50_flip0.0_ERGLOSS-w5-K8-tp2_final_offobstacle_20260814_11h59min.png",
+  "on": "/home/stud_schonfeld/Master_thesis/thesis_architecture/Trajectory_data_generator/viz_rerun/viz_cond_particles_crossattn_flow_matching_particle_ergodic_date_08_12_11h07min_nxi25_D384_N256_C50_flip0.0_ERGLOSS-w5-K8-tp2_final_onobstacle_20260814_11h59min.png"
+ },
+ "Selbstueberwacht": {
+  "off": "/home/stud_schonfeld/Master_thesis/thesis_architecture/Trajectory_data_generator/viz_rerun/viz_selfsup_selfsup_particles_date_08_12_10h13min_nxi25_D384_N256_K8_div10_final_offobstacle_20260814_12h06min.png",
+  "on": "/home/stud_schonfeld/Master_thesis/thesis_architecture/Trajectory_data_generator/viz_rerun/viz_selfsup_selfsup_particles_date_08_12_10h13min_nxi25_D384_N256_K8_div10_final_onobstacle_20260814_12h06min.png"
+ }
+}
