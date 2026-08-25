@@ -263,6 +263,9 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, ho
             nxi=args.nxi, K=args.erg_K, pts=args.erg_pts, deg=args.bspline_deg,
             weight=args.lambda_erg, t_power=args.erg_t_power,
             weighted_target=(args.sample_mode == 'uniform'),
+            metric=args.erg_metric, sinkhorn_blur=args.sinkhorn_blur,
+            sinkhorn_scaling=args.sinkhorn_scaling,
+            sinkhorn_ratio=args.sinkhorn_ratio,
         ).to(x1_clean.device)
         print(f"  Ergodic loss term active: {ergodic.extra_repr()}")
 
@@ -489,7 +492,16 @@ def run(args):
     # their checkpoints and figures never get mixed up with the pure-CFM runs.
     # Without the term the name is byte-identical to before.
     if getattr(args, 'lambda_erg', 0.0) > 0.0:
-        args.run_str += f"_ERGLOSS-w{args.lambda_erg:g}-K{args.erg_K}-tp{args.erg_t_power:g}"
+        if args.erg_metric == 'fourier':
+            # Unchanged name, so older runs keep matching the old scheme.
+            args.run_str += f"_ERGLOSS-w{args.lambda_erg:g}-K{args.erg_K}-tp{args.erg_t_power:g}"
+        elif args.erg_metric == 'sinkhorn':
+            args.run_str += (f"_ERGLOSS-SINKHORN-w{args.lambda_erg:g}"
+                             f"-blur{args.sinkhorn_blur:g}-tp{args.erg_t_power:g}")
+        else:
+            args.run_str += (f"_ERGLOSS-BOTH-w{args.lambda_erg:g}-K{args.erg_K}"
+                             f"-blur{args.sinkhorn_blur:g}-r{args.sinkhorn_ratio:g}"
+                             f"-tp{args.erg_t_power:g}")
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if device.type == 'cuda':
         torch.backends.cudnn.benchmark = True
@@ -620,6 +632,18 @@ def parse_args():
                    help='B-spline samples used for the trajectory time average.')
     p.add_argument('--erg_t_power', type=float, default=2.0,
                    help='Ramp exponent t^p; the endpoint estimate is poor at small t.')
+    # Which discrepancy measure the ergodic term uses. 'fourier' is the previous
+    # behaviour byte for byte; 'sinkhorn' drops the K x K basis truncation.
+    p.add_argument('--erg_metric', type=str, default='fourier',
+                   choices=['fourier', 'sinkhorn', 'both'],
+                   help='Discrepancy measure for the coverage term.')
+    p.add_argument('--sinkhorn_blur', type=float, default=0.05,
+                   help='Entropic length scale in domain widths (sinkhorn only).')
+    p.add_argument('--sinkhorn_scaling', type=float, default=0.5,
+                   help='Epsilon-annealing density; 0.5 is 6x cheaper than '
+                        'geomloss default 0.9 at the same gradient.')
+    p.add_argument('--sinkhorn_ratio', type=float, default=1.0,
+                   help="Factor on the Sinkhorn part when --erg_metric both.")
     
     p.add_argument('--n_gen',       type=int, default=5)
     p.add_argument('--steps',       type=int, default=100)

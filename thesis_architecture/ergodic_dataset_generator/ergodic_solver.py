@@ -288,9 +288,17 @@ def _generate_initial_trajectory(x0, shape_def, tsteps, dt):
         # Dynamic Serpentine: progress along Major Axis (E1), oscillate gently along Minor Axis (E2)
         curve = mu[None, :] + 1.0 * np.outer(tau, E1) + 0.3 * np.outer(np.sin(num_swings * np.pi * (tau + 1)), E2)
         
-        # transit from previous point
+        # Anfahrt vom letzten Punkt. Die Zahl der Stuetzpunkte haengt an der
+        # *Laenge* der Anfahrt, nicht an der Zahl der Komponenten. Mit einem
+        # Startpunkt irgendwo auf der Flaeche kann die erste Anfahrt fast die
+        # ganze Diagonale lang sein; mit einer festen, kleinen Punktzahl wuerde
+        # sie nach der Interpolation auf `tsteps` zu wenige Abtastpunkte
+        # bekommen und der PID-Regler muesste sie mit unrealistischer
+        # Geschwindigkeit abfahren.
         last_pt = points[-1][-1]
-        transit = np.linspace(last_pt, curve[0], max(5, int(20/len(means))))[1:-1]
+        dist = float(np.linalg.norm(np.asarray(curve[0]) - np.asarray(last_pt)))
+        n_transit = max(5, int(round(dist * 120)), int(20 / len(means)))
+        transit = np.linspace(last_pt, curve[0], n_transit)[1:-1]
         points.append(transit)
         points.append(curve)
 

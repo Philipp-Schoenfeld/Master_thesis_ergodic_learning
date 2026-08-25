@@ -1,2 +1,15 @@
 *.pt
 thesis_architecture/checkpoints/*
+
+# Zu gross fuer GitHub (Limit: 100 MB je Datei) — per Drive uebertragen.
+3D_ergodic_learning/ergodic_dataset_3d.db
+3D_ergodic_learning/cache/
+transfer/
+
+# Rohe Bahnendaten der Auswertungen, 13-21 MB je Datei, zusammen ueber 800 MB.
+# Regenerierbar aus den Skripten, gehoeren nicht dauerhaft in die Historie.
+bahnen.json
+
+# Python-Cache
+__pycache__/
+*.pyc

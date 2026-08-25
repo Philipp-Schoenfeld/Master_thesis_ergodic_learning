@@ -42,7 +42,9 @@ def make_pdf_and_score(shape_def):
     Supports both GMM (means, covs, weights) and analytical segments.
     """
     if shape_def.get('type') == 'analytical':
-        return _make_analytical_pdf_and_score(shape_def['segments'], shape_def.get('sigma', 0.025))
+        base = _make_analytical_pdf_and_score(shape_def['segments'],
+                                              shape_def.get('sigma', 0.025))
+        return _vielleicht_sockel(base, shape_def)
 
     w = np.array(shape_def['weights'], dtype=np.float32)
     w = w / w.sum()
@@ -65,7 +67,78 @@ def make_pdf_and_score(shape_def):
         return jnp.log(pdf_fn(x))
 
     score_fn = jax.grad(log_pdf)
-    return pdf_fn, score_fn
+    return _vielleicht_sockel((pdf_fn, score_fn), shape_def)
+
+
+# ---------------------------------------------------------------------------
+#  Sockel: eine breite, fast gleichverteilte Komponente unter der Form
+# ---------------------------------------------------------------------------
+#  Warum das existiert: die Zieldichten, die im Einsatz aus einem Glauben
+#  entstehen (mu + kappa*sigma, Niveaumenge, Informationsdichte), haben einen
+#  Traeger ueber dem *ganzen* Quadrat und halten in den obersten 30 % ihrer
+#  Zellen nur 0,34 bis 0,48 der Masse. Die bisherigen Trainingsdichten kommen
+#  auf 0,658 beziehungsweise 0,851 — das Netz sieht im Training also nie
+#  etwas, das einer Glaubensdichte auch nur aehnelt.
+#
+#  Ein Sockel schliesst genau diese Luecke, ohne den ueberwachten Aufbau
+#  anzutasten: die Dichte bleibt analytisch, `jax.grad` liefert den Score
+#  weiterhin von selbst, und der SVGD-Solver laeuft unveraendert.
+#
+#      p'(x) = (1-a) * p(x)/Z_p  +  a * g(x)/Z_g
+#
+#  Beide Anteile werden ueber dem Einheitsquadrat auf Masse 1 normiert. Die
+#  zwei Konstanten werden einmal beim Bauen numerisch bestimmt und im
+#  shape_def mitgefuehrt, damit die Dichte nach dem Umweg ueber die Datenbank
+#  exakt dieselbe ist.
+
+def _gitter_mittel(fn, res=96):
+    xs = np.linspace(0.0, 1.0, res)
+    gx, gy = np.meshgrid(xs, xs)
+    z = np.zeros(res * res, dtype=np.float32)
+    pts = jnp.array(np.stack([gx.ravel(), gy.ravel(), z, z], axis=1))
+    return float(np.mean(np.array(jax.vmap(fn)(pts))))
+
+
+def _gauss_mittel(center, sigma, res=96):
+    xs = np.linspace(0.0, 1.0, res)
+    gx, gy = np.meshgrid(xs, xs)
+    d2 = (gx - center[0]) ** 2 + (gy - center[1]) ** 2
+    return float(np.mean(np.exp(-d2 / (2.0 * sigma ** 2))))
+
+
+def _vielleicht_sockel(base, shape_def):
+    ped = shape_def.get('pedestal')
+    if not ped:
+        return base
+    base_pdf, _ = base
+    a  = float(ped['weight'])
+    sg = float(ped['sigma'])
+    c  = jnp.array(ped['center'], dtype=jnp.float32)
+    zb = float(ped['z_base'])
+    zp = float(ped['z_ped'])
+
+    def pdf_fn(x):
+        x2d = x[:2]
+        g = jnp.exp(-jnp.sum((x2d - c) ** 2) / (2.0 * sg ** 2))
+        return (1.0 - a) * base_pdf(x) / zb + a * g / zp + 1e-10
+
+    def log_pdf(x):
+        return jnp.log(pdf_fn(x))
+
+    return jax.jit(pdf_fn), jax.jit(jax.grad(log_pdf))
+
+
+def mit_sockel(base_def, weight, seed):
+    """Kopie von `base_def` mit einem Sockel vom Gewicht `weight`."""
+    rng = np.random.default_rng(seed)
+    sigma  = float(rng.uniform(0.40, 0.95))
+    center = [float(v) for v in rng.uniform(0.35, 0.65, size=2)]
+    pdf_base, _ = make_pdf_and_score(base_def)
+    d = dict(base_def)
+    d['pedestal'] = {'weight': float(weight), 'sigma': sigma, 'center': center,
+                     'z_base': _gitter_mittel(pdf_base),
+                     'z_ped':  _gauss_mittel(center, sigma)}
+    return d
 
 
 @jax.jit
@@ -853,3 +926,138 @@ def train_shape_names(total=750):
     rng = random.Random(42)
     rng.shuffle(candidates)
     return candidates[:total]
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  Flache Formen — die Trainingsverteilung an Glaubensdichten heranfuehren
+# ═════════════════════════════════════════════════════════════════════════════
+#  Gemessen ueber die zwoelf Holdout-Formen (Anteil der Masse in den obersten
+#  30 % der Zellen, und Traegeranteil):
+#
+#      wahre Dichten          Traeger 0,658   Konzentration 0,851
+#      Phi (UCB/Niveaumenge)  Traeger 1,000   Konzentration 0,337-0,481
+#
+#  Die vier Familien hier erzeugen Dichten im zweiten Band, bleiben dabei aber
+#  analytisch: `make_pdf_and_score` liefert den Score wie bisher ueber
+#  `jax.grad`, der SVGD-Solver laeuft unveraendert, und es entstehen echte
+#  ueberwachte Labels. Die Architektur CFM+ErgLoss bleibt unangetastet — es
+#  aendert sich nur, was sie zu sehen bekommt.
+#
+#  Wichtig: `all_dataset_shapes()` und `train_shape_names()` werden bewusst
+#  NICHT angefasst. Deren Reihenfolge haengt an einem Shuffle mit Keim 42;
+#  jede Ergaenzung dort wuerde die bestehenden 750 Trainingsformen austauschen
+#  und alle frueheren Laeufe unvergleichbar machen.
+
+def _weichzeichnen(base_def, s):
+    """Form verbreitern: GMM ueber die Kovarianzen, Segmente ueber sigma."""
+    d = dict(base_def)
+    if d.get('type') == 'analytical':
+        d['sigma'] = float(min(d.get('sigma', 0.025) + s, 0.090))
+    else:
+        covs = np.array(d['covs'], dtype=np.float64)
+        covs[:, 0, 0] += s * s
+        covs[:, 1, 1] += s * s
+        d['covs'] = covs.tolist()
+    return d
+
+
+def _breite_moden(seed):
+    """Zwei bis vier breite Gauss-Moden — so sieht ein Phi nach wenigen
+    Messungen tatsaechlich aus."""
+    rng = np.random.default_rng(seed)
+    n = int(rng.integers(2, 5))
+    means = rng.uniform(0.25, 0.75, size=(n, 2)).tolist()
+    covs, w = [], []
+    for _ in range(n):
+        a = float(rng.uniform(0.010, 0.055))
+        b = float(rng.uniform(0.010, 0.055))
+        t = float(rng.uniform(0, 2 * np.pi))
+        c_t, s_t = np.cos(t), np.sin(t)
+        R = np.array([[c_t, -s_t], [s_t, c_t]])
+        covs.append((R @ np.diag([a, b]) @ R.T).tolist())
+        w.append(float(rng.uniform(0.4, 1.0)))
+    w = (np.array(w) / sum(w)).tolist()
+    return {'means': means, 'covs': covs, 'weights': w}
+
+
+def _ring_kontur(seed):
+    """Geschlossene, glatte Kontur. Das ist die Gestalt, die eine
+    Niveaumengen- oder Informationsdichte erzeugt: Masse auf dem Rand einer
+    Menge statt in ihrem Inneren."""
+    rng = np.random.default_rng(seed)
+    r0 = float(rng.uniform(0.22, 0.34))
+    cx, cy = rng.uniform(0.40, 0.60, size=2)
+    am = rng.uniform(-0.18, 0.18, size=3)
+    ph = rng.uniform(0, 2 * np.pi, size=3)
+    th = np.linspace(0, 2 * np.pi, 65)
+    r = r0 * (1 + sum(am[k] * np.cos((k + 2) * th + ph[k]) for k in range(3)))
+    r = np.clip(r, 0.08, 0.44)
+    x = np.clip(cx + r * np.cos(th), 0.03, 0.97)
+    y = np.clip(cy + r * np.sin(th), 0.03, 0.97)
+    segs = [([float(x[i]), float(y[i])], [float(x[i + 1]), float(y[i + 1])])
+            for i in range(len(th) - 1)]
+    return {'type': 'analytical', 'sigma': float(rng.uniform(0.030, 0.055)),
+            'segments': segs}
+
+
+_FLAT_POOL = None
+
+
+def _flat_basis(i):
+    """Grundform aus dem bestehenden Trainingsvorrat — nie aus VALIDATION_SHAPES,
+    damit kein Holdout ueber die Hintertuer ins Training gelangt."""
+    global _FLAT_POOL
+    if _FLAT_POOL is None:
+        _FLAT_POOL = train_shape_names(750)
+    return get_shape(_FLAT_POOL[(i * 7 + 3) % len(_FLAT_POOL)])
+
+
+def _flat_ped(i, seed):
+    rng = np.random.default_rng(seed)
+    return mit_sockel(_flat_basis(i), float(rng.uniform(0.50, 0.95)), seed)
+
+
+def _flat_blur(i, seed):
+    rng = np.random.default_rng(seed)
+    d = _weichzeichnen(_flat_basis(i), float(rng.uniform(0.04, 0.10)))
+    return mit_sockel(d, float(rng.uniform(0.45, 0.93)), seed)
+
+
+def _flat_broad(seed):
+    rng = np.random.default_rng(seed)
+    return mit_sockel(_breite_moden(seed), float(rng.uniform(0.30, 0.85)), seed)
+
+
+def _flat_ring(seed):
+    rng = np.random.default_rng(seed)
+    return mit_sockel(_ring_kontur(seed), float(rng.uniform(0.45, 0.92)), seed)
+
+
+N_FLAT_PED, N_FLAT_BLUR, N_FLAT_BROAD, N_FLAT_RING = 180, 80, 80, 60
+
+_BUILDERS.update({
+    **{f'flat_ped_{i}':   (lambda k=i: _flat_ped(k,   20000 + k)) for i in range(N_FLAT_PED)},
+    **{f'flat_blur_{i}':  (lambda k=i: _flat_blur(k,  30000 + k)) for i in range(N_FLAT_BLUR)},
+    **{f'flat_broad_{i}': (lambda k=i: _flat_broad(   40000 + k)) for i in range(N_FLAT_BROAD)},
+    **{f'flat_ring_{i}':  (lambda k=i: _flat_ring(    50000 + k)) for i in range(N_FLAT_RING)},
+    # Zwoelf flache Holdout-Formen, drei je Familie. Sie kommen in einen
+    # eigenen Split `val_flat`, damit der bestehende `val`-Split — und damit
+    # jede frueher gemessene Holdout-Zahl — unveraendert bleibt.
+    **{f'flat_val_ped_{i}':   (lambda k=i: _flat_ped(900 + k, 60000 + k)) for i in range(3)},
+    **{f'flat_val_blur_{i}':  (lambda k=i: _flat_blur(910 + k, 61000 + k)) for i in range(3)},
+    **{f'flat_val_broad_{i}': (lambda k=i: _flat_broad(     62000 + k)) for i in range(3)},
+    **{f'flat_val_ring_{i}':  (lambda k=i: _flat_ring(      63000 + k)) for i in range(3)},
+})
+
+
+def flat_shape_names(split='train'):
+    """Namen der flachen Formen. `split='train'` gibt 400, `'val'` gibt 12."""
+    if split == 'val':
+        return ([f'flat_val_ped_{i}' for i in range(3)]
+                + [f'flat_val_blur_{i}' for i in range(3)]
+                + [f'flat_val_broad_{i}' for i in range(3)]
+                + [f'flat_val_ring_{i}' for i in range(3)])
+    return ([f'flat_ped_{i}' for i in range(N_FLAT_PED)]
+            + [f'flat_blur_{i}' for i in range(N_FLAT_BLUR)]
+            + [f'flat_broad_{i}' for i in range(N_FLAT_BROAD)]
+            + [f'flat_ring_{i}' for i in range(N_FLAT_RING)])

@@ -55,17 +55,23 @@ def init_db(db_path=_DB_PATH):
 
 def store_pair(conn, shape_name, split, shape_def, traj_xy, x0, dt, tsteps):
     if shape_def.get('type') == 'analytical':
-        params_json = json.dumps({
+        params = {
             'type': 'analytical',
             'segments': shape_def['segments'],
             'sigma': shape_def.get('sigma', 0.025)
-        })
+        }
     else:
-        params_json = json.dumps({
+        params = {
             'means':   shape_def['means'],
             'covs':    shape_def['covs'],
             'weights': [float(w) for w in shape_def['weights']],
-        })
+        }
+    # Der Sockel gehoert zwingend mit in die Datenbank: ohne ihn baut
+    # `make_pdf_and_score` beim Laden eine andere Dichte als die, gegen die
+    # der Solver optimiert hat.
+    if shape_def.get('pedestal'):
+        params['pedestal'] = shape_def['pedestal']
+    params_json = json.dumps(params)
     traj_blob = traj_xy.astype(np.float32).tobytes()
     conn.execute(
         """INSERT INTO ergodic_pairs
@@ -243,9 +249,16 @@ def plot_all_targets(shape_names, save_dir, resolution=70):
 # ── Generation ────────────────────────────────────────────────────────────────
 
 def generate_shapes(shape_names, split, conn, viz_dir, solver_kwargs, verbose=True):
+    a, b = getattr(_ARGS, 'shapes_from', None), getattr(_ARGS, 'shapes_to', None)
+    if a is not None or b is not None:
+        shape_names = list(shape_names)[a or 0:b]
+        print(f'  Abschnitt {a or 0}:{b if b is not None else "Ende"} '
+              f'-> {len(shape_names)} Formen')
     """Generate ergodic trajectories for a list of shape names."""
     from shape_library import get_shape, make_pdf_and_score
     from ergodic_solver import run_ergodic_coverage
+
+    os.makedirs(viz_dir, exist_ok=True)
 
     # Fetch already existing shapes for this split to resume gracefully
     existing_shapes = set(row[0] for row in conn.execute("SELECT shape_name FROM ergodic_pairs WHERE split=?", (split,)).fetchall())
@@ -264,7 +277,11 @@ def generate_shapes(shape_names, split, conn, viz_dir, solver_kwargs, verbose=Tr
         _, score_fn = make_pdf_and_score(shape_def)
 
         rng = np.random.default_rng(abs(hash(name)) % (2**31))
-        x0  = tuple(rng.uniform(0.05, 0.25, size=2))
+        if getattr(_ARGS, 'x0_mode', 'ecke') == 'ueberall':
+            m = getattr(_ARGS, 'x0_margin', 0.03)
+            x0 = tuple(rng.uniform(m, 1.0 - m, size=2))
+        else:
+            x0 = tuple(rng.uniform(0.05, 0.25, size=2))
 
         # Increase iterations for complex shapes
         kwargs = solver_kwargs.copy()
@@ -297,8 +314,11 @@ def generate_shapes(shape_names, split, conn, viz_dir, solver_kwargs, verbose=Tr
 def parse_args():
     p = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    p.add_argument('--mode',       choices=['preview', 'full', 'test_new', 'test_complex'], default='preview',
-                   help="'preview' = 5 shapes; 'full' = 775 shapes; 'test_new' = 10 custom test GMMs; 'test_complex' = 30 highly complex shapes")
+    p.add_argument('--mode',       choices=['preview', 'full', 'test_new', 'test_complex', 'flat'], default='preview',
+                   help="'preview' = 5 shapes; 'full' = 775 shapes; 'test_new' = 10 custom test GMMs; "
+                        "'test_complex' = 30 highly complex shapes; 'flat' = 400 flache Formen "
+                        "(Sockel, weichgezeichnet, breite Moden, Konturen) + 12 flache Holdouts. "
+                        "Ergaenzt einen bestehenden Datensatz, ohne die Splits 'train'/'val' zu veraendern.")
     p.add_argument('--dt',         type=float, default=0.05)
     p.add_argument('--tsteps',     type=int,   default=200,
                    help="Trajectory timesteps (output shape: tsteps+1)")
@@ -309,12 +329,33 @@ def parse_args():
                    help="Multiplier for the target density score function (default: 1.0)")
     p.add_argument('--h',          type=float, default=0.01,
                    help="RBF kernel bandwidth")
+    p.add_argument('--x0_mode', choices=['ecke', 'ueberall'], default='ecke',
+                   help="Wo der Startpunkt gezogen wird. 'ecke' ist das "
+                        "bisherige Verhalten (unten links, [0.05, 0.25]^2); "
+                        "'ueberall' zieht gleichverteilt ueber die ganze "
+                        "Flaeche, sodass die Bahn eine echte Anfahrt braucht.")
+    p.add_argument('--x0_margin', type=float, default=0.03,
+                   help='Randabstand bei --x0_mode ueberall.')
+    p.add_argument('--seed', type=int, default=None,
+                   help='Zufallskeim fuer die Startpunkte.')
+    p.add_argument('--shapes_from', type=int, default=None,
+                   help='Nur Formen ab diesem Index bearbeiten — fuer das '
+                        'Aufteilen des Laufs auf mehrere Jobs.')
+    p.add_argument('--shapes_to', type=int, default=None)
     p.add_argument('--db',         type=str,   default=_DB_PATH)
     return p.parse_args()
 
 
+_ARGS = None
+
+
 def main():
+    global _ARGS
     args = parse_args()
+    _ARGS = args
+    if args.seed is not None:
+        import numpy as _np
+        _np.random.seed(args.seed)
     from shape_library import (get_shape, PREVIEW_SHAPES,
                                VALIDATION_SHAPES, train_shape_names)
 
@@ -368,6 +409,29 @@ def main():
         grid_path = os.path.join(_VIZ_DIR, f'test_complex_grid_iters{args.num_iters}_scale{args.score_scale}.png')
         plot_preview_grid(results, grid_path)
         print(f'\n  Test_complex complete. Check visualizations/test_complex/ and {os.path.basename(grid_path)}')
+
+    elif args.mode == 'flat':
+        from shape_library import flat_shape_names
+        train_names = flat_shape_names('train')
+        val_names   = flat_shape_names('val')
+        print('\n' + '='*60)
+        print('  FLAT MODE — %d flache Trainingsformen + %d flache Holdouts'
+              % (len(train_names), len(val_names)))
+        print('='*60)
+        print('  Diese Formen ergaenzen einen bestehenden Datensatz. Der Split')
+        print("  'train' waechst, 'val' bleibt unangetastet; die flachen")
+        print("  Holdouts liegen im eigenen Split 'val_flat'.")
+        generate_shapes(
+            train_names, split='train',
+            conn=conn, viz_dir=os.path.join(_VIZ_DIR, 'flat'),
+            solver_kwargs=solver_kwargs, verbose=False,
+        )
+        generate_shapes(
+            val_names, split='val_flat',
+            conn=conn, viz_dir=os.path.join(_VIZ_DIR, 'flat'),
+            solver_kwargs=solver_kwargs, verbose=False,
+        )
+        print('\n  Flache Formen fertig.')
 
     else:  # full
         print('\n' + '='*60)
