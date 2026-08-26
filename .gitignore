@@ -13,3 +13,7 @@ bahnen.json
 # Python-Cache
 __pycache__/
 *.pyc
+
+# 201 MB — ueber GitHubs hartem Limit von 100 MB je Datei. Wird per Drive
+# uebertragen; die uebrigen Datenbanken (7-10 MB) bleiben im Repo.
+thesis_architecture/ergodic_dataset_generator/ergodic_dataset_length.db

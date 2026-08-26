@@ -1,50 +1,57 @@
 # Kontext für den Wechsel auf den Rechner mit RTX 2070 Super
 
-Stand: Dienstag, 25.08.2026, 13:00.
+Stand: Mittwoch, 26.08.2026, 12:30.
 
-Diese Datei ist die Übergabe. Sie sagt, mit welchem Checkpoint zu starten ist,
-was gerade wo läuft, was zuletzt am Code geändert wurde und welche Befehle
-drüben laufen sollen.
+Diese Datei ist die Übergabe. Sie sagt, welche Checkpoints es gibt und wofür,
+was auf dem Cluster gelaufen ist, was zuletzt am Code geändert wurde und welche
+Befehle drüben laufen sollen.
 
 ---
 
-## 1. Der Checkpoint, mit dem du startest
+## 1. Die Checkpoints
 
-**`thesis_architecture/checkpoints/netz2d_startpunkt.pt`**
+Alle liegen lokal unter `thesis_architecture/checkpoints/` bzw.
+`3D_ergodic_learning/checkpoints/`. Über Git kommen sie **nicht** mit
+(`.gitignore` fängt `*.pt` ab, GitHub weist über 100 MB ohnehin zurück) —
+für den Wechsel steht das Nötige in `transfer/`.
+
+| Datei in `transfer/` | Ursprung | Stand | wofür |
+|---|---|---|---|
+| `netz2d_startpunkt.pt` | `start_lang` | **Epoche 500 / 500, fertig** | Φ-Kreuz, Variante D |
+| `netz2d_laenge.pt` | `len_test` | Epoche 40 (Vorabtest) | erste Längen-Experimente |
+| `netz3d_flaechen.pt` | `surfB_lang` | Epoche 1520 / 1750 | 3D-Flächenzweig |
+
+### Der wichtigste: `netz2d_startpunkt.pt`
 
 | | |
 |---|---|
-| Ursprung | Lauf `start_lang`, Job 135443, Epoche 159 von 500 |
 | Architektur | `flow_matching_cond_particles_start.py` — Partikel-Cross-Attention **plus Startpunkt-Konditionierung** |
 | Training | CFM + ergodischer Zusatzterm, Sinkhorn, w = 1300, blur 0,05, t_power 2 |
-| Datensatz | `ergodic_dataset_start.db`, 1187 Formen, Startpunkte gleichverteilt über die Fläche |
-| Kennzeichen im Checkpoint | `start_cond: True`, `n_flat: 400`, `D: 384`, `nxi: 25`, `n_particles: 256` |
-| Größe | 334 MB (Optimiererzustand entfernt, für Inferenz nicht nötig) |
+| Datensatz | `ergodic_dataset_start.db`, 1187 Formen, Startpunkte gleichverteilt |
+| Kennzeichen | `start_cond: True`, `n_flat: 400`, `D: 384`, `nxi: 25`, `n_particles: 256` |
+| Größe | 334 MB (Optimiererzustand entfernt) |
 
-**Warum dieser und kein anderer.** Er ist der einzige Checkpoint mit
-Startpunkt-Konditionierung. Ohne die kann Variante D nicht dort weiterplanen,
-wo der Roboter gerade steht — der bisherige Behelf (`--d_join nearest` plus
-Anfahrt) kostete bis zu 170 % zusätzliche Weglänge. Mit ihm sind es **0,0 %**.
+**Dieser Lauf ist durch** — alle 500 Epochen, Lernrate bis zum Boden. Er ist der
+einzige mit Startpunkt-Konditionierung und der einzige, der die 400 flachen
+Formen gesehen hat.
 
-Er ist außerdem der einzige, der die 400 flachen Formen gesehen hat (Sockel,
-weichgezeichnet, breite Moden, Konturen). Die führen die Trainingsverteilung an
-Glaubensdichten heran: gemessene Massenkonzentration 0,471 gegen 0,853 bei den
-alten Trainingsdichten, das Φ-Band liegt bei 0,337–0,481.
+Ohne Startpunkt-Konditionierung kann Variante D nicht dort weiterplanen, wo der
+Roboter steht; der frühere Behelf (`--d_join nearest` plus Anfahrt) kostete bis
+zu 170 % zusätzliche Weglänge, mit ihr sind es **0,0 %**.
 
-**Der Lauf ist nicht zu Ende.** Epoche 159 von 500, die Lernrate steht noch bei
-7,89e-05 statt am Boden. Er läuft auf dem Cluster weiter und schreibt alle zehn
-Epochen einen neuen Stand — mit Rotation, es bleibt immer nur der neueste liegen.
-Wenn du später einen frischeren willst, ist es der einzige Treffer von
+### `netz2d_laenge.pt` — mit Vorbehalt
 
-    ls -t checkpoints/*START_FLAT400_L500*_ep*.pt | head -1
+Der Testlauf vom 25.08. lief auf einer **unvollständigen** Datenbank (2820 von
+21.234 Zeilen), weil damals sieben von acht Array-Aufgaben an fehlenden
+CJK-Schriften abstürzten. Er zeigt, dass die Längen-Konditionierung technisch
+funktioniert, ist aber kein brauchbares Modell. Das richtige Längen-Training
+läuft gerade (siehe Abschnitt 5).
 
-**Für Inferenz reicht dieser Stand. Zum Fortsetzen des Trainings nicht:** in
-`netz2d_startpunkt.pt` fehlt der `optimizer_state_dict` (667 MB, die zwei
-AdamW-Momente). Wer drüben weitertrainieren will, braucht die ungekürzte
-1002-MB-Datei vom Cluster.
+### Für Inferenz reicht das, zum Weitertrainieren nicht
 
-`3D_ergodic_learning/checkpoints/netz3d_flaechen.pt` (Epoche 423) ist das
-3D-Gegenstück, für den Flächenzweig. Nur nötig, wenn du dort weiterarbeitest.
+In allen `transfer/`-Dateien fehlt der `optimizer_state_dict` (667 MB je Datei,
+die zwei AdamW-Momente). Wer drüben weitertrainieren will, braucht die
+ungekürzten Dateien aus `thesis_architecture/checkpoints/`.
 
 ---
 
@@ -53,22 +60,33 @@ AdamW-Momente). Wer drüben weitertrainieren will, braucht die ungekürzte
 ```bash
 git clone git@github.com:Philipp-Schoenfeld/Master_thesis_ergodic_learning.git
 cd Master_thesis_ergodic_learning
-conda env create -f environment.yml 2>/dev/null || conda activate thesis
+pip install torch numpy matplotlib scipy geomloss tqdm
+# fuer die RTX 2070 Super:
+pip install torch --index-url https://download.pytorch.org/whl/cu124
 
 mkdir -p thesis_architecture/checkpoints 3D_ergodic_learning/checkpoints
-# Aus Google Drive holen und einsortieren:
-mv ~/Downloads/netz2d_startpunkt.pt      thesis_architecture/checkpoints/
-mv ~/Downloads/netz3d_flaechen.pt        3D_ergodic_learning/checkpoints/
-mv ~/Downloads/ergodic_dataset_775.db    thesis_architecture/ergodic_dataset_generator/
-mv ~/Downloads/ergodic_dataset_start.db  thesis_architecture/ergodic_dataset_generator/
+# aus Google Drive:
+mv ~/Downloads/netz2d_startpunkt.pt  thesis_architecture/checkpoints/
+mv ~/Downloads/netz2d_laenge.pt      thesis_architecture/checkpoints/
+mv ~/Downloads/netz3d_flaechen.pt    3D_ergodic_learning/checkpoints/
 ```
 
-**Welche Datenbank wofür.** Das Φ-Kreuz liest seine zwölf Holdout-Formen über
-`load_truth` aus `common/data.py`, und dessen `DEFAULT_DB` ist
-**`ergodic_dataset_775.db`** — ein `--db`-Schalter existiert in
-`apply_cfm_belief.py` nicht. Ohne diese Datei bricht der Lauf sofort ab.
-`ergodic_dataset_start.db` (1187 Formen) wird nur fürs **Training** gebraucht,
-nicht für das Kreuz.
+Erprobt mit torch 2.12.0, numpy 1.26.4, matplotlib 3.10.6, scipy 1.16.1,
+geomloss 0.3.1. **JAX wird für die Inferenz nicht gebraucht** — nur der
+Datensatzgenerator nutzt es.
+
+### Welche Datenbank wofür
+
+| Datenbank | Größe | über Git? | wofür |
+|---|---|---|---|
+| `ergodic_dataset_775.db` | 6,9 MB | **ja** | Φ-Kreuz — die zwölf Holdout-Formen |
+| `ergodic_dataset_start.db` | 10,3 MB | **ja** | Startpunkt-Training |
+| `ergodic_dataset_length.db` | 201 MB | nein, per Drive | Längen-Training |
+| `ergodic_dataset_3d.db` | 118 MB | nein, per Drive | 3D-Zweig |
+
+Das Φ-Kreuz liest seine Holdout-Formen über `load_truth` aus `common/data.py`,
+dessen `DEFAULT_DB` ist **`ergodic_dataset_775.db`**; ein `--db`-Schalter
+existiert in `apply_cfm_belief.py` nicht.
 
 Prüfen:
 
@@ -82,148 +100,195 @@ print('CUDA:', torch.cuda.is_available(),
       torch.cuda.get_device_name(0) if torch.cuda.is_available() else '')"
 ```
 
-Erwartet: `epoch 159 | start_cond True | n_flat 400` und die RTX 2070 Super.
+Erwartet: `epoch 499 | start_cond True | n_flat 400` und die RTX 2070 Super.
 
 ---
 
-## 3. Das Experiment, das drüben laufen soll
+## 3. Das Φ-Kreuz — das Experiment für drüben
 
-Das Φ-Kreuz mit **echtem Vorwissen** und **Variante D**. Auf der GPU kostet eine
-Planung rund 0,3 s statt 13,3 s auf der CPU — das ganze Kreuz über alle zwölf
-Formen läuft in etwa einer halben Stunde.
+Fertig vorbereitet unter `phi_kreuz_paket/`:
 
 ```bash
-cd thesis_architecture/exploration
-CK=../checkpoints/netz2d_startpunkt.pt
-
-for MUSTER in haelfte quadranten loch; do
-  for PHI in ucb stretch mass ei lse mi eid; do
-    OUT="results/phi_wahrheit/${MUSTER}_${PHI}"
-    [ -f "$OUT/metriken.csv" ] && continue
-    python -u apply_cfm_belief.py --ckpt "$CK" \
-      --shapes 12 --rounds 3 \
-      --missions orakel glaube-1 glaube-R zweistufig glaube-D B-warm maeher \
-      --phi_model "$PHI" --prior_pattern "$MUSTER" --prior_mode wahrheit \
-      --gp_noise 0.05 \
-      --d_rounds 30 --d_execute_frac 0.10 --d_join netz \
-      --save_paths --out_dir "$OUT" --device cuda
-  done
-done
+./phi_kreuz_paket/01_preflight.sh     # prueft Code, Daten, Checkpoint, Pakete, CUDA
+./phi_kreuz_paket/02_phi_kreuz.sh 1   # erst eine Form, ~2 min
+./phi_kreuz_paket/02_phi_kreuz.sh     # alle zwoelf, ~30 min auf der GPU
+python phi_kreuz_paket/03_auswerten.py
 ```
 
-Die Schleife überspringt fertige Zellen, ein Abbruch ist also unkritisch.
+Der Preflight prüft nicht bloß Dateinamen, sondern ob `MaskiertesWissen`,
+`--prior_mode wahrheit`, `--d_join netz`, die sieben Φ-Modelle und `start_cond`
+im Planer wirklich im Code stehen.
 
-### Was die Schalter bedeuten
+**Was es misst.** Drei Muster von Vorwissen (`haelfte`, `quadranten`, `loch`)
+mal sieben Zieldichten mal zwölf Formen mal sieben Missionen. Im bekannten
+Gebiet liegt die Grundwahrheit exakt vor (σ = 0), außerhalb gar kein Wissen
+(μ = 0, σ = 1) — verifiziert: innen RMSE 0,00e+00.
 
-- `--prior_mode wahrheit` — im bekannten Gebiet liegt die **Grundwahrheit exakt**
-  vor (σ = 0), außerhalb **gar kein Wissen** (μ = 0, σ = 1). Der alte Modus
-  `messungen` zog dort nur 60 Punktmessungen und ließ den GP interpolieren.
-- `--prior_pattern` — wo das Wissen liegt: `haelfte` (linke Hälfte bekannt),
-  `quadranten` (zwei diagonale Quadranten), `loch` (alles außer einem Fleck).
-- `--d_join netz` — Variante D plant vom aktuellen Standort aus, per
-  Startpunkt-Konditionierung. Nur mit einem `start_cond`-Checkpoint sinnvoll.
-- `--d_rounds 30 --d_execute_frac 0.10` — dreißig Runden zu je einem Zehntel der
-  geplanten Bahn. Ergibt rund drei Bahnlängen und ist damit mit `glaube-R`
-  (drei volle Runden) vergleichbar.
+Auf der CPU kostet eine Planung 13,3 s, auf der GPU rund 0,3 s. Variante D ist
+der Brocken: 30 der etwa 38 Planungen je Form und Zelle.
 
 ---
 
 ## 4. Was zuletzt am Code geändert wurde
 
-Alles davon ist im Repo, nichts steht nur auf dem Cluster.
-
-**`exploration/common/belief.py`** — neue Klasse `MaskiertesWissen` und
-`muster_maske()`. Grundwahrheit im bekannten Gebiet, gar kein Wissen außerhalb.
+**`exploration/common/belief.py`** — `MaskiertesWissen` und `muster_maske()`.
 Bewusst *kein* dicht konditionierter GP: ein Wahrheitsgitter im Abstand 0,04 ist
 bei Korrelationslänge 0,08 zu 97 % korreliert, und die Cholesky-Zerlegung bricht
-in float32 ab 205 Punkten zusammen. Außerdem würde ein GP Information über die
+in float32 ab 205 Punkten zusammen. Ein GP würde außerdem Information über die
 Grenze hinweg tragen, was hier nicht gewollt ist.
 
-**`exploration/apply_cfm_belief.py`**
-- `--prior_mode {messungen,wahrheit}`, Default `messungen` (alte Läufe bleiben
-  reproduzierbar), plus `--sigma_bekannt`.
-- `CfmPlanner` erkennt `start_cond` im Checkpoint und lädt dann die andere
-  Architektur. **Achtung:** es gibt zwei Planerklassen; benutzt wird
-  `CfmPlanner` in dieser Datei, nicht `ModelPlanner` in `common/planner.py`.
-  Beide sind erweitert, aber nur die erste läuft.
-- `run_variant_d` kennt `--d_join netz`. Kein `nearest`-Einstieg, keine Anfahrt.
-- Die Maske wandert nach `bahnen.json` und ins Formen-Bild.
+**`exploration/apply_cfm_belief.py`** — `--prior_mode {messungen,wahrheit}`
+(Vorgabe `messungen`, alte Läufe bleiben reproduzierbar), `--d_join netz` für
+Variante D mit Startpunkt, `CfmPlanner` erkennt `start_cond` im Checkpoint.
+**Achtung:** es gibt zwei Planerklassen; benutzt wird `CfmPlanner` in dieser
+Datei, nicht `ModelPlanner` in `common/planner.py`.
 
-**`thesis_architecture/flow_matching_cond_particles_start.py`** — Kopie der
-Partikel-Architektur mit `StartEmbedding`: Fourier-Merkmale des Startpunkts,
-MLP auf Breite D, **addiert auf die Zeit-Einbettung**. Läuft damit durch dieselbe
-`film_proj` in jedem `ConvResBlock` wie die Flusszeit. Nach der Integration wird
-der erste Kontrollpunkt zusätzlich hart gesetzt — Konditionierung macht den
-Startpunkt wahrscheinlich, nicht exakt.
+**`flow_matching_cond_particles_length.py`** (neu) — Längen-Konditionierung.
+`LengthEmbedding` normiert logarithmisch gegen Median und Standardabweichung des
+Datensatzes, dann Fourier-Merkmale und MLP, addiert auf `time_cond`. Dazu
+`null_length_token` und ein **eigener** 10 %-Dropout: nicht die Partikelmaske,
+sonst sähe das Netz nie den Fall „Dichte bekannt, Länge frei". Am Ende der
+Generierung passt `_resample_kontrollpunkte` die Zahl der Kontrollpunkte an die
+tatsächliche Bogenlänge an.
 
-**`thesis_architecture/flow_matching_runner_start.py`** — `--db`, `--tag`,
-`--keep_checkpoints` (Rotation: beim Speichern eines neuen Standes werden ältere
-desselben Laufs gelöscht). Der Laufname trägt `_START`, `_FLAT400` und den Tag.
+Gemessen nach 60 Optimierungsschritten: Längenwirkung 2,07e-02 gegen 1,41e-03
+für die Zeit, freier Zweig unterscheidbar bei 2,26e-02.
 
-**`ergodic_dataset_generator/shape_library.py`** — Sockel-Unterstützung
-(`mit_sockel`, `_vielleicht_sockel`) und vier neue Formfamilien
-(`flat_ped`, `flat_blur`, `flat_broad`, `flat_ring`), zusammen 400 Trainings-
-und 12 Holdout-Formen. `all_dataset_shapes()` und `train_shape_names()` sind
-bewusst **nicht** angefasst — deren Reihenfolge hängt an einem Shuffle mit
-Keim 42, jede Ergänzung hätte die bestehenden 750 Trainingsformen ausgetauscht.
+**`flow_matching_runner_length.py`** (neu) — liest `length` und `n_iters`,
+schlüsselt Varianten als `label#i{n_iters}`, bestimmt `log_ref` und `log_scale`
+aus dem Datensatz und legt beides ins Checkpoint. `--nxi` steht auf 64.
 
-**`ergodic_dataset_generator/dichte_numpy.py`** — Dichteauswertung ohne JAX, für
-Übersichtsgrafiken. Gegen die JAX-Fassung geprüft: maximale Abweichung 1,2e-06.
+**`ergodic_dataset_generator/ergodic_solver.py`** — `checkpoints` und
+`konvergenz_tol`. Vorgabe `None` reproduziert das alte Verhalten exakt.
+
+**`ergodic_dataset_generator/shape_library.py`** — Sockel-Unterstützung, vier
+flache Formfamilien, und `_finde_font()`: sucht CJK-Schriften der Reihe nach in
+`$ERGODIC_FONT_DIR`, `<Projektwurzel>/fonts/`, `~/Master_thesis/fonts/` und den
+Systempfaden — **und prüft, dass die Datei existiert**. Das alte `try/except`
+löste nie aus, weil `FontProperties(fname=...)` beim Anlegen nichts prüft.
+Die Schriften liegen unter `fonts/` (45 MB, über Drive zu übertragen).
 
 ---
 
-## 5. Was gerade läuft und wo
+## 5. Stand der Läufe auf dem Cluster
 
-### Auf dem Cluster (Kontingent: `gres/gpu=3`, alle drei belegt)
+### Fertig
 
-| Job | ID | Stand | Ende |
+| Lauf | Stand | Ergebnis |
+|---|---|---|
+| **Längen-Datenbank** | ✅ | 21.234 Zeilen, 1187/1187 Formen, Länge 2,14–45,67 |
+| `start_lang` (2D Startpunkt) | ✅ | **500/500 Epochen** |
+| `surf_kurz` (3D) | ✅ | 350/350, loss 0,735 |
+| Visualisierung der Längen-DB | ✅ | 11 Bilder unter `ergodic_dataset_generator/visualizations/laengen/` |
+
+### Läuft
+
+| Lauf | Stand | fertig |
+|---|---|---|
+| `len_test` (136800) | 40 Epochen, Rauchtest | ~14:00 |
+| `surf_lang` (135768) | 353/586, loss **0,352** | ~18:00 |
+| Längen-Haupttraining (136801–136803) | wartet auf `len_test` (`afterok`) | Do–Fr |
+
+`surf_lang` liegt mit 0,352 klar unter den 0,735 des einzigen fertigen 3D-Laufs.
+
+### Abgebrochen
+
+`start_kurz` (200-Epochen-Zeitplan) — überflüssig, seit `start_lang` durch ist.
+`surf_10h` — bei 22 von 58 Epochen; er war mit `copies_per_char 30` dreimal so
+groß angelegt wie `surf_lang` (142.680 gegen 48.052 Schritte) und hätte noch
+21,7 h gebraucht. Sein Checkpoint bei Epoche 40 liegt in
+`3D_ergodic_learning/checkpoints/`.
+
+---
+
+## 6. Die Längen-Datenbank
+
+19 Iterationsstände je Form: 100, 150, 200, 250, 300, 400, 500, 750, 1000, 1250,
+1500, 2000, 2500, 3000, 4000, 5000, 6000, 7500, 10000.
+
+Die vier mittleren Stützstellen (250, 400, 4000, 6000) kamen nachträglich dazu,
+weil die Bahn zwischen 300→500 (18,3 %), 3000→5000 (16,3 %) und 500→750 (14,3 %)
+am stärksten wuchs. Damit bleibt jeder Abschnitt unter rund zehn Prozent.
+
+**Oberhalb von 10000 wurde nicht erweitert.** Der Zuwachs fällt dort auf 0,64
+Längeneinheiten je 1000 Iterationen gegen 11,6 am Anfang; 25000 brächten bei
+2,5-facher Rechenzeit rund 20 % mehr Länge, und die Bahnen unterschieden sich um
+3 bis 4 % — zu wenig, um als eigenes Trainingsbeispiel zu taugen.
+
+97 % der Formen laufen bis 10000 durch, die Konvergenzprüfung greift also selten.
+Der eigentliche Gewinn ist ein anderer: 19 Varianten aus **einem** Solver-Lauf
+statt 19 Neustarts.
+
+Spreizung je Form: Median 3,31×, größte 11,59×.
+
+---
+
+## 7. Cluster-Ressourcen — gemessen, nicht geschätzt
+
+Der Cluster wertet die Effizienz aus und meldet sie. Der Bericht über vierzehn
+Tage lautete: **CPU-Effizienz 24,07 %**, **RAM-Effizienz 10,64 %** — 49 Tage
+CPU-Zeit und 9406 GB-Stunden unnötig blockiert.
+
+Nachgemessen mit `sacct` über die Läufe vom 24. bis 26.08.:
+
+| Job | CPU-Eff. | RAM-Eff. | RAM tatsächlich |
 |---|---|---|---|
-| `start_lang` | 135443 | Ep. 139/500, cn09, 178 s/Ep | Mi ~04:29 |
-| `surf_lang` (3D) | 135086 | Ep. 741/1750, dgx-station | Di ~20:15 |
-| `surf_10h` (3D) | 135475 | Ep. 4/75, cn01 (RTX 2080 Ti) | Di ~19:36 |
-| `phi_wahrheit` | 135774 | wartet auf GPU-Platz | ab ~19:36, +2 h |
-| Folgejobs | 135765–135770 | verkettet über `afterany` | bis Fr/Sa |
+| `surf_lang` | 25,0 % | 4,8 % | 1,54 GB |
+| `start_kurz` | 25,2 % | 10,1 % | 3,25 GB |
+| `len_test` | 26,4 % | 8,1 % | 2,59 GB |
+| Datensatz-Array | 18,5 % | 21,7 % | 1,74 GB |
 
-`phi_wahrheit` rechnet dasselbe Experiment wie oben, aber über alle zwölf
-Formen. Wenn du es drüben auf der GPU fährst, kannst du den Job stornieren:
-`ssh <cluster> scancel 135774`.
+**Jeder Job nutzt effektiv einen Kern.** Die Arbeit liegt auf der GPU, oder sie
+ist in JAX sequentiell über die Zeitschritte. Lokal gemessen: das Netz braucht
+13,47 s je Planung mit zwölf Threads und 13,24 s mit sechs — Threads bringen
+nichts.
 
-### Lokal auf dem alten Rechner
+Daraufhin angepasst:
 
-Dasselbe Kreuz, aber nur auf Form „A", zwei Prozesse à sechs Threads.
-Ergebnisse in `thesis_architecture/exploration/results/phi_wahrheit_A/`.
-Fertig gegen 13:57.
+| Skript | vorher | jetzt |
+|---|---|---|
+| `run_job_length_test.bash` | `-c 4 --mem=32G` | `-c 2 --mem=8G` |
+| `run_job_length_hp.bash` | `-c 4 --mem=32G` | `-c 2 --mem=8G` |
+| `run_data_gen.bash` | `-c 6 --mem=8G` | `-c 2 --mem=3G` |
+| `run_viz_laengen.bash` | `-c 4 --mem=8G` | `-c 2 --mem=4G` |
 
----
+Der Array belegte mit `-c 6` über acht Aufgaben **48 der 50 CPUs** des
+Kontingents und blockierte damit die eigenen GPU-Trainings, die auf
+`AssocGrpCpuLimit` warteten, obwohl eine Karte frei war. Mit `-c 2` sind es 16.
 
-## 6. Fallstricke
+**Regel für künftige Jobs:** vor dem Einreichen messen. Für gelaufene Jobs gibt
 
-- **`--device cuda` nicht vergessen.** Ohne das läuft alles auf der CPU, und
-  eine Planung kostet dort 13,3 s statt 0,3 s.
-- **8 GB VRAM.** Für Inferenz reichlich. Fürs 3D-Training eng: der Cluster
-  fuhr `D=384`, 512 Partikel, Batch 64 auf Karten mit 11–12 GB. Rechne mit
-  `--mini_batch 32`. Für 2D (256 Partikel) sollte es passen.
-- **Modelle nicht über Git.** GitHub weist Dateien über 100 MB ab, die
-  Checkpoints sind 334 MB. `.gitignore` fängt `*.pt` bereits ab. Auch `*.db`
-  gehört dort hinein: `ergodic_dataset_3d.db` ist 118,5 MB und ließe den Push
-  scheitern.
-- **Zwei Planerklassen.** Siehe oben — `ModelPlanner` in `common/planner.py`
-  wird nicht benutzt. Wer dort etwas ändert, ändert nichts am Verhalten.
-- **`--max_obs 96`** dünnt die Messpunkte aus. Ohne das würde die Gram-Matrix
-  des GP über dreißig Runden auf mehrere tausend Punkte wachsen.
-- **float16-Fassung ungetestet.** `netz2d_startpunkt_fp16.pt` (167 MB) existiert,
-  aber ob die erzeugten Bahnen identisch bleiben, ist nicht geprüft. Nimm
-  float32, bis das gemessen ist.
+    sacct -j <ID> -o JobID,Elapsed,AllocCPUS,TotalCPU,MaxRSS,ReqMem
+
+die tatsächliche CPU-Zeit und den Spitzenspeicher. `TotalCPU / (Elapsed ×
+AllocCPUS)` ist die CPU-Effizienz. Kontingent: `cpu=50, gres/gpu=3, mem=150G`.
 
 ---
 
-## 7. Offene Fragen, an denen es weitergeht
+## 8. Fallstricke
 
-1. **Schlägt Variante D die anderen Missionen?** Ein erster Probelauf auf einer
-   Form mit acht Runden sagte nein (0,0751 gegen 0,0596 bei gleichem Budget).
-   Mit dreißig Runden und zwölf Formen steht es noch aus.
-2. **Hält der Befund aus dem Messungs-Kreuz auch bei echtem Vorwissen?** Dort
-   war die Niveaumenge am robustesten (Spanne 0,0015 über die drei Muster,
-   gegen 0,0125 bei UCB). Mit exakter Grundwahrheit ist die Kante viel härter.
-3. **Interaktive Auswertung.** Aus den `bahnen.json` soll eine Grafik entstehen,
-   durch die sich nach Muster, Zieldichte, Form und Mission klicken lässt.
+- **`--device cuda` nicht vergessen**, sonst rechnet alles auf der CPU (Faktor 40).
+- **Zwei Planerklassen** — benutzt wird `CfmPlanner` in `apply_cfm_belief.py`.
+- **`--max_obs 96`** dünnt die Messpunkte aus; ohne das wüchse die Gram-Matrix
+  des GP über dreißig Runden auf mehrere tausend Punkte.
+- **`--prior_mode` steht auf `messungen`**, wenn man nichts angibt. Für das
+  Kreuz muss `wahrheit` gesetzt sein; `02_phi_kreuz.sh` tut das.
+- **8 GB VRAM** reichen für Inferenz. Fürs 3D-Training eng: der Cluster fuhr
+  Batch 64 auf Karten mit 11–12 GB, rechne mit `--mini_batch 32`.
+- **CJK-Schriften** braucht nur der Datensatzgenerator, nicht die Inferenz.
+
+---
+
+## 9. Offene Fragen
+
+1. **Schlägt Variante D die anderen Missionen?** Ein Zwischenstand auf Form „A"
+   sagt: Abdeckungsfehler 0,0264 bei Weglänge 18,23 gegen 0,0358 bei 13,82 für
+   `glaube-R`. Besser, aber auf längerem Weg — der Vergleich bei *gleichem*
+   Budget steht aus, dafür sind die Anytime-Kurven da.
+2. **Hält der Robustheitsbefund bei echtem Vorwissen?** Mit dem alten Modus
+   `messungen` war die Niveaumenge am unempfindlichsten dagegen, wo das
+   Vorwissen liegt (Spanne 0,0015 gegen 0,0125 bei UCB).
+3. **Greift die Längen-Konditionierung auf dem vollen Datensatz?** Sichtbar an
+   den Holdout-Bildern: dieselbe Zieldichte, verschiedene Längenvorgaben.
+4. **Interaktive Auswertung** aus den `bahnen.json`, durchklickbar nach Muster,
+   Zieldichte, Form und Mission.

@@ -35,6 +35,7 @@ from flow_matching_cond_particles_crossattn import (
 
 sys.path.append(os.path.join(_here, 'ergodic_dataset_generator'))
 from shape_library import pdf_on_grid
+from checkpoint_rotation import nach_zwischenstand, nach_endstand
 
 _DB_PATH = os.path.join(_here, 'ergodic_dataset_generator', 'ergodic_dataset_775.db')
 
@@ -236,6 +237,9 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt_dict['wandb_id'] = wandb.run.id
     torch.save(ckpt_dict, path)
+    # Je Lauf bleibt genau ein Zwischenstand liegen.
+    nach_zwischenstand(stem, args.run_str, path,
+                       behalten=getattr(args, "keep_checkpoints", 1))
     return path
 
 
@@ -571,6 +575,10 @@ def run(args):
             'epochs': args.epochs, 'lr': args.lr, 'sample_mode': args.sample_mode,
         }, final_save_path)
         print(f"  Checkpoint saved -> {final_save_path}")
+        # Nach dem Endstand bleibt nur das `_final`: die Zwischenstaende
+        # desselben Laufs werden entfernt. Bricht der Job vorher ab,
+        # bleibt statt dessen der letzte Zwischenstand liegen.
+        nach_endstand(stem, args.run_str, final_save_path)
 
     # Visualise Training sample
     viz_train_keys = random.sample(list(train_shapes.keys()), min(5, len(train_shapes)))
@@ -649,6 +657,14 @@ def parse_args():
     p.add_argument('--steps',       type=int, default=100)
     p.add_argument('--bspline_pts', type=int, default=512)
     p.add_argument('--bspline_deg', type=int, default=5)
+    
+    p.add_argument('--keep_checkpoints', type=int, default=1,
+    
+                   help='Wie viele Zwischenstaende eines Laufs behalten werden. '
+    
+                        'Vorgabe 1: beim Speichern eines neuen Standes werden '
+    
+                        'aeltere entfernt, und nach dem Endstand alle.')
     
     p.add_argument('--save_model', type=str,
                    default=os.path.join(_here, 'checkpoints', 'cond_particles_crossattn.pt'))

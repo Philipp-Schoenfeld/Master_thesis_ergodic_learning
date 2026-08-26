@@ -35,6 +35,7 @@ from flow_matching_cond_particles_start import (
 
 sys.path.append(os.path.join(_here, 'ergodic_dataset_generator'))
 from shape_library import pdf_on_grid
+from checkpoint_rotation import nach_zwischenstand, nach_endstand
 
 # Der Startpunkt-Zweig hat eine eigene Datenbank: dort sind die Startpunkte
 # gleichverteilt ueber die Flaeche gezogen statt in der linken unteren Ecke,
@@ -243,7 +244,8 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt_dict['wandb_id'] = wandb.run.id
     torch.save(ckpt_dict, path)
-    _alte_staende_entfernen(stem, args, path)
+    nach_zwischenstand(stem, args.run_str, path,
+                       behalten=getattr(args, "keep_checkpoints", 1))
     return path
 
 
@@ -637,6 +639,10 @@ def run(args):
             'epochs': args.epochs, 'lr': args.lr, 'sample_mode': args.sample_mode,
         }, final_save_path)
         print(f"  Checkpoint saved -> {final_save_path}")
+        # Nach dem Endstand bleibt nur das `_final`: die Zwischenstaende
+        # desselben Laufs werden entfernt. Bricht der Job vorher ab,
+        # bleibt statt dessen der letzte Zwischenstand liegen.
+        nach_endstand(stem, args.run_str, final_save_path)
 
     # Visualise Training sample
     viz_train_keys = random.sample(list(train_shapes.keys()), min(5, len(train_shapes)))

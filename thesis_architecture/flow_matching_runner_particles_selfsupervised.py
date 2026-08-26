@@ -55,6 +55,7 @@ from flow_matching_particles_selfsupervised import (
 # Particle sampling and the plotting style are reused verbatim.
 from flow_matching_runner_particles import sample_particles
 from visualize_checkpoint import draw_panel, save_grid
+from checkpoint_rotation import nach_zwischenstand, nach_endstand
 
 _DB_PATH = os.path.join(_here, 'ergodic_dataset_generator', 'ergodic_dataset_775.db')
 _CACHE_DIR = os.path.join(_here, 'cache')
@@ -212,6 +213,9 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt['wandb_id'] = wandb.run.id
     torch.save(ckpt, path)
+    # Je Lauf bleibt genau ein Zwischenstand liegen.
+    nach_zwischenstand(stem, args.run_str, path,
+                       behalten=getattr(args, "keep_checkpoints", 1))
     return path
 
 
@@ -542,6 +546,10 @@ def parse_args():
     p.add_argument('--seed',       type=int,   default=0)
 
     # Bookkeeping
+    p.add_argument('--keep_checkpoints', type=int, default=1,
+                   help='Wie viele Zwischenstaende eines Laufs behalten werden. '
+                        'Vorgabe 1: beim Speichern eines neuen Standes werden '
+                        'aeltere entfernt, und nach dem Endstand alle.')
     p.add_argument('--save_model', type=str, default='checkpoints/selfsup.pt')
     p.add_argument('--resume',     type=str, default=None)
     p.add_argument('--save_every', type=int, default=20)

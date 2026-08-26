@@ -49,6 +49,7 @@ from orientation_energy import (W_POINT, W_STANDOFF, W_ANGSMOOTH,
 from orientation import (SurfaceField, frames_for_curve, matrix_to_rot6d,
                          rot6d_to_matrix)
 import viz_3d
+from checkpoint_rotation import nach_zwischenstand, nach_endstand
 
 
 def orientation_targets(traj, labels, volumes_np, index, mode, device):
@@ -108,7 +109,8 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     ckpt['db3d'] = getattr(args, 'db3d', None)
     ckpt['surfaces'] = getattr(args, 'surfaces', None)
     torch.save(ckpt, path)
-    _alte_staende_entfernen(stem, args, path)
+    nach_zwischenstand(stem, args.run_str, path,
+                       behalten=getattr(args, "keep_checkpoints", 1))
     return path
 
 

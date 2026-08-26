@@ -11,6 +11,7 @@ Usage:
     pdf_fn, score_fn = make_pdf_and_score(shape_def)
 """
 
+import os
 import numpy as np
 import jax
 import jax.numpy as jnp
@@ -822,15 +823,47 @@ def _rand_organic(seed, pts=100):
 # ─────────────────────────────────────────────────────────────────────────────
 
 import matplotlib.font_manager as fm
-try:
-    _KOREAN_FONT = fm.FontProperties(fname='/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc', size=72)
-except Exception:
-    _KOREAN_FONT = None
 
-try:
-    _CJK_FONT = fm.FontProperties(fname='/usr/share/fonts/opentype/noto/NotoSerifCJK-Bold.ttc', size=72)
-except Exception:
-    _CJK_FONT = None
+
+def _finde_font(dateiname):
+    """Erste vorhandene Fassung einer Schrift, sonst None.
+
+    Die alte Fassung stand fest auf /usr/share/fonts und war in ein
+    try/except gehuellt — das aber nie ausloeste: `FontProperties(fname=...)`
+    prueft die Datei beim Anlegen nicht, sie scheitert erst beim Rendern.
+    Auf dem Cluster fielen deshalb sieben von acht Array-Aufgaben nach
+    wenigen Minuten mit `FileNotFoundError` aus, mitten in der Erzeugung.
+
+    Gesucht wird deshalb in dieser Reihenfolge, und die Datei muss wirklich
+    da sein:
+
+      1. $ERGODIC_FONT_DIR          (ausdrueckliche Vorgabe)
+      2. <Projektwurzel>/fonts/     (mit dem Repo mitgeliefert)
+      3. ~/Master_thesis/fonts/
+      4. die Systempfade
+    """
+    orte = []
+    if os.environ.get('ERGODIC_FONT_DIR'):
+        orte.append(os.path.join(os.environ['ERGODIC_FONT_DIR'], dateiname))
+    _wurzel = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    orte.append(os.path.join(_wurzel, 'fonts', dateiname))
+    orte.append(os.path.expanduser(os.path.join('~', 'Master_thesis', 'fonts', dateiname)))
+    orte.append(os.path.join('/usr/share/fonts/opentype/noto', dateiname))
+    orte.append(os.path.join('/usr/share/fonts/truetype/noto', dateiname))
+    for o in orte:
+        if os.path.isfile(o):
+            return fm.FontProperties(fname=o, size=72)
+    return None
+
+
+_KOREAN_FONT = _finde_font('NotoSansCJK-Bold.ttc')
+_CJK_FONT = _finde_font('NotoSerifCJK-Bold.ttc')
+if _KOREAN_FONT is None or _CJK_FONT is None:
+    import warnings
+    warnings.warn(
+        'CJK-Schriften nicht gefunden. Die Formen korean_* und cjk_* koennen '
+        'nicht erzeugt werden. Erwartet unter <Projektwurzel>/fonts/ oder '
+        '$ERGODIC_FONT_DIR.')
 
 GREEK_UPPER = 'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ'
 GREEK_LOWER = 'αβγδεζηθικλμνξοπρστυφχψω'

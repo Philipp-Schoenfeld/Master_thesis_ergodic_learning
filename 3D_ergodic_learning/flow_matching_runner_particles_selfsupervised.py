@@ -49,6 +49,7 @@ from orientation_energy import (SE3Energy, W_POINT, W_STANDOFF, W_ANGSMOOTH,
                                 STANDOFF_TARGET, STANDOFF_BAND,
                                 pointing_error_deg, incidence_ok_fraction)
 import viz_3d
+from checkpoint_rotation import nach_zwischenstand, nach_endstand
 
 
 def _basis(nxi, T, deg, device):
@@ -103,6 +104,9 @@ def _save_checkpoint(model, opt, sched, epoch, loss, args):
     if args.use_wandb and _WANDB_OK and wandb.run is not None:
         ckpt['wandb_id'] = wandb.run.id
     torch.save(ckpt, path)
+    # Je Lauf bleibt genau ein Zwischenstand liegen.
+    nach_zwischenstand(stem, args.run_str, path,
+                       behalten=getattr(args, "keep_checkpoints", 1))
     return path
 
 
@@ -461,6 +465,14 @@ def parse_args():
     p.add_argument('--assert_energy_drops', action='store_true', default=False)
     p.add_argument('--gate_epochs',    type=int,   default=20)
     p.add_argument('--min_drop_ratio', type=float, default=0.9)
+
+    p.add_argument('--keep_checkpoints', type=int, default=1,
+
+                   help='Wie viele Zwischenstaende eines Laufs behalten werden. '
+
+                        'Vorgabe 1: beim Speichern eines neuen Standes werden '
+
+                        'aeltere entfernt, und nach dem Endstand alle.')
 
     p.add_argument('--save_model', type=str,
                    default=os.path.join(_here, 'checkpoints', 'selfsup_3d.pt'))

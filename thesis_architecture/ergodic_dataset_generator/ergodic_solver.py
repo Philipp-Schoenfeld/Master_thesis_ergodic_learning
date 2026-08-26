@@ -100,6 +100,8 @@ def run_ergodic_coverage(
     Kd=5.0,
     score_scale=1.0,
     verbose   = False,
+    checkpoints=None,
+    konvergenz_tol=None,
 ):
     """
     Run Stein variational flow matching ergodic coverage optimisation.
@@ -158,13 +160,54 @@ def run_ergodic_coverage(
     else:
         itr = range(num_iters)
 
-    for _ in itr:
+    # ── Zwischenstaende ───────────────────────────────────────────────────
+    # Ohne `checkpoints` bleibt alles wie bisher. Mit einer Liste von
+    # Iterationszahlen wird der Optimierer *einmal* bis zur groessten davon
+    # gefahren und an jedem Punkt die Bahn mitgeschrieben. Fuenfzehn
+    # Neustarts fuer fuenfzehn Laengen waeren die naheliegende, aber teure
+    # Variante: der Loeser laeuft dann fuenfzehnmal durch dieselben ersten
+    # hundert Iterationen.
+    ziel = sorted(set(int(c) for c in checkpoints)) if checkpoints else []
+    zwischen, laengen = {}, []
+
+    def _pfadlaenge(tr):
+        return float(np.linalg.norm(np.diff(tr, axis=0), axis=1).sum())
+
+    for i in itr:
         x_traj, A_traj, B_traj = linearize_dyn(x0j, u_traj)
         stein_dx               = stein_grad_jit(x_traj, h=h)
         v_traj, _              = solve_lqr(z0, A_traj, B_traj, stein_dx)
         u_traj                += step_size * v_traj
 
+        if ziel and (i + 1) in ziel:
+            tr = np.array(pm.traj_sim(x0j, u_traj))[:, :2]
+            L = _pfadlaenge(tr)
+            zwischen[i + 1] = tr
+            laengen.append((i + 1, L))
+            # Konvergenz: waechst die Laenge ueber die letzten *zwei*
+            # Abstaende jeweils um weniger als `konvergenz_tol`, ist der
+            # Rest redundant. Zwei statt einem Abstand, weil die Laenge
+            # zwischen zwei benachbarten Checkpoints auch mal zufaellig
+            # stagniert, ohne dass der Loeser fertig waere.
+            if konvergenz_tol is not None and len(laengen) >= 5:
+                l0, l1, l2 = (laengen[-3][1], laengen[-2][1], laengen[-1][1])
+                # Betrag, nicht vorzeichenbehaftet: die Laenge waechst nicht
+                # monoton. Gemessen an Form "A" faellt sie zwischen 100 und
+                # 150 Iterationen von 5,82 auf 5,53, bevor sie auf 17,38
+                # steigt. Ein vorzeichenbehafteter Vergleich haette diesen
+                # Einbruch als Konvergenz gelesen und nach drei von fuenfzehn
+                # Varianten abgebrochen.
+                #
+                # Erst ab fuenf Checkpoints, aus demselben Grund: die ersten
+                # Abstaende sind zu kurz, um eine Aussage zu tragen.
+                w1 = abs(l1 - l0) / max(l0, 1e-9)
+                w2 = abs(l2 - l1) / max(l1, 1e-9)
+                if w1 < konvergenz_tol and w2 < konvergenz_tol:
+                    break
+
     final_traj = pm.traj_sim(x0j, u_traj)
+    if ziel:
+        return zwischen, init_traj, laengen
     return np.array(final_traj)[:, :2], init_traj
 
 

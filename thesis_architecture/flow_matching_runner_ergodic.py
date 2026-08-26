@@ -19,6 +19,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from checkpoint_rotation import nach_zwischenstand, nach_endstand
 
 try:
     import wandb
@@ -282,6 +283,9 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt_dict['wandb_id'] = wandb.run.id
     torch.save(ckpt_dict, path)
+    # Je Lauf bleibt genau ein Zwischenstand liegen.
+    nach_zwischenstand(stem, args.run_str, path,
+                       behalten=getattr(args, "keep_checkpoints", 1))
     return path
 
 
@@ -608,6 +612,10 @@ def run(args):
             'holdout_labels': list(holdout_shapes.keys()),
         }, final_save_path)
         print(f"  Checkpoint saved -> {final_save_path}")
+        # Nach dem Endstand bleibt nur das `_final`: die Zwischenstaende
+        # desselben Laufs werden entfernt. Bricht der Job vorher ab,
+        # bleibt statt dessen der letzte Zwischenstand liegen.
+        nach_endstand(stem, args.run_str, final_save_path)
 
     # ── visualise training shapes (5 random) ──
     viz_train_keys = random.sample(list(train_shapes.keys()),
@@ -680,6 +688,10 @@ def parse_args():
     p.add_argument('--bspline_pts', type=int, default=512)
     p.add_argument('--bspline_deg', type=int, default=5)
     # persistence
+    p.add_argument('--keep_checkpoints', type=int, default=1,
+                   help='Wie viele Zwischenstaende eines Laufs behalten werden. '
+                        'Vorgabe 1: beim Speichern eines neuen Standes werden '
+                        'aeltere entfernt, und nach dem Endstand alle.')
     p.add_argument('--save_model', type=str,
                    default=os.path.join(_here, 'checkpoints',
                                         'cond_spectral_crossattn_ergodic.pt'))
