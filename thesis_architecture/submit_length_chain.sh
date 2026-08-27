@@ -14,24 +14,58 @@
 #   2  CFG-Gewicht         2.0 gegen 4.0
 #   3  Log-Normierung      automatisch gegen fest 1.0
 #   4  Laengen-Dropout     0.1 gegen 0.25
+#
+# Alle Glieder laufen mit LENFREQ=linear, also der korrigierten
+# Laengenkodierung. Unter der bisherigen Wahl `oktaven` waren verschiedene
+# Laengen bitgleich kodiert (3,34 Perioden ueber dem Datensatzbereich), und
+# kein Punkt der Suche haette eine Aussage ueber die Laengenkonditionierung
+# erlaubt. Liegt zu einem TAG bereits ein alter Stand vor, setzt das Glied
+# darauf auf und der Runner initialisiert den Laengenkopf neu.
 set -u
 WARTE=${1:-}
 DEP=""
 [ -n "$WARTE" ] && DEP="--dependency=afterany:$WARTE"
 
-reihe () {   # $1=TAG  $2=Variablen
-    local id
-    id=$(sbatch --parsable $DEP --export=ALL,$2 run_job_length_hp.bash)
-    echo "  $1  ->  Job $id  ${DEP:+(nach ${DEP#*:})}"
-    DEP="--dependency=afterany:$id"
+# Je Punkt der Suche werden MEHRERE Glieder eingereiht. Grund: 200 Epochen
+# brauchen bei gemessenen 583 s/Epoche rund 32 h, das Limit auf stud liegt bei
+# 24 h. Mit nur einem Glied je Punkt wuerde kein einziger Punkt jemals fertig —
+# das naechste Glied begaenne einen anderen TAG, und der vorige bliebe fuer
+# immer bei ~150 Epochen stehen. Ist ein Punkt schon fertig, beendet sich sein
+# Folgeglied sofort (Pruefung auf `_final` im Jobskript), es kostet also nichts.
+GLIEDER=${GLIEDER:-2}
+
+reihe () {   # $1=TAG  $2=Beschriftung  $3=Variablen
+    local id=""
+    if ! gewuenscht "$1"; then
+        echo "  $2  uebersprungen" >&2
+        echo ""
+        return
+    fi
+    for _g in $(seq 1 "$GLIEDER"); do
+        id=$(sbatch --parsable $DEP --export=ALL,$3 run_job_length_hp.bash)
+        echo "  $2  Glied $_g  ->  Job $id  ${DEP:+(nach ${DEP#*:})}" >&2
+        DEP="--dependency=afterany:$id"
+    done
     echo "$id"
 }
 
-echo "Hyperparameter-Kette:"
-A=$(reihe "lr1e-4  (Bezug)" "TAG=LR1E4,LR=1e-4,CFG=2.0,PDROPLEN=0.1,EPOCHS=200" | tail -1)
-B=$(reihe "lr3e-4"          "TAG=LR3E4,LR=3e-4,CFG=2.0,PDROPLEN=0.1,EPOCHS=200" | tail -1)
-C=$(reihe "cfg4.0"          "TAG=CFG40,LR=1e-4,CFG=4.0,PDROPLEN=0.1,EPOCHS=200" | tail -1)
-D=$(reihe "logscale1.0"     "TAG=LOGS10,LR=1e-4,CFG=2.0,LOGSCALE=1.0,PDROPLEN=0.1,EPOCHS=200" | tail -1)
-E=$(reihe "pdroplen0.25"    "TAG=PD025,LR=1e-4,CFG=2.0,PDROPLEN=0.25,EPOCHS=200" | tail -1)
+# PUNKTE waehlt aus, welche Punkte eingereiht werden — noetig, wenn nur
+# einzelne nachgeholt werden muessen (etwa nach einem Abbruch) und die
+# uebrigen bereits laufen. Leer bedeutet: alle.
+#   PUNKTE="LR1E4"           nur der Bezugspunkt
+#   PUNKTE="LR3E4 CFG40"     zwei davon
+PUNKTE=${PUNKTE:-}
+gewuenscht () {
+    [ -z "$PUNKTE" ] && return 0
+    for p in $PUNKTE; do [ "$p" = "$1" ] && return 0; done
+    return 1
+}
+
+echo "Hyperparameter-Kette${PUNKTE:+ (nur: $PUNKTE)}:"
+A=$(reihe "LR1E4" "lr1e-4  (Bezug)" "TAG=LR1E4,LR=1e-4,CFG=2.0,PDROPLEN=0.1,EPOCHS=200,LENFREQ=linear")
+B=$(reihe "LR3E4" "lr3e-4"          "TAG=LR3E4,LR=3e-4,CFG=2.0,PDROPLEN=0.1,EPOCHS=200,LENFREQ=linear")
+C=$(reihe "CFG40" "cfg4.0"          "TAG=CFG40,LR=1e-4,CFG=4.0,PDROPLEN=0.1,EPOCHS=200,LENFREQ=linear")
+D=$(reihe "LOGS10" "logscale1.0"     "TAG=LOGS10,LR=1e-4,CFG=2.0,LOGSCALE=1.0,PDROPLEN=0.1,EPOCHS=200,LENFREQ=linear")
+E=$(reihe "PD025" "pdroplen0.25"    "TAG=PD025,LR=1e-4,CFG=2.0,PDROPLEN=0.25,EPOCHS=200,LENFREQ=linear")
 echo
 echo "Letztes Glied: $E"
