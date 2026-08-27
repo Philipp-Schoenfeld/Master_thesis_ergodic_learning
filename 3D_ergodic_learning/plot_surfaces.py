@@ -115,6 +115,9 @@ def main():
                 B = np.asarray(e['bahn'])
                 ax.plot(B[:, 0], B[:, 1], B[:, 2], color='#00A344', lw=2.0,
                         alpha=.95)
+                # Durchscheinende Bahn (immer im Vordergrund)
+                ax.plot(B[:, 0], B[:, 1], B[:, 2], color='#00A344', lw=2.0,
+                        alpha=.25, zorder=10)
 
                 if e.get('rot6'):
                     R = rot6_to_R(np.asarray(e['rot6']))

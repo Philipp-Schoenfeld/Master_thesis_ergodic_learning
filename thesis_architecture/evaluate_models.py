@@ -126,6 +126,16 @@ def main():
                    help='Figures per checkpoint: with and without obstacle, separately.')
     p.add_argument('--viz_all_candidates', action='store_true',
                    help='Draw every candidate instead of only the best.')
+    p.add_argument('--target_length', type=float, default=None,
+                   help='Target path length given to the network as FiLM '
+                        'conditioning (only effective for a length_cond '
+                        'checkpoint, e.g. netz2d_laenge.pt; ignored otherwise). '
+                        'Recorded path_len in the output table is the achieved '
+                        'length, so it directly shows how well the network '
+                        'tracked the request.')
+    p.add_argument('--target_length_cfg', type=float, default=0.0,
+                   help='Classifier-free guidance strength for --target_length '
+                        '(0 = off, i.e. the raw conditioned prediction).')
     args = p.parse_args()
 
     device = torch.device(args.device if args.device else
@@ -209,7 +219,9 @@ def main():
                 parts = sample_particles(dens_t, idx_t, e['meta']['n_particles'],
                                          device, mode='uniform')[0]
                 cps, dt = generate(e['model'], e['kind'], parts, args.n_samples,
-                                   e['meta'], args.steps, device, gseed)
+                                   e['meta'], args.steps, device, gseed,
+                                   length=args.target_length,
+                                   length_cfg_weight=args.target_length_cfg)
                 times.append(dt / args.n_samples * 1000.0)
                 divs.append(sample_diversity(cps))
 
@@ -278,7 +290,8 @@ def main():
                 obstacle_mode=args.viz_obstacle_mode, device=str(device),
                 grid_res=args.grid_res, erg_K=args.erg_K,
                 solver_T=args.solver_T, bspline_deg=args.bspline_deg,
-                seed=args.seed)
+                seed=args.seed, length=args.target_length,
+                length_cfg_weight=args.target_length_cfg)
         with open(os.path.join(args.out, 'figures.json'), 'w') as f:
             json.dump(figures, f, indent=1)
 

@@ -77,6 +77,42 @@ def _egg_mesh(subdiv=4, taper=0.32, stretch=1.35):
     return trimesh.Trimesh(vertices=v, faces=m.faces, process=False)
 
 
+def _prism_mesh(height=1.0, radius=0.62):
+    """Gerades Dreiecksprisma: eine gleichseitige Dreiecksgrundflaeche,
+    entlang z extrudiert.
+    """
+    import trimesh
+    angles = np.deg2rad([90.0, 210.0, 330.0])
+    tri = np.stack([radius * np.cos(angles), radius * np.sin(angles)], axis=1)
+    bottom = np.concatenate([tri, np.full((3, 1), -height / 2)], axis=1)
+    top = np.concatenate([tri, np.full((3, 1), height / 2)], axis=1)
+    verts = np.vstack([bottom, top])          # 0,1,2 unten; 3,4,5 oben
+    faces = [[0, 2, 1], [3, 4, 5]]             # Grund- und Deckflaeche
+    for i in range(3):
+        j = (i + 1) % 3
+        faces += [[i, j, j + 3], [i, j + 3, i + 3]]
+    return trimesh.Trimesh(vertices=verts, faces=np.array(faces), process=False)
+
+
+def _cone_mesh(radius=0.55, height=1.0, sections=64):
+    """Gerader Kreiskegel, Spitze oben."""
+    import trimesh
+    m = trimesh.creation.cone(radius=radius, height=height, sections=sections)
+    v = np.asarray(m.vertices, dtype=np.float64).copy()
+    v[:, 2] -= height / 2          # trimesh baut den Kegel von z=0 bis z=height
+    return trimesh.Trimesh(vertices=v, faces=m.faces, process=False)
+
+
+def _torus_mesh(major=0.35, minor=0.16, major_sections=48, minor_sections=24):
+    """Torus um die z-Achse."""
+    import trimesh
+    m = trimesh.creation.torus(major_radius=major, minor_radius=minor,
+                               major_sections=major_sections,
+                               minor_sections=minor_sections)
+    return trimesh.Trimesh(vertices=np.asarray(m.vertices, dtype=np.float64),
+                           faces=np.asarray(m.faces), process=False)
+
+
 def _bunny_mesh():
     """Stanford-Bunny. Wird beim ersten Aufruf ueber open3d geholt."""
     import trimesh, open3d as o3d
@@ -147,11 +183,24 @@ def build(key):
     if key == 'bunny':
         return Surface(key, 'Stanford-Bunny', _bunny_mesh(), view=(0, -1, 0),
                        note='echtes Messnetz, konkav und konvex zugleich')
+    if key == 'prisma':
+        nrm = np.array([0.45, -0.3, 0.84]) / np.linalg.norm([0.45, -0.3, 0.84])
+        return Surface(key, 'Dreiecksprisma', _prism_mesh(), view=-nrm,
+                       note='ebene Facetten mit scharfen Kanten dazwischen — '
+                            'die Projektion trifft Deckflaeche und zwei Seiten')
+    if key == 'kegel':
+        return Surface(key, 'Kegel', _cone_mesh(), view=(0, 0, -1),
+                       note='Kruemmung nimmt zur Spitze hin zu — die Mantelflaeche '
+                            'wird schmaler, waehrend die Projektion gleich breit bleibt')
+    if key == 'torus':
+        return Surface(key, 'Torus', _torus_mesh(), view=(0, 0, -1),
+                       note='Loch in der Mitte: von oben trifft die Projektion nur '
+                            'den Ring, die Innenseite bleibt zwangslaeufig unbeschienen')
     raise KeyError(key)
 
 
 KEYS = ['ebene_flach', 'ebene_gekippt', 'ebene_diagonal',
-        'kugel', 'wuerfel', 'ei', 'bunny']
+        'kugel', 'wuerfel', 'ei', 'bunny', 'prisma', 'kegel', 'torus']
 
 
 # ── Projektion ───────────────────────────────────────────────────────────────

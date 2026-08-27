@@ -74,6 +74,28 @@ def path_length(curve):
     return float((curve[1:] - curve[:-1]).norm(dim=-1).sum())
 
 
+def trim_to_length(curve, max_len):
+    """Schneidet `curve` (T,2) auf hoechstens `max_len` Weglaenge.
+
+    Der letzte Punkt wird exakt auf die Zielweglaenge interpoliert, statt auf
+    den naechstliegenden Stuetzpunkt abzurunden — sonst haette ein Budget-
+    Mechanismus, der auf Zehntel-Einheiten genau vergleichen soll, einen
+    Rundungsfehler in der Groessenordnung eines ganzen Bahnsegments.
+    """
+    if max_len <= 0:
+        return curve[:1]
+    seg = (curve[1:] - curve[:-1]).norm(dim=-1)
+    cum = torch.cat([torch.zeros(1, device=curve.device, dtype=curve.dtype),
+                     seg.cumsum(0)])
+    if float(cum[-1]) <= max_len:
+        return curve
+    tgt = torch.tensor(max_len, device=cum.device, dtype=cum.dtype)
+    k = int(torch.searchsorted(cum, tgt).clamp(1, len(curve) - 1))
+    t = (max_len - float(cum[k - 1])) / max(float(cum[k] - cum[k - 1]), 1e-12)
+    last = curve[k - 1] + t * (curve[k] - curve[k - 1])
+    return torch.cat([curve[:k], last.unsqueeze(0)], dim=0)
+
+
 def summarise(name, curve, truth, b0, b1, extra=None):
     """Ein Ergebnisdatensatz pro Mission."""
     row = {

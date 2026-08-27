@@ -1,0 +1,2697 @@
+[09:09] haelfte / ucb
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=970ms
+    glaube-1  cov=0.0736 erg=0.32861 ig= 1399.75 rmse=0.1349 len=8.75 t=742ms
+    glaube    cov=0.0250 erg=0.10380 ig= 1886.60 rmse=0.0590 len=30.45 t=2245ms
+    zweistufig cov=0.0344 erg=0.14924 ig= 1708.07 rmse=0.0781 len=15.56 t=1500ms
+    glaube-D  cov=0.0255 erg=0.07907 ig= 2005.50 rmse=0.0357 len=35.68 t=22706ms
+    maeher    cov=0.0274 erg=0.05306 ig= 1321.07 rmse=0.1345 len=36.08 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  765.53 rmse=0.1668 len=4.28 t=742ms
+    glaube-1  cov=0.0600 erg=0.27906 ig= 1497.95 rmse=0.0861 len=8.71 t=757ms
+    glaube    cov=0.0214 erg=0.09523 ig= 1875.38 rmse=0.0773 len=25.07 t=2242ms
+    zweistufig cov=0.0329 erg=0.12392 ig= 1707.60 rmse=0.0855 len=14.05 t=1512ms
+    glaube-D  cov=0.0254 erg=0.11829 ig= 2007.02 rmse=0.0343 len=32.54 t=22646ms
+    maeher    cov=0.0267 erg=0.05202 ig= 1293.44 rmse=0.0802 len=32.56 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  868.75 rmse=0.1035 len=5.74 t=745ms
+    glaube-1  cov=0.0647 erg=0.18840 ig= 1417.86 rmse=0.1453 len=10.29 t=754ms
+    glaube    cov=0.0264 erg=0.09365 ig= 1902.08 rmse=0.0651 len=29.04 t=2251ms
+    zweistufig cov=0.0374 erg=0.13977 ig= 1603.37 rmse=0.1025 len=15.85 t=1291ms
+    glaube-D  cov=0.0248 erg=0.06021 ig= 2008.68 rmse=0.0403 len=38.02 t=21805ms
+    maeher    cov=0.0297 erg=0.04937 ig= 1266.64 rmse=0.1382 len=37.84 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  743.66 rmse=0.2216 len=6.57 t=646ms
+    glaube-1  cov=0.0731 erg=0.36702 ig= 1330.11 rmse=0.1231 len=8.46 t=644ms
+    glaube    cov=0.0246 erg=0.06779 ig= 1902.78 rmse=0.0798 len=26.43 t=1935ms
+    zweistufig cov=0.0366 erg=0.10193 ig= 1746.40 rmse=0.2231 len=17.22 t=1319ms
+    glaube-D  cov=0.0236 erg=0.08389 ig= 2010.31 rmse=0.0432 len=37.33 t=19821ms
+    maeher    cov=0.0279 erg=0.05886 ig= 1309.78 rmse=0.0953 len=36.96 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  642.65 rmse=0.1992 len=2.90 t=661ms
+    glaube-1  cov=0.0791 erg=0.31515 ig= 1483.40 rmse=0.1325 len=7.53 t=654ms
+    glaube    cov=0.0241 erg=0.12128 ig= 1886.10 rmse=0.0715 len=24.05 t=1967ms
+    zweistufig cov=0.0314 erg=0.10264 ig= 1747.25 rmse=0.0992 len=14.82 t=1306ms
+    glaube-D  cov=0.0217 erg=0.06934 ig= 2008.26 rmse=0.0455 len=29.17 t=19842ms
+    maeher    cov=0.0221 erg=0.04856 ig= 1387.74 rmse=0.0738 len=29.04 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1174.62 rmse=0.0388 len=9.89 t=657ms
+    glaube-1  cov=0.0756 erg=0.08793 ig= 1483.40 rmse=0.0446 len=10.09 t=665ms
+    glaube    cov=0.0272 erg=0.02284 ig= 1901.98 rmse=0.0204 len=29.33 t=1971ms
+    zweistufig cov=0.0434 erg=0.06211 ig= 1636.25 rmse=0.0405 len=15.98 t=1295ms
+    glaube-D  cov=0.0265 erg=0.01823 ig= 2006.35 rmse=0.0054 len=39.10 t=19744ms
+    maeher    cov=0.0327 erg=0.01532 ig= 1337.03 rmse=0.0426 len=38.72 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig= 1080.21 rmse=0.0483 len=8.99 t=650ms
+    glaube-1  cov=0.0831 erg=0.23333 ig= 1423.08 rmse=0.0414 len=10.71 t=651ms
+    glaube    cov=0.0280 erg=0.04481 ig= 1837.49 rmse=0.0151 len=28.25 t=1937ms
+    zweistufig cov=0.0527 erg=0.10626 ig= 1748.81 rmse=0.0236 len=15.42 t=1335ms
+    glaube-D  cov=0.0271 erg=0.07189 ig= 2005.25 rmse=0.0052 len=40.50 t=19824ms
+    maeher    cov=0.0326 erg=0.04080 ig= 1384.06 rmse=0.0264 len=40.48 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig= 1346.41 rmse=0.2494 len=5.77 t=646ms
+    glaube-1  cov=0.0551 erg=0.06760 ig= 1402.84 rmse=0.2946 len=6.12 t=645ms
+    glaube    cov=0.0262 erg=0.03796 ig= 1823.05 rmse=0.2535 len=26.98 t=1958ms
+    zweistufig cov=0.0381 erg=0.03295 ig= 1677.97 rmse=0.2998 len=12.44 t=1323ms
+    glaube-D  cov=0.0192 erg=0.03508 ig= 2012.21 rmse=0.0608 len=32.28 t=19919ms
+    maeher    cov=0.0255 erg=0.16006 ig= 1293.44 rmse=0.2228 len=32.56 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  908.05 rmse=0.3428 len=5.41 t=650ms
+    glaube-1  cov=0.0924 erg=0.25459 ig= 1360.68 rmse=0.1959 len=7.53 t=654ms
+    glaube    cov=0.0257 erg=0.06627 ig= 1907.07 rmse=0.0932 len=26.84 t=1972ms
+    zweistufig cov=0.0310 erg=0.09945 ig= 1771.93 rmse=0.1353 len=14.62 t=1306ms
+    glaube-D  cov=0.0222 erg=0.03637 ig= 2006.16 rmse=0.0556 len=32.07 t=19932ms
+    maeher    cov=0.0273 erg=0.06849 ig= 1363.93 rmse=0.1647 len=31.68 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  308.02 rmse=0.2196 len=5.14 t=650ms
+    glaube-1  cov=0.0985 erg=0.39886 ig= 1512.15 rmse=0.1204 len=10.16 t=646ms
+    glaube    cov=0.0261 erg=0.12090 ig= 1869.03 rmse=0.0731 len=27.97 t=1946ms
+    zweistufig cov=0.0434 erg=0.16277 ig= 1695.85 rmse=0.1894 len=14.75 t=1309ms
+    glaube-D  cov=0.0281 erg=0.13603 ig= 2007.03 rmse=0.0308 len=33.27 t=19765ms
+    maeher    cov=0.0259 erg=0.07684 ig= 1277.02 rmse=0.1188 len=33.44 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  941.79 rmse=0.0592 len=8.32 t=646ms
+    glaube-1  cov=0.0772 erg=0.15284 ig= 1384.91 rmse=0.0586 len=8.11 t=645ms
+    glaube    cov=0.0324 erg=0.05511 ig= 1894.66 rmse=0.0346 len=31.89 t=1956ms
+    zweistufig cov=0.0396 erg=0.09421 ig= 1645.55 rmse=0.0567 len=16.57 t=1349ms
+    glaube-D  cov=0.0298 erg=0.08141 ig= 2008.84 rmse=0.0171 len=35.76 t=19901ms
+    maeher    cov=0.0290 erg=0.01813 ig= 1321.07 rmse=0.0455 len=36.08 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  918.74 rmse=0.0450 len=8.08 t=646ms
+    glaube-1  cov=0.1069 erg=0.31242 ig= 1417.48 rmse=0.0335 len=11.92 t=656ms
+    glaube    cov=0.0324 erg=0.11848 ig= 1896.21 rmse=0.0196 len=29.88 t=1971ms
+    zweistufig cov=0.0519 erg=0.15824 ig= 1590.87 rmse=0.0333 len=14.48 t=1319ms
+    glaube-D  cov=0.0313 erg=0.19475 ig= 2009.87 rmse=0.0043 len=40.11 t=19712ms
+    maeher    cov=0.0329 erg=0.06070 ig= 1384.06 rmse=0.0232 len=40.48 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      877.23    0.1548     6.35     692
+glaube-1          0.0783     0.24882     1426.13    0.1176     9.03     676
+glaube-R          0.0266     0.07901     1881.87    0.0718    28.02    2029
+zweistufig        0.0394     0.11112     1689.99    0.1139    15.15    1347
+glaube-D          0.0254     0.08205     2007.96    0.0315    35.49   20468
+maeher            0.0283     0.05852     1328.27    0.0972    35.49       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 27.95):
+Mission           9.22     18.45     27.95
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0672    0.0402         —
+zweistufig      0.1066         —         —
+glaube-D        0.0648    0.0391    0.0289
+maeher          0.2707    0.1186    0.0458
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.2 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0470)
+[09:15] haelfte / stretch
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=863ms
+    glaube-1  cov=0.0725 erg=0.32878 ig= 1401.68 rmse=0.1234 len=8.68 t=651ms
+    glaube    cov=0.0243 erg=0.10550 ig= 1884.70 rmse=0.0513 len=32.64 t=1946ms
+    zweistufig cov=0.0337 erg=0.11834 ig= 1712.86 rmse=0.1073 len=18.61 t=1316ms
+    glaube-D  cov=0.0232 erg=0.08426 ig= 2010.00 rmse=0.0329 len=34.52 t=19834ms
+    maeher    cov=0.0265 erg=0.05194 ig=  706.55 rmse=0.1455 len=34.32 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  765.53 rmse=0.1668 len=4.28 t=661ms
+    glaube-1  cov=0.0616 erg=0.28483 ig= 1485.33 rmse=0.0934 len=8.40 t=667ms
+    glaube    cov=0.0232 erg=0.07085 ig= 1879.02 rmse=0.0852 len=29.66 t=1982ms
+    zweistufig cov=0.0376 erg=0.11541 ig= 1750.12 rmse=0.0894 len=16.35 t=1314ms
+    glaube-D  cov=0.0242 erg=0.14751 ig= 2008.82 rmse=0.0328 len=31.18 t=20144ms
+    maeher    cov=0.0239 erg=0.05116 ig= 1315.28 rmse=0.1402 len=30.80 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  868.75 rmse=0.1035 len=5.74 t=652ms
+    glaube-1  cov=0.0640 erg=0.18851 ig= 1419.01 rmse=0.1451 len=10.46 t=647ms
+    glaube    cov=0.0296 erg=0.10367 ig= 1913.78 rmse=0.0681 len=33.48 t=1977ms
+    zweistufig cov=0.0368 erg=0.17427 ig= 1714.75 rmse=0.1161 len=17.75 t=1311ms
+    glaube-D  cov=0.0255 erg=0.07114 ig= 2010.00 rmse=0.0406 len=38.68 t=19897ms
+    maeher    cov=0.0324 erg=0.05007 ig= 1337.03 rmse=0.1077 len=38.72 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  743.66 rmse=0.2216 len=6.57 t=656ms
+    glaube-1  cov=0.0731 erg=0.36702 ig= 1330.11 rmse=0.1232 len=8.46 t=656ms
+    glaube    cov=0.0278 erg=0.07485 ig= 1896.96 rmse=0.0742 len=32.05 t=1958ms
+    zweistufig cov=0.0373 erg=0.11922 ig= 1736.04 rmse=0.1645 len=19.87 t=1540ms
+    glaube-D  cov=0.0230 erg=0.08250 ig= 2010.95 rmse=0.0442 len=35.02 t=20847ms
+    maeher    cov=0.0280 erg=0.05888 ig= 1231.90 rmse=0.1013 len=35.20 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  642.65 rmse=0.1992 len=2.90 t=657ms
+    glaube-1  cov=0.0818 erg=0.30735 ig= 1481.23 rmse=0.1274 len=7.43 t=814ms
+    glaube    cov=0.0266 erg=0.10176 ig= 1898.07 rmse=0.0706 len=25.30 t=2113ms
+    zweistufig cov=0.0404 erg=0.12478 ig= 1752.96 rmse=0.0931 len=18.38 t=1324ms
+    glaube-D  cov=0.0237 erg=0.10447 ig= 2008.40 rmse=0.0463 len=30.15 t=20454ms
+    maeher    cov=0.0240 erg=0.04931 ig= 1372.06 rmse=0.0813 len=29.92 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1174.62 rmse=0.0388 len=9.89 t=651ms
+    glaube-1  cov=0.0754 erg=0.08693 ig= 1476.65 rmse=0.0451 len=10.27 t=660ms
+    glaube    cov=0.0269 erg=0.02140 ig= 1905.56 rmse=0.0232 len=29.43 t=1983ms
+    zweistufig cov=0.0470 erg=0.07371 ig= 1575.20 rmse=0.0387 len=16.99 t=1314ms
+    glaube-D  cov=0.0267 erg=0.01797 ig= 2007.00 rmse=0.0057 len=36.79 t=20043ms
+    maeher    cov=0.0291 erg=0.01512 ig= 1309.78 rmse=0.0321 len=36.96 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig= 1080.21 rmse=0.0483 len=8.99 t=799ms
+    glaube-1  cov=0.0833 erg=0.23389 ig= 1430.83 rmse=0.0407 len=10.68 t=802ms
+    glaube    cov=0.0287 erg=0.04821 ig= 1856.77 rmse=0.0183 len=28.83 t=2160ms
+    zweistufig cov=0.0456 erg=0.11836 ig= 1738.39 rmse=0.0186 len=16.22 t=1303ms
+    glaube-D  cov=0.0285 erg=0.07887 ig= 2007.13 rmse=0.0057 len=39.70 t=20779ms
+    maeher    cov=0.0326 erg=0.04082 ig= 1292.34 rmse=0.0303 len=39.60 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig= 1346.41 rmse=0.2494 len=5.77 t=658ms
+    glaube-1  cov=0.0575 erg=0.06813 ig= 1400.79 rmse=0.2449 len=6.00 t=659ms
+    glaube    cov=0.0210 erg=0.06462 ig= 1903.87 rmse=0.1400 len=29.41 t=2156ms
+    zweistufig cov=0.0274 erg=0.04595 ig= 1759.17 rmse=0.2494 len=17.72 t=1299ms
+    glaube-D  cov=0.0206 erg=0.04122 ig= 2010.58 rmse=0.0602 len=30.06 t=23377ms
+    maeher    cov=0.0242 erg=0.16006 ig= 1372.06 rmse=0.1917 len=29.92 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  908.05 rmse=0.3428 len=5.41 t=761ms
+    glaube-1  cov=0.0970 erg=0.25196 ig= 1358.69 rmse=0.1994 len=7.57 t=776ms
+    glaube    cov=0.0258 erg=0.04803 ig= 1889.47 rmse=0.1002 len=31.60 t=2333ms
+    zweistufig cov=0.0406 erg=0.08243 ig= 1743.19 rmse=0.1574 len=17.60 t=1308ms
+    glaube-D  cov=0.0210 erg=0.06023 ig= 2010.74 rmse=0.0542 len=29.69 t=22580ms
+    maeher    cov=0.0273 erg=0.06849 ig= 1363.93 rmse=0.1647 len=31.68 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  308.02 rmse=0.2196 len=5.14 t=828ms
+    glaube-1  cov=0.0949 erg=0.39387 ig= 1516.64 rmse=0.1472 len=10.07 t=662ms
+    glaube    cov=0.0230 erg=0.14174 ig= 1874.52 rmse=0.0765 len=29.15 t=2168ms
+    zweistufig cov=0.0438 erg=0.19222 ig= 1735.59 rmse=0.0993 len=17.56 t=1479ms
+    glaube-D  cov=0.0265 erg=0.16053 ig= 2005.96 rmse=0.0324 len=35.48 t=22736ms
+    maeher    cov=0.0291 erg=0.07761 ig= 1231.90 rmse=0.1185 len=35.20 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  941.79 rmse=0.0592 len=8.32 t=647ms
+    glaube-1  cov=0.0748 erg=0.15247 ig= 1349.57 rmse=0.0704 len=8.05 t=825ms
+    glaube    cov=0.0320 erg=0.06741 ig= 1911.65 rmse=0.0365 len=33.07 t=2109ms
+    zweistufig cov=0.0393 erg=0.11253 ig= 1694.02 rmse=0.0570 len=17.71 t=1417ms
+    glaube-D  cov=0.0305 erg=0.07144 ig= 2008.64 rmse=0.0195 len=37.07 t=22336ms
+    maeher    cov=0.0290 erg=0.01810 ig= 1309.78 rmse=0.0812 len=36.96 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  918.74 rmse=0.0450 len=8.08 t=781ms
+    glaube-1  cov=0.1082 erg=0.29631 ig= 1417.42 rmse=0.0329 len=11.77 t=653ms
+    glaube    cov=0.0321 erg=0.13103 ig= 1882.82 rmse=0.0170 len=30.17 t=2193ms
+    zweistufig cov=0.0629 erg=0.21433 ig= 1503.24 rmse=0.0587 len=15.72 t=1348ms
+    glaube-D  cov=0.0344 erg=0.22346 ig= 2010.93 rmse=0.0051 len=37.70 t=22664ms
+    maeher    cov=0.0294 erg=0.06052 ig= 1266.64 rmse=0.0274 len=37.84 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      877.23    0.1548     6.35     718
+glaube-1          0.0787     0.24667     1422.33    0.1161     8.99     706
+glaube-R          0.0267     0.08159     1891.43    0.0634    30.40    2090
+zweistufig        0.0410     0.12430     1701.29    0.1041    17.54    1356
+glaube-D          0.0257     0.09530     2009.10    0.0316    34.67   21308
+maeher            0.0280     0.05851     1259.10    0.1018    34.76       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 29.74):
+Mission           9.81     19.63     29.74
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0644    0.0396         —
+zweistufig      0.1093         —         —
+glaube-D        0.0609    0.0373    0.0284
+maeher          0.2528    0.0999    0.0371
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.8 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0509)
+[09:21] haelfte / mass
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=1115ms
+    glaube-1  cov=0.0632 erg=0.19996 ig= 1227.08 rmse=0.1072 len=12.60 t=785ms
+    glaube    cov=0.0263 erg=0.09399 ig= 1893.67 rmse=0.0711 len=34.01 t=2078ms
+    zweistufig cov=0.0378 erg=0.06934 ig= 1760.33 rmse=0.0650 len=20.86 t=1495ms
+    glaube-D  cov=0.0327 erg=0.10887 ig= 2008.42 rmse=0.0337 len=33.96 t=22472ms
+    maeher    cov=0.0265 erg=0.05194 ig=  706.55 rmse=0.1455 len=34.32 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  765.53 rmse=0.1668 len=4.28 t=655ms
+    glaube-1  cov=0.0396 erg=0.06866 ig= 1299.83 rmse=0.1209 len=10.98 t=876ms
+    glaube    cov=0.0237 erg=0.04595 ig= 1874.86 rmse=0.0565 len=30.13 t=2151ms
+    zweistufig cov=0.0352 erg=0.06969 ig= 1754.11 rmse=0.0854 len=18.96 t=1453ms
+    glaube-D  cov=0.0349 erg=0.18250 ig= 2004.26 rmse=0.0373 len=35.07 t=23898ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1231.90 rmse=0.1048 len=35.20 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  868.75 rmse=0.1035 len=5.74 t=659ms
+    glaube-1  cov=0.0563 erg=0.10130 ig= 1420.41 rmse=0.1449 len=10.52 t=825ms
+    glaube    cov=0.0285 erg=0.08283 ig= 1896.24 rmse=0.0633 len=34.98 t=2243ms
+    zweistufig cov=0.0331 erg=0.11486 ig= 1736.92 rmse=0.1026 len=20.23 t=1467ms
+    glaube-D  cov=0.0387 erg=0.13315 ig= 2011.27 rmse=0.0416 len=38.45 t=22961ms
+    maeher    cov=0.0324 erg=0.05007 ig= 1337.03 rmse=0.1077 len=38.72 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  743.66 rmse=0.2216 len=6.57 t=785ms
+    glaube-1  cov=0.0522 erg=0.15606 ig= 1396.32 rmse=0.1057 len=11.34 t=647ms
+    glaube    cov=0.0227 erg=0.06904 ig= 1884.27 rmse=0.1132 len=35.72 t=2291ms
+    zweistufig cov=0.0385 erg=0.07442 ig= 1671.33 rmse=0.1297 len=20.11 t=1324ms
+    glaube-D  cov=0.0265 erg=0.07140 ig= 2007.75 rmse=0.0507 len=38.53 t=22291ms
+    maeher    cov=0.0332 erg=0.06056 ig= 1337.03 rmse=0.0986 len=38.72 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  642.65 rmse=0.1992 len=2.90 t=828ms
+    glaube-1  cov=0.0523 erg=0.10824 ig= 1401.38 rmse=0.1165 len=11.66 t=794ms
+    glaube    cov=0.0220 erg=0.05897 ig= 1860.82 rmse=0.0816 len=31.72 t=2214ms
+    zweistufig cov=0.0294 erg=0.06273 ig= 1756.51 rmse=0.1017 len=21.85 t=1324ms
+    glaube-D  cov=0.0257 erg=0.11239 ig= 2006.51 rmse=0.0485 len=33.33 t=23078ms
+    maeher    cov=0.0262 erg=0.05006 ig= 1277.02 rmse=0.1055 len=33.44 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1174.62 rmse=0.0388 len=9.89 t=913ms
+    glaube-1  cov=0.0527 erg=0.03710 ig= 1447.17 rmse=0.0274 len=10.10 t=813ms
+    glaube    cov=0.0296 erg=0.02480 ig= 1914.12 rmse=0.0194 len=30.06 t=2167ms
+    zweistufig cov=0.0396 erg=0.03142 ig= 1698.61 rmse=0.0227 len=21.55 t=1566ms
+    glaube-D  cov=0.0475 erg=0.05606 ig= 2007.52 rmse=0.0055 len=34.10 t=23563ms
+    maeher    cov=0.0265 erg=0.01503 ig=  706.55 rmse=0.1940 len=34.32 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig= 1080.21 rmse=0.0483 len=8.99 t=866ms
+    glaube-1  cov=0.0650 erg=0.12931 ig= 1432.93 rmse=0.0474 len=10.55 t=654ms
+    glaube    cov=0.0291 erg=0.04898 ig= 1847.85 rmse=0.0214 len=28.11 t=2071ms
+    zweistufig cov=0.0438 erg=0.07699 ig= 1725.30 rmse=0.0239 len=18.72 t=1323ms
+    glaube-D  cov=0.0303 erg=0.07785 ig= 2002.97 rmse=0.0069 len=36.59 t=23211ms
+    maeher    cov=0.0291 erg=0.04027 ig= 1309.78 rmse=0.0389 len=36.96 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig= 1346.41 rmse=0.2494 len=5.77 t=852ms
+    glaube-1  cov=0.0476 erg=0.11500 ig= 1342.52 rmse=0.2691 len=11.93 t=848ms
+    glaube    cov=0.0238 erg=0.05518 ig= 1899.82 rmse=0.1297 len=31.60 t=2120ms
+    zweistufig cov=0.0294 erg=0.03001 ig= 1677.99 rmse=0.3495 len=19.23 t=1375ms
+    glaube-D  cov=0.0256 erg=0.09796 ig= 2006.77 rmse=0.0635 len=36.77 t=22468ms
+    maeher    cov=0.0291 erg=0.16008 ig= 1309.78 rmse=0.1935 len=36.96 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  908.05 rmse=0.3428 len=5.41 t=906ms
+    glaube-1  cov=0.0460 erg=0.06707 ig= 1155.60 rmse=0.2330 len=12.96 t=804ms
+    glaube    cov=0.0233 erg=0.03624 ig= 1847.00 rmse=0.1723 len=33.01 t=2181ms
+    zweistufig cov=0.0291 erg=0.05585 ig= 1718.25 rmse=0.1483 len=19.68 t=1439ms
+    glaube-D  cov=0.0218 erg=0.04191 ig= 2006.91 rmse=0.0560 len=36.04 t=22856ms
+    maeher    cov=0.0283 erg=0.06964 ig= 1321.07 rmse=0.1618 len=36.08 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  308.02 rmse=0.2196 len=5.14 t=679ms
+    glaube-1  cov=0.0662 erg=0.24470 ig= 1359.33 rmse=0.1278 len=11.40 t=907ms
+    glaube    cov=0.0228 erg=0.10807 ig= 1868.50 rmse=0.0745 len=31.78 t=2382ms
+    zweistufig cov=0.0347 erg=0.14411 ig= 1728.77 rmse=0.1157 len=17.81 t=1672ms
+    glaube-D  cov=0.0285 erg=0.13812 ig= 2006.32 rmse=0.0325 len=34.69 t=23567ms
+    maeher    cov=0.0258 erg=0.07681 ig=  706.55 rmse=0.1094 len=34.32 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  941.79 rmse=0.0592 len=8.32 t=680ms
+    glaube-1  cov=0.0500 erg=0.05207 ig= 1297.95 rmse=0.0615 len=8.71 t=660ms
+    glaube    cov=0.0312 erg=0.07898 ig= 1899.88 rmse=0.0310 len=36.00 t=2411ms
+    zweistufig cov=0.0353 erg=0.05338 ig= 1667.22 rmse=0.0490 len=21.22 t=1641ms
+    glaube-D  cov=0.0327 erg=0.09251 ig= 2008.00 rmse=0.0179 len=35.53 t=23580ms
+    maeher    cov=0.0290 erg=0.01813 ig= 1321.07 rmse=0.0455 len=36.08 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  918.74 rmse=0.0450 len=8.08 t=653ms
+    glaube-1  cov=0.0686 erg=0.16803 ig= 1363.78 rmse=0.0402 len=10.83 t=649ms
+    glaube    cov=0.0310 erg=0.12207 ig= 1889.79 rmse=0.0201 len=30.51 t=2400ms
+    zweistufig cov=0.0486 erg=0.13333 ig= 1614.52 rmse=0.0326 len=19.02 t=1524ms
+    glaube-D  cov=0.0695 erg=0.30328 ig= 2013.05 rmse=0.0049 len=37.16 t=23393ms
+    maeher    cov=0.0294 erg=0.06053 ig= 1309.78 rmse=0.0359 len=36.96 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      877.23    0.1548     6.35     799
+glaube-1          0.0550     0.12063     1345.36    0.1168    11.13     772
+glaube-R          0.0262     0.06876     1881.40    0.0712    32.30    2226
+zweistufig        0.0362     0.07635     1709.16    0.1022    19.94    1467
+glaube-D          0.0345     0.11800     2007.48    0.0332    35.85   23112
+maeher            0.0286     0.05885     1156.17    0.1118    36.01       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 31.58):
+Mission          10.42     20.85     31.58
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0562         —         —
+glaube-R        0.0574    0.0371         —
+zweistufig      0.0991         —         —
+glaube-D        0.0788    0.0510    0.0378
+maeher          0.2493    0.0946    0.0343
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.9 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0476)
+[09:28] haelfte / ei
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=843ms
+    glaube-1  cov=0.0919 erg=0.27525 ig= 1323.54 rmse=0.1116 len=11.32 t=677ms
+    glaube    cov=0.0558 erg=0.18016 ig= 1912.98 rmse=0.0678 len=28.28 t=1962ms
+    zweistufig cov=0.0409 erg=0.16668 ig= 1713.13 rmse=0.0923 len=16.52 t=1331ms
+    glaube-D  cov=0.0428 erg=0.14258 ig= 2006.02 rmse=0.0331 len=35.15 t=19923ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1231.90 rmse=0.1035 len=35.20 t=0ms
+
+[2/12] greek_upper_0
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0341 erg=0.01195 ig=  765.53 rmse=0.1668 len=4.28 t=686ms
+    glaube-1  cov=0.0745 erg=0.22156 ig= 1423.12 rmse=0.1008 len=11.11 t=682ms
+    glaube    cov=0.0496 erg=0.11329 ig= 1892.82 rmse=0.0570 len=26.20 t=1968ms
+    zweistufig cov=0.0454 erg=0.14266 ig= 1741.53 rmse=0.0686 len=14.99 t=1322ms
+    glaube-D  cov=0.0338 erg=0.16027 ig= 2009.42 rmse=0.0341 len=32.07 t=19921ms
+    maeher    cov=0.0268 erg=0.05206 ig= 1363.93 rmse=0.0966 len=31.68 t=0ms
+
+[3/12] korean_5
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0509 erg=0.01867 ig=  868.75 rmse=0.1035 len=5.74 t=660ms
+    glaube-1  cov=0.2583 erg=0.36087 ig= 1320.65 rmse=0.2557 len=5.89 t=655ms
+    glaube    cov=0.1240 erg=0.16282 ig= 1897.71 rmse=0.0740 len=25.70 t=1969ms
+    zweistufig cov=0.0508 erg=0.20302 ig= 1695.55 rmse=0.1125 len=15.61 t=1344ms
+    glaube-D  cov=0.0441 erg=0.19975 ig= 2008.33 rmse=0.0424 len=33.14 t=20526ms
+    maeher    cov=0.0263 erg=0.04896 ig= 1277.02 rmse=0.1454 len=33.44 t=0ms
+
+[4/12] digit_5
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0338 erg=0.00584 ig=  743.66 rmse=0.2216 len=6.57 t=655ms
+    glaube-1  cov=0.2077 erg=0.44116 ig= 1335.27 rmse=0.1540 len=7.32 t=661ms
+    glaube    cov=0.0778 erg=0.14948 ig= 1914.48 rmse=0.0742 len=17.43 t=1948ms
+    zweistufig cov=0.0457 erg=0.14983 ig= 1671.86 rmse=0.1616 len=18.75 t=1464ms
+    glaube-D  cov=0.0332 erg=0.14566 ig= 2008.05 rmse=0.0429 len=36.24 t=20124ms
+    maeher    cov=0.0279 erg=0.05887 ig= 1321.07 rmse=0.1199 len=36.08 t=0ms
+
+[5/12] a_lc
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0419 erg=0.00751 ig=  642.65 rmse=0.1992 len=2.90 t=707ms
+    glaube-1  cov=0.2369 erg=0.43879 ig= 1309.12 rmse=0.1213 len=6.99 t=674ms
+    glaube    cov=0.0677 erg=0.12673 ig= 1902.03 rmse=0.0872 len=22.64 t=2019ms
+    zweistufig cov=0.0392 erg=0.15047 ig= 1800.20 rmse=0.0985 len=18.72 t=1388ms
+    glaube-D  cov=0.0396 erg=0.12120 ig= 2003.27 rmse=0.0462 len=31.84 t=20406ms
+    maeher    cov=0.0263 erg=0.05020 ig= 1363.93 rmse=0.0935 len=31.68 t=0ms
+
+[6/12] rand_gmm_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0493 erg=0.03934 ig= 1174.62 rmse=0.0388 len=9.89 t=663ms
+    glaube-1  cov=0.2158 erg=0.22375 ig= 1307.47 rmse=0.0629 len=6.36 t=759ms
+    glaube    cov=0.0345 erg=0.03946 ig= 1912.26 rmse=0.0137 len=26.94 t=2637ms
+    zweistufig cov=0.0371 erg=0.07248 ig= 1764.21 rmse=0.0249 len=15.67 t=1357ms
+    glaube-D  cov=0.0427 erg=0.04655 ig= 2007.08 rmse=0.0059 len=36.67 t=21786ms
+    maeher    cov=0.0291 erg=0.01512 ig= 1309.78 rmse=0.0321 len=36.96 t=0ms
+
+[7/12] rand_gmm_20
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0483 erg=0.00794 ig= 1080.21 rmse=0.0483 len=8.99 t=657ms
+    glaube-1  cov=0.1162 erg=0.29059 ig= 1407.87 rmse=0.0457 len=10.86 t=661ms
+    glaube    cov=0.0335 erg=0.06697 ig= 1836.07 rmse=0.0185 len=29.14 t=2000ms
+    zweistufig cov=0.0464 erg=0.18240 ig= 1766.17 rmse=0.0203 len=16.51 t=1315ms
+    glaube-D  cov=0.0355 erg=0.16571 ig= 1998.88 rmse=0.0070 len=34.86 t=20796ms
+    maeher    cov=0.0292 erg=0.04033 ig= 1231.90 rmse=0.0341 len=35.20 t=0ms
+
+[8/12] rand_ana_poly_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0449 erg=0.02516 ig= 1346.41 rmse=0.2494 len=5.77 t=656ms
+    glaube-1  cov=0.0626 erg=0.09327 ig= 1377.67 rmse=0.2735 len=6.78 t=654ms
+    glaube    cov=0.0230 erg=0.06511 ig= 1912.08 rmse=0.1136 len=21.12 t=2103ms
+    zweistufig cov=0.0315 erg=0.04581 ig= 1728.76 rmse=0.2342 len=15.66 t=1308ms
+    glaube-D  cov=0.0252 erg=0.10465 ig= 2003.31 rmse=0.0671 len=33.58 t=20316ms
+    maeher    cov=0.0254 erg=0.16002 ig= 1277.02 rmse=0.2040 len=33.44 t=0ms
+
+[9/12] rand_ana_poly_20
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0370 erg=0.01049 ig=  908.05 rmse=0.3428 len=5.41 t=654ms
+    glaube-1  cov=0.0666 erg=0.20324 ig= 1380.66 rmse=0.1854 len=11.88 t=649ms
+    glaube    cov=0.0534 erg=0.04074 ig= 1875.45 rmse=0.1248 len=22.84 t=1972ms
+    zweistufig cov=0.0477 erg=0.09940 ig= 1645.61 rmse=0.3923 len=15.61 t=1347ms
+    glaube-D  cov=0.0237 erg=0.05053 ig= 1999.23 rmse=0.0593 len=31.98 t=20144ms
+    maeher    cov=0.0273 erg=0.06849 ig= 1363.93 rmse=0.1647 len=31.68 t=0ms
+
+[10/12] rand_ana_poly_30
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0327 erg=0.01306 ig=  308.02 rmse=0.2196 len=5.14 t=656ms
+    glaube-1  cov=0.0991 erg=0.40274 ig= 1489.49 rmse=0.1231 len=10.27 t=654ms
+    glaube    cov=0.0582 erg=0.23398 ig= 1880.13 rmse=0.0877 len=29.21 t=2013ms
+    zweistufig cov=0.0632 erg=0.28815 ig= 1752.58 rmse=0.1338 len=16.02 t=1349ms
+    glaube-D  cov=0.0433 erg=0.19229 ig= 2004.16 rmse=0.0304 len=32.69 t=20186ms
+    maeher    cov=0.0260 erg=0.07687 ig= 1293.44 rmse=0.1684 len=32.56 t=0ms
+
+[11/12] rand_gmm_complex_0
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0495 erg=0.01003 ig=  941.79 rmse=0.0592 len=8.32 t=689ms
+    glaube-1  cov=0.1085 erg=0.19041 ig= 1467.60 rmse=0.0601 len=9.04 t=657ms
+    glaube    cov=0.0448 erg=0.12978 ig= 1910.67 rmse=0.0363 len=28.52 t=2007ms
+    zweistufig cov=0.0447 erg=0.14296 ig= 1681.44 rmse=0.0528 len=16.21 t=1315ms
+    glaube-D  cov=0.0434 erg=0.13202 ig= 2010.01 rmse=0.0169 len=33.97 t=20113ms
+    maeher    cov=0.0267 erg=0.01787 ig=  706.55 rmse=0.0890 len=34.32 t=0ms
+
+[12/12] rand_gmm_complex_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0496 erg=0.02579 ig=  918.74 rmse=0.0450 len=8.08 t=1152ms
+    glaube-1  cov=0.1462 erg=0.36807 ig= 1461.32 rmse=0.0326 len=12.30 t=800ms
+    glaube    cov=0.0357 erg=0.18578 ig= 1869.01 rmse=0.0186 len=30.16 t=2060ms
+    zweistufig cov=0.0563 erg=0.29374 ig= 1727.14 rmse=0.0310 len=15.28 t=1566ms
+    glaube-D  cov=0.1678 erg=0.35058 ig= 2008.70 rmse=0.0064 len=30.55 t=21606ms
+    maeher    cov=0.0250 erg=0.06043 ig= 1315.28 rmse=0.0229 len=30.80 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      877.23    0.1548     6.35     723
+glaube-1          0.1403     0.29248     1383.65    0.1272     9.18     682
+glaube-R          0.0548     0.12452     1892.97    0.0644    25.68    2055
+zweistufig        0.0457     0.16147     1724.01    0.1186    16.30    1367
+glaube-D          0.0479     0.15098     2005.54    0.0326    33.56   20487
+maeher            0.0270     0.05852     1254.64    0.1062    33.59       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 26.31):
+Mission           8.68     17.36     26.31
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.1214         —         —
+glaube-R        0.1149    0.0702         —
+zweistufig      0.1681         —         —
+glaube-D        0.1132    0.0751    0.0556
+maeher          0.2711    0.1187    0.0424
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.6 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0547)
+[09:34] haelfte / lse
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=1103ms
+    glaube-1  cov=0.0663 erg=0.19785 ig= 1296.43 rmse=0.1114 len=9.31 t=844ms
+    glaube    cov=0.0334 erg=0.07644 ig= 1781.28 rmse=0.0697 len=25.01 t=2247ms
+    zweistufig cov=0.0388 erg=0.10352 ig= 1664.36 rmse=0.1059 len=12.29 t=1373ms
+    glaube-D  cov=0.0267 erg=0.07860 ig= 1999.38 rmse=0.0360 len=34.95 t=20263ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1231.90 rmse=0.1035 len=35.20 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  765.53 rmse=0.1668 len=4.28 t=676ms
+    glaube-1  cov=0.0459 erg=0.10607 ig= 1359.28 rmse=0.1789 len=7.84 t=662ms
+    glaube    cov=0.0296 erg=0.03918 ig= 1879.58 rmse=0.0532 len=21.62 t=2009ms
+    zweistufig cov=0.0364 erg=0.08435 ig= 1671.91 rmse=0.1630 len=10.59 t=1343ms
+    glaube-D  cov=0.0245 erg=0.11106 ig= 2006.70 rmse=0.0352 len=31.82 t=19948ms
+    maeher    cov=0.0268 erg=0.05206 ig= 1363.93 rmse=0.0966 len=31.68 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  868.75 rmse=0.1035 len=5.74 t=656ms
+    glaube-1  cov=0.0558 erg=0.03950 ig= 1235.60 rmse=0.1017 len=8.76 t=682ms
+    glaube    cov=0.0369 erg=0.05829 ig= 1802.85 rmse=0.0782 len=23.29 t=2009ms
+    zweistufig cov=0.0446 erg=0.11202 ig= 1644.33 rmse=0.1172 len=12.44 t=1350ms
+    glaube-D  cov=0.0276 erg=0.04360 ig= 2005.39 rmse=0.0418 len=37.71 t=20089ms
+    maeher    cov=0.0297 erg=0.04937 ig= 1266.64 rmse=0.1382 len=37.84 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  743.66 rmse=0.2216 len=6.57 t=659ms
+    glaube-1  cov=0.0659 erg=0.14651 ig= 1364.05 rmse=0.1174 len=9.59 t=664ms
+    glaube    cov=0.0363 erg=0.06276 ig= 1883.21 rmse=0.1013 len=22.82 t=1999ms
+    zweistufig cov=0.0463 erg=0.08485 ig= 1684.60 rmse=0.1423 len=13.67 t=1323ms
+    glaube-D  cov=0.0243 erg=0.07161 ig= 2008.11 rmse=0.0446 len=34.18 t=20642ms
+    maeher    cov=0.0256 erg=0.05758 ig=  706.55 rmse=0.1408 len=34.32 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  642.65 rmse=0.1992 len=2.90 t=657ms
+    glaube-1  cov=0.0624 erg=0.16378 ig= 1347.02 rmse=0.1005 len=8.35 t=649ms
+    glaube    cov=0.0385 erg=0.08460 ig= 1841.54 rmse=0.0911 len=22.39 t=2024ms
+    zweistufig cov=0.0442 erg=0.07904 ig= 1700.22 rmse=0.0840 len=12.00 t=1421ms
+    glaube-D  cov=0.0246 erg=0.09514 ig= 2005.02 rmse=0.0457 len=31.14 t=21355ms
+    maeher    cov=0.0239 erg=0.04924 ig= 1315.28 rmse=0.1132 len=30.80 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1174.62 rmse=0.0388 len=9.89 t=686ms
+    glaube-1  cov=0.0643 erg=0.01167 ig= 1360.26 rmse=0.0601 len=9.33 t=659ms
+    glaube    cov=0.0430 erg=0.01055 ig= 1795.56 rmse=0.0209 len=22.78 t=1999ms
+    zweistufig cov=0.0649 erg=0.07598 ig= 1548.07 rmse=0.0313 len=12.43 t=1348ms
+    glaube-D  cov=0.0333 erg=0.05314 ig= 2007.07 rmse=0.0063 len=33.36 t=20309ms
+    maeher    cov=0.0266 erg=0.01505 ig= 1277.02 rmse=0.0246 len=33.44 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig= 1080.21 rmse=0.0483 len=8.99 t=661ms
+    glaube-1  cov=0.0744 erg=0.07515 ig= 1125.00 rmse=0.0432 len=6.58 t=658ms
+    glaube    cov=0.0369 erg=0.02954 ig= 1689.71 rmse=0.0237 len=22.34 t=2014ms
+    zweistufig cov=0.0533 erg=0.07081 ig= 1645.44 rmse=0.0344 len=12.84 t=1328ms
+    glaube-D  cov=0.0330 erg=0.08761 ig= 2004.63 rmse=0.0048 len=32.10 t=19990ms
+    maeher    cov=0.0267 erg=0.04001 ig= 1363.93 rmse=0.0214 len=31.68 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig= 1346.41 rmse=0.2494 len=5.77 t=663ms
+    glaube-1  cov=0.0481 erg=0.08927 ig= 1497.28 rmse=0.1922 len=8.99 t=658ms
+    glaube    cov=0.0319 erg=0.05229 ig= 1749.00 rmse=0.3597 len=25.75 t=1986ms
+    zweistufig cov=0.0470 erg=0.03462 ig= 1562.20 rmse=0.3891 len=10.80 t=1314ms
+    glaube-D  cov=0.0206 erg=0.04260 ig= 2010.91 rmse=0.0608 len=30.52 t=19955ms
+    maeher    cov=0.0241 erg=0.16001 ig= 1315.28 rmse=0.2331 len=30.80 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  908.05 rmse=0.3428 len=5.41 t=667ms
+    glaube-1  cov=0.0639 erg=0.10293 ig= 1359.73 rmse=0.2732 len=8.85 t=660ms
+    glaube    cov=0.0482 erg=0.07982 ig= 1884.80 rmse=0.1012 len=23.16 t=1978ms
+    zweistufig cov=0.0396 erg=0.07844 ig= 1743.61 rmse=0.1193 len=12.07 t=1305ms
+    glaube-D  cov=0.0222 erg=0.03164 ig= 2002.58 rmse=0.0564 len=29.40 t=19802ms
+    maeher    cov=0.0220 erg=0.06670 ig= 1387.74 rmse=0.1532 len=29.04 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  308.02 rmse=0.2196 len=5.14 t=650ms
+    glaube-1  cov=0.0534 erg=0.16151 ig= 1253.40 rmse=0.1324 len=8.77 t=651ms
+    glaube    cov=0.0275 erg=0.08101 ig= 1784.67 rmse=0.0993 len=23.75 t=1960ms
+    zweistufig cov=0.0579 erg=0.11635 ig= 1639.25 rmse=0.1465 len=12.41 t=1302ms
+    glaube-D  cov=0.0259 erg=0.11248 ig= 2005.23 rmse=0.0291 len=32.71 t=19726ms
+    maeher    cov=0.0260 erg=0.07687 ig= 1293.44 rmse=0.1684 len=32.56 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  941.79 rmse=0.0592 len=8.32 t=655ms
+    glaube-1  cov=0.0731 erg=0.03558 ig= 1263.18 rmse=0.0632 len=8.72 t=653ms
+    glaube    cov=0.0510 erg=0.03782 ig= 1811.54 rmse=0.0467 len=22.94 t=1944ms
+    zweistufig cov=0.0780 erg=0.09334 ig= 1588.25 rmse=0.0673 len=10.59 t=1317ms
+    glaube-D  cov=0.0378 erg=0.07949 ig= 2008.54 rmse=0.0163 len=32.77 t=19807ms
+    maeher    cov=0.0269 erg=0.01793 ig= 1293.44 rmse=0.1159 len=32.56 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  918.74 rmse=0.0450 len=8.08 t=649ms
+    glaube-1  cov=0.0751 erg=0.06107 ig= 1180.31 rmse=0.0313 len=9.13 t=655ms
+    glaube    cov=0.0538 erg=0.04164 ig= 1730.44 rmse=0.0269 len=25.77 t=1959ms
+    zweistufig cov=0.0880 erg=0.09484 ig= 1492.21 rmse=0.0355 len=10.97 t=1299ms
+    glaube-D  cov=0.0380 erg=0.15082 ig= 2007.80 rmse=0.0056 len=36.84 t=19822ms
+    maeher    cov=0.0294 erg=0.06053 ig= 1309.78 rmse=0.0359 len=36.96 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      877.23    0.1548     6.35     699
+glaube-1          0.0624     0.09924     1303.46    0.1171     8.69     675
+glaube-R          0.0389     0.05450     1802.85    0.0893    23.47    2011
+zweistufig        0.0532     0.08568     1632.04    0.1197    11.93    1335
+glaube-D          0.0282     0.07982     2005.95    0.0319    33.13   20142
+maeher            0.0263     0.05820     1260.41    0.1121    33.07       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 23.01):
+Mission           7.59     15.19     23.01
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0661         —         —
+glaube-R        0.0633    0.0471         —
+zweistufig      0.1905         —         —
+glaube-D        0.0619    0.0421    0.0340
+maeher          0.2944    0.1471    0.0612
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.7 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0713)
+[09:40] haelfte / mi
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=830ms
+    glaube-1  cov=0.0680 erg=0.31174 ig= 1430.49 rmse=0.1117 len=8.62 t=644ms
+    glaube    cov=0.0213 erg=0.03759 ig= 1891.33 rmse=0.0578 len=25.68 t=1941ms
+    zweistufig cov=0.0344 erg=0.14924 ig= 1708.07 rmse=0.0781 len=15.56 t=1305ms
+    glaube-D  cov=0.0223 erg=0.06388 ig= 2005.17 rmse=0.0342 len=32.47 t=19747ms
+    maeher    cov=0.0267 erg=0.05202 ig= 1293.44 rmse=0.0789 len=32.56 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  765.53 rmse=0.1668 len=4.28 t=646ms
+    glaube-1  cov=0.0524 erg=0.21205 ig= 1531.88 rmse=0.0860 len=7.96 t=650ms
+    glaube    cov=0.0214 erg=0.05969 ig= 1807.29 rmse=0.0715 len=25.07 t=1932ms
+    zweistufig cov=0.0329 erg=0.12392 ig= 1707.60 rmse=0.0855 len=14.05 t=1294ms
+    glaube-D  cov=0.0235 erg=0.09182 ig= 2009.53 rmse=0.0347 len=30.65 t=19732ms
+    maeher    cov=0.0239 erg=0.05116 ig= 1315.28 rmse=0.1402 len=30.80 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  868.75 rmse=0.1035 len=5.74 t=648ms
+    glaube-1  cov=0.0528 erg=0.14706 ig= 1503.25 rmse=0.1097 len=9.69 t=650ms
+    glaube    cov=0.0230 erg=0.05004 ig= 1846.89 rmse=0.0744 len=28.98 t=1946ms
+    zweistufig cov=0.0374 erg=0.13977 ig= 1603.37 rmse=0.1025 len=15.85 t=1317ms
+    glaube-D  cov=0.0249 erg=0.05494 ig= 2007.99 rmse=0.0412 len=39.48 t=19754ms
+    maeher    cov=0.0324 erg=0.05005 ig= 1292.34 rmse=0.1336 len=39.60 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  743.66 rmse=0.2216 len=6.57 t=654ms
+    glaube-1  cov=0.0506 erg=0.27778 ig= 1462.52 rmse=0.1280 len=9.04 t=652ms
+    glaube    cov=0.0230 erg=0.04350 ig= 1890.18 rmse=0.1004 len=25.22 t=1981ms
+    zweistufig cov=0.0366 erg=0.10193 ig= 1746.40 rmse=0.2231 len=17.22 t=1313ms
+    glaube-D  cov=0.0231 erg=0.07408 ig= 2009.51 rmse=0.0439 len=33.63 t=19805ms
+    maeher    cov=0.0257 erg=0.05759 ig= 1277.02 rmse=0.0926 len=33.44 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  642.65 rmse=0.1992 len=2.90 t=653ms
+    glaube-1  cov=0.0660 erg=0.25079 ig= 1536.51 rmse=0.1213 len=7.40 t=648ms
+    glaube    cov=0.0234 erg=0.07476 ig= 1882.60 rmse=0.0663 len=21.84 t=1977ms
+    zweistufig cov=0.0314 erg=0.10264 ig= 1747.25 rmse=0.0992 len=14.82 t=1311ms
+    glaube-D  cov=0.0249 erg=0.11444 ig= 2006.81 rmse=0.0453 len=28.29 t=19813ms
+    maeher    cov=0.0222 erg=0.04865 ig= 1246.72 rmse=0.1154 len=28.16 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1174.62 rmse=0.0388 len=9.89 t=652ms
+    glaube-1  cov=0.0629 erg=0.06374 ig= 1507.38 rmse=0.0284 len=9.92 t=664ms
+    glaube    cov=0.0260 erg=0.01159 ig= 1860.18 rmse=0.0218 len=29.46 t=1972ms
+    zweistufig cov=0.0434 erg=0.06211 ig= 1636.25 rmse=0.0405 len=15.98 t=1318ms
+    glaube-D  cov=0.0266 erg=0.02281 ig= 2007.03 rmse=0.0059 len=37.94 t=19787ms
+    maeher    cov=0.0291 erg=0.01510 ig= 1266.64 rmse=0.0253 len=37.84 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig= 1080.21 rmse=0.0483 len=8.99 t=649ms
+    glaube-1  cov=0.0704 erg=0.15915 ig= 1443.45 rmse=0.0474 len=10.29 t=655ms
+    glaube    cov=0.0307 erg=0.01442 ig= 1774.67 rmse=0.0232 len=27.38 t=1960ms
+    zweistufig cov=0.0527 erg=0.10626 ig= 1748.81 rmse=0.0236 len=15.42 t=1305ms
+    glaube-D  cov=0.0261 erg=0.04748 ig= 2005.30 rmse=0.0055 len=39.00 t=19764ms
+    maeher    cov=0.0326 erg=0.04084 ig= 1337.03 rmse=0.0319 len=38.72 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig= 1346.41 rmse=0.2494 len=5.77 t=653ms
+    glaube-1  cov=0.0590 erg=0.06660 ig= 1396.42 rmse=0.2933 len=5.97 t=648ms
+    glaube    cov=0.0336 erg=0.04304 ig= 1745.94 rmse=0.2605 len=23.68 t=1944ms
+    zweistufig cov=0.0381 erg=0.03295 ig= 1677.97 rmse=0.2998 len=12.44 t=1315ms
+    glaube-D  cov=0.0203 erg=0.04933 ig= 2002.53 rmse=0.0771 len=29.83 t=19806ms
+    maeher    cov=0.0242 erg=0.16006 ig= 1372.06 rmse=0.1917 len=29.92 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  908.05 rmse=0.3428 len=5.41 t=649ms
+    glaube-1  cov=0.0876 erg=0.22364 ig= 1424.95 rmse=0.1539 len=7.78 t=651ms
+    glaube    cov=0.0309 erg=0.04955 ig= 1884.16 rmse=0.1074 len=25.24 t=1953ms
+    zweistufig cov=0.0310 erg=0.09945 ig= 1771.93 rmse=0.1353 len=14.62 t=1311ms
+    glaube-D  cov=0.0194 erg=0.03299 ig= 2005.04 rmse=0.0544 len=30.20 t=19798ms
+    maeher    cov=0.0235 erg=0.06751 ig= 1372.06 rmse=0.1417 len=29.92 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  308.02 rmse=0.2196 len=5.14 t=653ms
+    glaube-1  cov=0.0780 erg=0.34557 ig= 1413.73 rmse=0.2105 len=9.80 t=650ms
+    glaube    cov=0.0228 erg=0.08195 ig= 1802.94 rmse=0.1075 len=24.44 t=1955ms
+    zweistufig cov=0.0434 erg=0.16277 ig= 1695.85 rmse=0.1894 len=14.75 t=1315ms
+    glaube-D  cov=0.0240 erg=0.12135 ig= 2005.05 rmse=0.0294 len=34.39 t=20365ms
+    maeher    cov=0.0258 erg=0.07681 ig=  706.55 rmse=0.1094 len=34.32 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  941.79 rmse=0.0592 len=8.32 t=658ms
+    glaube-1  cov=0.0645 erg=0.08831 ig= 1324.53 rmse=0.0673 len=7.79 t=653ms
+    glaube    cov=0.0298 erg=0.04126 ig= 1862.45 rmse=0.0406 len=31.25 t=1959ms
+    zweistufig cov=0.0396 erg=0.09421 ig= 1645.55 rmse=0.0567 len=16.57 t=1301ms
+    glaube-D  cov=0.0290 erg=0.05389 ig= 2005.89 rmse=0.0163 len=38.81 t=19927ms
+    maeher    cov=0.0332 erg=0.01852 ig= 1337.03 rmse=0.0563 len=38.72 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  918.74 rmse=0.0450 len=8.08 t=655ms
+    glaube-1  cov=0.0797 erg=0.21952 ig= 1392.18 rmse=0.0393 len=10.56 t=661ms
+    glaube    cov=0.0283 erg=0.04653 ig= 1826.80 rmse=0.0225 len=29.38 t=1979ms
+    zweistufig cov=0.0519 erg=0.15824 ig= 1590.87 rmse=0.0333 len=14.48 t=1308ms
+    glaube-D  cov=0.0321 erg=0.20916 ig= 2009.92 rmse=0.0054 len=40.70 t=19859ms
+    maeher    cov=0.0329 erg=0.06070 ig= 1384.06 rmse=0.0232 len=40.48 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      877.23    0.1548     6.35     667
+glaube-1          0.0660     0.19716     1447.27    0.1164     8.74     652
+glaube-R          0.0262     0.04616     1839.62    0.0795    26.47    1958
+zweistufig        0.0394     0.11112     1689.99    0.1139    15.15    1309
+glaube-D          0.0247     0.07801     2006.65    0.0328    34.62   19846
+maeher            0.0277     0.05825     1266.69    0.0950    34.54       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 25.40):
+Mission           8.38     16.76     25.40
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0740         —         —
+glaube-R        0.0621    0.0365         —
+zweistufig      0.1447         —         —
+glaube-D        0.0595    0.0376    0.0291
+maeher          0.2838    0.1330    0.0540
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.2 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0470)
+[09:46] haelfte / eid
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=835ms
+    glaube-1  cov=0.0547 erg=0.11694 ig=  890.16 rmse=0.1760 len=11.47 t=647ms
+    glaube    cov=0.0264 erg=0.04693 ig= 1769.43 rmse=0.1071 len=31.03 t=1969ms
+    zweistufig cov=0.0361 erg=0.02395 ig= 1383.45 rmse=0.1370 len=18.64 t=1311ms
+    glaube-D  cov=0.0263 erg=0.06929 ig= 2003.24 rmse=0.0357 len=31.16 t=19970ms
+    maeher    cov=0.0239 erg=0.05116 ig= 1315.28 rmse=0.1385 len=30.80 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  765.53 rmse=0.1668 len=4.28 t=662ms
+    glaube-1  cov=0.0723 erg=0.06690 ig=  725.37 rmse=0.2339 len=8.17 t=660ms
+    glaube    cov=0.0368 erg=0.02627 ig= 1548.66 rmse=0.1496 len=27.09 t=1989ms
+    zweistufig cov=0.0369 erg=0.02796 ig= 1386.31 rmse=0.1409 len=18.82 t=1315ms
+    glaube-D  cov=0.0308 erg=0.19802 ig= 1991.19 rmse=0.0373 len=33.03 t=19913ms
+    maeher    cov=0.0266 erg=0.05198 ig= 1277.02 rmse=0.0676 len=33.44 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  868.75 rmse=0.1035 len=5.74 t=660ms
+    glaube-1  cov=0.0556 erg=0.06404 ig=  919.17 rmse=0.1563 len=9.19 t=659ms
+    glaube    cov=0.0267 erg=0.04591 ig= 1710.94 rmse=0.0845 len=32.17 t=1963ms
+    zweistufig cov=0.0395 erg=0.05800 ig= 1496.44 rmse=0.1128 len=18.52 t=1316ms
+    glaube-D  cov=0.0295 erg=0.14867 ig= 2002.93 rmse=0.0466 len=37.24 t=20002ms
+    maeher    cov=0.0298 erg=0.04939 ig= 1309.78 rmse=0.1093 len=36.96 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  743.66 rmse=0.2216 len=6.57 t=675ms
+    glaube-1  cov=0.0747 erg=0.12022 ig=  808.64 rmse=0.1766 len=10.33 t=685ms
+    glaube    cov=0.0226 erg=0.05495 ig= 1707.06 rmse=0.1236 len=32.73 t=1970ms
+    zweistufig cov=0.0320 erg=0.03303 ig= 1409.22 rmse=0.3030 len=18.14 t=1313ms
+    glaube-D  cov=0.0224 erg=0.07165 ig= 2006.44 rmse=0.0468 len=36.73 t=20062ms
+    maeher    cov=0.0279 erg=0.05886 ig= 1309.78 rmse=0.0953 len=36.96 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  642.65 rmse=0.1992 len=2.90 t=661ms
+    glaube-1  cov=0.0565 erg=0.11371 ig= 1030.36 rmse=0.1554 len=10.92 t=671ms
+    glaube    cov=0.0377 erg=0.04643 ig= 1519.34 rmse=0.1427 len=30.07 t=2058ms
+    zweistufig cov=0.0695 erg=0.06163 ig=  947.06 rmse=0.1866 len=18.31 t=1337ms
+    glaube-D  cov=0.0250 erg=0.09847 ig= 2005.26 rmse=0.0465 len=32.54 t=21901ms
+    maeher    cov=0.0263 erg=0.05013 ig= 1293.44 rmse=0.1230 len=32.56 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1174.62 rmse=0.0388 len=9.89 t=663ms
+    glaube-1  cov=0.0998 erg=0.10704 ig=  823.52 rmse=0.1866 len=9.41 t=653ms
+    glaube    cov=0.0346 erg=0.01847 ig= 1761.98 rmse=0.0219 len=28.31 t=1993ms
+    zweistufig cov=0.0404 erg=0.05055 ig= 1417.19 rmse=0.0459 len=17.79 t=1435ms
+    glaube-D  cov=0.0283 erg=0.03012 ig= 2005.03 rmse=0.0052 len=33.74 t=20675ms
+    maeher    cov=0.0266 erg=0.01505 ig= 1277.02 rmse=0.0246 len=33.44 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig= 1080.21 rmse=0.0483 len=8.99 t=947ms
+    glaube-1  cov=0.0822 erg=0.04760 ig=  792.86 rmse=0.0754 len=10.10 t=806ms
+    glaube    cov=0.0306 erg=0.02366 ig= 1605.47 rmse=0.0217 len=30.34 t=2428ms
+    zweistufig cov=0.0427 erg=0.01717 ig= 1209.95 rmse=0.0348 len=19.18 t=1309ms
+    glaube-D  cov=0.0257 erg=0.03168 ig= 2001.33 rmse=0.0068 len=32.04 t=20336ms
+    maeher    cov=0.0267 erg=0.04001 ig= 1363.93 rmse=0.0214 len=31.68 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig= 1346.41 rmse=0.2494 len=5.77 t=648ms
+    glaube-1  cov=0.2180 erg=0.34548 ig=  436.17 rmse=0.2874 len=6.14 t=664ms
+    glaube    cov=0.0385 erg=0.16300 ig= 1571.74 rmse=0.3271 len=26.68 t=1957ms
+    zweistufig cov=0.0318 erg=0.10130 ig= 1709.35 rmse=0.2443 len=19.57 t=1316ms
+    glaube-D  cov=0.0241 erg=0.09534 ig= 2006.92 rmse=0.0646 len=35.65 t=19861ms
+    maeher    cov=0.0292 erg=0.16011 ig= 1321.07 rmse=0.2089 len=36.08 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  908.05 rmse=0.3428 len=5.41 t=650ms
+    glaube-1  cov=0.0656 erg=0.08772 ig=  861.87 rmse=0.2735 len=12.46 t=650ms
+    glaube    cov=0.0237 erg=0.02665 ig= 1599.73 rmse=0.2905 len=30.40 t=1970ms
+    zweistufig cov=0.0437 erg=0.05294 ig= 1328.82 rmse=0.1865 len=18.01 t=1301ms
+    glaube-D  cov=0.0222 erg=0.05577 ig= 2003.79 rmse=0.0550 len=36.90 t=19788ms
+    maeher    cov=0.0283 erg=0.06961 ig= 1309.78 rmse=0.1525 len=36.96 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  308.02 rmse=0.2196 len=5.14 t=651ms
+    glaube-1  cov=0.0416 erg=0.03598 ig= 1053.27 rmse=0.1254 len=8.77 t=652ms
+    glaube    cov=0.0210 erg=0.04044 ig= 1585.33 rmse=0.1173 len=29.13 t=1958ms
+    zweistufig cov=0.0300 erg=0.04094 ig= 1202.67 rmse=0.2958 len=18.05 t=1298ms
+    glaube-D  cov=0.0275 erg=0.11792 ig= 2004.87 rmse=0.0311 len=35.83 t=19791ms
+    maeher    cov=0.0291 erg=0.07758 ig= 1321.07 rmse=0.1218 len=36.08 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  941.79 rmse=0.0592 len=8.32 t=649ms
+    glaube-1  cov=0.0823 erg=0.03944 ig=  723.93 rmse=0.0792 len=7.93 t=649ms
+    glaube    cov=0.0317 erg=0.03007 ig= 1791.22 rmse=0.0708 len=33.68 t=1961ms
+    zweistufig cov=0.0466 erg=0.03500 ig=  949.63 rmse=0.0802 len=17.73 t=1308ms
+    glaube-D  cov=0.0288 erg=0.06840 ig= 2004.89 rmse=0.0181 len=33.66 t=19780ms
+    maeher    cov=0.0268 erg=0.01790 ig= 1277.02 rmse=0.0584 len=33.44 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  918.74 rmse=0.0450 len=8.08 t=656ms
+    glaube-1  cov=0.0813 erg=0.06066 ig=  764.82 rmse=0.0486 len=10.02 t=654ms
+    glaube    cov=0.0305 erg=0.05330 ig= 1656.05 rmse=0.0216 len=30.09 t=1968ms
+    zweistufig cov=0.0380 erg=0.04881 ig= 1496.64 rmse=0.0236 len=20.44 t=1301ms
+    glaube-D  cov=0.0427 erg=0.21067 ig= 2008.95 rmse=0.0056 len=37.17 t=19868ms
+    maeher    cov=0.0294 erg=0.06053 ig= 1309.78 rmse=0.0359 len=36.96 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      877.23    0.1548     6.35     696
+glaube-1          0.0821     0.10048      819.18    0.1645     9.58     671
+glaube-R          0.0301     0.04801     1652.25    0.1232    30.14    2016
+zweistufig        0.0406     0.04594     1328.06    0.1493    18.60    1321
+glaube-D          0.0278     0.09967     2003.74    0.0333    34.64   20162
+maeher            0.0275     0.05853     1307.08    0.0964    34.61       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 30.08):
+Mission           9.93     19.85     30.08
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0799    0.0480         —
+zweistufig      0.0765         —         —
+glaube-D        0.0632    0.0419    0.0298
+maeher          0.2514    0.0957    0.0339
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.8 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0557)
+[09:52] quadranten / ucb
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=851ms
+    glaube-1  cov=0.0485 erg=0.24550 ig= 1175.37 rmse=0.0848 len=8.89 t=649ms
+    glaube    cov=0.0243 erg=0.08780 ig= 1849.52 rmse=0.1044 len=26.36 t=1952ms
+    zweistufig cov=0.0318 erg=0.08633 ig= 1662.94 rmse=0.1041 len=16.10 t=1300ms
+    glaube-D  cov=0.0246 erg=0.06787 ig= 2006.92 rmse=0.0321 len=32.21 t=19912ms
+    maeher    cov=0.0267 erg=0.05202 ig= 1274.62 rmse=0.0740 len=32.56 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  686.17 rmse=0.1618 len=4.28 t=658ms
+    glaube-1  cov=0.0697 erg=0.19949 ig= 1281.01 rmse=0.1546 len=7.47 t=646ms
+    glaube    cov=0.0259 erg=0.05901 ig= 1888.82 rmse=0.0548 len=24.71 t=1947ms
+    zweistufig cov=0.0315 erg=0.06754 ig= 1542.74 rmse=0.1031 len=16.57 t=1298ms
+    glaube-D  cov=0.0226 erg=0.07698 ig= 2005.80 rmse=0.0343 len=32.52 t=19770ms
+    maeher    cov=0.0267 erg=0.05202 ig= 1274.62 rmse=0.0744 len=32.56 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  790.32 rmse=0.1196 len=5.74 t=646ms
+    glaube-1  cov=0.0603 erg=0.10145 ig= 1495.13 rmse=0.1077 len=6.59 t=655ms
+    glaube    cov=0.0257 erg=0.05536 ig= 1886.70 rmse=0.0769 len=26.94 t=1947ms
+    zweistufig cov=0.0321 erg=0.03722 ig= 1707.17 rmse=0.0841 len=15.38 t=1298ms
+    glaube-D  cov=0.0272 erg=0.05194 ig= 2007.04 rmse=0.0405 len=37.09 t=19750ms
+    maeher    cov=0.0298 erg=0.04939 ig= 1343.11 rmse=0.0950 len=36.96 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  751.98 rmse=0.2200 len=6.57 t=645ms
+    glaube-1  cov=0.0611 erg=0.14005 ig= 1487.91 rmse=0.1548 len=7.47 t=661ms
+    glaube    cov=0.0267 erg=0.05204 ig= 1881.90 rmse=0.1212 len=26.10 t=1973ms
+    zweistufig cov=0.0333 erg=0.08448 ig= 1704.81 rmse=0.1074 len=16.23 t=1299ms
+    glaube-D  cov=0.0220 erg=0.03664 ig= 2004.77 rmse=0.0419 len=34.47 t=19952ms
+    maeher    cov=0.0256 erg=0.05758 ig=  721.89 rmse=0.1419 len=34.32 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  599.78 rmse=0.1710 len=2.90 t=654ms
+    glaube-1  cov=0.0682 erg=0.15381 ig= 1221.99 rmse=0.1129 len=7.81 t=674ms
+    glaube    cov=0.0244 erg=0.07529 ig= 1860.63 rmse=0.0647 len=21.88 t=1959ms
+    zweistufig cov=0.0274 erg=0.09305 ig= 1552.63 rmse=0.1490 len=13.88 t=1375ms
+    glaube-D  cov=0.0227 erg=0.07561 ig= 2006.65 rmse=0.0414 len=32.89 t=20981ms
+    maeher    cov=0.0263 erg=0.05013 ig= 1274.62 rmse=0.1184 len=32.56 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1229.14 rmse=0.0408 len=9.89 t=844ms
+    glaube-1  cov=0.0663 erg=0.05303 ig= 1484.11 rmse=0.0321 len=7.69 t=873ms
+    glaube    cov=0.0265 erg=0.02109 ig= 1896.40 rmse=0.0176 len=26.68 t=2527ms
+    zweistufig cov=0.0377 erg=0.04618 ig= 1700.20 rmse=0.0200 len=16.78 t=1289ms
+    glaube-D  cov=0.0272 erg=0.02250 ig= 2003.60 rmse=0.0060 len=36.68 t=21775ms
+    maeher    cov=0.0291 erg=0.01512 ig= 1343.11 rmse=0.0303 len=36.96 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  871.05 rmse=0.0647 len=8.99 t=647ms
+    glaube-1  cov=0.0616 erg=0.10804 ig= 1253.02 rmse=0.0519 len=8.70 t=646ms
+    glaube    cov=0.0274 erg=0.02761 ig= 1809.52 rmse=0.0237 len=26.33 t=1938ms
+    zweistufig cov=0.0379 erg=0.04796 ig= 1599.38 rmse=0.0279 len=18.10 t=1295ms
+    glaube-D  cov=0.0289 erg=0.05882 ig= 1997.65 rmse=0.0062 len=37.37 t=19648ms
+    maeher    cov=0.0291 erg=0.04027 ig= 1343.11 rmse=0.0385 len=36.96 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  681.26 rmse=0.1994 len=5.77 t=644ms
+    glaube-1  cov=0.0563 erg=0.15583 ig= 1341.04 rmse=0.1772 len=7.81 t=653ms
+    glaube    cov=0.0283 erg=0.12557 ig= 1819.28 rmse=0.1239 len=25.53 t=1941ms
+    zweistufig cov=0.0333 erg=0.09953 ig= 1622.26 rmse=0.2754 len=16.22 t=1299ms
+    glaube-D  cov=0.0241 erg=0.10078 ig= 2004.85 rmse=0.0438 len=35.05 t=19746ms
+    maeher    cov=0.0292 erg=0.16015 ig= 1160.57 rmse=0.1690 len=35.20 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  564.85 rmse=0.3283 len=5.41 t=644ms
+    glaube-1  cov=0.0801 erg=0.16608 ig= 1414.60 rmse=0.1770 len=9.16 t=647ms
+    glaube    cov=0.0276 erg=0.06935 ig= 1894.65 rmse=0.1122 len=25.49 t=1944ms
+    zweistufig cov=0.0274 erg=0.05379 ig= 1570.30 rmse=0.0905 len=16.38 t=1297ms
+    glaube-D  cov=0.0238 erg=0.07174 ig= 2002.78 rmse=0.0458 len=32.72 t=19644ms
+    maeher    cov=0.0273 erg=0.06844 ig= 1274.62 rmse=0.1814 len=32.56 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  790.83 rmse=0.2108 len=5.14 t=647ms
+    glaube-1  cov=0.0928 erg=0.20978 ig= 1338.82 rmse=0.1790 len=8.34 t=649ms
+    glaube    cov=0.0249 erg=0.07110 ig= 1807.45 rmse=0.1549 len=28.35 t=1956ms
+    zweistufig cov=0.0292 erg=0.04591 ig= 1711.82 rmse=0.1470 len=15.38 t=1297ms
+    glaube-D  cov=0.0250 erg=0.08065 ig= 2005.56 rmse=0.0490 len=40.39 t=19679ms
+    maeher    cov=0.0318 erg=0.07858 ig= 1349.09 rmse=0.1849 len=40.48 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig= 1003.07 rmse=0.0498 len=8.32 t=670ms
+    glaube-1  cov=0.0787 erg=0.08272 ig= 1359.64 rmse=0.0817 len=7.13 t=650ms
+    glaube    cov=0.0389 erg=0.03804 ig= 1882.22 rmse=0.0434 len=28.72 t=1952ms
+    zweistufig cov=0.0344 erg=0.03672 ig= 1662.22 rmse=0.0467 len=18.25 t=1325ms
+    glaube-D  cov=0.0265 erg=0.04083 ig= 2003.84 rmse=0.0133 len=43.35 t=21439ms
+    maeher    cov=0.0331 erg=0.01841 ig= 1407.53 rmse=0.0611 len=43.12 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig= 1207.18 rmse=0.0481 len=8.08 t=652ms
+    glaube-1  cov=0.0756 erg=0.08899 ig= 1168.91 rmse=0.0622 len=8.39 t=667ms
+    glaube    cov=0.0286 erg=0.02628 ig= 1873.84 rmse=0.0217 len=27.19 t=1984ms
+    zweistufig cov=0.0474 erg=0.06127 ig= 1693.93 rmse=0.0241 len=16.01 t=1308ms
+    glaube-D  cov=0.0311 erg=0.18409 ig= 2000.37 rmse=0.0060 len=39.87 t=19907ms
+    maeher    cov=0.0329 erg=0.06071 ig= 1319.21 rmse=0.0336 len=39.60 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      818.61    0.1512     6.35     683
+glaube-1          0.0683     0.14207     1335.13    0.1147     7.96     673
+glaube-R          0.0274     0.05904     1862.58    0.0766    26.19    2002
+zweistufig        0.0336     0.06333     1644.20    0.0983    16.27    1307
+glaube-D          0.0255     0.07237     2004.15    0.0300    36.22   20184
+maeher            0.0290     0.05857     1257.17    0.1002    36.15       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 26.13):
+Mission           8.62     17.25     26.13
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0647    0.0423         —
+zweistufig      0.0957         —         —
+glaube-D        0.0650    0.0397    0.0306
+maeher          0.2863    0.1362    0.0540
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 4.5 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0463)
+[09:58] quadranten / stretch
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=848ms
+    glaube-1  cov=0.0488 erg=0.24860 ig= 1185.02 rmse=0.0911 len=8.89 t=657ms
+    glaube    cov=0.0276 erg=0.10302 ig= 1837.77 rmse=0.0817 len=29.83 t=1949ms
+    zweistufig cov=0.0378 erg=0.11899 ig= 1622.73 rmse=0.0961 len=20.89 t=1297ms
+    glaube-D  cov=0.0249 erg=0.08829 ig= 2008.90 rmse=0.0328 len=32.00 t=19950ms
+    maeher    cov=0.0268 erg=0.05206 ig= 1351.05 rmse=0.0994 len=31.68 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  686.17 rmse=0.1618 len=4.28 t=645ms
+    glaube-1  cov=0.0677 erg=0.19879 ig= 1261.70 rmse=0.1912 len=7.48 t=646ms
+    glaube    cov=0.0263 erg=0.06782 ig= 1912.49 rmse=0.0562 len=26.83 t=1975ms
+    zweistufig cov=0.0452 erg=0.10178 ig= 1617.66 rmse=0.0888 len=19.20 t=1310ms
+    glaube-D  cov=0.0230 erg=0.08696 ig= 2008.32 rmse=0.0328 len=30.59 t=21895ms
+    maeher    cov=0.0239 erg=0.05116 ig= 1352.46 rmse=0.1379 len=30.80 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  790.32 rmse=0.1196 len=5.74 t=686ms
+    glaube-1  cov=0.0608 erg=0.09988 ig= 1497.06 rmse=0.1177 len=6.54 t=655ms
+    glaube    cov=0.0284 erg=0.08109 ig= 1909.68 rmse=0.0795 len=31.31 t=1976ms
+    zweistufig cov=0.0346 erg=0.06744 ig= 1765.79 rmse=0.0767 len=17.80 t=1355ms
+    glaube-D  cov=0.0257 erg=0.05698 ig= 2008.43 rmse=0.0414 len=35.98 t=20061ms
+    maeher    cov=0.0298 erg=0.04941 ig= 1301.60 rmse=0.0798 len=36.08 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  751.98 rmse=0.2200 len=6.57 t=653ms
+    glaube-1  cov=0.0611 erg=0.14005 ig= 1487.92 rmse=0.1548 len=7.47 t=664ms
+    glaube    cov=0.0320 erg=0.07069 ig= 1881.41 rmse=0.0748 len=29.69 t=1980ms
+    zweistufig cov=0.0394 erg=0.09026 ig= 1763.34 rmse=0.1530 len=17.98 t=1341ms
+    glaube-D  cov=0.0222 erg=0.03995 ig= 2009.81 rmse=0.0406 len=33.30 t=20119ms
+    maeher    cov=0.0257 erg=0.05759 ig= 1197.61 rmse=0.0883 len=33.44 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  599.78 rmse=0.1710 len=2.90 t=660ms
+    glaube-1  cov=0.0680 erg=0.15664 ig= 1235.88 rmse=0.1279 len=7.73 t=665ms
+    glaube    cov=0.0304 erg=0.09048 ig= 1882.37 rmse=0.0784 len=26.85 t=1972ms
+    zweistufig cov=0.0386 erg=0.13022 ig= 1642.62 rmse=0.0963 len=18.52 t=1318ms
+    glaube-D  cov=0.0232 erg=0.07886 ig= 2004.59 rmse=0.0416 len=31.87 t=22564ms
+    maeher    cov=0.0263 erg=0.05020 ig= 1351.05 rmse=0.0937 len=31.68 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1229.14 rmse=0.0408 len=9.89 t=716ms
+    glaube-1  cov=0.0666 erg=0.05441 ig= 1502.49 rmse=0.0265 len=7.66 t=839ms
+    glaube    cov=0.0269 erg=0.02134 ig= 1893.46 rmse=0.0203 len=26.52 t=1982ms
+    zweistufig cov=0.0401 erg=0.03458 ig= 1693.33 rmse=0.0250 len=17.49 t=1326ms
+    glaube-D  cov=0.0265 erg=0.01706 ig= 2006.08 rmse=0.0057 len=37.59 t=21947ms
+    maeher    cov=0.0291 erg=0.01510 ig= 1298.72 rmse=0.0265 len=37.84 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  871.05 rmse=0.0647 len=8.99 t=660ms
+    glaube-1  cov=0.0626 erg=0.10405 ig= 1230.13 rmse=0.0491 len=8.68 t=667ms
+    glaube    cov=0.0271 erg=0.02944 ig= 1826.60 rmse=0.0164 len=26.79 t=1973ms
+    zweistufig cov=0.0402 erg=0.05449 ig= 1654.66 rmse=0.0215 len=18.05 t=1309ms
+    glaube-D  cov=0.0272 erg=0.04946 ig= 1999.17 rmse=0.0064 len=40.69 t=19902ms
+    maeher    cov=0.0326 erg=0.04080 ig= 1349.09 rmse=0.0254 len=40.48 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  681.26 rmse=0.1994 len=5.77 t=660ms
+    glaube-1  cov=0.0609 erg=0.16316 ig= 1341.69 rmse=0.1875 len=8.25 t=658ms
+    glaube    cov=0.0290 erg=0.15320 ig= 1849.52 rmse=0.0988 len=27.98 t=1972ms
+    zweistufig cov=0.0304 erg=0.14262 ig= 1645.23 rmse=0.0986 len=17.90 t=1307ms
+    glaube-D  cov=0.0230 erg=0.11228 ig= 2009.10 rmse=0.0444 len=37.40 t=19868ms
+    maeher    cov=0.0291 erg=0.16005 ig= 1298.72 rmse=0.1298 len=37.84 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  564.85 rmse=0.3283 len=5.41 t=649ms
+    glaube-1  cov=0.0785 erg=0.16154 ig= 1434.26 rmse=0.1814 len=9.00 t=659ms
+    glaube    cov=0.0280 erg=0.07556 ig= 1855.25 rmse=0.1173 len=29.26 t=1958ms
+    zweistufig cov=0.0345 erg=0.12253 ig= 1679.48 rmse=0.1294 len=20.40 t=1442ms
+    glaube-D  cov=0.0213 erg=0.06034 ig= 2002.92 rmse=0.0455 len=31.87 t=20279ms
+    maeher    cov=0.0273 erg=0.06849 ig= 1351.05 rmse=0.1322 len=31.68 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  790.83 rmse=0.2108 len=5.14 t=828ms
+    glaube-1  cov=0.0900 erg=0.20958 ig= 1346.18 rmse=0.1775 len=8.33 t=887ms
+    glaube    cov=0.0271 erg=0.10648 ig= 1869.15 rmse=0.1025 len=29.75 t=2070ms
+    zweistufig cov=0.0373 erg=0.09568 ig= 1754.06 rmse=0.1825 len=18.11 t=1328ms
+    glaube-D  cov=0.0238 erg=0.08951 ig= 2006.29 rmse=0.0489 len=36.73 t=20007ms
+    maeher    cov=0.0290 erg=0.07756 ig= 1343.11 rmse=0.1546 len=36.96 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig= 1003.07 rmse=0.0498 len=8.32 t=661ms
+    glaube-1  cov=0.0787 erg=0.08563 ig= 1362.56 rmse=0.0743 len=7.13 t=656ms
+    glaube    cov=0.0317 erg=0.03773 ig= 1876.77 rmse=0.0318 len=30.15 t=1972ms
+    zweistufig cov=0.0376 erg=0.04261 ig= 1700.45 rmse=0.0470 len=18.57 t=1707ms
+    glaube-D  cov=0.0289 erg=0.06140 ig= 2004.31 rmse=0.0147 len=37.98 t=21425ms
+    maeher    cov=0.0289 erg=0.01808 ig= 1298.72 rmse=0.0654 len=37.84 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig= 1207.18 rmse=0.0481 len=8.08 t=786ms
+    glaube-1  cov=0.0756 erg=0.09108 ig= 1179.71 rmse=0.0564 len=8.14 t=889ms
+    glaube    cov=0.0279 erg=0.02588 ig= 1882.53 rmse=0.0162 len=27.09 t=2227ms
+    zweistufig cov=0.0382 erg=0.07115 ig= 1713.07 rmse=0.0328 len=17.20 t=1316ms
+    glaube-D  cov=0.0314 erg=0.21281 ig= 1998.26 rmse=0.0072 len=39.44 t=22755ms
+    maeher    cov=0.0329 erg=0.06071 ig= 1319.21 rmse=0.0336 len=39.60 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      818.61    0.1512     6.35     704
+glaube-1          0.0683     0.14278     1338.72    0.1196     7.94     712
+glaube-R          0.0285     0.07189     1873.08    0.0645    28.50    2001
+zweistufig        0.0378     0.08936     1687.70    0.0873    18.51    1363
+glaube-D          0.0251     0.07949     2005.52    0.0302    35.45   20898
+maeher            0.0285     0.05843     1317.70    0.0889    35.49       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 28.45):
+Mission           9.39     18.78     28.45
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0628    0.0395         —
+zweistufig      0.0924         —         —
+glaube-D        0.0597    0.0383    0.0284
+maeher          0.2657    0.1124    0.0407
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 4.0 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0491)
+[10:04] quadranten / mass
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=853ms
+    glaube-1  cov=0.0559 erg=0.13787 ig= 1390.50 rmse=0.0993 len=12.47 t=653ms
+    glaube    cov=0.0272 erg=0.06971 ig= 1895.97 rmse=0.0712 len=30.91 t=1937ms
+    zweistufig cov=0.0356 erg=0.07409 ig= 1586.44 rmse=0.0680 len=19.38 t=1303ms
+    glaube-D  cov=0.0274 erg=0.08363 ig= 1999.67 rmse=0.0356 len=34.12 t=19753ms
+    maeher    cov=0.0265 erg=0.05194 ig=  721.89 rmse=0.1547 len=34.32 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  686.17 rmse=0.1618 len=4.28 t=660ms
+    glaube-1  cov=0.0605 erg=0.13235 ig= 1319.52 rmse=0.1461 len=9.20 t=658ms
+    glaube    cov=0.0343 erg=0.05273 ig= 1909.49 rmse=0.0720 len=27.43 t=1952ms
+    zweistufig cov=0.0340 erg=0.08066 ig= 1685.41 rmse=0.1543 len=17.15 t=1318ms
+    glaube-D  cov=0.0270 erg=0.12729 ig= 1984.77 rmse=0.0374 len=35.92 t=19834ms
+    maeher    cov=0.0274 erg=0.05306 ig= 1301.60 rmse=0.1285 len=36.08 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  790.32 rmse=0.1196 len=5.74 t=651ms
+    glaube-1  cov=0.0548 erg=0.07704 ig= 1316.25 rmse=0.1307 len=8.75 t=653ms
+    glaube    cov=0.0275 erg=0.06378 ig= 1887.82 rmse=0.0730 len=32.91 t=1961ms
+    zweistufig cov=0.0435 erg=0.08580 ig= 1686.63 rmse=0.0871 len=16.43 t=1305ms
+    glaube-D  cov=0.0298 erg=0.12568 ig= 1997.59 rmse=0.0425 len=39.88 t=19809ms
+    maeher    cov=0.0324 erg=0.05005 ig= 1319.21 rmse=0.1180 len=39.60 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  751.98 rmse=0.2200 len=6.57 t=654ms
+    glaube-1  cov=0.0545 erg=0.10765 ig= 1212.40 rmse=0.1932 len=10.33 t=653ms
+    glaube    cov=0.0287 erg=0.06896 ig= 1890.50 rmse=0.0860 len=34.60 t=1960ms
+    zweistufig cov=0.0379 erg=0.06648 ig= 1693.25 rmse=0.0970 len=16.45 t=1313ms
+    glaube-D  cov=0.0234 erg=0.07463 ig= 2002.35 rmse=0.0429 len=38.47 t=20320ms
+    maeher    cov=0.0332 erg=0.06056 ig= 1362.05 rmse=0.0861 len=38.72 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  599.78 rmse=0.1710 len=2.90 t=656ms
+    glaube-1  cov=0.0503 erg=0.08627 ig= 1257.15 rmse=0.1283 len=10.26 t=651ms
+    glaube    cov=0.0265 erg=0.06268 ig= 1861.71 rmse=0.0899 len=29.65 t=1973ms
+    zweistufig cov=0.0364 erg=0.07471 ig= 1690.06 rmse=0.1117 len=19.03 t=1318ms
+    glaube-D  cov=0.0254 erg=0.06306 ig= 2002.81 rmse=0.0416 len=36.24 t=19884ms
+    maeher    cov=0.0283 erg=0.05119 ig= 1301.60 rmse=0.1122 len=36.08 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1229.14 rmse=0.0408 len=9.89 t=655ms
+    glaube-1  cov=0.0498 erg=0.01657 ig= 1453.90 rmse=0.0271 len=8.42 t=652ms
+    glaube    cov=0.0278 erg=0.01973 ig= 1895.33 rmse=0.0188 len=26.32 t=1974ms
+    zweistufig cov=0.0392 erg=0.03096 ig= 1602.31 rmse=0.0279 len=17.74 t=1306ms
+    glaube-D  cov=0.0284 erg=0.03255 ig= 2001.45 rmse=0.0063 len=36.11 t=19984ms
+    maeher    cov=0.0292 erg=0.01513 ig= 1301.60 rmse=0.0217 len=36.08 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  871.05 rmse=0.0647 len=8.99 t=651ms
+    glaube-1  cov=0.0577 erg=0.06226 ig= 1320.85 rmse=0.0330 len=8.21 t=663ms
+    glaube    cov=0.0262 erg=0.03166 ig= 1838.68 rmse=0.0169 len=27.74 t=1964ms
+    zweistufig cov=0.0395 erg=0.03638 ig= 1629.89 rmse=0.0359 len=18.30 t=1319ms
+    glaube-D  cov=0.0281 erg=0.05673 ig= 1995.27 rmse=0.0074 len=34.46 t=19934ms
+    maeher    cov=0.0264 erg=0.03991 ig=  721.89 rmse=0.0855 len=34.32 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  681.26 rmse=0.1994 len=5.77 t=663ms
+    glaube-1  cov=0.0502 erg=0.09500 ig= 1166.65 rmse=0.1701 len=11.84 t=662ms
+    glaube    cov=0.0213 erg=0.07759 ig= 1829.70 rmse=0.1144 len=31.07 t=1978ms
+    zweistufig cov=0.0271 erg=0.10806 ig= 1517.33 rmse=0.1423 len=16.87 t=1321ms
+    glaube-D  cov=0.0272 erg=0.15733 ig= 2003.71 rmse=0.0438 len=39.43 t=20166ms
+    maeher    cov=0.0333 erg=0.16031 ig= 1319.21 rmse=0.1902 len=39.60 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  564.85 rmse=0.3283 len=5.41 t=654ms
+    glaube-1  cov=0.0443 erg=0.11289 ig= 1332.39 rmse=0.1286 len=13.48 t=661ms
+    glaube    cov=0.0287 erg=0.05195 ig= 1833.51 rmse=0.1083 len=29.24 t=2012ms
+    zweistufig cov=0.0299 erg=0.06693 ig= 1545.17 rmse=0.1550 len=18.59 t=1316ms
+    glaube-D  cov=0.0230 erg=0.04878 ig= 2001.63 rmse=0.0443 len=33.36 t=20062ms
+    maeher    cov=0.0272 erg=0.06840 ig= 1197.61 rmse=0.1514 len=33.44 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  790.83 rmse=0.2108 len=5.14 t=659ms
+    glaube-1  cov=0.0697 erg=0.13629 ig= 1131.39 rmse=0.2010 len=9.57 t=666ms
+    glaube    cov=0.0252 erg=0.05564 ig= 1820.88 rmse=0.2000 len=29.98 t=1969ms
+    zweistufig cov=0.0289 erg=0.04241 ig= 1696.52 rmse=0.1781 len=15.93 t=1301ms
+    glaube-D  cov=0.0271 erg=0.08518 ig= 2005.14 rmse=0.0496 len=33.31 t=19908ms
+    maeher    cov=0.0259 erg=0.07684 ig= 1197.61 rmse=0.1357 len=33.44 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig= 1003.07 rmse=0.0498 len=8.32 t=649ms
+    glaube-1  cov=0.0635 erg=0.05200 ig= 1362.88 rmse=0.0750 len=7.66 t=656ms
+    glaube    cov=0.0404 erg=0.03945 ig= 1887.14 rmse=0.0618 len=29.36 t=1954ms
+    zweistufig cov=0.0363 erg=0.02359 ig= 1642.84 rmse=0.0621 len=17.57 t=1331ms
+    glaube-D  cov=0.0299 erg=0.06036 ig= 2000.17 rmse=0.0154 len=38.73 t=19864ms
+    maeher    cov=0.0332 erg=0.01852 ig= 1362.05 rmse=0.0536 len=38.72 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig= 1207.18 rmse=0.0481 len=8.08 t=650ms
+    glaube-1  cov=0.0612 erg=0.06395 ig= 1295.90 rmse=0.0545 len=8.83 t=650ms
+    glaube    cov=0.0281 erg=0.02410 ig= 1907.56 rmse=0.0168 len=27.86 t=1955ms
+    zweistufig cov=0.0378 erg=0.07002 ig= 1736.74 rmse=0.0365 len=17.17 t=1317ms
+    glaube-D  cov=0.0298 erg=0.16788 ig= 2004.08 rmse=0.0057 len=37.61 t=19807ms
+    maeher    cov=0.0294 erg=0.06052 ig= 1298.72 rmse=0.0435 len=37.84 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      818.61    0.1512     6.35     671
+glaube-1          0.0560     0.09001     1296.65    0.1156     9.92     656
+glaube-R          0.0285     0.05150     1871.52    0.0774    29.75    1966
+zweistufig        0.0355     0.06334     1642.72    0.0963    17.55    1314
+glaube-D          0.0272     0.09026     1999.89    0.0311    36.47   19944
+maeher            0.0294     0.05887     1200.42    0.1068    36.52       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 29.33):
+Mission           9.68     19.36     29.33
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0578    0.0386         —
+zweistufig      0.0714         —         —
+glaube-D        0.0694    0.0411    0.0314
+maeher          0.2674    0.1152    0.0429
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.9 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0502)
+[10:10] quadranten / ei
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=863ms
+    glaube-1  cov=0.0765 erg=0.19950 ig= 1232.77 rmse=0.1173 len=11.65 t=648ms
+    glaube    cov=0.0303 erg=0.13565 ig= 1853.61 rmse=0.0794 len=33.13 t=1959ms
+    zweistufig cov=0.0340 erg=0.14386 ig= 1704.48 rmse=0.0731 len=17.79 t=1307ms
+    glaube-D  cov=0.0268 erg=0.08969 ig= 1987.51 rmse=0.0404 len=35.04 t=19781ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1160.57 rmse=0.1142 len=35.20 t=0ms
+
+[2/12] greek_upper_0
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0341 erg=0.01195 ig=  686.17 rmse=0.1618 len=4.28 t=659ms
+    glaube-1  cov=0.0965 erg=0.18052 ig= 1378.24 rmse=0.1046 len=8.44 t=649ms
+    glaube    cov=0.0270 erg=0.07289 ig= 1877.48 rmse=0.0963 len=29.31 t=1953ms
+    zweistufig cov=0.0495 erg=0.09676 ig= 1609.34 rmse=0.0949 len=17.31 t=1302ms
+    glaube-D  cov=0.0339 erg=0.17954 ig= 1986.36 rmse=0.0392 len=33.78 t=19921ms
+    maeher    cov=0.0266 erg=0.05198 ig= 1197.61 rmse=0.0730 len=33.44 t=0ms
+
+[3/12] korean_5
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0509 erg=0.01867 ig=  790.32 rmse=0.1196 len=5.74 t=655ms
+    glaube-1  cov=0.1348 erg=0.15851 ig= 1297.24 rmse=0.1334 len=7.43 t=650ms
+    glaube    cov=0.0526 erg=0.04966 ig= 1914.02 rmse=0.0634 len=28.41 t=1964ms
+    zweistufig cov=0.0416 erg=0.09469 ig= 1752.64 rmse=0.0884 len=16.20 t=1303ms
+    glaube-D  cov=0.0310 erg=0.14307 ig= 1999.53 rmse=0.0423 len=35.03 t=19861ms
+    maeher    cov=0.0299 erg=0.04944 ig= 1160.57 rmse=0.1136 len=35.20 t=0ms
+
+[4/12] digit_5
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0338 erg=0.00584 ig=  751.98 rmse=0.2200 len=6.57 t=650ms
+    glaube-1  cov=0.0944 erg=0.15285 ig= 1454.31 rmse=0.1007 len=9.54 t=658ms
+    glaube    cov=0.0352 erg=0.08246 ig= 1882.30 rmse=0.0750 len=27.47 t=1969ms
+    zweistufig cov=0.0373 erg=0.11067 ig= 1738.67 rmse=0.1635 len=18.00 t=1336ms
+    glaube-D  cov=0.0290 erg=0.08606 ig= 1992.58 rmse=0.0454 len=33.02 t=20263ms
+    maeher    cov=0.0257 erg=0.05759 ig= 1197.61 rmse=0.0883 len=33.44 t=0ms
+
+[5/12] a_lc
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0419 erg=0.00751 ig=  599.78 rmse=0.1710 len=2.90 t=661ms
+    glaube-1  cov=0.0777 erg=0.12457 ig= 1150.83 rmse=0.1578 len=9.24 t=656ms
+    glaube    cov=0.0349 erg=0.07124 ig= 1853.69 rmse=0.0661 len=27.18 t=1987ms
+    zweistufig cov=0.0352 erg=0.12788 ig= 1659.89 rmse=0.0942 len=18.31 t=1310ms
+    glaube-D  cov=0.0286 erg=0.09045 ig= 1996.74 rmse=0.0449 len=33.86 t=20091ms
+    maeher    cov=0.0262 erg=0.05006 ig= 1197.61 rmse=0.0875 len=33.44 t=0ms
+
+[6/12] rand_gmm_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0493 erg=0.03934 ig= 1229.14 rmse=0.0408 len=9.89 t=649ms
+    glaube-1  cov=0.1068 erg=0.09010 ig= 1480.16 rmse=0.0339 len=7.37 t=658ms
+    glaube    cov=0.0381 erg=0.03311 ig= 1876.25 rmse=0.0226 len=27.74 t=2173ms
+    zweistufig cov=0.0380 erg=0.03677 ig= 1695.23 rmse=0.0231 len=16.43 t=1307ms
+    glaube-D  cov=0.0325 erg=0.04829 ig= 1989.73 rmse=0.0069 len=30.92 t=19959ms
+    maeher    cov=0.0246 erg=0.01503 ig= 1352.46 rmse=0.0277 len=30.80 t=0ms
+
+[7/12] rand_gmm_20
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0483 erg=0.00794 ig=  871.05 rmse=0.0647 len=8.99 t=655ms
+    glaube-1  cov=0.0626 erg=0.12123 ig= 1286.70 rmse=0.0445 len=9.34 t=654ms
+    glaube    cov=0.0372 erg=0.05658 ig= 1862.75 rmse=0.0202 len=28.34 t=2014ms
+    zweistufig cov=0.0467 erg=0.08519 ig= 1696.09 rmse=0.0327 len=17.97 t=1317ms
+    glaube-D  cov=0.0287 erg=0.06636 ig= 1989.89 rmse=0.0076 len=36.48 t=19923ms
+    maeher    cov=0.0292 erg=0.04030 ig= 1301.60 rmse=0.0183 len=36.08 t=0ms
+
+[8/12] rand_ana_poly_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0449 erg=0.02516 ig=  681.26 rmse=0.1994 len=5.77 t=650ms
+    glaube-1  cov=0.0713 erg=0.19189 ig= 1380.86 rmse=0.2093 len=9.72 t=653ms
+    glaube    cov=0.0309 erg=0.13949 ig= 1798.72 rmse=0.2197 len=25.81 t=1972ms
+    zweistufig cov=0.0404 erg=0.21462 ig= 1700.26 rmse=0.1125 len=16.96 t=1305ms
+    glaube-D  cov=0.0304 erg=0.19209 ig= 1978.62 rmse=0.0553 len=34.31 t=19874ms
+    maeher    cov=0.0253 erg=0.15998 ig=  721.89 rmse=0.2071 len=34.32 t=0ms
+
+[9/12] rand_ana_poly_20
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0370 erg=0.01049 ig=  564.85 rmse=0.3283 len=5.41 t=657ms
+    glaube-1  cov=0.0785 erg=0.19649 ig= 1195.65 rmse=0.1477 len=9.91 t=653ms
+    glaube    cov=0.0444 erg=0.07318 ig= 1859.81 rmse=0.0874 len=26.72 t=1967ms
+    zweistufig cov=0.0435 erg=0.12397 ig= 1681.83 rmse=0.1518 len=17.68 t=1304ms
+    glaube-D  cov=0.0236 erg=0.07115 ig= 1997.51 rmse=0.0471 len=35.13 t=19904ms
+    maeher    cov=0.0283 erg=0.06968 ig= 1160.57 rmse=0.1360 len=35.20 t=0ms
+
+[10/12] rand_ana_poly_30
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0327 erg=0.01306 ig=  790.83 rmse=0.2108 len=5.14 t=652ms
+    glaube-1  cov=0.1195 erg=0.21800 ig= 1068.71 rmse=0.2121 len=8.23 t=658ms
+    glaube    cov=0.0352 erg=0.12447 ig= 1885.68 rmse=0.1047 len=28.77 t=1954ms
+    zweistufig cov=0.0414 erg=0.10299 ig= 1693.81 rmse=0.1593 len=16.04 t=1303ms
+    glaube-D  cov=0.0349 erg=0.13588 ig= 1998.79 rmse=0.0582 len=32.21 t=19978ms
+    maeher    cov=0.0260 erg=0.07687 ig= 1274.62 rmse=0.1943 len=32.56 t=0ms
+
+[11/12] rand_gmm_complex_0
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0495 erg=0.01003 ig= 1003.07 rmse=0.0498 len=8.32 t=653ms
+    glaube-1  cov=0.1173 erg=0.10655 ig= 1337.55 rmse=0.1043 len=8.68 t=666ms
+    glaube    cov=0.0552 erg=0.05384 ig= 1880.92 rmse=0.0255 len=26.39 t=1982ms
+    zweistufig cov=0.0381 erg=0.06407 ig= 1664.30 rmse=0.0801 len=17.79 t=1310ms
+    glaube-D  cov=0.0313 erg=0.06968 ig= 1992.14 rmse=0.0178 len=35.88 t=19981ms
+    maeher    cov=0.0290 erg=0.01813 ig= 1301.60 rmse=0.0706 len=36.08 t=0ms
+
+[12/12] rand_gmm_complex_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0496 erg=0.02579 ig= 1207.18 rmse=0.0481 len=8.08 t=655ms
+    glaube-1  cov=0.0964 erg=0.09415 ig= 1447.76 rmse=0.0614 len=7.80 t=668ms
+    glaube    cov=0.0276 erg=0.04181 ig= 1887.06 rmse=0.0166 len=28.73 t=1984ms
+    zweistufig cov=0.0377 erg=0.12514 ig= 1707.07 rmse=0.0318 len=17.40 t=1309ms
+    glaube-D  cov=0.0351 erg=0.20908 ig= 1988.47 rmse=0.0099 len=34.68 t=20069ms
+    maeher    cov=0.0268 erg=0.06044 ig=  721.89 rmse=0.1517 len=34.32 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      818.61    0.1512     6.35     672
+glaube-1          0.0944     0.15286     1309.23    0.1189     8.95     656
+glaube-R          0.0374     0.07787     1869.36    0.0731    28.17    1990
+zweistufig        0.0403     0.11055     1691.97    0.0921    17.32    1309
+glaube-D          0.0305     0.11511     1991.49    0.0346    34.20   19967
+maeher            0.0271     0.05855     1145.72    0.1069    34.17       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 27.76):
+Mission           9.16     18.32     27.76
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0876    0.0533         —
+zweistufig      0.0980         —         —
+glaube-D        0.0762    0.0455    0.0340
+maeher          0.2654    0.1091    0.0376
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 4.5 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0547)
+[10:16] quadranten / lse
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=896ms
+    glaube-1  cov=0.0484 erg=0.07356 ig= 1178.39 rmse=0.1032 len=11.14 t=650ms
+    glaube    cov=0.0262 erg=0.04198 ig= 1787.42 rmse=0.0894 len=27.44 t=1964ms
+    zweistufig cov=0.0324 erg=0.06594 ig= 1497.31 rmse=0.1171 len=13.41 t=1311ms
+    glaube-D  cov=0.0254 erg=0.05965 ig= 1999.19 rmse=0.0346 len=35.22 t=19780ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1160.57 rmse=0.1142 len=35.20 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  686.17 rmse=0.1618 len=4.28 t=655ms
+    glaube-1  cov=0.0457 erg=0.05339 ig= 1377.48 rmse=0.0970 len=8.58 t=650ms
+    glaube    cov=0.0306 erg=0.02880 ig= 1858.93 rmse=0.0930 len=23.64 t=1977ms
+    zweistufig cov=0.0433 erg=0.04866 ig= 1414.79 rmse=0.1280 len=13.43 t=1324ms
+    glaube-D  cov=0.0277 erg=0.09623 ig= 1998.97 rmse=0.0403 len=34.87 t=20015ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1160.57 rmse=0.1226 len=35.20 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  790.32 rmse=0.1196 len=5.74 t=659ms
+    glaube-1  cov=0.0446 erg=0.02946 ig= 1267.46 rmse=0.1302 len=9.64 t=658ms
+    glaube    cov=0.0264 erg=0.03434 ig= 1746.67 rmse=0.0846 len=27.21 t=2009ms
+    zweistufig cov=0.0410 erg=0.02776 ig= 1687.86 rmse=0.0824 len=13.53 t=1320ms
+    glaube-D  cov=0.0256 erg=0.02439 ig= 2001.64 rmse=0.0421 len=38.98 t=20088ms
+    maeher    cov=0.0324 erg=0.05007 ig= 1362.05 rmse=0.0966 len=38.72 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  751.98 rmse=0.2200 len=6.57 t=662ms
+    glaube-1  cov=0.0531 erg=0.06035 ig= 1218.17 rmse=0.1098 len=8.51 t=648ms
+    glaube    cov=0.0245 erg=0.03205 ig= 1847.91 rmse=0.1404 len=29.21 t=1977ms
+    zweistufig cov=0.0355 erg=0.04502 ig= 1647.37 rmse=0.1211 len=13.99 t=1316ms
+    glaube-D  cov=0.0246 erg=0.04978 ig= 2000.72 rmse=0.0451 len=39.27 t=19945ms
+    maeher    cov=0.0332 erg=0.06055 ig= 1319.21 rmse=0.1005 len=39.60 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  599.78 rmse=0.1710 len=2.90 t=655ms
+    glaube-1  cov=0.0473 erg=0.06035 ig= 1369.90 rmse=0.1249 len=8.10 t=669ms
+    glaube    cov=0.0254 erg=0.03626 ig= 1859.20 rmse=0.0859 len=27.02 t=1968ms
+    zweistufig cov=0.0434 erg=0.05947 ig= 1450.93 rmse=0.0862 len=11.24 t=1320ms
+    glaube-D  cov=0.0258 erg=0.08152 ig= 1998.67 rmse=0.0421 len=36.05 t=19836ms
+    maeher    cov=0.0283 erg=0.05119 ig= 1301.60 rmse=0.1122 len=36.08 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1229.14 rmse=0.0408 len=9.89 t=661ms
+    glaube-1  cov=0.0580 erg=0.01674 ig= 1301.32 rmse=0.0377 len=9.96 t=665ms
+    glaube    cov=0.0455 erg=0.01787 ig= 1736.57 rmse=0.0261 len=24.46 t=1987ms
+    zweistufig cov=0.0567 erg=0.02629 ig= 1571.49 rmse=0.0301 len=13.14 t=1417ms
+    glaube-D  cov=0.0309 erg=0.02243 ig= 2005.02 rmse=0.0059 len=34.71 t=20371ms
+    maeher    cov=0.0265 erg=0.01503 ig=  721.89 rmse=0.2102 len=34.32 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  871.05 rmse=0.0647 len=8.99 t=689ms
+    glaube-1  cov=0.0577 erg=0.02608 ig= 1018.51 rmse=0.0333 len=7.86 t=668ms
+    glaube    cov=0.0335 erg=0.01069 ig= 1741.31 rmse=0.0189 len=25.52 t=1965ms
+    zweistufig cov=0.0538 erg=0.03581 ig= 1485.82 rmse=0.0292 len=13.76 t=1315ms
+    glaube-D  cov=0.0285 erg=0.04445 ig= 2001.93 rmse=0.0055 len=36.65 t=19930ms
+    maeher    cov=0.0291 erg=0.04027 ig= 1343.11 rmse=0.0385 len=36.96 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  681.26 rmse=0.1994 len=5.77 t=659ms
+    glaube-1  cov=0.0708 erg=0.12638 ig= 1287.11 rmse=0.1531 len=10.31 t=663ms
+    glaube    cov=0.0261 erg=0.07731 ig= 1810.08 rmse=0.1098 len=28.82 t=1964ms
+    zweistufig cov=0.0407 erg=0.07709 ig= 1534.60 rmse=0.2659 len=12.47 t=1430ms
+    glaube-D  cov=0.0232 erg=0.09227 ig= 1995.21 rmse=0.0460 len=34.85 t=20409ms
+    maeher    cov=0.0292 erg=0.16015 ig= 1160.57 rmse=0.1690 len=35.20 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  564.85 rmse=0.3283 len=5.41 t=739ms
+    glaube-1  cov=0.0444 erg=0.09708 ig= 1233.28 rmse=0.1633 len=10.54 t=713ms
+    glaube    cov=0.0279 erg=0.04455 ig= 1799.90 rmse=0.0792 len=29.39 t=2161ms
+    zweistufig cov=0.0450 erg=0.05126 ig= 1532.43 rmse=0.1493 len=13.58 t=1383ms
+    glaube-D  cov=0.0232 erg=0.04950 ig= 1998.52 rmse=0.0503 len=33.76 t=21229ms
+    maeher    cov=0.0272 erg=0.06840 ig= 1197.61 rmse=0.1514 len=33.44 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  790.83 rmse=0.2108 len=5.14 t=675ms
+    glaube-1  cov=0.0599 erg=0.13498 ig= 1243.56 rmse=0.1740 len=10.33 t=669ms
+    glaube    cov=0.0263 erg=0.03197 ig= 1840.00 rmse=0.1406 len=29.53 t=1951ms
+    zweistufig cov=0.0328 erg=0.03899 ig= 1545.94 rmse=0.2095 len=12.98 t=1315ms
+    glaube-D  cov=0.0249 erg=0.06144 ig= 2003.85 rmse=0.0477 len=33.23 t=19866ms
+    maeher    cov=0.0259 erg=0.07684 ig= 1197.61 rmse=0.1357 len=33.44 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig= 1003.07 rmse=0.0498 len=8.32 t=653ms
+    glaube-1  cov=0.0730 erg=0.03229 ig= 1257.41 rmse=0.0744 len=8.86 t=654ms
+    glaube    cov=0.0511 erg=0.02364 ig= 1816.45 rmse=0.0557 len=25.31 t=1984ms
+    zweistufig cov=0.0644 erg=0.03397 ig= 1622.62 rmse=0.0605 len=13.87 t=1365ms
+    glaube-D  cov=0.0303 erg=0.03298 ig= 2004.05 rmse=0.0131 len=33.82 t=20028ms
+    maeher    cov=0.0268 erg=0.01790 ig= 1197.61 rmse=0.0516 len=33.44 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig= 1207.18 rmse=0.0481 len=8.08 t=659ms
+    glaube-1  cov=0.0818 erg=0.05574 ig= 1239.41 rmse=0.0696 len=8.54 t=683ms
+    glaube    cov=0.0489 erg=0.04188 ig= 1804.97 rmse=0.0181 len=23.20 t=1998ms
+    zweistufig cov=0.0849 erg=0.03498 ig= 1491.96 rmse=0.0284 len=13.00 t=1314ms
+    glaube-D  cov=0.0390 erg=0.14730 ig= 2004.40 rmse=0.0063 len=33.47 t=19824ms
+    maeher    cov=0.0269 erg=0.06046 ig= 1197.61 rmse=0.0290 len=33.44 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      818.61    0.1512     6.35     689
+glaube-1          0.0571     0.06387     1249.33    0.1059     9.37     666
+glaube-R          0.0327     0.03511     1804.12    0.0785    26.73    1992
+zweistufig        0.0478     0.04544     1540.26    0.1090    13.20    1344
+glaube-D          0.0274     0.06349     2001.01    0.0316    35.41   20110
+maeher            0.0284     0.05892     1193.33    0.1110    35.42       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 27.04):
+Mission           8.92     17.85     27.04
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0599    0.0427         —
+zweistufig      0.0919         —         —
+glaube-D        0.0564    0.0390    0.0318
+maeher          0.2771    0.1246    0.0474
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 5.5 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0679)
+[10:22] quadranten / mi
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=852ms
+    glaube-1  cov=0.0477 erg=0.24283 ig= 1170.08 rmse=0.0867 len=7.95 t=656ms
+    glaube    cov=0.0213 erg=0.04727 ig= 1852.86 rmse=0.0727 len=23.84 t=1954ms
+    zweistufig cov=0.0318 erg=0.08633 ig= 1662.94 rmse=0.1041 len=16.10 t=1306ms
+    glaube-D  cov=0.0219 erg=0.04906 ig= 2004.40 rmse=0.0318 len=34.25 t=19859ms
+    maeher    cov=0.0265 erg=0.05194 ig=  721.89 rmse=0.1547 len=34.32 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  686.17 rmse=0.1618 len=4.28 t=657ms
+    glaube-1  cov=0.0615 erg=0.15978 ig= 1416.89 rmse=0.0909 len=7.15 t=655ms
+    glaube    cov=0.0236 erg=0.03771 ig= 1817.92 rmse=0.0773 len=23.15 t=1956ms
+    zweistufig cov=0.0315 erg=0.06754 ig= 1542.74 rmse=0.1031 len=16.57 t=1378ms
+    glaube-D  cov=0.0229 erg=0.07767 ig= 2001.90 rmse=0.0338 len=33.70 t=19878ms
+    maeher    cov=0.0266 erg=0.05198 ig= 1197.61 rmse=0.0730 len=33.44 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  790.32 rmse=0.1196 len=5.74 t=670ms
+    glaube-1  cov=0.0479 erg=0.07733 ig= 1448.74 rmse=0.1621 len=7.26 t=669ms
+    glaube    cov=0.0240 erg=0.03559 ig= 1852.23 rmse=0.0821 len=26.45 t=1963ms
+    zweistufig cov=0.0321 erg=0.03722 ig= 1707.17 rmse=0.0841 len=15.38 t=1311ms
+    glaube-D  cov=0.0261 erg=0.05377 ig= 2002.96 rmse=0.0409 len=38.98 t=19856ms
+    maeher    cov=0.0324 erg=0.05007 ig= 1362.05 rmse=0.0966 len=38.72 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  751.98 rmse=0.2200 len=6.57 t=653ms
+    glaube-1  cov=0.0511 erg=0.12326 ig= 1478.21 rmse=0.1262 len=7.66 t=664ms
+    glaube    cov=0.0222 erg=0.03102 ig= 1877.29 rmse=0.0715 len=25.64 t=1967ms
+    zweistufig cov=0.0333 erg=0.08448 ig= 1704.81 rmse=0.1074 len=16.23 t=1327ms
+    glaube-D  cov=0.0226 erg=0.04785 ig= 2000.32 rmse=0.0397 len=32.93 t=20117ms
+    maeher    cov=0.0258 erg=0.05760 ig= 1274.62 rmse=0.1026 len=32.56 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  599.78 rmse=0.1710 len=2.90 t=651ms
+    glaube-1  cov=0.0554 erg=0.13611 ig= 1244.93 rmse=0.1269 len=7.87 t=659ms
+    glaube    cov=0.0223 erg=0.04468 ig= 1821.04 rmse=0.0742 len=23.25 t=1961ms
+    zweistufig cov=0.0274 erg=0.09305 ig= 1552.63 rmse=0.1490 len=13.88 t=1317ms
+    glaube-D  cov=0.0242 erg=0.06337 ig= 2005.32 rmse=0.0415 len=31.52 t=19903ms
+    maeher    cov=0.0263 erg=0.05020 ig= 1351.05 rmse=0.0937 len=31.68 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1229.14 rmse=0.0408 len=9.89 t=658ms
+    glaube-1  cov=0.0576 erg=0.03590 ig= 1498.33 rmse=0.0345 len=7.87 t=652ms
+    glaube    cov=0.0259 erg=0.01222 ig= 1834.83 rmse=0.0212 len=26.70 t=1963ms
+    zweistufig cov=0.0377 erg=0.04618 ig= 1700.20 rmse=0.0200 len=16.78 t=1302ms
+    glaube-D  cov=0.0270 erg=0.01725 ig= 2002.59 rmse=0.0054 len=37.88 t=19803ms
+    maeher    cov=0.0291 erg=0.01510 ig= 1298.72 rmse=0.0265 len=37.84 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  871.05 rmse=0.0647 len=8.99 t=649ms
+    glaube-1  cov=0.0623 erg=0.07171 ig= 1269.03 rmse=0.0383 len=8.16 t=654ms
+    glaube    cov=0.0249 erg=0.01103 ig= 1734.38 rmse=0.0227 len=27.21 t=1948ms
+    zweistufig cov=0.0379 erg=0.04796 ig= 1599.38 rmse=0.0279 len=18.10 t=1353ms
+    glaube-D  cov=0.0260 erg=0.04894 ig= 1996.30 rmse=0.0075 len=38.24 t=19705ms
+    maeher    cov=0.0291 erg=0.04025 ig= 1298.72 rmse=0.0328 len=37.84 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  681.26 rmse=0.1994 len=5.77 t=651ms
+    glaube-1  cov=0.0672 erg=0.13235 ig= 1371.14 rmse=0.1523 len=7.55 t=680ms
+    glaube    cov=0.0205 erg=0.07756 ig= 1752.42 rmse=0.1576 len=26.45 t=1967ms
+    zweistufig cov=0.0333 erg=0.09953 ig= 1622.26 rmse=0.2754 len=16.22 t=1379ms
+    glaube-D  cov=0.0218 erg=0.08291 ig= 2005.43 rmse=0.0466 len=37.67 t=20000ms
+    maeher    cov=0.0291 erg=0.16005 ig= 1298.72 rmse=0.1298 len=37.84 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  564.85 rmse=0.3283 len=5.41 t=679ms
+    glaube-1  cov=0.0663 erg=0.14938 ig= 1439.86 rmse=0.1610 len=8.89 t=703ms
+    glaube    cov=0.0230 erg=0.04201 ig= 1879.22 rmse=0.0833 len=22.45 t=2061ms
+    zweistufig cov=0.0274 erg=0.05379 ig= 1570.30 rmse=0.0905 len=16.38 t=1337ms
+    glaube-D  cov=0.0209 erg=0.06630 ig= 1994.58 rmse=0.0462 len=30.71 t=20052ms
+    maeher    cov=0.0234 erg=0.06746 ig= 1352.46 rmse=0.1827 len=30.80 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  790.83 rmse=0.2108 len=5.14 t=667ms
+    glaube-1  cov=0.0795 erg=0.18451 ig= 1344.39 rmse=0.1901 len=8.24 t=650ms
+    glaube    cov=0.0243 erg=0.04935 ig= 1781.41 rmse=0.1580 len=28.21 t=1967ms
+    zweistufig cov=0.0292 erg=0.04591 ig= 1711.82 rmse=0.1470 len=15.38 t=1315ms
+    glaube-D  cov=0.0244 erg=0.10908 ig= 1993.02 rmse=0.0499 len=39.49 t=19979ms
+    maeher    cov=0.0318 erg=0.07860 ig= 1319.21 rmse=0.1715 len=39.60 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig= 1003.07 rmse=0.0498 len=8.32 t=650ms
+    glaube-1  cov=0.0744 erg=0.06640 ig= 1361.63 rmse=0.0811 len=7.05 t=649ms
+    glaube    cov=0.0322 erg=0.02574 ig= 1870.72 rmse=0.0414 len=28.07 t=1957ms
+    zweistufig cov=0.0344 erg=0.03672 ig= 1662.22 rmse=0.0467 len=18.25 t=1313ms
+    glaube-D  cov=0.0274 erg=0.06148 ig= 2005.57 rmse=0.0131 len=38.33 t=19894ms
+    maeher    cov=0.0332 erg=0.01852 ig= 1362.05 rmse=0.0536 len=38.72 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig= 1207.18 rmse=0.0481 len=8.08 t=660ms
+    glaube-1  cov=0.0709 erg=0.08122 ig= 1219.15 rmse=0.0611 len=8.45 t=663ms
+    glaube    cov=0.0300 erg=0.02080 ig= 1846.69 rmse=0.0175 len=26.19 t=2034ms
+    zweistufig cov=0.0474 erg=0.06127 ig= 1693.93 rmse=0.0241 len=16.01 t=1310ms
+    glaube-D  cov=0.0292 erg=0.14535 ig= 2004.57 rmse=0.0055 len=43.24 t=20754ms
+    maeher    cov=0.0328 erg=0.06067 ig= 1407.53 rmse=0.0341 len=43.12 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      818.61    0.1512     6.35     675
+glaube-1          0.0618     0.12173     1355.20    0.1093     7.84     663
+glaube-R          0.0245     0.03625     1826.75    0.0733    25.63    1975
+zweistufig        0.0336     0.06333     1644.20    0.0983    16.27    1329
+glaube-D          0.0245     0.06859     2001.41    0.0302    36.41   19983
+maeher            0.0288     0.05854     1270.39    0.0960    36.37       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 26.20):
+Mission           8.64     17.29     26.20
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0547    0.0333         —
+zweistufig      0.0955         —         —
+glaube-D        0.0593    0.0385    0.0292
+maeher          0.2870    0.1376    0.0553
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 4.5 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0463)
+[10:28] quadranten / eid
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=842ms
+    glaube-1  cov=0.0448 erg=0.07468 ig= 1112.79 rmse=0.1230 len=11.24 t=673ms
+    glaube    cov=0.0230 erg=0.03666 ig= 1648.58 rmse=0.1461 len=29.69 t=2099ms
+    zweistufig cov=0.0301 erg=0.01984 ig= 1395.31 rmse=0.2095 len=19.30 t=1303ms
+    glaube-D  cov=0.0249 erg=0.06154 ig= 1975.13 rmse=0.0358 len=34.59 t=20002ms
+    maeher    cov=0.0265 erg=0.05194 ig=  721.89 rmse=0.1547 len=34.32 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  686.17 rmse=0.1618 len=4.28 t=650ms
+    glaube-1  cov=0.0460 erg=0.03606 ig=  973.54 rmse=0.1336 len=9.41 t=660ms
+    glaube    cov=0.0249 erg=0.03636 ig= 1582.21 rmse=0.1354 len=28.23 t=1968ms
+    zweistufig cov=0.0327 erg=0.03726 ig= 1601.83 rmse=0.1525 len=18.41 t=1307ms
+    glaube-D  cov=0.0292 erg=0.10280 ig= 1988.65 rmse=0.0354 len=33.12 t=19722ms
+    maeher    cov=0.0266 erg=0.05198 ig= 1197.61 rmse=0.0730 len=33.44 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  790.32 rmse=0.1196 len=5.74 t=655ms
+    glaube-1  cov=0.0523 erg=0.05746 ig= 1079.61 rmse=0.1406 len=9.67 t=658ms
+    glaube    cov=0.0279 erg=0.04760 ig= 1547.64 rmse=0.0835 len=33.52 t=1980ms
+    zweistufig cov=0.0376 erg=0.06879 ig= 1324.87 rmse=0.1440 len=20.64 t=1308ms
+    glaube-D  cov=0.0292 erg=0.10820 ig= 1988.98 rmse=0.0465 len=33.81 t=19876ms
+    maeher    cov=0.0263 erg=0.04896 ig= 1197.61 rmse=0.1028 len=33.44 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  751.98 rmse=0.2200 len=6.57 t=661ms
+    glaube-1  cov=0.0479 erg=0.08689 ig= 1042.94 rmse=0.1632 len=11.06 t=654ms
+    glaube    cov=0.0228 erg=0.04427 ig= 1732.38 rmse=0.0852 len=30.89 t=1957ms
+    zweistufig cov=0.0324 erg=0.03679 ig= 1322.11 rmse=0.1973 len=19.47 t=1315ms
+    glaube-D  cov=0.0236 erg=0.04996 ig= 1986.55 rmse=0.0408 len=37.14 t=19907ms
+    maeher    cov=0.0279 erg=0.05886 ig= 1343.11 rmse=0.0913 len=36.96 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  599.78 rmse=0.1710 len=2.90 t=655ms
+    glaube-1  cov=0.0472 erg=0.05224 ig=  861.63 rmse=0.1196 len=9.10 t=653ms
+    glaube    cov=0.0229 erg=0.02674 ig= 1654.19 rmse=0.0762 len=28.43 t=1974ms
+    zweistufig cov=0.0289 erg=0.03398 ig= 1291.56 rmse=0.1712 len=19.37 t=1311ms
+    glaube-D  cov=0.0241 erg=0.07379 ig= 1976.77 rmse=0.0443 len=34.66 t=19820ms
+    maeher    cov=0.0260 erg=0.05000 ig=  721.89 rmse=0.1392 len=34.32 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig= 1229.14 rmse=0.0408 len=9.89 t=657ms
+    glaube-1  cov=0.0821 erg=0.06443 ig=  800.77 rmse=0.1486 len=9.85 t=658ms
+    glaube    cov=0.0343 erg=0.02078 ig= 1678.18 rmse=0.0466 len=27.77 t=1956ms
+    zweistufig cov=0.0393 erg=0.03143 ig= 1319.65 rmse=0.0493 len=19.29 t=1332ms
+    glaube-D  cov=0.0291 erg=0.02690 ig= 1999.17 rmse=0.0063 len=33.16 t=20025ms
+    maeher    cov=0.0266 erg=0.01505 ig= 1197.61 rmse=0.0254 len=33.44 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  871.05 rmse=0.0647 len=8.99 t=666ms
+    glaube-1  cov=0.0506 erg=0.02491 ig=  839.37 rmse=0.0543 len=10.50 t=668ms
+    glaube    cov=0.0264 erg=0.00739 ig= 1543.83 rmse=0.0261 len=27.52 t=2011ms
+    zweistufig cov=0.0364 erg=0.01023 ig= 1341.87 rmse=0.0294 len=19.14 t=1334ms
+    glaube-D  cov=0.0269 erg=0.05481 ig= 1980.85 rmse=0.0063 len=35.50 t=20063ms
+    maeher    cov=0.0292 erg=0.04033 ig= 1160.57 rmse=0.0375 len=35.20 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  681.26 rmse=0.1994 len=5.77 t=680ms
+    glaube-1  cov=0.0502 erg=0.07566 ig=  891.24 rmse=0.1992 len=9.86 t=663ms
+    glaube    cov=0.0238 erg=0.07033 ig= 1601.47 rmse=0.1695 len=28.68 t=1985ms
+    zweistufig cov=0.0353 erg=0.09966 ig= 1398.80 rmse=0.1296 len=19.80 t=1308ms
+    glaube-D  cov=0.0250 erg=0.14180 ig= 1997.99 rmse=0.0447 len=35.11 t=19992ms
+    maeher    cov=0.0292 erg=0.16015 ig= 1160.57 rmse=0.1690 len=35.20 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  564.85 rmse=0.3283 len=5.41 t=653ms
+    glaube-1  cov=0.0391 erg=0.03808 ig=  929.12 rmse=0.2762 len=10.62 t=682ms
+    glaube    cov=0.0241 erg=0.03088 ig= 1628.83 rmse=0.1041 len=30.69 t=1958ms
+    zweistufig cov=0.0264 erg=0.03581 ig= 1421.68 rmse=0.1824 len=20.64 t=1302ms
+    glaube-D  cov=0.0235 erg=0.06224 ig= 1998.89 rmse=0.0466 len=34.88 t=19844ms
+    maeher    cov=0.0283 erg=0.06968 ig= 1160.57 rmse=0.1360 len=35.20 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  790.83 rmse=0.2108 len=5.14 t=654ms
+    glaube-1  cov=0.0598 erg=0.06461 ig=  898.89 rmse=0.2550 len=8.85 t=648ms
+    glaube    cov=0.0228 erg=0.05369 ig= 1717.22 rmse=0.2121 len=30.35 t=1956ms
+    zweistufig cov=0.0312 erg=0.02282 ig= 1457.45 rmse=0.1326 len=19.37 t=1395ms
+    glaube-D  cov=0.0245 erg=0.08334 ig= 1988.27 rmse=0.0508 len=36.73 t=20117ms
+    maeher    cov=0.0290 erg=0.07756 ig= 1343.11 rmse=0.1546 len=36.96 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig= 1003.07 rmse=0.0498 len=8.32 t=683ms
+    glaube-1  cov=0.0591 erg=0.02220 ig=  929.25 rmse=0.0680 len=7.76 t=700ms
+    glaube    cov=0.0298 erg=0.02002 ig= 1829.98 rmse=0.0523 len=33.60 t=2142ms
+    zweistufig cov=0.0387 erg=0.03278 ig= 1210.25 rmse=0.0764 len=21.62 t=1338ms
+    glaube-D  cov=0.0280 erg=0.03581 ig= 2001.48 rmse=0.0129 len=33.72 t=20222ms
+    maeher    cov=0.0268 erg=0.01790 ig= 1197.61 rmse=0.0516 len=33.44 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig= 1207.18 rmse=0.0481 len=8.08 t=651ms
+    glaube-1  cov=0.0926 erg=0.07226 ig=  920.33 rmse=0.1476 len=9.84 t=653ms
+    glaube    cov=0.0289 erg=0.03769 ig= 1815.78 rmse=0.0196 len=30.00 t=1998ms
+    zweistufig cov=0.0492 erg=0.09342 ig= 1429.88 rmse=0.0941 len=20.69 t=1313ms
+    glaube-D  cov=0.0351 erg=0.16895 ig= 1991.28 rmse=0.0079 len=36.42 t=19777ms
+    maeher    cov=0.0295 erg=0.06054 ig= 1301.60 rmse=0.0377 len=36.08 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      818.61    0.1512     6.35     676
+glaube-1          0.0560     0.05579      939.96    0.1524     9.81     664
+glaube-R          0.0260     0.03603     1665.02    0.0964    29.95    1999
+zweistufig        0.0348     0.04357     1376.27    0.1307    19.81    1322
+glaube-D          0.0269     0.08084     1989.50    0.0315    34.90   19947
+maeher            0.0277     0.05858     1141.98    0.0977    34.83       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 29.80):
+Mission           9.83     19.67     29.80
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0636    0.0392         —
+zweistufig      0.0639         —         —
+glaube-D        0.0626    0.0377    0.0296
+maeher          0.2543    0.0983    0.0341
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.9 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0491)
+[10:34] loch / ucb
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=854ms
+    glaube-1  cov=0.0488 erg=0.05372 ig=  802.93 rmse=0.0911 len=4.95 t=652ms
+    glaube    cov=0.0186 erg=0.00584 ig=  915.83 rmse=0.0486 len=17.87 t=1958ms
+    zweistufig cov=0.0273 erg=0.02413 ig=  899.45 rmse=0.0639 len=8.54 t=1316ms
+    glaube-D  cov=0.0208 erg=0.03702 ig=  954.05 rmse=0.0357 len=24.63 t=19853ms
+    maeher    cov=0.0202 erg=0.04967 ig=  689.97 rmse=0.1105 len=24.64 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  787.41 rmse=0.1096 len=4.28 t=667ms
+    glaube-1  cov=0.0452 erg=0.02598 ig=  805.33 rmse=0.1131 len=4.87 t=660ms
+    glaube    cov=0.0187 erg=0.00886 ig=  909.21 rmse=0.0566 len=15.22 t=1944ms
+    zweistufig cov=0.0309 erg=0.02062 ig=  887.82 rmse=0.1214 len=7.31 t=1297ms
+    glaube-D  cov=0.0218 erg=0.06817 ig=  953.08 rmse=0.0350 len=29.63 t=19719ms
+    maeher    cov=0.0240 erg=0.05121 ig=  711.83 rmse=0.0772 len=29.92 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  544.75 rmse=0.1002 len=5.74 t=649ms
+    glaube-1  cov=0.0491 erg=0.03694 ig=  827.61 rmse=0.0654 len=6.46 t=660ms
+    glaube    cov=0.0240 erg=0.01061 ig=  917.70 rmse=0.0471 len=19.31 t=1959ms
+    zweistufig cov=0.0352 erg=0.03806 ig=  894.53 rmse=0.0532 len=8.69 t=1315ms
+    glaube-D  cov=0.0238 erg=0.02471 ig=  952.41 rmse=0.0337 len=31.35 t=19855ms
+    maeher    cov=0.0265 erg=0.04902 ig=  716.98 rmse=0.1102 len=31.68 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  780.87 rmse=0.1475 len=6.57 t=660ms
+    glaube-1  cov=0.0422 erg=0.04692 ig=  846.80 rmse=0.2690 len=5.52 t=680ms
+    glaube    cov=0.0209 erg=0.01930 ig=  926.08 rmse=0.0750 len=16.01 t=1980ms
+    zweistufig cov=0.0317 erg=0.02543 ig=  913.49 rmse=0.0748 len=8.90 t=1301ms
+    glaube-D  cov=0.0197 erg=0.01405 ig=  954.84 rmse=0.0440 len=26.84 t=19709ms
+    maeher    cov=0.0210 erg=0.05512 ig=  694.07 rmse=0.1168 len=26.40 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  864.44 rmse=0.1141 len=2.90 t=649ms
+    glaube-1  cov=0.0473 erg=0.02242 ig=  834.80 rmse=0.1144 len=3.54 t=652ms
+    glaube    cov=0.0183 erg=0.00797 ig=  931.34 rmse=0.0730 len=12.15 t=1945ms
+    zweistufig cov=0.0259 erg=0.00683 ig=  906.13 rmse=0.0881 len=7.53 t=1301ms
+    glaube-D  cov=0.0188 erg=0.02046 ig=  955.14 rmse=0.0528 len=24.33 t=19804ms
+    maeher    cov=0.0201 erg=0.04780 ig=  689.97 rmse=0.1414 len=24.64 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig=  496.68 rmse=0.0356 len=9.89 t=654ms
+    glaube-1  cov=0.0762 erg=0.07700 ig=  688.89 rmse=0.0348 len=8.58 t=651ms
+    glaube    cov=0.0281 erg=0.01485 ig=  921.99 rmse=0.0080 len=25.02 t=1977ms
+    zweistufig cov=0.0443 erg=0.03484 ig=  879.24 rmse=0.0132 len=12.33 t=1310ms
+    glaube-D  cov=0.0278 erg=0.01792 ig=  950.37 rmse=0.0032 len=33.08 t=19878ms
+    maeher    cov=0.0266 erg=0.01505 ig=  680.88 rmse=0.0251 len=33.44 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  705.74 rmse=0.0449 len=8.99 t=656ms
+    glaube-1  cov=0.0604 erg=0.03692 ig=  731.65 rmse=0.0327 len=7.88 t=653ms
+    glaube    cov=0.0266 erg=0.00631 ig=  909.61 rmse=0.0075 len=25.49 t=1972ms
+    zweistufig cov=0.0486 erg=0.02746 ig=  868.12 rmse=0.0110 len=11.67 t=1296ms
+    glaube-D  cov=0.0270 erg=0.03236 ig=  950.55 rmse=0.0032 len=39.18 t=19755ms
+    maeher    cov=0.0326 erg=0.04082 ig=  675.00 rmse=0.0279 len=39.60 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  238.67 rmse=0.1816 len=5.77 t=649ms
+    glaube-1  cov=0.0479 erg=0.09532 ig=  782.67 rmse=0.1441 len=5.89 t=650ms
+    glaube    cov=0.0220 erg=0.02134 ig=  875.62 rmse=0.0628 len=17.91 t=1951ms
+    zweistufig cov=0.0311 erg=0.04507 ig=  872.16 rmse=0.0660 len=8.76 t=1302ms
+    glaube-D  cov=0.0194 erg=0.08396 ig=  954.01 rmse=0.0327 len=24.79 t=19918ms
+    maeher    cov=0.0200 erg=0.16023 ig=  689.97 rmse=0.1085 len=24.64 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  632.24 rmse=0.2727 len=5.41 t=657ms
+    glaube-1  cov=0.0406 erg=0.01677 ig=  745.32 rmse=0.1772 len=4.76 t=653ms
+    glaube    cov=0.0183 erg=0.01059 ig=  913.14 rmse=0.1812 len=14.47 t=1966ms
+    zweistufig cov=0.0257 erg=0.00963 ig=  887.20 rmse=0.0963 len=8.17 t=1300ms
+    glaube-D  cov=0.0176 erg=0.02553 ig=  953.39 rmse=0.0515 len=23.93 t=20176ms
+    maeher    cov=0.0204 erg=0.06579 ig=  659.27 rmse=0.2399 len=23.76 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  627.04 rmse=0.1956 len=5.14 t=660ms
+    glaube-1  cov=0.0388 erg=0.05570 ig=  829.33 rmse=0.1432 len=5.63 t=651ms
+    glaube    cov=0.0201 erg=0.01511 ig=  906.16 rmse=0.0984 len=15.64 t=1958ms
+    zweistufig cov=0.0295 erg=0.03247 ig=  895.40 rmse=0.1067 len=9.66 t=1328ms
+    glaube-D  cov=0.0207 erg=0.01400 ig=  952.30 rmse=0.0412 len=21.00 t=19789ms
+    maeher    cov=0.0191 erg=0.07506 ig=  718.17 rmse=0.1522 len=21.12 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  732.86 rmse=0.0390 len=8.32 t=666ms
+    glaube-1  cov=0.0604 erg=0.03250 ig=  771.06 rmse=0.0396 len=7.51 t=658ms
+    glaube    cov=0.0319 erg=0.00797 ig=  906.75 rmse=0.0278 len=29.54 t=1995ms
+    zweistufig cov=0.0463 erg=0.02035 ig=  866.67 rmse=0.0564 len=11.86 t=1318ms
+    glaube-D  cov=0.0267 erg=0.02624 ig=  951.22 rmse=0.0104 len=37.44 t=20034ms
+    maeher    cov=0.0289 erg=0.01808 ig=  693.88 rmse=0.0548 len=37.84 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  616.60 rmse=0.0267 len=8.08 t=665ms
+    glaube-1  cov=0.0838 erg=0.08607 ig=  736.45 rmse=0.0260 len=8.22 t=667ms
+    glaube    cov=0.0252 erg=0.01446 ig=  909.43 rmse=0.0078 len=26.46 t=2005ms
+    zweistufig cov=0.0434 erg=0.05666 ig=  874.12 rmse=0.0147 len=11.27 t=1318ms
+    glaube-D  cov=0.0279 erg=0.11362 ig=  951.35 rmse=0.0033 len=38.91 t=19963ms
+    maeher    cov=0.0330 erg=0.06071 ig=  693.67 rmse=0.0231 len=38.72 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      643.76    0.1167     6.35     674
+glaube-1          0.0534     0.04885      783.57    0.1042     6.15     657
+glaube-R          0.0227     0.01193      911.91    0.0578    19.59    1967
+zweistufig        0.0350     0.02846      887.03    0.0638     9.56    1308
+glaube-D          0.0227     0.03984      952.73    0.0289    29.59   19871
+maeher            0.0244     0.05738      692.81    0.0990    29.70       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 17.84):
+Mission           5.89     11.78     17.84
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0590    0.0335         —
+zweistufig      0.0647         —         —
+glaube-D        0.0616    0.0375    0.0294
+maeher          0.3159    0.1746    0.0867
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.0 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0425)
+[10:40] loch / stretch
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=866ms
+    glaube-1  cov=0.0450 erg=0.04883 ig=  824.26 rmse=0.0964 len=5.15 t=659ms
+    glaube    cov=0.0197 erg=0.01860 ig=  917.13 rmse=0.0523 len=25.89 t=1971ms
+    zweistufig cov=0.0369 erg=0.03006 ig=  887.15 rmse=0.1069 len=15.05 t=1304ms
+    glaube-D  cov=0.0183 erg=0.01993 ig=  954.67 rmse=0.0329 len=20.30 t=19848ms
+    maeher    cov=0.0214 erg=0.05012 ig=  719.49 rmse=0.0844 len=25.52 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  787.41 rmse=0.1096 len=4.28 t=668ms
+    glaube-1  cov=0.0456 erg=0.02785 ig=  809.92 rmse=0.1136 len=4.79 t=652ms
+    glaube    cov=0.0223 erg=0.01926 ig=  917.71 rmse=0.0645 len=24.37 t=1965ms
+    zweistufig cov=0.0448 erg=0.02810 ig=  888.12 rmse=0.0754 len=12.68 t=1294ms
+    glaube-D  cov=0.0183 erg=0.02175 ig=  954.20 rmse=0.0337 len=22.00 t=19911ms
+    maeher    cov=0.0202 erg=0.04967 ig=  689.97 rmse=0.1200 len=24.64 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  544.75 rmse=0.1002 len=5.74 t=659ms
+    glaube-1  cov=0.0498 erg=0.03476 ig=  832.09 rmse=0.0571 len=6.67 t=660ms
+    glaube    cov=0.0241 erg=0.02583 ig=  922.98 rmse=0.0444 len=26.34 t=1968ms
+    zweistufig cov=0.0373 erg=0.06203 ig=  877.68 rmse=0.0595 len=12.77 t=1322ms
+    glaube-D  cov=0.0229 erg=0.00861 ig=  952.42 rmse=0.0343 len=28.40 t=19927ms
+    maeher    cov=0.0224 erg=0.04845 ig=  675.48 rmse=0.0858 len=28.16 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  780.87 rmse=0.1475 len=6.57 t=656ms
+    glaube-1  cov=0.0422 erg=0.04692 ig=  846.80 rmse=0.2691 len=5.52 t=650ms
+    glaube    cov=0.0240 erg=0.03972 ig=  920.65 rmse=0.0899 len=25.79 t=1958ms
+    zweistufig cov=0.0387 erg=0.04630 ig=  888.92 rmse=0.1134 len=14.25 t=1304ms
+    glaube-D  cov=0.0177 erg=0.01461 ig=  955.32 rmse=0.0418 len=22.73 t=19933ms
+    maeher    cov=0.0213 erg=0.05515 ig=  719.49 rmse=0.1142 len=25.52 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  864.44 rmse=0.1141 len=2.90 t=653ms
+    glaube-1  cov=0.0465 erg=0.02174 ig=  836.33 rmse=0.1229 len=3.63 t=666ms
+    glaube    cov=0.0215 erg=0.01758 ig=  913.41 rmse=0.0839 len=22.70 t=1973ms
+    zweistufig cov=0.0396 erg=0.01506 ig=  869.70 rmse=0.1053 len=15.68 t=1309ms
+    glaube-D  cov=0.0170 erg=0.00882 ig=  956.28 rmse=0.0519 len=17.26 t=19934ms
+    maeher    cov=0.0194 erg=0.04757 ig=  703.43 rmse=0.1062 len=22.88 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig=  496.68 rmse=0.0356 len=9.89 t=658ms
+    glaube-1  cov=0.0776 erg=0.07667 ig=  677.13 rmse=0.0355 len=8.72 t=663ms
+    glaube    cov=0.0288 erg=0.01382 ig=  918.96 rmse=0.0090 len=25.02 t=1970ms
+    zweistufig cov=0.0451 erg=0.03425 ig=  877.65 rmse=0.0145 len=12.40 t=1309ms
+    glaube-D  cov=0.0277 erg=0.01992 ig=  950.73 rmse=0.0034 len=34.98 t=19990ms
+    maeher    cov=0.0292 erg=0.01515 ig=  648.07 rmse=0.0405 len=35.20 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  705.74 rmse=0.0449 len=8.99 t=665ms
+    glaube-1  cov=0.0617 erg=0.03577 ig=  722.10 rmse=0.0355 len=7.90 t=659ms
+    glaube    cov=0.0272 erg=0.00619 ig=  904.74 rmse=0.0125 len=25.09 t=1977ms
+    zweistufig cov=0.0484 erg=0.02735 ig=  866.05 rmse=0.0117 len=11.77 t=1304ms
+    glaube-D  cov=0.0259 erg=0.02391 ig=  951.20 rmse=0.0039 len=36.62 t=20014ms
+    maeher    cov=0.0291 erg=0.04027 ig=  723.90 rmse=0.0353 len=36.96 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  238.67 rmse=0.1816 len=5.77 t=662ms
+    glaube-1  cov=0.0485 erg=0.11410 ig=  792.67 rmse=0.1377 len=5.93 t=656ms
+    glaube    cov=0.0207 erg=0.06978 ig=  903.36 rmse=0.0596 len=25.66 t=1988ms
+    zweistufig cov=0.0477 erg=0.13521 ig=  849.57 rmse=0.0875 len=14.10 t=1330ms
+    glaube-D  cov=0.0196 erg=0.05973 ig=  952.19 rmse=0.0343 len=24.32 t=19911ms
+    maeher    cov=0.0212 erg=0.16020 ig=  719.49 rmse=0.1371 len=25.52 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  632.24 rmse=0.2727 len=5.41 t=659ms
+    glaube-1  cov=0.0421 erg=0.01614 ig=  749.08 rmse=0.1710 len=4.78 t=654ms
+    glaube    cov=0.0228 erg=0.02992 ig=  904.81 rmse=0.1126 len=28.07 t=1977ms
+    zweistufig cov=0.0458 erg=0.04106 ig=  896.32 rmse=0.1026 len=13.30 t=1300ms
+    glaube-D  cov=0.0156 erg=0.00809 ig=  953.70 rmse=0.0519 len=21.23 t=19867ms
+    maeher    cov=0.0221 erg=0.06675 ig=  675.48 rmse=0.1712 len=28.16 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  627.04 rmse=0.1956 len=5.14 t=648ms
+    glaube-1  cov=0.0391 erg=0.05360 ig=  821.37 rmse=0.1544 len=5.58 t=647ms
+    glaube    cov=0.0194 erg=0.02386 ig=  911.72 rmse=0.0855 len=24.04 t=1945ms
+    zweistufig cov=0.0424 erg=0.05733 ig=  885.90 rmse=0.1216 len=13.97 t=1306ms
+    glaube-D  cov=0.0192 erg=0.01194 ig=  952.52 rmse=0.0406 len=21.26 t=19686ms
+    maeher    cov=0.0202 erg=0.07539 ig=  659.27 rmse=0.2105 len=23.76 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  732.86 rmse=0.0390 len=8.32 t=650ms
+    glaube-1  cov=0.0612 erg=0.03170 ig=  764.83 rmse=0.0398 len=7.42 t=647ms
+    glaube    cov=0.0308 erg=0.00826 ig=  909.97 rmse=0.0213 len=29.35 t=1946ms
+    zweistufig cov=0.0461 erg=0.01675 ig=  862.55 rmse=0.0560 len=12.59 t=1302ms
+    glaube-D  cov=0.0267 erg=0.02286 ig=  951.41 rmse=0.0095 len=36.31 t=19706ms
+    maeher    cov=0.0290 erg=0.01813 ig=  736.23 rmse=0.0533 len=36.08 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  616.60 rmse=0.0267 len=8.08 t=648ms
+    glaube-1  cov=0.0859 erg=0.08427 ig=  724.40 rmse=0.0299 len=8.19 t=646ms
+    glaube    cov=0.0273 erg=0.02022 ig=  902.59 rmse=0.0071 len=26.19 t=1948ms
+    zweistufig cov=0.0445 erg=0.05701 ig=  876.86 rmse=0.0123 len=11.72 t=1302ms
+    glaube-D  cov=0.0295 erg=0.10497 ig=  949.89 rmse=0.0033 len=36.75 t=19675ms
+    maeher    cov=0.0294 erg=0.06053 ig=  723.90 rmse=0.0181 len=36.96 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      643.76    0.1167     6.35     674
+glaube-1          0.0538     0.04936      783.41    0.1052     6.19     655
+glaube-R          0.0240     0.02442      912.33    0.0536    25.71    1966
+zweistufig        0.0431     0.04588      877.21    0.0722    13.36    1307
+glaube-D          0.0215     0.02709      952.88    0.0285    26.85   19867
+maeher            0.0238     0.05728      699.52    0.0981    29.11       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 25.57):
+Mission           8.44     16.88     25.57
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0480    0.0310         —
+zweistufig      0.0628         —         —
+glaube-D        0.0456    0.0279         —
+maeher          0.2434    0.0892         —
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 1.6 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0511)
+[10:46] loch / mass
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=872ms
+    glaube-1  cov=0.0398 erg=0.06145 ig=  753.89 rmse=0.1421 len=9.57 t=651ms
+    glaube    cov=0.0208 erg=0.02475 ig=  928.07 rmse=0.0481 len=27.39 t=1966ms
+    zweistufig cov=0.0345 erg=0.02654 ig=  851.30 rmse=0.1021 len=17.38 t=1310ms
+    glaube-D  cov=0.0276 erg=0.07074 ig=  952.67 rmse=0.0345 len=31.65 t=19931ms
+    maeher    cov=0.0268 erg=0.05206 ig=  716.98 rmse=0.1013 len=31.68 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  787.41 rmse=0.1096 len=4.28 t=658ms
+    glaube-1  cov=0.0438 erg=0.03655 ig=  756.20 rmse=0.1289 len=8.28 t=663ms
+    glaube    cov=0.0216 erg=0.02186 ig=  917.12 rmse=0.0499 len=25.20 t=1981ms
+    zweistufig cov=0.0334 erg=0.03279 ig=  862.90 rmse=0.0871 len=16.13 t=1306ms
+    glaube-D  cov=0.0326 erg=0.15877 ig=  951.06 rmse=0.0372 len=31.32 t=19897ms
+    maeher    cov=0.0268 erg=0.05206 ig=  716.98 rmse=0.1041 len=31.68 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  544.75 rmse=0.1002 len=5.74 t=652ms
+    glaube-1  cov=0.0550 erg=0.03812 ig=  739.15 rmse=0.1043 len=9.56 t=655ms
+    glaube    cov=0.0274 erg=0.05426 ig=  924.87 rmse=0.0411 len=29.76 t=1954ms
+    zweistufig cov=0.0331 erg=0.05586 ig=  879.64 rmse=0.0721 len=18.41 t=1297ms
+    glaube-D  cov=0.0467 erg=0.18181 ig=  950.92 rmse=0.0352 len=35.76 t=19736ms
+    maeher    cov=0.0298 erg=0.04941 ig=  736.23 rmse=0.0831 len=36.08 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  780.87 rmse=0.1475 len=6.57 t=650ms
+    glaube-1  cov=0.0484 erg=0.07897 ig=  708.89 rmse=0.2089 len=9.71 t=649ms
+    glaube    cov=0.0213 erg=0.02974 ig=  915.87 rmse=0.0712 len=27.68 t=1973ms
+    zweistufig cov=0.0320 erg=0.03260 ig=  860.56 rmse=0.0966 len=16.12 t=1297ms
+    glaube-D  cov=0.0344 erg=0.11517 ig=  954.18 rmse=0.0440 len=32.52 t=19726ms
+    maeher    cov=0.0258 erg=0.05760 ig=  730.20 rmse=0.1151 len=32.56 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  864.44 rmse=0.1141 len=2.90 t=655ms
+    glaube-1  cov=0.0388 erg=0.02066 ig=  823.44 rmse=0.1294 len=8.75 t=651ms
+    glaube    cov=0.0185 erg=0.01979 ig=  921.60 rmse=0.0789 len=28.60 t=1949ms
+    zweistufig cov=0.0332 erg=0.01845 ig=  871.52 rmse=0.1532 len=17.43 t=1310ms
+    glaube-D  cov=0.0226 erg=0.07511 ig=  953.23 rmse=0.0545 len=29.94 t=19705ms
+    maeher    cov=0.0240 erg=0.04931 ig=  711.83 rmse=0.0994 len=29.92 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig=  496.68 rmse=0.0356 len=9.89 t=647ms
+    glaube-1  cov=0.0730 erg=0.06996 ig=  689.94 rmse=0.0344 len=8.67 t=648ms
+    glaube    cov=0.0293 erg=0.02283 ig=  926.01 rmse=0.0083 len=24.25 t=1948ms
+    zweistufig cov=0.0388 erg=0.02171 ig=  843.81 rmse=0.0138 len=19.56 t=1334ms
+    glaube-D  cov=0.0346 erg=0.04778 ig=  952.83 rmse=0.0030 len=33.37 t=19859ms
+    maeher    cov=0.0266 erg=0.01505 ig=  680.88 rmse=0.0251 len=33.44 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  705.74 rmse=0.0449 len=8.99 t=654ms
+    glaube-1  cov=0.0548 erg=0.02428 ig=  712.51 rmse=0.0351 len=8.10 t=654ms
+    glaube    cov=0.0263 erg=0.01948 ig=  922.77 rmse=0.0074 len=24.37 t=1955ms
+    zweistufig cov=0.0373 erg=0.01776 ig=  859.75 rmse=0.0144 len=16.03 t=1327ms
+    glaube-D  cov=0.0353 erg=0.08030 ig=  952.42 rmse=0.0032 len=31.64 t=19801ms
+    maeher    cov=0.0267 erg=0.04001 ig=  716.98 rmse=0.0394 len=31.68 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  238.67 rmse=0.1816 len=5.77 t=654ms
+    glaube-1  cov=0.0411 erg=0.06212 ig=  661.01 rmse=0.1233 len=9.66 t=649ms
+    glaube    cov=0.0215 erg=0.07558 ig=  894.72 rmse=0.0632 len=28.99 t=1952ms
+    zweistufig cov=0.0252 erg=0.09271 ig=  875.28 rmse=0.0773 len=18.67 t=1299ms
+    glaube-D  cov=0.0331 erg=0.22480 ig=  953.16 rmse=0.0337 len=29.40 t=19738ms
+    maeher    cov=0.0226 erg=0.16002 ig=  722.36 rmse=0.1297 len=29.04 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  632.24 rmse=0.2727 len=5.41 t=649ms
+    glaube-1  cov=0.0380 erg=0.02674 ig=  671.69 rmse=0.1659 len=9.38 t=657ms
+    glaube    cov=0.0226 erg=0.02849 ig=  925.76 rmse=0.0744 len=26.74 t=1951ms
+    zweistufig cov=0.0462 erg=0.03216 ig=  790.08 rmse=0.2156 len=17.26 t=1307ms
+    glaube-D  cov=0.0217 erg=0.04073 ig=  953.42 rmse=0.0533 len=30.95 t=19763ms
+    maeher    cov=0.0234 erg=0.06746 ig=  727.94 rmse=0.2030 len=30.80 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  627.04 rmse=0.1956 len=5.14 t=659ms
+    glaube-1  cov=0.0422 erg=0.02868 ig=  742.22 rmse=0.2685 len=7.64 t=653ms
+    glaube    cov=0.0212 erg=0.03615 ig=  912.69 rmse=0.1221 len=26.83 t=1957ms
+    zweistufig cov=0.0305 erg=0.02273 ig=  800.81 rmse=0.1572 len=18.34 t=1301ms
+    glaube-D  cov=0.0266 erg=0.09065 ig=  951.87 rmse=0.0427 len=34.50 t=19754ms
+    maeher    cov=0.0258 erg=0.07681 ig=  404.03 rmse=0.1560 len=34.32 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  732.86 rmse=0.0390 len=8.32 t=649ms
+    glaube-1  cov=0.0571 erg=0.02544 ig=  739.88 rmse=0.0397 len=7.23 t=651ms
+    glaube    cov=0.0294 erg=0.01014 ig=  914.06 rmse=0.0241 len=29.28 t=1958ms
+    zweistufig cov=0.0344 erg=0.00914 ig=  836.55 rmse=0.0392 len=17.86 t=1323ms
+    glaube-D  cov=0.0498 erg=0.10834 ig=  953.39 rmse=0.0085 len=31.96 t=19745ms
+    maeher    cov=0.0270 erg=0.01797 ig=  716.98 rmse=0.0449 len=31.68 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  616.60 rmse=0.0267 len=8.08 t=650ms
+    glaube-1  cov=0.0906 erg=0.06815 ig=  756.12 rmse=0.0208 len=7.88 t=662ms
+    glaube    cov=0.0274 erg=0.05281 ig=  924.02 rmse=0.0084 len=25.45 t=1951ms
+    zweistufig cov=0.0418 erg=0.04882 ig=  801.48 rmse=0.0197 len=17.54 t=1302ms
+    glaube-D  cov=0.0977 erg=0.23718 ig=  951.55 rmse=0.0029 len=32.29 t=19801ms
+    maeher    cov=0.0270 erg=0.06047 ig=  730.20 rmse=0.0132 len=32.56 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      643.76    0.1167     6.35     671
+glaube-1          0.0519     0.04509      729.58    0.1168     8.70     653
+glaube-R          0.0239     0.03299      918.96    0.0498    27.05    1958
+zweistufig        0.0350     0.03427      844.47    0.0874    17.56    1309
+glaube-D          0.0386     0.11928      952.56    0.0294    32.11   19788
+maeher            0.0260     0.05819      692.63    0.0929    32.12       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 26.97):
+Mission           8.90     17.80     26.97
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0530    0.0321         —
+zweistufig      0.0654         —         —
+glaube-D        0.0718    0.0496    0.0426
+maeher          0.2595    0.1037    0.0358
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.9 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0480)
+[10:51] loch / ei
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=841ms
+    glaube-1  cov=0.0625 erg=0.09858 ig=  694.59 rmse=0.0997 len=9.11 t=649ms
+    glaube    cov=0.0253 erg=0.02248 ig=  919.30 rmse=0.0570 len=23.98 t=1941ms
+    zweistufig cov=0.0407 erg=0.03910 ig=  868.42 rmse=0.0804 len=12.16 t=1290ms
+    glaube-D  cov=0.0385 erg=0.12866 ig=  950.65 rmse=0.0342 len=31.05 t=19568ms
+    maeher    cov=0.0239 erg=0.05116 ig=  727.94 rmse=0.1437 len=30.80 t=0ms
+
+[2/12] greek_upper_0
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0341 erg=0.01195 ig=  787.41 rmse=0.1096 len=4.28 t=645ms
+    glaube-1  cov=0.0574 erg=0.05480 ig=  718.32 rmse=0.0985 len=8.64 t=644ms
+    glaube    cov=0.0351 erg=0.06752 ig=  922.03 rmse=0.0528 len=14.29 t=1941ms
+    zweistufig cov=0.0450 erg=0.03088 ig=  894.92 rmse=0.0847 len=11.18 t=1288ms
+    glaube-D  cov=0.0400 erg=0.15765 ig=  951.75 rmse=0.0384 len=26.96 t=19625ms
+    maeher    cov=0.0226 erg=0.05062 ig=  665.72 rmse=0.1254 len=27.28 t=0ms
+
+[3/12] korean_5
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0509 erg=0.01867 ig=  544.75 rmse=0.1002 len=5.74 t=647ms
+    glaube-1  cov=0.0707 erg=0.07493 ig=  772.08 rmse=0.0653 len=7.90 t=675ms
+    glaube    cov=0.0368 erg=0.07634 ig=  917.46 rmse=0.0487 len=25.62 t=1966ms
+    zweistufig cov=0.0500 erg=0.09911 ig=  885.50 rmse=0.0659 len=10.73 t=1383ms
+    glaube-D  cov=0.0529 erg=0.20155 ig=  948.81 rmse=0.0374 len=31.24 t=21974ms
+    maeher    cov=0.0244 erg=0.04866 ig=  727.94 rmse=0.0885 len=30.80 t=0ms
+
+[4/12] digit_5
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0338 erg=0.00584 ig=  780.87 rmse=0.1475 len=6.57 t=698ms
+    glaube-1  cov=0.1311 erg=0.11141 ig=  820.05 rmse=0.1996 len=2.61 t=695ms
+    glaube    cov=0.0375 erg=0.08192 ig=  913.79 rmse=0.0786 len=14.85 t=2075ms
+    zweistufig cov=0.0375 erg=0.05260 ig=  891.82 rmse=0.1292 len=12.48 t=1378ms
+    glaube-D  cov=0.0421 erg=0.11227 ig=  952.32 rmse=0.0460 len=29.24 t=21000ms
+    maeher    cov=0.0224 erg=0.05577 ig=  722.36 rmse=0.1144 len=29.04 t=0ms
+
+[5/12] a_lc
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0419 erg=0.00751 ig=  864.44 rmse=0.1141 len=2.90 t=690ms
+    glaube-1  cov=0.0685 erg=0.02618 ig=  834.22 rmse=0.1459 len=2.60 t=696ms
+    glaube    cov=0.0309 erg=0.02702 ig=  916.69 rmse=0.0937 len=11.22 t=2063ms
+    zweistufig cov=0.0321 erg=0.01032 ig=  905.11 rmse=0.0822 len=14.07 t=1374ms
+    glaube-D  cov=0.0295 erg=0.07812 ig=  951.28 rmse=0.0591 len=26.75 t=20894ms
+    maeher    cov=0.0208 erg=0.04816 ig=  694.07 rmse=0.1223 len=26.40 t=0ms
+
+[6/12] rand_gmm_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0493 erg=0.03934 ig=  496.68 rmse=0.0356 len=9.89 t=686ms
+    glaube-1  cov=0.0817 erg=0.09211 ig=  673.50 rmse=0.0369 len=8.25 t=696ms
+    glaube    cov=0.0298 erg=0.02994 ig=  911.90 rmse=0.0119 len=26.05 t=2085ms
+    zweistufig cov=0.0495 erg=0.04871 ig=  877.93 rmse=0.0208 len=11.82 t=1341ms
+    glaube-D  cov=0.0552 erg=0.06696 ig=  948.35 rmse=0.0052 len=28.75 t=20817ms
+    maeher    cov=0.0231 erg=0.01503 ig=  722.36 rmse=0.0158 len=29.04 t=0ms
+
+[7/12] rand_gmm_20
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0483 erg=0.00794 ig=  705.74 rmse=0.0449 len=8.99 t=683ms
+    glaube-1  cov=0.0688 erg=0.05281 ig=  722.91 rmse=0.0365 len=7.63 t=705ms
+    glaube    cov=0.0305 erg=0.04706 ig=  918.59 rmse=0.0100 len=18.36 t=2098ms
+    zweistufig cov=0.0451 erg=0.04631 ig=  882.75 rmse=0.0114 len=12.35 t=1336ms
+    glaube-D  cov=0.0377 erg=0.08928 ig=  950.18 rmse=0.0035 len=30.06 t=20512ms
+    maeher    cov=0.0247 erg=0.03975 ig=  711.83 rmse=0.0227 len=29.92 t=0ms
+
+[8/12] rand_ana_poly_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0449 erg=0.02516 ig=  238.67 rmse=0.1816 len=5.77 t=665ms
+    glaube-1  cov=0.0612 erg=0.15366 ig=  728.38 rmse=0.1064 len=8.92 t=671ms
+    glaube    cov=0.0310 erg=0.09862 ig=  907.25 rmse=0.0679 len=22.44 t=2013ms
+    zweistufig cov=0.0474 erg=0.16575 ig=  887.42 rmse=0.0947 len=11.79 t=1354ms
+    glaube-D  cov=0.0285 erg=0.11023 ig=  952.60 rmse=0.0331 len=29.94 t=20318ms
+    maeher    cov=0.0242 erg=0.16006 ig=  711.83 rmse=0.1200 len=29.92 t=0ms
+
+[9/12] rand_ana_poly_20
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0370 erg=0.01049 ig=  632.24 rmse=0.2727 len=5.41 t=665ms
+    glaube-1  cov=0.0502 erg=0.03333 ig=  725.52 rmse=0.1338 len=9.24 t=658ms
+    glaube    cov=0.0235 erg=0.02407 ig=  916.33 rmse=0.0813 len=20.68 t=1996ms
+    zweistufig cov=0.0443 erg=0.04341 ig=  884.13 rmse=0.1512 len=10.62 t=1336ms
+    glaube-D  cov=0.0210 erg=0.03834 ig=  950.07 rmse=0.0559 len=33.06 t=20325ms
+    maeher    cov=0.0272 erg=0.06840 ig=  680.88 rmse=0.1701 len=33.44 t=0ms
+
+[10/12] rand_ana_poly_30
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0327 erg=0.01306 ig=  627.04 rmse=0.1956 len=5.14 t=672ms
+    glaube-1  cov=0.0524 erg=0.04734 ig=  743.50 rmse=0.2537 len=7.21 t=668ms
+    glaube    cov=0.0345 erg=0.04089 ig=  891.23 rmse=0.1228 len=23.13 t=1999ms
+    zweistufig cov=0.0431 erg=0.07735 ig=  876.99 rmse=0.1622 len=11.63 t=1330ms
+    glaube-D  cov=0.0326 erg=0.14812 ig=  951.21 rmse=0.0481 len=31.17 t=20134ms
+    maeher    cov=0.0238 erg=0.07629 ig=  727.94 rmse=0.1510 len=30.80 t=0ms
+
+[11/12] rand_gmm_complex_0
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0495 erg=0.01003 ig=  732.86 rmse=0.0390 len=8.32 t=668ms
+    glaube-1  cov=0.0621 erg=0.03709 ig=  760.38 rmse=0.0447 len=7.70 t=658ms
+    glaube    cov=0.0333 erg=0.01891 ig=  911.81 rmse=0.0247 len=24.14 t=1978ms
+    zweistufig cov=0.0462 erg=0.02784 ig=  871.20 rmse=0.0467 len=12.25 t=1327ms
+    glaube-D  cov=0.0360 erg=0.10855 ig=  952.27 rmse=0.0093 len=30.08 t=20213ms
+    maeher    cov=0.0249 erg=0.01781 ig=  711.83 rmse=0.0523 len=29.92 t=0ms
+
+[12/12] rand_gmm_complex_10
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0496 erg=0.02579 ig=  616.60 rmse=0.0267 len=8.08 t=657ms
+    glaube-1  cov=0.0776 erg=0.10339 ig=  733.40 rmse=0.0257 len=8.37 t=661ms
+    glaube    cov=0.0280 erg=0.05966 ig=  921.53 rmse=0.0064 len=26.66 t=1977ms
+    zweistufig cov=0.0532 erg=0.11984 ig=  877.87 rmse=0.0105 len=11.62 t=1327ms
+    glaube-D  cov=0.0964 erg=0.25634 ig=  938.45 rmse=0.0069 len=32.00 t=20058ms
+    maeher    cov=0.0271 erg=0.06048 ig=  716.98 rmse=0.0160 len=31.68 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      643.76    0.1167     6.35     685
+glaube-1          0.0704     0.07380      743.90    0.1039     7.35     673
+glaube-R          0.0313     0.04954      913.99    0.0546    20.95    2011
+zweistufig        0.0445     0.06344      883.67    0.0783    11.89    1339
+glaube-D          0.0425     0.12467      949.83    0.0314    30.03   20453
+maeher            0.0241     0.05768      710.14    0.0952    29.92       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 22.51):
+Mission           7.43     14.86     22.51
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0733         —         —
+glaube-R        0.0667    0.0434         —
+zweistufig      0.0661         —         —
+glaube-D        0.0755    0.0595    0.0496
+maeher          0.2799    0.1263    0.0439
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.3 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0547)
+[10:57] loch / lse
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=863ms
+    glaube-1  cov=0.0377 erg=0.01523 ig=  796.19 rmse=0.1843 len=4.99 t=655ms
+    glaube    cov=0.0336 erg=0.00764 ig=  876.74 rmse=0.0774 len=13.25 t=2001ms
+    zweistufig cov=0.0418 erg=0.03186 ig=  897.14 rmse=0.0899 len=7.70 t=1317ms
+    glaube-D  cov=0.0245 erg=0.05517 ig=  953.76 rmse=0.0355 len=26.27 t=20052ms
+    maeher    cov=0.0212 erg=0.05005 ig=  694.07 rmse=0.0976 len=26.40 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  787.41 rmse=0.1096 len=4.28 t=682ms
+    glaube-1  cov=0.0465 erg=0.01041 ig=  833.77 rmse=0.1025 len=3.43 t=659ms
+    glaube    cov=0.0312 erg=0.00730 ig=  881.48 rmse=0.1000 len=11.03 t=2007ms
+    zweistufig cov=0.0391 erg=0.02713 ig=  882.27 rmse=0.1126 len=6.74 t=1326ms
+    glaube-D  cov=0.0262 erg=0.05266 ig=  952.21 rmse=0.0359 len=27.77 t=20069ms
+    maeher    cov=0.0225 erg=0.05056 ig=  675.48 rmse=0.1053 len=28.16 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  544.75 rmse=0.1002 len=5.74 t=661ms
+    glaube-1  cov=0.0574 erg=0.00827 ig=  742.77 rmse=0.0836 len=4.47 t=669ms
+    glaube    cov=0.0377 erg=0.01089 ig=  904.76 rmse=0.0533 len=15.55 t=1995ms
+    zweistufig cov=0.0464 erg=0.04783 ig=  903.02 rmse=0.0641 len=7.65 t=1377ms
+    glaube-D  cov=0.0234 erg=0.03057 ig=  952.56 rmse=0.0341 len=32.24 t=20699ms
+    maeher    cov=0.0264 erg=0.04899 ig=  730.20 rmse=0.0767 len=32.56 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  780.87 rmse=0.1475 len=6.57 t=695ms
+    glaube-1  cov=0.0487 erg=0.01262 ig=  829.94 rmse=0.1383 len=4.43 t=695ms
+    glaube    cov=0.0387 erg=0.01180 ig=  901.06 rmse=0.1378 len=10.70 t=2069ms
+    zweistufig cov=0.0443 erg=0.03375 ig=  898.46 rmse=0.1418 len=8.39 t=1382ms
+    glaube-D  cov=0.0201 erg=0.01468 ig=  954.13 rmse=0.0434 len=24.63 t=20891ms
+    maeher    cov=0.0203 erg=0.05458 ig=  689.97 rmse=0.0940 len=24.64 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  864.44 rmse=0.1141 len=2.90 t=692ms
+    glaube-1  cov=0.0515 erg=0.00988 ig=  871.37 rmse=0.1303 len=2.44 t=704ms
+    glaube    cov=0.0381 erg=0.01106 ig=  918.93 rmse=0.0752 len=9.05 t=2079ms
+    zweistufig cov=0.0427 erg=0.02004 ig=  879.40 rmse=0.1038 len=7.00 t=1382ms
+    glaube-D  cov=0.0227 erg=0.02301 ig=  954.22 rmse=0.0563 len=24.15 t=20981ms
+    maeher    cov=0.0203 erg=0.04793 ig=  659.27 rmse=0.1216 len=23.76 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig=  496.68 rmse=0.0356 len=9.89 t=689ms
+    glaube-1  cov=0.0771 erg=0.03605 ig=  753.13 rmse=0.0351 len=4.86 t=692ms
+    glaube    cov=0.0561 erg=0.02002 ig=  882.20 rmse=0.0172 len=16.06 t=2082ms
+    zweistufig cov=0.0795 erg=0.05487 ig=  858.12 rmse=0.0363 len=8.58 t=1394ms
+    glaube-D  cov=0.0351 erg=0.01979 ig=  952.68 rmse=0.0028 len=26.66 t=21038ms
+    maeher    cov=0.0219 erg=0.01510 ig=  694.07 rmse=0.0232 len=26.40 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  705.74 rmse=0.0449 len=8.99 t=692ms
+    glaube-1  cov=0.0733 erg=0.01762 ig=  732.86 rmse=0.0241 len=4.45 t=697ms
+    glaube    cov=0.0604 erg=0.01888 ig=  832.24 rmse=0.0185 len=13.12 t=2075ms
+    zweistufig cov=0.0731 erg=0.03457 ig=  863.13 rmse=0.0134 len=8.67 t=1382ms
+    glaube-D  cov=0.0322 erg=0.04227 ig=  952.11 rmse=0.0031 len=29.07 t=21030ms
+    maeher    cov=0.0230 erg=0.03954 ig=  722.36 rmse=0.0243 len=29.04 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  238.67 rmse=0.1816 len=5.77 t=696ms
+    glaube-1  cov=0.0439 erg=0.01735 ig=  745.37 rmse=0.1872 len=5.22 t=695ms
+    glaube    cov=0.0278 erg=0.01017 ig=  883.72 rmse=0.0756 len=15.12 t=2089ms
+    zweistufig cov=0.0408 erg=0.03849 ig=  845.77 rmse=0.0686 len=7.36 t=1389ms
+    glaube-D  cov=0.0223 erg=0.07422 ig=  953.34 rmse=0.0349 len=25.77 t=20955ms
+    maeher    cov=0.0212 erg=0.16020 ig=  719.49 rmse=0.1371 len=25.52 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  632.24 rmse=0.2727 len=5.41 t=688ms
+    glaube-1  cov=0.0545 erg=0.02322 ig=  781.10 rmse=0.1906 len=3.30 t=693ms
+    glaube    cov=0.0315 erg=0.00950 ig=  877.33 rmse=0.1195 len=9.72 t=2084ms
+    zweistufig cov=0.0388 erg=0.01542 ig=  879.43 rmse=0.1099 len=7.06 t=1415ms
+    glaube-D  cov=0.0239 erg=0.04294 ig=  951.98 rmse=0.0582 len=26.11 t=21116ms
+    maeher    cov=0.0210 erg=0.06616 ig=  694.07 rmse=0.1890 len=26.40 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  627.04 rmse=0.1956 len=5.14 t=703ms
+    glaube-1  cov=0.0500 erg=0.00888 ig=  780.37 rmse=0.1351 len=3.97 t=689ms
+    glaube    cov=0.0299 erg=0.01239 ig=  904.36 rmse=0.0996 len=13.47 t=2091ms
+    zweistufig cov=0.0333 erg=0.04154 ig=  897.60 rmse=0.0886 len=8.26 t=1409ms
+    glaube-D  cov=0.0237 erg=0.05643 ig=  952.15 rmse=0.0442 len=27.93 t=21152ms
+    maeher    cov=0.0223 erg=0.07589 ig=  675.48 rmse=0.2092 len=28.16 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  732.86 rmse=0.0390 len=8.32 t=701ms
+    glaube-1  cov=0.0933 erg=0.03365 ig=  778.09 rmse=0.0437 len=3.80 t=691ms
+    glaube    cov=0.0854 erg=0.02846 ig=  861.78 rmse=0.0744 len=11.60 t=2075ms
+    zweistufig cov=0.0985 erg=0.04736 ig=  852.60 rmse=0.0561 len=6.92 t=1398ms
+    glaube-D  cov=0.0385 erg=0.08434 ig=  953.45 rmse=0.0089 len=30.54 t=21073ms
+    maeher    cov=0.0248 erg=0.01777 ig=  727.94 rmse=0.0673 len=30.80 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  616.60 rmse=0.0267 len=8.08 t=695ms
+    glaube-1  cov=0.0987 erg=0.03818 ig=  787.65 rmse=0.0163 len=3.76 t=691ms
+    glaube    cov=0.0784 erg=0.03999 ig=  874.11 rmse=0.0194 len=12.75 t=2088ms
+    zweistufig cov=0.0908 erg=0.05533 ig=  871.66 rmse=0.0121 len=7.16 t=1395ms
+    glaube-D  cov=0.0392 erg=0.08383 ig=  950.21 rmse=0.0030 len=25.90 t=21055ms
+    maeher    cov=0.0225 erg=0.06049 ig=  719.49 rmse=0.0260 len=25.52 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      643.76    0.1167     6.35     705
+glaube-1          0.0611     0.01928      786.05    0.1059     4.09     686
+glaube-R          0.0457     0.01567      883.22    0.0723    12.62    2061
+zweistufig        0.0558     0.03735      877.38    0.0748     7.62    1380
+glaube-D          0.0277     0.04832      952.73    0.0300    27.25   20843
+maeher            0.0223     0.05727      700.16    0.0976    27.28       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 12.80):
+Mission           4.22      8.45     12.80
+-------------------------------------------
+orakel          0.0661         —         —
+glaube-1             —         —         —
+glaube-R        0.0591    0.0499         —
+zweistufig      0.0995         —         —
+glaube-D        0.0680    0.0450    0.0377
+maeher          0.3583    0.2345    0.1393
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.2 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0654)
+[11:04] loch / mi
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/12] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=911ms
+    glaube-1  cov=0.0450 erg=0.03839 ig=  809.20 rmse=0.1072 len=5.60 t=688ms
+    glaube    cov=0.0171 erg=0.00551 ig=  899.87 rmse=0.0724 len=18.64 t=2056ms
+    zweistufig cov=0.0273 erg=0.02413 ig=  899.45 rmse=0.0639 len=8.54 t=1389ms
+    glaube-D  cov=0.0187 erg=0.02470 ig=  954.32 rmse=0.0344 len=22.59 t=21029ms
+    maeher    cov=0.0196 erg=0.04939 ig=  703.43 rmse=0.1217 len=22.88 t=0ms
+
+[2/12] greek_upper_0
+    orakel    cov=0.0341 erg=0.01195 ig=  787.41 rmse=0.1096 len=4.28 t=699ms
+    glaube-1  cov=0.0440 erg=0.01789 ig=  783.42 rmse=0.1187 len=5.29 t=689ms
+    glaube    cov=0.0217 erg=0.01296 ig=  897.22 rmse=0.1430 len=15.71 t=2089ms
+    zweistufig cov=0.0309 erg=0.02062 ig=  887.82 rmse=0.1214 len=7.31 t=1385ms
+    glaube-D  cov=0.0204 erg=0.06246 ig=  952.84 rmse=0.0349 len=27.56 t=21005ms
+    maeher    cov=0.0226 erg=0.05062 ig=  665.72 rmse=0.1254 len=27.28 t=0ms
+
+[3/12] korean_5
+    orakel    cov=0.0509 erg=0.01867 ig=  544.75 rmse=0.1002 len=5.74 t=693ms
+    glaube-1  cov=0.0446 erg=0.01293 ig=  823.63 rmse=0.0765 len=6.55 t=698ms
+    glaube    cov=0.0235 erg=0.00411 ig=  908.23 rmse=0.0538 len=19.84 t=2078ms
+    zweistufig cov=0.0352 erg=0.03806 ig=  894.53 rmse=0.0532 len=8.69 t=1381ms
+    glaube-D  cov=0.0229 erg=0.01774 ig=  952.51 rmse=0.0339 len=32.74 t=20922ms
+    maeher    cov=0.0264 erg=0.04899 ig=  730.20 rmse=0.0767 len=32.56 t=0ms
+
+[4/12] digit_5
+    orakel    cov=0.0338 erg=0.00584 ig=  780.87 rmse=0.1475 len=6.57 t=696ms
+    glaube-1  cov=0.0432 erg=0.03033 ig=  795.20 rmse=0.1211 len=6.42 t=689ms
+    glaube    cov=0.0192 erg=0.00622 ig=  928.87 rmse=0.0675 len=17.35 t=2068ms
+    zweistufig cov=0.0317 erg=0.02543 ig=  913.49 rmse=0.0748 len=8.90 t=1389ms
+    glaube-D  cov=0.0182 erg=0.01088 ig=  955.22 rmse=0.0439 len=26.42 t=20918ms
+    maeher    cov=0.0210 erg=0.05512 ig=  694.07 rmse=0.1168 len=26.40 t=0ms
+
+[5/12] a_lc
+    orakel    cov=0.0419 erg=0.00751 ig=  864.44 rmse=0.1141 len=2.90 t=707ms
+    glaube-1  cov=0.0446 erg=0.01294 ig=  864.99 rmse=0.1140 len=3.59 t=690ms
+    glaube    cov=0.0201 erg=0.00705 ig=  925.60 rmse=0.0953 len=11.77 t=2086ms
+    zweistufig cov=0.0259 erg=0.00683 ig=  906.13 rmse=0.0881 len=7.53 t=1386ms
+    glaube-D  cov=0.0170 erg=0.01762 ig=  955.76 rmse=0.0521 len=20.21 t=21134ms
+    maeher    cov=0.0188 erg=0.04727 ig=  686.77 rmse=0.1158 len=20.24 t=0ms
+
+[6/12] rand_gmm_10
+    orakel    cov=0.0493 erg=0.03934 ig=  496.68 rmse=0.0356 len=9.89 t=691ms
+    glaube-1  cov=0.0649 erg=0.04701 ig=  699.30 rmse=0.0327 len=8.92 t=695ms
+    glaube    cov=0.0264 erg=0.00701 ig=  910.04 rmse=0.0099 len=27.48 t=2086ms
+    zweistufig cov=0.0443 erg=0.03484 ig=  879.24 rmse=0.0132 len=12.33 t=1371ms
+    glaube-D  cov=0.0267 erg=0.01738 ig=  950.57 rmse=0.0034 len=36.27 t=21031ms
+    maeher    cov=0.0292 erg=0.01513 ig=  736.23 rmse=0.0188 len=36.08 t=0ms
+
+[7/12] rand_gmm_20
+    orakel    cov=0.0483 erg=0.00794 ig=  705.74 rmse=0.0449 len=8.99 t=689ms
+    glaube-1  cov=0.0523 erg=0.01641 ig=  692.40 rmse=0.0373 len=8.20 t=686ms
+    glaube    cov=0.0277 erg=0.00413 ig=  876.87 rmse=0.0220 len=27.97 t=2123ms
+    zweistufig cov=0.0486 erg=0.02746 ig=  868.12 rmse=0.0110 len=11.67 t=1382ms
+    glaube-D  cov=0.0259 erg=0.02623 ig=  951.09 rmse=0.0036 len=38.60 t=21043ms
+    maeher    cov=0.0326 erg=0.04084 ig=  693.67 rmse=0.0305 len=38.72 t=0ms
+
+[8/12] rand_ana_poly_10
+    orakel    cov=0.0449 erg=0.02516 ig=  238.67 rmse=0.1816 len=5.77 t=688ms
+    glaube-1  cov=0.0527 erg=0.07952 ig=  750.76 rmse=0.1119 len=5.59 t=687ms
+    glaube    cov=0.0210 erg=0.01258 ig=  872.73 rmse=0.0628 len=18.26 t=2061ms
+    zweistufig cov=0.0311 erg=0.04507 ig=  872.16 rmse=0.0660 len=8.76 t=1386ms
+    glaube-D  cov=0.0184 erg=0.05662 ig=  952.32 rmse=0.0328 len=24.82 t=20973ms
+    maeher    cov=0.0200 erg=0.16023 ig=  689.97 rmse=0.1085 len=24.64 t=0ms
+
+[9/12] rand_ana_poly_20
+    orakel    cov=0.0370 erg=0.01049 ig=  632.24 rmse=0.2727 len=5.41 t=696ms
+    glaube-1  cov=0.0439 erg=0.01706 ig=  758.63 rmse=0.1553 len=5.15 t=691ms
+    glaube    cov=0.0181 erg=0.00956 ig=  898.45 rmse=0.1092 len=13.96 t=2077ms
+    zweistufig cov=0.0257 erg=0.00963 ig=  887.20 rmse=0.0963 len=8.17 t=1399ms
+    glaube-D  cov=0.0149 erg=0.01064 ig=  952.24 rmse=0.0627 len=21.91 t=20991ms
+    maeher    cov=0.0188 erg=0.06501 ig=  737.00 rmse=0.1461 len=22.00 t=0ms
+
+[10/12] rand_ana_poly_30
+    orakel    cov=0.0327 erg=0.01306 ig=  627.04 rmse=0.1956 len=5.14 t=688ms
+    glaube-1  cov=0.0392 erg=0.03432 ig=  825.78 rmse=0.1564 len=6.24 t=687ms
+    glaube    cov=0.0196 erg=0.02116 ig=  872.79 rmse=0.1282 len=16.50 t=2067ms
+    zweistufig cov=0.0295 erg=0.03247 ig=  895.40 rmse=0.1067 len=9.66 t=1383ms
+    glaube-D  cov=0.0189 erg=0.00764 ig=  951.42 rmse=0.0408 len=21.60 t=20978ms
+    maeher    cov=0.0188 erg=0.07498 ig=  737.00 rmse=0.1889 len=22.00 t=0ms
+
+[11/12] rand_gmm_complex_0
+    orakel    cov=0.0495 erg=0.01003 ig=  732.86 rmse=0.0390 len=8.32 t=689ms
+    glaube-1  cov=0.0565 erg=0.02268 ig=  735.95 rmse=0.0333 len=7.19 t=692ms
+    glaube    cov=0.0294 erg=0.00751 ig=  884.06 rmse=0.0336 len=30.15 t=2138ms
+    zweistufig cov=0.0463 erg=0.02035 ig=  866.67 rmse=0.0564 len=11.86 t=1377ms
+    glaube-D  cov=0.0267 erg=0.02284 ig=  951.32 rmse=0.0095 len=37.19 t=20919ms
+    maeher    cov=0.0290 erg=0.01810 ig=  723.90 rmse=0.0455 len=36.96 t=0ms
+
+[12/12] rand_gmm_complex_10
+    orakel    cov=0.0496 erg=0.02579 ig=  616.60 rmse=0.0267 len=8.08 t=695ms
+    glaube-1  cov=0.0831 erg=0.04622 ig=  722.08 rmse=0.0292 len=8.05 t=688ms
+    glaube    cov=0.0267 erg=0.01055 ig=  883.31 rmse=0.0119 len=27.22 t=2076ms
+    zweistufig cov=0.0434 erg=0.05666 ig=  874.12 rmse=0.0147 len=11.27 t=1380ms
+    glaube-D  cov=0.0287 erg=0.08309 ig=  951.45 rmse=0.0029 len=39.78 t=20901ms
+    maeher    cov=0.0329 erg=0.06071 ig=  675.00 rmse=0.0176 len=39.60 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0426     0.01627      643.76    0.1167     6.35     712
+glaube-1          0.0512     0.03131      771.78    0.0911     6.40     690
+glaube-R          0.0225     0.00903      896.50    0.0675    20.41    2084
+zweistufig        0.0350     0.02846      887.03    0.0638     9.56    1384
+glaube-D          0.0214     0.02982      952.59    0.0296    29.14   20987
+maeher            0.0241     0.05720      706.08    0.0927    29.11       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 18.43):
+Mission           6.08     12.16     18.43
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0538    0.0339         —
+zweistufig      0.0618         —         —
+glaube-D        0.0523    0.0334    0.0270
+maeher          0.3064    0.1613    0.0781
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.0 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0425)
+[11:10] loch / eid

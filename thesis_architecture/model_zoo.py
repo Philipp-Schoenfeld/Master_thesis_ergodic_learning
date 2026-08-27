@@ -21,11 +21,20 @@ def load_model(ckpt_path, device):
     Returns (model, kind, meta) where kind is 'selfsup' or 'flow'. The type is
     read from the checkpoint's own `selfsupervised` flag, so nothing has to be
     inferred from the file name.
+
+    Flow checkpoints additionally carry `start_cond`/`length_cond` flags —
+    each adds extra parameters to the state dict (`start_emb.*`,
+    `length_emb.*`), so the wrong architecture class fails to load with an
+    "unexpected key" error rather than silently producing nonsense. The three
+    flow architectures are strictly nested (base ⊂ start ⊂ start+length), so
+    checking the flags picks the exact matching module.
     """
     ckpt = torch.load(ckpt_path, map_location=device, weights_only=True)
     nxi = ckpt.get('nxi', 25)
     nd = ckpt.get('nd', 2)
     D = ckpt.get('D', 384)
+    start_cond = bool(ckpt.get('start_cond', False))
+    length_cond = bool(ckpt.get('length_cond', False))
     meta = dict(
         nxi=nxi, nd=nd, D=D,
         n_particles=ckpt.get('n_particles', 256),
@@ -35,17 +44,36 @@ def load_model(ckpt_path, device):
         diversity_weight=ckpt.get('diversity_weight'),
         lambda_erg=ckpt.get('lambda_erg', 0.0),
         use_obstacle=ckpt.get('use_obstacle', False),
+        start_cond=start_cond,
+        length_cond=length_cond,
+        log_ref=ckpt.get('log_ref', 5.0),
+        log_scale=ckpt.get('log_scale', 1.5),
     )
 
     if ckpt.get('selfsupervised', False):
         from flow_matching_particles_selfsupervised import SelfSupervisedParticleGenerator
         model = SelfSupervisedParticleGenerator(nxi=nxi, nd=nd, D=D).to(device)
         kind = 'selfsup'
+        module = 'flow_matching_particles_selfsupervised'
+    elif length_cond:
+        from flow_matching_cond_particles_length import ParticleCrossAttnFlowNetwork
+        model = ParticleCrossAttnFlowNetwork(
+            nxi=nxi, nd=nd, D=D, log_ref=meta['log_ref'],
+            log_scale=meta['log_scale']).to(device)
+        kind = 'flow'
+        module = 'flow_matching_cond_particles_length'
+    elif start_cond:
+        from flow_matching_cond_particles_start import ParticleCrossAttnFlowNetwork
+        model = ParticleCrossAttnFlowNetwork(nxi=nxi, nd=nd, D=D).to(device)
+        kind = 'flow'
+        module = 'flow_matching_cond_particles_start'
     else:
         from flow_matching_cond_particles_crossattn import ParticleCrossAttnFlowNetwork
         model = ParticleCrossAttnFlowNetwork(nxi=nxi, nd=nd, D=D).to(device)
         kind = 'flow'
+        module = 'flow_matching_cond_particles_crossattn'
 
+    meta['_module'] = module
     model.load_state_dict(ckpt['model_state_dict'])
     model.eval()
     return model, kind, meta
@@ -65,13 +93,18 @@ def describe(kind, meta):
 @torch.no_grad()
 def generate(model, kind, particles, n_samples, meta, steps, device, seed,
              obstacle=None, obstacle_weight=20.0, obstacle_t_start=0.3,
-             polish_steps=250):
+             polish_steps=250, start=None, length=None, length_cfg_weight=0.0):
     """n trajectories for one conditioning. Returns (cps, seconds).
 
     `obstacle` applies the inference-time repulsion. The flow models steer around
     it during integration; the single-pass generator has no integration to steer,
     so its output is pushed out afterwards by the same penalty descent — the
     guarantee (no penetration) is identical, only the route there differs.
+
+    `start`/`length` are only meaningful for checkpoints with `start_cond`/
+    `length_cond` set (see `load_model`) — passing them for a base checkpoint
+    would raise, since its `generate_particle_trajectories` has no such
+    parameter, so callers should gate on `meta['start_cond']`/`meta['length_cond']`.
     """
     dev = torch.device(device) if isinstance(device, str) else device
     g = torch.Generator(device=dev).manual_seed(seed)
@@ -87,13 +120,21 @@ def generate(model, kind, particles, n_samples, meta, steps, device, seed,
             B = basis_torch(meta['nxi'], 256, 5, device=dev)
             cps = polish_out_of_obstacle(cps, obstacle, B, max_iters=polish_steps)
     else:
-        from flow_matching_cond_particles_crossattn import generate_particle_trajectories
-        cps, _ = generate_particle_trajectories(
-            model, particles, num_samples=n_samples,
+        import importlib
+        gen_mod = importlib.import_module(meta.get('_module', 'flow_matching_cond_particles_crossattn'))
+        generate_particle_trajectories = gen_mod.generate_particle_trajectories
+        kwargs = dict(
+            num_samples=n_samples,
             nxi=meta['nxi'], nd=meta['nd'], steps=steps, device=str(dev),
             cfg_weight=meta['cfg_weight'], generator=g,
             obstacle=obstacle, obstacle_weight=obstacle_weight,
             obstacle_t_start=obstacle_t_start, polish_steps=polish_steps)
+        if meta.get('start_cond') and start is not None:
+            kwargs['start'] = start
+        if meta.get('length_cond') and length is not None:
+            kwargs['length'] = length
+            kwargs['length_cfg_weight'] = length_cfg_weight
+        cps, _ = generate_particle_trajectories(model, particles, **kwargs)
 
     if dev.type == 'cuda':
         torch.cuda.synchronize()

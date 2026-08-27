@@ -145,7 +145,7 @@ def save_grid(panels, title, save_path, max_cols=5):
     plt.tight_layout()
     plt.savefig(save_path, dpi=150, bbox_inches='tight', facecolor='white')
     plt.close()
-    print(f"  Saved → {save_path}")
+    print(f"  Saved -> {save_path}")
 
 
 # ── Load holdout shapes from DB ───────────────────────────────────────────────
@@ -209,7 +209,8 @@ def render_checkpoint(ckpt_path, out_dir=None, n_gen=5, steps=100,
                       select_best=True, select_by='total', obstacle_mode='both',
                       device=None, grid_res=64, erg_K=K_DEFAULT, solver_T=100,
                       bspline_deg=5, seed=0, max_cols=5, n_particles=None,
-                      obstacle_weight=20.0, obstacle_t_start=0.3, quiet=False):
+                      obstacle_weight=20.0, obstacle_t_start=0.3, quiet=False,
+                      length=None, length_cfg_weight=0.0):
     """Holdout figures for one checkpoint. Returns {variant: path}.
 
     With `select_best`, the n generated candidates are scored with the solver's
@@ -268,7 +269,8 @@ def render_checkpoint(ckpt_path, out_dir=None, n_gen=5, steps=100,
             cps, _ = generate(model, kind, parts, n_gen, meta, steps, device,
                               seed + i, obstacle=obstacle,
                               obstacle_weight=obstacle_weight,
-                              obstacle_t_start=obstacle_t_start)
+                              obstacle_t_start=obstacle_t_start,
+                              length=length, length_cfg_weight=length_cfg_weight)
 
             s = _score_candidates(cps, energy, phi, dens_t, basis)
             if select_best:
@@ -297,7 +299,10 @@ def render_checkpoint(ckpt_path, out_dir=None, n_gen=5, steps=100,
                  f"coverage {mean['coverage']:.4f}   "
                  f"Pfadlänge {mean['path_len']:.2f}")
 
-        path = os.path.join(out_dir, f"viz_{stem}_{vname}obstacle_{stamp}.png")
+        suffix = f"_{vname}obstacle"
+        if length is not None:
+            suffix += f"_L{length:.1f}"
+        path = os.path.join(out_dir, f"viz_{stem}{suffix}_{stamp}.png")
         save_grid(panels, head, path, max_cols=max_cols)
         written[vname] = path
         if not quiet:
@@ -334,6 +339,8 @@ def main():
     p.add_argument('--max_cols', type=int, default=5)
     p.add_argument('--seed', type=int, default=0)
     p.add_argument('--device', default=None)
+    p.add_argument('--length', type=float, default=None, help='Target length for length-conditioned models.')
+    p.add_argument('--length_cfg_weight', type=float, default=0.0, help='CFG weight for length conditioning.')
     args = p.parse_args()
 
     for ck in args.checkpoint:
@@ -348,7 +355,8 @@ def main():
             grid_res=args.grid_res, erg_K=args.erg_K, solver_T=args.solver_T,
             bspline_deg=args.bspline_deg, seed=args.seed, max_cols=args.max_cols,
             n_particles=args.n_particles, obstacle_weight=args.obstacle_weight,
-            obstacle_t_start=args.obstacle_t_start)
+            obstacle_t_start=args.obstacle_t_start,
+            length=args.length, length_cfg_weight=args.length_cfg_weight)
     print()
 
 

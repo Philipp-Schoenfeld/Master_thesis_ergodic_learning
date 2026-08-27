@@ -1,0 +1,34 @@
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cuda  n_samples=8  ODE steps=100
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r64_K10_669659e0dab5.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] 2D_Laenge  (D=384, N=256)  lambda_erg=1300.0
+
+==============================================================================================================
+  Mittelwerte über 25 Holdout-Formen (niedriger ist besser, außer diversity)
+==============================================================================================================
+  Modell                                          E_ergodic   E_total  coverage  path_len  diversity t/traj [ms]
+  ----------------------------------------------------------------------------------------------------------
+  2D_Laenge                                          4.0047     7.423    0.0448     6.502     0.3070       419.2
+ *SVGD solver (Referenz)                             0.9238     2.188    0.0332     3.959          —           —
+  ----------------------------------------------------------------------------------------------------------
+  * bester ergodischer Wert. E_total ist die vollständige Solver-Zielfunktion.
+
+  Geschrieben nach ../visualisierungen/02_holdout_vergleich/metriken/2d_laenge/: summary.csv, per_shape.csv, results.json
+
+==============================================================================================================
+  Visualisierung (beste von 5, Hindernis: both)
+==============================================================================================================
+
+  2D_Laenge
+  [off] generating 25 shapes (5 candidates each)...
+  Saved → ../visualisierungen/02_holdout_vergleich/2d_laenge\viz_netz2d_laenge_offobstacle_20260826_14h14min.png
+         E_ergodic=3.200  E_total=5.975  coverage=0.0440
+  [on ] generating 25 shapes (5 candidates each)...
+  Saved → ../visualisierungen/02_holdout_vergleich/2d_laenge\viz_netz2d_laenge_onobstacle_20260826_14h14min.png
+         E_ergodic=3.344  E_total=6.309  coverage=0.0455
+
+PHASE2A_DONE exit=0

@@ -123,8 +123,13 @@ class GradientPlanner(BasePlanner):
         return (e.Lambda * (c - phi) ** 2).sum(dim=-1)
 
     def plan(self, particles, n_candidates=1, init=None, history=None,
-             start=None):
+             start=None, length=None, length_cfg_weight=0.0):
         """`history` ist die bereits abgefahrene Bahn.
+
+        `length`/`length_cfg_weight` gehoeren zur laengenkonditionierten
+        `CfmPlanner`-Schnittstelle und werden hier ignoriert — der
+        Gradientenplaner hat sein eigenes `target_length` (siehe
+        `_regularisers`), nicht abhaengig vom Aufrufer.
 
         Sie wird der Abdeckung vorangestellt, statt ignoriert zu werden. Das ist
         die Buchfuehrung, an der Receding-Horizon-Verfahren scheitern, wenn man
@@ -207,13 +212,19 @@ class ModelPlanner(BasePlanner):
         self.model.load_state_dict(ck['model_state_dict'])
         self.model.eval()
 
-    def plan(self, particles, n_candidates=1, init=None, start=None):
+    def plan(self, particles, n_candidates=1, init=None, start=None,
+             length=None, length_cfg_weight=0.0):
         """`start` wirkt nur bei einem startpunkt-konditionierten Checkpoint.
 
         Dort geht der Punkt als FiLM-Konditionierung ins Netz und der erste
         Kontrollpunkt wird anschliessend hart darauf gesetzt. Bei einem alten
         Checkpoint wird er stillschweigend ignoriert — der Aufrufer muss
         `start_cond` pruefen, wenn er sich darauf verlassen will.
+
+        `length`/`length_cfg_weight` sind hier ebenso stillschweigend
+        ignoriert: diese Klasse laedt immer die Basis- oder
+        Startpunkt-Architektur, nie die laengenkonditionierte — dafuer ist
+        `CfmPlanner` in `apply_cfm_belief.py` zustaendig.
         """
         t0 = time.perf_counter()
         kw = {}

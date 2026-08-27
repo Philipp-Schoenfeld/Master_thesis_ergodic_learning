@@ -91,7 +91,8 @@ from common.baselines import lawnmower_path
 from common.belief import GPBelief, MaskiertesWissen, muster_maske
 from common.data import load_truth
 from common.metrics import (anytime_curve, at_budget, belief_rmse,
-                            coverage_vs_truth, information_gain, path_length)
+                            coverage_vs_truth, information_gain, path_length,
+                            trim_to_length)
 from common.observation import measure, thin
 from common.planner import GradientPlanner
 
@@ -197,11 +198,22 @@ class CfmPlanner:
             nxi = ck.get('nxi', nxi)
             D = ck.get('D', D)
             n_particles = ck.get('n_particles', n_particles)
-        # Startpunkt-konditionierte Checkpoints tragen `start_cond` und
-        # brauchen die andere Architektur — sie haben einen zusaetzlichen
-        # `start_emb`-Block, den das alte Netz nicht laden kann.
+        # Startpunkt-/Laengen-konditionierte Checkpoints tragen `start_cond`
+        # bzw. `length_cond` und brauchen die passende Architektur — jede
+        # Stufe fuegt einen zusaetzlichen Einbettungsblock hinzu
+        # (`start_emb`, `length_emb`), den eine kleinere Architektur nicht
+        # laden kann. Die drei Varianten sind strikt geschachtelt
+        # (Basis ⊂ Start ⊂ Start+Laenge), also entscheidet zuerst das
+        # staerkste Flag.
         self.start_cond = bool(ck.get('start_cond', False)) if ck else False
-        if self.start_cond:
+        self.length_cond = bool(ck.get('length_cond', False)) if ck else False
+        extra_kw = {}
+        if self.length_cond:
+            from flow_matching_cond_particles_length import (
+                ParticleCrossAttnFlowNetwork, generate_particle_trajectories)
+            extra_kw['log_ref'] = ck.get('log_ref', 5.0)
+            extra_kw['log_scale'] = ck.get('log_scale', 1.5)
+        elif self.start_cond:
             from flow_matching_cond_particles_start import (
                 ParticleCrossAttnFlowNetwork, generate_particle_trajectories)
         else:
@@ -214,7 +226,7 @@ class CfmPlanner:
             bspline_basis_matrix(nxi, pts, deg)).float().to(self.device)
         # `n_particles` ist ein reiner Datenparameter — der Tokenizer arbeitet
         # ueber die Sequenzachse und kennt keine feste Wolkengroesse.
-        self.model = ParticleCrossAttnFlowNetwork(nxi=nxi, D=D).to(self.device)
+        self.model = ParticleCrossAttnFlowNetwork(nxi=nxi, D=D, **extra_kw).to(self.device)
         if ck is not None:
             self.model.load_state_dict(ck['model_state_dict'])
         self.model.eval()
@@ -223,17 +235,24 @@ class CfmPlanner:
     def render(self, cps):
         return torch.einsum('pi,kid->kpd', self.B, cps.float().to(self.device))
 
-    def plan(self, particles, n_candidates=1, start=None):
-        """`start` wirkt nur bei einem startpunkt-konditionierten Checkpoint.
+    def plan(self, particles, n_candidates=1, start=None, length=None,
+             length_cfg_weight=0.0):
+        """`start` wirkt nur bei einem startpunkt-konditionierten Checkpoint,
+        `length` nur bei einem zusaetzlich laengen-konditionierten.
 
-        Dort geht der Punkt als FiLM-Konditionierung ins Netz, und der erste
-        Kontrollpunkt wird anschliessend hart darauf gesetzt. Bei einem alten
-        Checkpoint wird er ignoriert.
+        Beide gehen als FiLM-Konditionierung ins Netz; der Startpunkt wird
+        danach zusaetzlich hart auf den ersten Kontrollpunkt gesetzt. Bei
+        einem Checkpoint ohne das jeweilige Flag wird der Wert ignoriert,
+        statt einen Fehler zu werfen — Aufrufer muessen also nicht selbst
+        pruefen, was ein Checkpoint kann.
         """
         t0 = time.perf_counter()
         kw = {}
         if start is not None and self.start_cond:
             kw['start'] = start.to(self.device).reshape(-1)
+        if length is not None and self.length_cond:
+            kw['length'] = length
+            kw['length_cfg_weight'] = length_cfg_weight
         out = self._gen(self.model, particles.to(self.device),
                         num_samples=n_candidates, nxi=self.nxi,
                         steps=self.steps, device=str(self.device),
@@ -259,12 +278,36 @@ def best_candidate(curves, phi):
 
 def run_mission(planner, truth, belief0, args, mode, rounds, ergodic,
                 use_truth_density=False, generator=None):
-    """Eine Mission auf einer Form. -> dict mit Bahn, Runden und Metriken."""
+    """Eine Mission auf einer Form. -> dict mit Bahn, Runden und Metriken.
+
+    Mit `args.path_budget` gesetzt UND `rounds > 1` (glaube-R): die
+    Rundenschleife laeuft nicht mehr ueber eine feste Rundenzahl, sondern bis
+    die gefahrene Weglaenge das Budget erreicht; die letzte Runde wird exakt
+    darauf zugeschnitten (`trim_to_length`). Der kappa-Zeitplan folgt dann dem
+    Budget-Fortschritt (gefahrene Laenge / Budget) statt dem Rundenfortschritt
+    — sonst waere eine budgetierte Mission bei Abbruch immer "unteranneal": am
+    Rundenfortschritt gemessen haette sie noch gar nicht auf Ausbeuten
+    umgeschaltet.
+
+    Einrunden-Missionen (`rounds == 1`: orakel, glaube-1) bleiben davon
+    unberuehrt bis auf das Zuschneiden selbst — sie sollen per Definition eine
+    einzige Planung bleiben, nicht zu einer replanenden Mission werden, nur
+    weil ein Budget angegeben ist.
+    """
     belief = belief0.clone()
     seg_curves, rounds_log = [], []
     wallclock = 0.0
 
-    for r in range(rounds):
+    budget = getattr(args, 'path_budget', None)
+    budget_driven = budget is not None and rounds > 1
+    max_rounds = max(rounds, 60) if budget_driven else rounds
+
+    r = 0
+    while r < max_rounds:
+        so_far = path_length(torch.cat(seg_curves, dim=0)) if seg_curves else 0.0
+        if budget_driven and so_far >= budget - 1e-6:
+            break
+
         # ---- Zieldichte fuer diese Runde ---------------------------------
         if use_truth_density:
             phi = truth.to(args.device)
@@ -272,7 +315,11 @@ def run_mission(planner, truth, belief0, args, mode, rounds, ergodic,
             kap = float('nan')
         else:
             mu, sd = belief.posterior_grid()
-            kap = kappa_schedule(r, rounds, args.kappa0, args.kappa1)
+            if budget_driven:
+                progress = min(1.0, so_far / budget)
+                kap = args.kappa0 + (args.kappa1 - args.kappa0) * progress
+            else:
+                kap = kappa_schedule(r, rounds, args.kappa0, args.kappa1)
             # norm='max': Trainingskonvention des Gewichtskanals, siehe Modulkopf
             phi = zieldichte(mu, sd, kap, args)
             if r == 0 and is_degenerate(phi):
@@ -287,7 +334,9 @@ def run_mission(planner, truth, belief0, args, mode, rounds, ergodic,
         # ---- Planen -------------------------------------------------------
         # Beide Planer bekommen dieselbe Wolke (N,3) und *keine* Historie:
         # getestet wird ja gerade, ob Phi die Historie ersetzt.
-        cps = planner.plan(parts, n_candidates=args.n_candidates)
+        cps = planner.plan(parts, n_candidates=args.n_candidates,
+                           length=args.target_length,
+                           length_cfg_weight=args.target_length_cfg)
         wallclock += getattr(planner, 'last_wallclock', 0.0)
 
         curves = planner.render(cps)
@@ -311,6 +360,11 @@ def run_mission(planner, truth, belief0, args, mode, rounds, ergodic,
                                 device=curve.device).unsqueeze(-1)
             link = prev_end.unsqueeze(0) * (1 - al) + curve[0].unsqueeze(0) * al
             curve = torch.cat([link, curve], dim=0)
+
+        if budget is not None:
+            remaining = budget - so_far
+            if path_length(curve) >= remaining:
+                curve = trim_to_length(curve, remaining)
         seg_curves.append(curve.detach())
 
         # ---- Messen und Glauben fortschreiben ------------------------------
@@ -327,6 +381,9 @@ def run_mission(planner, truth, belief0, args, mode, rounds, ergodic,
             'info_gain': information_gain(before, belief),
             'belief_rmse': belief_rmse(belief, truth),
         })
+        r += 1
+        if not budget_driven and r >= rounds:
+            break
 
     path = torch.cat(seg_curves, dim=0)
     return {
@@ -659,10 +716,19 @@ def run_variant_d(planner, truth, belief0, args, ergodic, generator=None):
     driven, log = [], []
     wallclock, transit_len = 0.0, 0.0
     R = args.d_rounds
+    budget = getattr(args, 'path_budget', None)
+    max_rounds = max(R, 200) if budget is not None else R
 
-    for r in range(R):
+    r = 0
+    while r < max_rounds:
+        so_far = path_length(torch.cat(driven, dim=0)) if driven else 0.0
+        if budget is not None and so_far >= budget - 1e-6:
+            break
         mu, sd = belief.posterior_grid()
-        kap = kappa_schedule(r, R, args.kappa0, args.kappa1)
+        if budget is not None:
+            kap = args.kappa0 + (args.kappa1 - args.kappa0) * min(1.0, so_far / budget)
+        else:
+            kap = kappa_schedule(r, R, args.kappa0, args.kappa1)
         here = torch.cat(driven, dim=0) if driven else None
         visit = (visitation_field(here, belief.res, args.visit_bandwidth,
                                   args.device) if here is not None else None)
@@ -678,9 +744,13 @@ def run_variant_d(planner, truth, belief0, args, ergodic, generator=None):
         # zu einer erheblichen Strecke.
         pos = here[-1] if here is not None else None
         kann_start = getattr(planner, 'start_cond', False) and pos is not None
-        cps = (planner.plan(parts, n_candidates=args.n_candidates, start=pos)
+        cps = (planner.plan(parts, n_candidates=args.n_candidates, start=pos,
+                            length=args.target_length,
+                            length_cfg_weight=args.target_length_cfg)
                if kann_start else
-               planner.plan(parts, n_candidates=args.n_candidates))
+               planner.plan(parts, n_candidates=args.n_candidates,
+                            length=args.target_length,
+                            length_cfg_weight=args.target_length_cfg))
         wallclock += getattr(planner, 'last_wallclock', 0.0)
         curve = best_candidate(planner.render(cps), phi)
 
@@ -708,13 +778,18 @@ def run_variant_d(planner, truth, belief0, args, ergodic, generator=None):
             transit_len += float(torch.linalg.norm(
                 seg[0] - here[-1].to(seg.device)))
 
+        if budget is not None:
+            remaining = budget - so_far
+            if path_length(seg) >= remaining:
+                seg = trim_to_length(seg, remaining)
+
         driven.append(seg.detach())
         before = belief.clone()
         pts, vals = measure(seg.detach(), truth, noise_std=args.noise,
                             sensor_radius=args.sensor_radius)
         belief.observe(*thin(pts, vals, max_points=args.max_obs))
 
-        if r % max(1, R // 3) == 0 or r == R - 1:
+        if budget is not None or r % max(1, R // 3) == 0 or r == R - 1:
             log.append({'round': r, 'kappa': kap,
                         'phi': phi.detach().cpu().numpy(),
                         'curve': seg.detach().cpu().numpy(),
@@ -722,6 +797,9 @@ def run_variant_d(planner, truth, belief0, args, ergodic, generator=None):
                                   else np.zeros_like(phi.cpu().numpy())),
                         'info_gain': information_gain(before, belief),
                         'belief_rmse': belief_rmse(belief, truth)})
+        r += 1
+        if budget is None and r >= R:
+            break
 
     path = torch.cat(driven, dim=0)
     return {
@@ -770,7 +848,9 @@ def run_two_stage(planner, truth, belief0, args, ergodic, generator=None):
         parts = phi_particles(phi, args.n_particles, mode=args.phi_mode,
                               quantile=args.phi_quantile, device=args.device,
                               generator=generator)
-        cps = planner.plan(parts, n_candidates=args.n_candidates)
+        cps = planner.plan(parts, n_candidates=args.n_candidates,
+                           length=args.target_length,
+                           length_cfg_weight=args.target_length_cfg)
         wallclock += getattr(planner, 'last_wallclock', 0.0)
         curve = best_candidate(planner.render(cps), phi)
         log.append({'round': len(log), 'kappa': float('nan'), 'tag': tag,
@@ -778,10 +858,18 @@ def run_two_stage(planner, truth, belief0, args, ergodic, generator=None):
                     'curve': curve.detach().cpu().numpy()})
         return curve
 
+    budget = getattr(args, 'path_budget', None)
+
     # ── Phase 1: reine Erkundung ───────────────────────────────────────────
     mu, sd = belief.posterior_grid()
     phi_explore = zieldichte(torch.zeros_like(mu), sd, 1.0, args)
     curve1 = _phase(phi_explore, 'sigma')
+    if budget is not None and path_length(curve1) >= budget / 2:
+        # Budget zu gleichen Teilen auf beide Phasen — eine budgetierte
+        # zweistufige Mission bleibt sonst per Konstruktion die mit dem
+        # groessten Budget, weil beide Phasen unbeschnitten blieben.
+        curve1 = trim_to_length(curve1, budget / 2)
+        log[-1]['curve'] = curve1.detach().cpu().numpy()
 
     before = belief.clone()
     pts, vals = measure(curve1.detach(), truth,
@@ -805,13 +893,18 @@ def run_two_stage(planner, truth, belief0, args, ergodic, generator=None):
 
     before2 = belief.clone()
     seg = torch.cat([transit, curve2], dim=0)
+    if budget is not None:
+        remaining = budget - path_length(curve1)
+        if path_length(seg) >= remaining:
+            seg = trim_to_length(seg, max(remaining, 0.0))
+            log[-1]['curve'] = seg.detach().cpu().numpy()
     pts, vals = measure(seg.detach(), truth,
                         noise_std=args.noise, sensor_radius=args.sensor_radius)
     belief.observe(*thin(pts, vals, max_points=args.max_obs))
     log[-1]['info_gain'] = information_gain(before2, belief)
     log[-1]['belief_rmse'] = belief_rmse(belief, truth)
 
-    path = torch.cat([curve1, transit, curve2], dim=0).detach()
+    path = torch.cat([curve1, seg], dim=0).detach()
     return {
         'path': path,
         'rounds': log,
@@ -1053,6 +1146,29 @@ def main():
     p.add_argument('--kappa1', type=float, default=0.3)
     p.add_argument('--rounds', type=int, default=3)
     p.add_argument('--execute_frac', type=float, default=1.0)
+    p.add_argument('--target_length', type=float, default=None,
+                   help='Zielweglaenge je Planung, an das Netz selbst als '
+                        'FiLM-Konditionierung gegeben (nur wirksam bei einem '
+                        'laengen-konditionierten Checkpoint, sonst ignoriert). '
+                        'Anders als --path_budget wird hier nichts nachtraeglich '
+                        'zugeschnitten — das Netz plant direkt auf die '
+                        'Zielweglaenge hin.')
+    p.add_argument('--target_length_cfg', type=float, default=0.0,
+                   help='Klassifikatorfreie Fuehrungsstaerke fuer --target_length '
+                        '(0 = aus).')
+    p.add_argument('--path_budget', type=float, default=None,
+                   help='Gemeinsames Weg-Budget zur Erzeugungszeit statt '
+                        'nachtraeglicher Kuerzung. Bei Missionen mit mehreren '
+                        'Runden (glaube-R, glaube-D) ersetzt es die feste '
+                        'Rundenzahl durch "planen, bis das Budget erreicht ist" '
+                        '(letzte Runde exakt zugeschnitten); der kappa-Zeitplan '
+                        'folgt dann dem Budget-Fortschritt (gefahrene Laenge / '
+                        'Budget) statt dem Rundenfortschritt. Einrunden-'
+                        'Missionen (orakel, glaube-1) bleiben einmalige '
+                        'Planungen und werden nur zugeschnitten, nicht erneut '
+                        'geplant. zweistufig teilt das Budget zur Haelfte auf '
+                        'beide Phasen auf. Ohne Angabe unveraendertes '
+                        'Verhalten (rundenbasiert, kein Budget).')
     p.add_argument('--phi_model', default='ucb', choices=sorted(PHI_MODELLE),
                    help='Wie aus dem Glauben eine Zieldichte wird. `ucb` ist '
                         'die bisherige Modellierung und bleibt die '

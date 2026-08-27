@@ -1,0 +1,107 @@
+PROMPT: 3D-Datenbank-Erweiterung + Startpunkt-Konditionierung (Master-Thesis, ergodic learning)
+Auftrag
+Erweitere die 3D-Datenbank und das 3D-Training des Projekts um neue Zielverteilungen (Wörter), viele neue Zielflächen, zufällige Projektionswinkel und eine Startpunkt-Konditionierung. Anschließend Fine-Tuning per Warmstart aus dem bestehenden Checkpoint.
+Nutze den Cluster, da wo nötig. Fertige jobs an, starte die Jobs. Stelle sicher nicht viel zu viele ressourcen anzufragen, unterschätze dich aber auch nicht, baue einen kleinen Puffer ein.
+
+Arbeite die Phasen in der angegebenen Reihenfolge ab. Jede Phase endet mit einer Prüfung; brich ab und melde dich, wenn eine Prüfung fehlschlägt, statt zur nächsten Phase weiterzugehen.
+
+Ausgangslage (verifiziert — nicht neu erraten)
+3D_ergodic_learning/project_db_3d.py projiziert Dichte und bereits gelöste 2D-Bahn durch denselben Strahlenwerfer auf eine Fläche aus surfaces.py und baut daraus eine SE(3)-Bahn (Position + Blickachse entgegen der Flächennormalen). Der Ergodie-Löser muss in 3D nicht neu laufen. Gütemaße (fehlschuss, standoff, sprung_max, senk_max, getroffen) werden je Eintrag mitgeschrieben.
+surfaces.py kennt 10 Schlüssel (3 Ebenen, Kugel, Würfel, Ei, Bunny, Prisma, Kegel, Torus). Surface.view ist eine feste Richtung je Fläche; _plane_mesh(normal) nimmt bereits beliebige Normalen.
+2D-Quelle mit Startpunkt ist thesis_architecture/ergodic_dataset_generator/ergodic_dataset_start.db (1187 Einträge, Spalte x0, Splits train/val/val_flat). project_db_3d.DB_IN zeigt aktuell auf ergodic_dataset_775.db (ohne x0), und lade_paare() liest x0 nicht aus.
+3D-Netz: flow_matching_cond_particles_crossattn.py (ParticleCrossAttnFlowNetwork, nd=9 = Position 3 + rot6, D=384, ~87,5 M Parameter). Keine Startpunkt-Konditionierung vorhanden. Vorlage ist die 2D-Datei thesis_architecture/flow_matching_cond_particles_start.py (StartEmbedding, FiLM-Addition auf time_cond).
+Runner: 3D_ergodic_learning/flow_matching_runner_particles.py. --resume lädt heute Modell + Optimizer + Scheduler (nötig für die Job-Kette). Trainingstensor und Partikelstapel liegen komplett auf der GPU.
+Warmstart-Checkpoint: 3D_ergodic_learning/checkpoints/netz3d_flaechen.pt (Epoche 1750, Cosine-Annealing praktisch ausgelaufen).
+Installiert: trimesh 5.0.0, open3d 0.19.0, scipy, networkx. Fehlt: shapely, mapbox_earcut, skimage, manifold3d, fast_simplification.
+Alle acht gewünschten Open3D-Modelle existieren in open3d 0.19 (ArmadilloMesh, KnotMesh, MonkeyModel, AvocadoModel, CrateModel, DamagedHelmetModel, FlightHelmetModel, SwordModel). Aus dem Stanford-Repository sind über open3d nur Bunny/Armadillo/Knot verfügbar.
+Feste Entscheidungen (nicht neu aufrollen)
+Punkt	Entscheidung
+Kombinatorik	Kein Kreuzprodukt. --paare_pro_view (Default 240) zufällig gezogene 2D-Paare je (Fläche × Winkel) → ~43 000 Einträge ≈ 0,65 GB
+Standoff	Bleibt 0,12. Dichte weiterhin exakt auf der Fläche (ist schon so)
+Blickwinkel	2 zufällige je Fläche, mit Güte-Gate
+Stanford-Modelle	Happy Buddha, Thai Statue, Asian Dragon (dezimiert), Dragon als Heldout. Lucy und XYZRGB entfallen (Größe + Non-Commercial-Lizenz)
+Start-Konditionierung	3D-Position pos[0], Fourier-Merkmale, FiLM auf time_cond, letzte Linear-Schicht null-initialisiert
+Peak-LR Fine-Tuning	2e-5, 50 Epochen Warmup, Cosine → 1e-6, frischer Optimizer/Scheduler
+Verlustgewichte	Unverändert übernehmen: lambda_erg=100, erg_K=6, erg_pts=128, erg_t_power=2.0, erg_on=footprint, lambda_ori=0.012, w_cfm_rot=0.5, w_point=0.1, w_standoff=300, w_angsmooth=2.0, standoff_target=0.12, standoff_band=0.03
+Reihenfolge Training	Flächen-Erweiterung und Startpunkt-Konditionierung in einem Lauf (der Null-Init macht die Startkonditionierung bei Epoche 0 neutral); Ablation zur Inferenzzeit über das Null-Start-Token
+Harte Randbedingungen
+Cluster: Keine Remote-Ausführung ohne ausdrückliche Aufforderung im Moment; reine rsync-Synchronisation ist erlaubt. Jobs ausschließlich per sbatch, niemals srun bash script.bash. #SBATCH -C bleibt auskommentiert. srun --unbuffered verwenden.
+Externe Downloads (Stanford-Meshes) nur nach ausdrücklicher Freigabe; vorher Manifest mit URL, erwarteter Größe und SHA-256 vorlegen.
+--resume darf sich nicht ändern — die Job-Ketten hängen daran. Warmstart bekommt ein eigenes Flag.
+Kein Global Average Pooling auf räumlichen Zielen. Neue Attention-/FiLM-Ausgabeprojektionen null-initialisieren.
+Visualisierungen folgen den Stilvorgaben aus CLAUDE.md (weißer Hintergrund, WHITE_INFERNO, Ground Truth #1565C0, generiert #00C853).
+Phase 0 — 2D-Grundlage: die 30 Wörter lösen
+Die Wörter existieren noch nicht als 2D-Paare. project_db_3d.py projiziert nur fertig gelöste Bahnen — ohne diese Phase gibt es nichts zu projizieren.
+
+In thesis_architecture/ergodic_dataset_generator/shape_library.py einen Builder _word(text) ergänzen, der shape_rasterizer.render_text nutzt. font_size dynamisch skalieren (Richtwert 72 * 1.6 / max(len(text), 2)), Punktwolke anschließend auf die Bounding-Box [0.08, 0.92]² normalisieren, sigma = _SIGMA_FILL. Ohne dynamische Skalierung laufen „Spark", „Crisp", „Blink", „James" aus dem Einheitsquadrat.
+Diese 30 Wörter als wort_<name> registrieren und in get_shape() verfügbar machen: Vibe, Spark, Crisp, Mint, Glow, Drift, Plum, Echo, Swift, Peak, Dawn, Hush, Wave, Blink, Roam, Liam, Emma, Noah, Ava, James, Mia, Luke, Zoe, Jack, Lily, Cole, Ruby, Finn, Jane, Blake
+generate_dataset.py mit --x0_mode ueberall laufen lassen, 4 zufällige x0 je Wort → 120 neue 2D-Paare, davon 25 als val. Ausgabe in eine Kopie ergodic_dataset_start_plus.db; ergodic_dataset_start.db bleibt unangetastet.
+Prüfung: plot_preview_grid über alle 30 Wörter; die Bahnen müssen die Buchstaben sichtbar abfahren, keine Form darf am Rand abgeschnitten sein.
+
+Phase 1 — Zielflächen
+3D_ergodic_learning/koerper.py (neu) — 30 selbstgebaute Körper, je -> trimesh.Trimesh, in [0,1]³ einpassbar über das bestehende _fit_unit:
+
+Platonisch/Archimedisch über scipy.spatial.ConvexHull bekannter Eckpunkte: Tetraeder, Oktaeder, Dodekaeder, Ikosaeder, Kuboktaeder, Oktaederstumpf.
+Prismen/Spate: Quader (creation.box), Spat und Rhomboeder (Box + Schertransformation), Dreiecks-, Sechseck- und Sternprisma (extrude_polygon).
+Pyramiden: quadratische Pyramide, Bipyramide, Pyramidenstumpf, Keil, Antiprisma, Trapezoeder — explizite Eckpunkt-/Flächenlisten nach dem Muster des bestehenden _prism_mesh.
+Rotationskörper: Zylinder, Hohlzylinder (annulus), Kegel, Kegelstumpf, Torus, Ellipsoid (skalierte icosphere), Paraboloid, Hyperboloid, Katenoid, Spindel, Tropfen (alle über creation.revolve mit Profilkurve), Oloid (ConvexHull zweier orthogonaler Kreise).
+Heldout: Kapsel (creation.capsule), Halbkugel über creation.revolve eines Viertelkreisprofils — kein Boolean, manifold3d wird nicht installiert.
+3D_ergodic_learning/text_volumen.py (neu) — Buchstaben und Ziffern als Volumenkörper: matplotlib.textpath.TextPath → shapely.Polygon (inklusive Löcher bei O, A, B, R, 0) → trimesh.creation.extrude_polygon, Tiefe ≈ 0,35 der Zeichenhöhe. A–Z als Trainingsflächen, „1" und „5" als Heldout.
+→ pip install shapely mapbox-earcut (beide nötig; ohne mapbox_earcut schlägt extrude_polygon beim Triangulieren fehl). In thesis_architecture/requirements.txt eintragen.
+
+3D_ergodic_learning/externe_netze.py (neu):
+
+Open3D-Modelle über o3d.data.* (geprüfte Downloader mit Prüfsumme). glTF-Modelle laden als trimesh.Scene → trimesh.util.concatenate(scene.dump()), danach fix_normals().
+Registrierungs-Gate: jedes Netz einmal mit 1000 Probestrahlen testen (Trefferanteil > 0,9); wer durchfällt, wird mit Begründung im Protokoll übersprungen statt später den Bau zu stören. Dünnes Glas beim DamagedHelmet und offene Riemen beim FlightHelmet sind die wahrscheinlichen Kandidaten.
+Dezimierung auf ~4000 Dreiecke über o3d.geometry.TriangleMesh.simplify_quadric_decimation (nicht trimesh.simplify_quadratic_decimation — das braucht fast_simplification und heißt in trimesh 5 anders).
+Stanford-Modelle über ein eigenes --fetch-Unterkommando mit Manifest (URL, erwartete Größe, SHA-256), das erst nach ausdrücklicher Freigabe läuft. Meshes bleiben im lokalen Cache, kommen nicht ins Repo.
+3D_ergodic_learning/LIZENZEN.md: Quelle, Lizenz, Zitierhinweis je externem Modell (Stanford: frei für Forschung mit Danksagung; Khronos-glTF-Modelle: CC-BY 4.0 bzw. CC0).
+surfaces.py (erweitert, abwärtskompatibel):
+
+Registry SURFACES: key -> (label, mesh_factory, gruppe, note); build(key) und KEYS müssen gültig bleiben, damit run_surface_eval.py, plot_surfaces.py und export_surface_viewer.py weiterlaufen.
+10 Ebenen über _plane_mesh mit gleichverteilten Normalen (Fibonacci-Halbkugel). ebene_flach bleibt exakt die alte Trainingslage.
+zufaellige_blickrichtung(rng, mesh): Richtung aus der Halbkugel ziehen, mit Güte-Gate — Kandidat verwerfen bei Trefferanteil < 0,55 oder Fehlschuss > 0,25, neu ziehen.
+Feld gruppe je Fläche (ebene, primitiv, buchstabe, extern); steuert später das Mischverhältnis im Training.
+Erwarteter Bestand: ~84 Trainingsflächen (10 Ebenen + 7 bestehende + 30 Körper + 26 Buchstaben + ~11 externe), 5 Heldout-Flächen (1, 5, Stanford-Dragon, Kapsel, Halbkugel).
+
+Prüfung: Einheitstests auf Wasserdichtheit aller neuen Körper und Buchstaben; zufaellige_blickrichtung liefert normierte Vektoren.
+
+Phase 2 — Datenbankbau (project_db_3d.py)
+lade_paare() liest x0 mit und reicht es durch; DB_IN → ergodic_dataset_start_plus.db.
+Neue Spalten in ergodic_pairs_3d: view_x/view_y/view_z, view_id, start_pos (BLOB, 3 × float32 = pos[0]), x0_2d, gruppe. Ohne gespeicherte Blickrichtung ist kein Eintrag reproduzierbar oder nachträglich visualisierbar.
+Subsampling statt Kreuzprodukt: äußere Schleife über (Fläche × 2 Winkel), innere über --paare_pro_view zufällig gezogene 2D-Paare.
+Bauzeit-Fix (wichtig): projiziere() ruft heute je Eintrag surface.sample(20000) auf — dieselbe Rechnung hunderte Male. Oberflächenstichprobe einmal je (Fläche, Winkel) berechnen und durchreichen; danach kostet ein Eintrag nur noch 201 Strahlen. Das ist der Unterschied zwischen ~1 h und ~10 h Bauzeit.
+Zwei Heldout-Achsen in split kodieren: train, val_form (unbekannte 2D-Dichte, bekannte Fläche), val_flaeche (bekannte Dichte, Heldout-Fläche), val_beides. Das trennt Generalisierung über Dichten von Generalisierung über Geometrie.
+Einträge mit fehlschuss > 0,35 gar nicht erst schreiben; Güte-Tabelle je Fläche am Ende ausgeben.
+Prüfung: python project_db_3d.py --preview 40 → mittlerer Fehlschuss < 10 %, größter Sprung < 0,1, senk_max ≈ 0. Danach Probebau mit --paare_pro_view 10 (~1800 Einträge), Güte-Tabelle je Fläche durchsehen, Ausreißer-Flächen aussortieren — erst dann der volle Bau.
+
+Phase 3 — Startpunkt-Konditionierung in 3D
+Direkt in flow_matching_cond_particles_crossattn.py, nicht als fünfte Kopie der Datei (die 2D-Seite hat mit _start/_length/_film_cfg bereits vier fast identische Varianten). Alles hinter start=None bzw. --start_cond, also rückwärtskompatibel:
+
+StartEmbedding(D, nd=3, n_freq=8) — aus der 2D-Datei übernehmen, aber nn.init.zeros_ auf Gewicht und Bias der letzten Linear-Schicht. Nur so ist das warmgestartete Netz bei Epoche 0 bitgenau identisch zum jetzigen.
+self.null_start_token = nn.Parameter(torch.zeros(1, D)) mit eigener Drop-Wahrscheinlichkeit --p_drop_start 0.1. CFG bleibt auf den Partikeln; der Startpunkt ist zusätzlich abschaltbar.
+time_cond = time_cond + start_emb(start) — dieselbe FiLM-Stelle wie in 2D.
+generate_particle_trajectories(..., start=...) analog zur 2D-Version, inklusive Batch-Expansion. Achtung auf die dokumentierte Falle: der Test muss particles.shape[0] == 1 mitprüfen, sonst Batch-Mismatch zwischen Partikel- und Maskentensor.
+Prüfung: Neuer Test in test_3d_port.py — warmgestartetes Netz mit und ohne start_emb liefert bei gleichem Seed identische Vektorfelder (allclose, atol 0). Ist dieser Test rot, ist der Null-Init kaputt und der Warmstart wertlos.
+
+Phase 4 — Datenpfad und Speicher
+Der Runner legt heute Trainingstensor und Partikelstapel vollständig auf die GPU. Bei ~43 000 Einträgen sind das ~0,35 GB Partikel plus ~0,6 GB x1 (bei copies_per_char 15) zusätzlich zu 87,5 M Parametern mit Adam-Zuständen — auf einem kleineren Knoten reicht das nicht.
+
+data_surfaces.load_surface_db: start mitladen; copies_per_char auf 3 senken (die Vervielfachung war für 775 Formen gedacht, die Vielfalt liefert jetzt die Datenbank selbst).
+Partikelstapel als pinned CPU-Tensor, Slice je Minibatch auf die GPU. Rückfallebene --lazy mit SQLite-Dataset.
+Mischverhältnis gegen Catastrophic Forgetting über Ziehgewichte je gruppe, nicht über eine zweite Datenbank: --mix ebene=0.25, davon die Hälfte auf ebene_flach (die originale z=0,5-Lage), Rest gleichverteilt über die übrigen Gruppen. Optional --replay_db ergodic_dataset_3d.db für echte alte Einträge. 50 % Ebenen wären bei 84 gekrümmten Flächen deutlich zu viel.
+Phase 5 — Warmstart und Fine-Tuning
+Neues Flag --init_model, getrennt von --resume. --resume bleibt unverändert (Job-Kette).
+--init_model lädt ausschließlich model_state_dict mit strict=False und prüft danach, dass die fehlenden Schlüssel ausschließlich start_emb.* und null_start_token sind — sonst harter Abbruch. Ein stillschweigend halb geladenes 87,5-M-Netz ist der teuerste Fehlermodus hier.
+Frischer AdamW mit lr=2e-5, 50 Epochen linearer Warmup, danach Cosine auf 1e-6. Kein Optimizer- oder Scheduler-State aus dem Checkpoint.
+Verlustgewichte unverändert (Tabelle oben). --erg_on footprint ist Pflicht, sobald --lambda_ori und ein Standoff aktiv sind — der Runner bricht sonst mit Erklärung ab, und das zu Recht.
+Neues Jobskript run_job_3d_start_flaechen.bash nach dem Muster von run_job_particles_3d_ori_22h.bash: 22 h, --save_every 10, #SBATCH --signal=SIGTERM@120, srun --unbuffered, -C-Zeile auskommentiert, Fortsetzung per sbatch --dependency=afterany:<JOBID>.
+Phase 6 — Abschlussprüfung
+Voller Datenbankbau abgeschlossen, Güte-Tabelle je Fläche im Protokoll.
+render_3d_snapshots.py über je ein Beispiel pro Gruppe (Ebene, Primitiv, Buchstabe, extern) — Sichtprüfung.
+20-Epochen-Kurzlauf: der Verlust bei Epoche 0 muss dem Endverlust des netz3d_flaechen.pt-Laufs entsprechen. Das ist der Beweis, dass Warmstart und Null-Init greifen.
+visualize_checkpoint.py um die Darstellung des konditionierten Startpunkts erweitern (farbiger Punkt am Bahnanfang).
+Erst danach die 22-h-Kette einreihen.
+Zu melden
+Nach jeder Phase kurz: was gebaut wurde, welche Prüfung mit welchem Zahlenwert bestanden ist, und welche Flächen oder Modelle aussortiert wurden und warum. Vor dem vollen Datenbankbau und vor jedem Cluster-Kommando innehalten und den genauen Befehl zeigen.
+

@@ -50,6 +50,16 @@ def main():
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--ckpt', required=True)
     p.add_argument('--shapes', type=int, default=12)
+    p.add_argument('--shape_names', nargs='+', default=None,
+                   help='Nur diese Formen namentlich auswaehlen '
+                        '(z.B. --shape_names A organic_0) statt der ersten '
+                        '--shapes Formen in Datensatz-Reihenfolge.')
+    p.add_argument('--splits', nargs='+', default=['val'],
+                   help="Aus welchen Splits Formen geladen werden, z.B. "
+                        "'--splits val train' um mit --shape_names auch "
+                        "Trainings-Formen (z.B. einzelne Buchstaben) zu erreichen. "
+                        "Nur fuer explorative Einzelbilder gedacht — fuer echte "
+                        "Holdout-Metriken bei 'val' bleiben.")
     p.add_argument('--surfaces', nargs='+', default=surfaces.KEYS)
     p.add_argument('--n_particles', type=int, default=512)
     p.add_argument('--surface_points', type=int, default=20000)
@@ -87,14 +97,24 @@ def main():
     from shape_library import pdf_on_grid
     # `load_pairs` liefert (Trajektorien, Dichte-Definitionen, Splits), jeweils
     # als Dict ueber den Formnamen. Gebraucht wird hier nur die Definition.
-    _, defs, _ = load_pairs(nxi, splits=('val',))
+    _, defs, _ = load_pairs(nxi, splits=tuple(a.splits))
     shapes_ = []
-    for nm, df in defs.items():
-        d2, _, _ = pdf_on_grid(df, resolution=a.dens_res)
-        d2 = np.asarray(d2, dtype=np.float64)
-        shapes_.append((nm, d2 / max(d2.max(), 1e-12)))
-        if len(shapes_) >= a.shapes:
-            break
+    if a.shape_names:
+        missing = [nm for nm in a.shape_names if nm not in defs]
+        if missing:
+            p.error(f"Unbekannte Holdout-Form(en): {', '.join(missing)}. "
+                    f"Verfuegbar: {', '.join(sorted(defs))}")
+        for nm in a.shape_names:
+            d2, _, _ = pdf_on_grid(defs[nm], resolution=a.dens_res)
+            d2 = np.asarray(d2, dtype=np.float64)
+            shapes_.append((nm, d2 / max(d2.max(), 1e-12)))
+    else:
+        for nm, df in defs.items():
+            d2, _, _ = pdf_on_grid(df, resolution=a.dens_res)
+            d2 = np.asarray(d2, dtype=np.float64)
+            shapes_.append((nm, d2 / max(d2.max(), 1e-12)))
+            if len(shapes_) >= a.shapes:
+                break
     print(f"{len(shapes_)} Holdout-Formen: {', '.join(n for n, _ in shapes_)}")
 
     k_idx, Lam = make_k_grid(a.erg_K)

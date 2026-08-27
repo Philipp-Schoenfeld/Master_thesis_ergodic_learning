@@ -1,0 +1,894 @@
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\3D_ergodic_learning\render_3d_snapshots.py:125: DeprecationWarning: 
+Support for the 'engine' argument is deprecated and will be removed after September 2025.
+Kaleido will be the only supported engine at that time.
+
+  fig.write_image(out_path, engine='kaleido')
+[10/175] ebene_diagonal/greek_upper_0.png
+[20/175] ei/korean_5.png
+[30/175] ebene_gekippt/a_lc.png
+[40/175] wuerfel/rand_gmm_10.png
+[50/175] ebene_flach/rand_ana_poly_10.png
+[60/175] kugel/rand_ana_poly_20.png
+[70/175] bunny/rand_ana_poly_30.png
+[80/175] ebene_diagonal/rand_gmm_complex_10.png
+[90/175] ei/rand_gmm_complex_20.png
+[100/175] ebene_gekippt/rand_ana_poly_complex_0.png
+[110/175] wuerfel/rand_ana_poly_complex_10.png
+[120/175] ebene_flach/rand_ana_poly_complex_30.png
+[130/175] kugel/organic_0.png
+[140/175] bunny/organic_10.png
+[150/175] ebene_diagonal/organic_30.png
+[160/175] ei/cjk_0.png
+[170/175] ebene_gekippt/cjk_20.png
+[175/175] bunny/cjk_20.png
+done -> ../visualisierungen/02_holdout_vergleich/3d_flaechen/bilder

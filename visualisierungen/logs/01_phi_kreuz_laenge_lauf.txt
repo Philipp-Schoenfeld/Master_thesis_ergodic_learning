@@ -1,0 +1,948 @@
+[14:18] haelfte / ucb
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=831ms
+    glaube-1  cov=0.0736 erg=0.32861 ig= 1399.75 rmse=0.1349 len=8.75 t=647ms
+    glaube    cov=0.0250 erg=0.10380 ig= 1886.60 rmse=0.0590 len=30.45 t=1965ms
+    zweistufig cov=0.0344 erg=0.14924 ig= 1708.07 rmse=0.0781 len=15.56 t=1293ms
+    glaube-D  cov=0.0255 erg=0.07907 ig= 2005.50 rmse=0.0357 len=35.68 t=20051ms
+    maeher    cov=0.0274 erg=0.05306 ig= 1321.07 rmse=0.1345 len=36.08 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      828.36    0.1632     5.08     831
+glaube-1          0.0736     0.32861     1399.75    0.1349     8.75     647
+glaube-R          0.0250     0.10380     1886.60    0.0590    30.45    1965
+zweistufig        0.0344     0.14924     1708.07    0.0781    15.56    1293
+glaube-D          0.0255     0.07907     2005.50    0.0357    35.68   20051
+maeher            0.0274     0.05306     1321.07    0.1345    36.08       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 30.29):
+Mission           9.99     19.99     30.29
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0592    0.0382    0.0250
+zweistufig      0.0888         —         —
+glaube-D        0.0464    0.0333    0.0262
+maeher          0.2998    0.1216    0.0397
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ucb\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.0 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0372)
+[14:18] haelfte / stretch
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=827ms
+    glaube-1  cov=0.0725 erg=0.32878 ig= 1401.68 rmse=0.1234 len=8.68 t=650ms
+    glaube    cov=0.0243 erg=0.10550 ig= 1884.70 rmse=0.0513 len=32.64 t=1974ms
+    zweistufig cov=0.0337 erg=0.11834 ig= 1712.86 rmse=0.1073 len=18.61 t=1314ms
+    glaube-D  cov=0.0232 erg=0.08426 ig= 2010.00 rmse=0.0329 len=34.52 t=19865ms
+    maeher    cov=0.0265 erg=0.05194 ig=  706.55 rmse=0.1455 len=34.32 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      828.36    0.1632     5.08     827
+glaube-1          0.0725     0.32878     1401.68    0.1234     8.68     650
+glaube-R          0.0243     0.10550     1884.70    0.0513    32.64    1974
+zweistufig        0.0337     0.11834     1712.86    0.1073    18.61    1314
+glaube-D          0.0232     0.08426     2010.00    0.0329    34.52   19865
+maeher            0.0265     0.05194      706.55    0.1455    34.32       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 32.41):
+Mission          10.70     21.39     32.41
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0537    0.0356    0.0243
+zweistufig      0.0641         —         —
+glaube-D        0.0471    0.0324    0.0237
+maeher          0.2668    0.0940    0.0283
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_stretch\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.5 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0406)
+[14:19] haelfte / mass
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=850ms
+    glaube-1  cov=0.0632 erg=0.19996 ig= 1227.08 rmse=0.1072 len=12.60 t=642ms
+    glaube    cov=0.0263 erg=0.09399 ig= 1893.67 rmse=0.0711 len=34.01 t=1957ms
+    zweistufig cov=0.0378 erg=0.06934 ig= 1760.33 rmse=0.0650 len=20.86 t=1293ms
+    glaube-D  cov=0.0327 erg=0.10887 ig= 2008.42 rmse=0.0337 len=33.96 t=19686ms
+    maeher    cov=0.0265 erg=0.05194 ig=  706.55 rmse=0.1455 len=34.32 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      828.36    0.1632     5.08     850
+glaube-1          0.0632     0.19996     1227.08    0.1072    12.60     642
+glaube-R          0.0263     0.09399     1893.67    0.0711    34.01    1957
+zweistufig        0.0378     0.06934     1760.33    0.0650    20.86    1293
+glaube-D          0.0327     0.10887     2008.42    0.0337    33.96   19686
+maeher            0.0265     0.05194      706.55    0.1455    34.32       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 33.88):
+Mission          11.18     22.36     33.88
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0636         —         —
+glaube-R        0.0523    0.0359    0.0263
+zweistufig      0.0784         —         —
+glaube-D        0.0556    0.0470    0.0327
+maeher          0.2547    0.0838    0.0268
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mass\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.4 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0504)
+[14:20] haelfte / ei
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=839ms
+    glaube-1  cov=0.0919 erg=0.27525 ig= 1323.54 rmse=0.1116 len=11.32 t=645ms
+    glaube    cov=0.0558 erg=0.18016 ig= 1912.98 rmse=0.0678 len=28.28 t=1950ms
+    zweistufig cov=0.0409 erg=0.16668 ig= 1713.13 rmse=0.0923 len=16.52 t=1299ms
+    glaube-D  cov=0.0428 erg=0.14258 ig= 2006.02 rmse=0.0331 len=35.15 t=19693ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1231.90 rmse=0.1035 len=35.20 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      828.36    0.1632     5.08     839
+glaube-1          0.0919     0.27525     1323.54    0.1116    11.32     645
+glaube-R          0.0558     0.18016     1912.98    0.0678    28.28    1950
+zweistufig        0.0409     0.16668     1713.13    0.0923    16.52    1299
+glaube-D          0.0428     0.14258     2006.02    0.0331    35.15   19693
+maeher            0.0275     0.05309     1231.90    0.1035    35.20       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 28.14):
+Mission           9.29     18.57     28.14
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0921         —         —
+glaube-R        0.1282    0.0587    0.0558
+zweistufig      0.1032         —         —
+glaube-D        0.0824    0.0517    0.0441
+maeher          0.3071    0.1315    0.0463
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_ei\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.1 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0528)
+[14:20] haelfte / lse
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=841ms
+    glaube-1  cov=0.0663 erg=0.19785 ig= 1296.43 rmse=0.1114 len=9.31 t=655ms
+    glaube    cov=0.0334 erg=0.07644 ig= 1781.28 rmse=0.0697 len=25.01 t=1940ms
+    zweistufig cov=0.0388 erg=0.10352 ig= 1664.36 rmse=0.1059 len=12.29 t=1288ms
+    glaube-D  cov=0.0267 erg=0.07860 ig= 1999.38 rmse=0.0360 len=34.95 t=19636ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1231.90 rmse=0.1035 len=35.20 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      828.36    0.1632     5.08     841
+glaube-1          0.0663     0.19785     1296.43    0.1114     9.31     655
+glaube-R          0.0334     0.07644     1781.28    0.0697    25.01    1940
+zweistufig        0.0388     0.10352     1664.36    0.1059    12.29    1288
+glaube-D          0.0267     0.07860     1999.38    0.0360    34.95   19636
+maeher            0.0275     0.05309     1231.90    0.1035    35.20       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 24.91):
+Mission           8.22     16.44     24.91
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0679         —         —
+glaube-R        0.0552    0.0449    0.0334
+zweistufig      0.1532         —         —
+glaube-D        0.0510    0.0357    0.0315
+maeher          0.3327    0.1643    0.0668
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_lse\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.4 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0459)
+[14:21] haelfte / mi
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=824ms
+    glaube-1  cov=0.0680 erg=0.31174 ig= 1430.49 rmse=0.1117 len=8.62 t=646ms
+    glaube    cov=0.0213 erg=0.03759 ig= 1891.33 rmse=0.0578 len=25.68 t=1939ms
+    zweistufig cov=0.0344 erg=0.14924 ig= 1708.07 rmse=0.0781 len=15.56 t=1304ms
+    glaube-D  cov=0.0223 erg=0.06388 ig= 2005.17 rmse=0.0342 len=32.47 t=19664ms
+    maeher    cov=0.0267 erg=0.05202 ig= 1293.44 rmse=0.0789 len=32.56 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      828.36    0.1632     5.08     824
+glaube-1          0.0680     0.31174     1430.49    0.1117     8.62     646
+glaube-R          0.0213     0.03759     1891.33    0.0578    25.68    1939
+zweistufig        0.0344     0.14924     1708.07    0.0781    15.56    1304
+glaube-D          0.0223     0.06388     2005.17    0.0342    32.47   19664
+maeher            0.0267     0.05202     1293.44    0.0789    32.56       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 25.64):
+Mission           8.46     16.92     25.64
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0680         —         —
+glaube-R        0.0534    0.0298    0.0214
+zweistufig      0.1771         —         —
+glaube-D        0.0452    0.0315    0.0241
+maeher          0.3154    0.1365    0.0470
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_mi\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.0 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0372)
+[14:21] haelfte / eid
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'haelfte', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  828.36 rmse=0.1632 len=5.08 t=820ms
+    glaube-1  cov=0.0547 erg=0.11694 ig=  890.16 rmse=0.1760 len=11.47 t=648ms
+    glaube    cov=0.0264 erg=0.04693 ig= 1769.43 rmse=0.1071 len=31.03 t=1952ms
+    zweistufig cov=0.0361 erg=0.02395 ig= 1383.45 rmse=0.1370 len=18.64 t=1306ms
+    glaube-D  cov=0.0263 erg=0.06929 ig= 2003.24 rmse=0.0357 len=31.16 t=19675ms
+    maeher    cov=0.0239 erg=0.05116 ig= 1315.28 rmse=0.1385 len=30.80 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      828.36    0.1632     5.08     820
+glaube-1          0.0547     0.11694      890.16    0.1760    11.47     648
+glaube-R          0.0264     0.04693     1769.43    0.1071    31.03    1952
+zweistufig        0.0361     0.02395     1383.45    0.1370    18.64    1306
+glaube-D          0.0263     0.06929     2003.24    0.0357    31.16   19675
+maeher            0.0239     0.05116     1315.28    0.1385    30.80       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 30.83):
+Mission          10.17     20.35     30.83
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0547         —         —
+glaube-R        0.0565    0.0379    0.0264
+zweistufig      0.0706         —         —
+glaube-D        0.0416    0.0307    0.0264
+maeher          0.2555    0.0745         —
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/haelfte_eid\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 1.9 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0509)
+[14:22] quadranten / ucb
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=857ms
+    glaube-1  cov=0.0485 erg=0.24550 ig= 1175.37 rmse=0.0848 len=8.89 t=655ms
+    glaube    cov=0.0243 erg=0.08780 ig= 1849.52 rmse=0.1044 len=26.36 t=2013ms
+    zweistufig cov=0.0318 erg=0.08633 ig= 1662.94 rmse=0.1041 len=16.10 t=1320ms
+    glaube-D  cov=0.0246 erg=0.06787 ig= 2006.92 rmse=0.0321 len=32.21 t=20099ms
+    maeher    cov=0.0267 erg=0.05202 ig= 1274.62 rmse=0.0740 len=32.56 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      647.70    0.2003     5.08     857
+glaube-1          0.0485     0.24550     1175.37    0.0848     8.89     655
+glaube-R          0.0243     0.08780     1849.52    0.1044    26.36    2013
+zweistufig        0.0318     0.08633     1662.94    0.1041    16.10    1320
+glaube-D          0.0246     0.06787     2006.92    0.0321    32.21   20099
+maeher            0.0267     0.05202     1274.62    0.0740    32.56       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 26.23):
+Mission           8.66     17.31     26.23
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0485         —         —
+glaube-R        0.0579    0.0355    0.0243
+zweistufig      0.0798         —         —
+glaube-D        0.0540    0.0313    0.0261
+maeher          0.3104    0.1310    0.0436
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ucb\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.8 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0446)
+[14:23] quadranten / stretch
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=822ms
+    glaube-1  cov=0.0488 erg=0.24860 ig= 1185.02 rmse=0.0911 len=8.89 t=647ms
+    glaube    cov=0.0276 erg=0.10302 ig= 1837.77 rmse=0.0817 len=29.83 t=1969ms
+    zweistufig cov=0.0378 erg=0.11899 ig= 1622.73 rmse=0.0961 len=20.89 t=1318ms
+    glaube-D  cov=0.0249 erg=0.08829 ig= 2008.90 rmse=0.0328 len=32.00 t=19890ms
+    maeher    cov=0.0268 erg=0.05206 ig= 1351.05 rmse=0.0994 len=31.68 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      647.70    0.2003     5.08     822
+glaube-1          0.0488     0.24860     1185.02    0.0911     8.89     647
+glaube-R          0.0276     0.10302     1837.77    0.0817    29.83    1969
+zweistufig        0.0378     0.11899     1622.73    0.0961    20.89    1318
+glaube-D          0.0249     0.08829     2008.90    0.0328    32.00   19890
+maeher            0.0268     0.05206     1351.05    0.0994    31.68       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 29.62):
+Mission           9.78     19.55     29.62
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0560    0.0340    0.0276
+zweistufig      0.0737    0.0381         —
+glaube-D        0.0477    0.0297    0.0253
+maeher          0.2696    0.0963    0.0292
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_stretch\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.5 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0490)
+[14:23] quadranten / mass
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=851ms
+    glaube-1  cov=0.0559 erg=0.13787 ig= 1390.50 rmse=0.0993 len=12.47 t=670ms
+    glaube    cov=0.0272 erg=0.06971 ig= 1895.97 rmse=0.0712 len=30.91 t=1971ms
+    zweistufig cov=0.0356 erg=0.07409 ig= 1586.44 rmse=0.0680 len=19.38 t=1313ms
+    glaube-D  cov=0.0274 erg=0.08363 ig= 1999.67 rmse=0.0356 len=34.12 t=20013ms
+    maeher    cov=0.0265 erg=0.05194 ig=  721.89 rmse=0.1547 len=34.32 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      647.70    0.2003     5.08     851
+glaube-1          0.0559     0.13787     1390.50    0.0993    12.47     670
+glaube-R          0.0272     0.06971     1895.97    0.0712    30.91    1971
+zweistufig        0.0356     0.07409     1586.44    0.0680    19.38    1313
+glaube-D          0.0274     0.08363     1999.67    0.0356    34.12   20013
+maeher            0.0265     0.05194      721.89    0.1547    34.32       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 30.73):
+Mission          10.14     20.28     30.73
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0611         —         —
+glaube-R        0.0512    0.0366    0.0272
+zweistufig      0.0579         —         —
+glaube-D        0.0547    0.0354    0.0278
+maeher          0.2808    0.1058    0.0312
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mass\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 4.3 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0551)
+[14:24] quadranten / ei
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=858ms
+    glaube-1  cov=0.0765 erg=0.19950 ig= 1232.77 rmse=0.1173 len=11.65 t=660ms
+    glaube    cov=0.0303 erg=0.13565 ig= 1853.61 rmse=0.0794 len=33.13 t=1962ms
+    zweistufig cov=0.0340 erg=0.14386 ig= 1704.48 rmse=0.0731 len=17.79 t=1306ms
+    glaube-D  cov=0.0268 erg=0.08969 ig= 1987.51 rmse=0.0404 len=35.04 t=19864ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1160.57 rmse=0.1142 len=35.20 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      647.70    0.2003     5.08     858
+glaube-1          0.0765     0.19950     1232.77    0.1173    11.65     660
+glaube-R          0.0303     0.13565     1853.61    0.0794    33.13    1962
+zweistufig        0.0340     0.14386     1704.48    0.0731    17.79    1306
+glaube-D          0.0268     0.08969     1987.51    0.0404    35.04   19864
+maeher            0.0275     0.05309     1160.57    0.1142    35.20       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 33.03):
+Mission          10.90     21.80     33.03
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0766         —         —
+glaube-R        0.0699    0.0372    0.0304
+zweistufig      0.0673         —         —
+glaube-D        0.0601    0.0447    0.0271
+maeher          0.2712    0.0931    0.0294
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_ei\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 4.1 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0528)
+[14:24] quadranten / lse
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=846ms
+    glaube-1  cov=0.0484 erg=0.07356 ig= 1178.39 rmse=0.1032 len=11.14 t=659ms
+    glaube    cov=0.0262 erg=0.04198 ig= 1787.42 rmse=0.0894 len=27.44 t=1970ms
+    zweistufig cov=0.0324 erg=0.06594 ig= 1497.31 rmse=0.1171 len=13.41 t=1313ms
+    glaube-D  cov=0.0254 erg=0.05965 ig= 1999.19 rmse=0.0346 len=35.22 t=19988ms
+    maeher    cov=0.0275 erg=0.05309 ig= 1160.57 rmse=0.1142 len=35.20 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      647.70    0.2003     5.08     846
+glaube-1          0.0484     0.07356     1178.39    0.1032    11.14     659
+glaube-R          0.0262     0.04198     1787.42    0.0894    27.44    1970
+zweistufig        0.0324     0.06594     1497.31    0.1171    13.41    1313
+glaube-D          0.0254     0.05965     1999.19    0.0346    35.22   19988
+maeher            0.0275     0.05309     1160.57    0.1142    35.20       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 27.30):
+Mission           9.01     18.02     27.30
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0499         —         —
+glaube-R        0.0466    0.0336    0.0262
+zweistufig      0.0832         —         —
+glaube-D        0.0429    0.0320    0.0280
+maeher          0.3132    0.1389    0.0509
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_lse\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 5.6 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0452)
+[14:25] quadranten / mi
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=857ms
+    glaube-1  cov=0.0477 erg=0.24283 ig= 1170.08 rmse=0.0867 len=7.95 t=660ms
+    glaube    cov=0.0213 erg=0.04727 ig= 1852.86 rmse=0.0727 len=23.84 t=1953ms
+    zweistufig cov=0.0318 erg=0.08633 ig= 1662.94 rmse=0.1041 len=16.10 t=1299ms
+    glaube-D  cov=0.0219 erg=0.04906 ig= 2004.40 rmse=0.0318 len=34.25 t=20010ms
+    maeher    cov=0.0265 erg=0.05194 ig=  721.89 rmse=0.1547 len=34.32 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      647.70    0.2003     5.08     857
+glaube-1          0.0477     0.24283     1170.08    0.0867     7.95     660
+glaube-R          0.0213     0.04727     1852.86    0.0727    23.84    1953
+zweistufig        0.0318     0.08633     1662.94    0.1041    16.10    1299
+glaube-D          0.0219     0.04906     2004.40    0.0318    34.25   20010
+maeher            0.0265     0.05194      721.89    0.1547    34.32       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 23.82):
+Mission           7.86     15.72     23.82
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0531    0.0295    0.0214
+zweistufig      0.0872    0.0337         —
+glaube-D        0.0503    0.0318    0.0254
+maeher          0.3389    0.1674    0.0702
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_mi\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 3.8 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0446)
+[14:26] quadranten / eid
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'quadranten', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  647.70 rmse=0.2003 len=5.08 t=860ms
+    glaube-1  cov=0.0448 erg=0.07468 ig= 1112.79 rmse=0.1230 len=11.24 t=674ms
+    glaube    cov=0.0230 erg=0.03666 ig= 1648.58 rmse=0.1461 len=29.69 t=2022ms
+    zweistufig cov=0.0301 erg=0.01984 ig= 1395.31 rmse=0.2095 len=19.30 t=1356ms
+    glaube-D  cov=0.0249 erg=0.06154 ig= 1975.13 rmse=0.0358 len=34.59 t=20422ms
+    maeher    cov=0.0265 erg=0.05194 ig=  721.89 rmse=0.1547 len=34.32 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      647.70    0.2003     5.08     860
+glaube-1          0.0448     0.07468     1112.79    0.1230    11.24     674
+glaube-R          0.0230     0.03666     1648.58    0.1461    29.69    2022
+zweistufig        0.0301     0.01984     1395.31    0.2095    19.30    1356
+glaube-D          0.0249     0.06154     1975.13    0.0358    34.59   20422
+maeher            0.0265     0.05194      721.89    0.1547    34.32       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 29.63):
+Mission           9.78     19.56     29.63
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0463         —         —
+glaube-R        0.0553    0.0320    0.0230
+zweistufig      0.0516         —         —
+glaube-D        0.0429    0.0310    0.0262
+maeher          0.2899    0.1144    0.0343
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/quadranten_eid\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 1.5 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0435)
+[14:26] loch / ucb
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=869ms
+    glaube-1  cov=0.0488 erg=0.05372 ig=  802.93 rmse=0.0911 len=4.95 t=645ms
+    glaube    cov=0.0186 erg=0.00584 ig=  915.83 rmse=0.0486 len=17.87 t=1953ms
+    zweistufig cov=0.0273 erg=0.02413 ig=  899.45 rmse=0.0639 len=8.54 t=1308ms
+    glaube-D  cov=0.0208 erg=0.03702 ig=  954.05 rmse=0.0357 len=24.63 t=19755ms
+    maeher    cov=0.0202 erg=0.04967 ig=  689.97 rmse=0.1105 len=24.64 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      697.78    0.1332     5.08     869
+glaube-1          0.0488     0.05372      802.93    0.0911     4.95     645
+glaube-R          0.0186     0.00584      915.83    0.0486    17.87    1953
+zweistufig        0.0273     0.02413      899.45    0.0639     8.54    1308
+glaube-D          0.0208     0.03702      954.05    0.0357    24.63   19755
+maeher            0.0202     0.04967      689.97    0.1105    24.64       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 17.81):
+Mission           5.88     11.76     17.81
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0371    0.0230    0.0186
+zweistufig      0.0468         —         —
+glaube-D        0.0429    0.0267    0.0234
+maeher          0.3317    0.1566    0.0586
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ucb\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 1.2 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0325)
+[14:27] loch / stretch
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=835ms
+    glaube-1  cov=0.0450 erg=0.04883 ig=  824.26 rmse=0.0964 len=5.15 t=650ms
+    glaube    cov=0.0197 erg=0.01860 ig=  917.13 rmse=0.0523 len=25.89 t=1940ms
+    zweistufig cov=0.0369 erg=0.03006 ig=  887.15 rmse=0.1069 len=15.05 t=1374ms
+    glaube-D  cov=0.0183 erg=0.01993 ig=  954.67 rmse=0.0329 len=20.30 t=21844ms
+    maeher    cov=0.0214 erg=0.05012 ig=  719.49 rmse=0.0844 len=25.52 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      697.78    0.1332     5.08     835
+glaube-1          0.0450     0.04883      824.26    0.0964     5.15     650
+glaube-R          0.0197     0.01860      917.13    0.0523    25.89    1940
+zweistufig        0.0369     0.03006      887.15    0.1069    15.05    1374
+glaube-D          0.0183     0.01993      954.67    0.0329    20.30   21844
+maeher            0.0214     0.05012      719.49    0.0844    25.52       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 25.67):
+Mission           8.47     16.94     25.67
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0286    0.0225    0.0197
+zweistufig      0.0567         —         —
+glaube-D        0.0315    0.0193         —
+maeher          0.2578    0.0717         —
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_stretch\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 1.2 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0466)
+[14:27] loch / mass
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=894ms
+    glaube-1  cov=0.0398 erg=0.06145 ig=  753.89 rmse=0.1421 len=9.57 t=683ms
+    glaube    cov=0.0208 erg=0.02475 ig=  928.07 rmse=0.0481 len=27.39 t=2071ms
+    zweistufig cov=0.0345 erg=0.02654 ig=  851.30 rmse=0.1021 len=17.38 t=1330ms
+    glaube-D  cov=0.0276 erg=0.07074 ig=  952.67 rmse=0.0345 len=31.65 t=20020ms
+    maeher    cov=0.0268 erg=0.05206 ig=  716.98 rmse=0.1013 len=31.68 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      697.78    0.1332     5.08     894
+glaube-1          0.0398     0.06145      753.89    0.1421     9.57     683
+glaube-R          0.0208     0.02475      928.07    0.0481    27.39    2071
+zweistufig        0.0345     0.02654      851.30    0.1021    17.38    1330
+glaube-D          0.0276     0.07074      952.67    0.0345    31.65   20020
+maeher            0.0268     0.05206      716.98    0.1013    31.68       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 27.20):
+Mission           8.98     17.95     27.20
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0402         —         —
+glaube-R        0.0402    0.0289    0.0208
+zweistufig      0.0547         —         —
+glaube-D        0.0467    0.0383    0.0290
+maeher          0.2907    0.1152    0.0363
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mass\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 1.5 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0494)
+[14:28] loch / ei
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+      [warn] mu ist nach Phase 1 praktisch flach — Phase 2 hat keine aufgedeckte Dichte, die sie abdecken koennte.
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=871ms
+    glaube-1  cov=0.0625 erg=0.09858 ig=  694.59 rmse=0.0997 len=9.11 t=653ms
+    glaube    cov=0.0253 erg=0.02248 ig=  919.30 rmse=0.0570 len=23.98 t=1979ms
+    zweistufig cov=0.0407 erg=0.03910 ig=  868.42 rmse=0.0804 len=12.16 t=1320ms
+    glaube-D  cov=0.0385 erg=0.12866 ig=  950.65 rmse=0.0342 len=31.05 t=20065ms
+    maeher    cov=0.0239 erg=0.05116 ig=  727.94 rmse=0.1437 len=30.80 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      697.78    0.1332     5.08     871
+glaube-1          0.0625     0.09858      694.59    0.0997     9.11     653
+glaube-R          0.0253     0.02248      919.30    0.0570    23.98    1979
+zweistufig        0.0407     0.03910      868.42    0.0804    12.16    1320
+glaube-D          0.0385     0.12866      950.65    0.0342    31.05   20065
+maeher            0.0239     0.05116      727.94    0.1437    30.80       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 23.75):
+Mission           7.84     15.68     23.75
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0641         —         —
+glaube-R        0.0560    0.0387    0.0253
+zweistufig      0.0479         —         —
+glaube-D        0.0668    0.0535    0.0392
+maeher          0.3166    0.1400    0.0483
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_ei\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 0.6 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0528)
+[14:29] loch / lse
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=905ms
+    glaube-1  cov=0.0377 erg=0.01523 ig=  796.19 rmse=0.1843 len=4.99 t=688ms
+    glaube    cov=0.0336 erg=0.00764 ig=  876.74 rmse=0.0774 len=13.25 t=2067ms
+    zweistufig cov=0.0418 erg=0.03186 ig=  897.14 rmse=0.0899 len=7.70 t=1375ms
+    glaube-D  cov=0.0245 erg=0.05517 ig=  953.76 rmse=0.0355 len=26.27 t=21296ms
+    maeher    cov=0.0212 erg=0.05005 ig=  694.07 rmse=0.0976 len=26.40 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      697.78    0.1332     5.08     905
+glaube-1          0.0377     0.01523      796.19    0.1843     4.99     688
+glaube-R          0.0336     0.00764      876.74    0.0774    13.25    2067
+zweistufig        0.0418     0.03186      897.14    0.0899     7.70    1375
+glaube-D          0.0245     0.05517      953.76    0.0355    26.27   21296
+maeher            0.0212     0.05005      694.07    0.0976    26.40       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 13.21):
+Mission           4.36      8.72     13.21
+-------------------------------------------
+orakel          0.0534         —         —
+glaube-1        0.0417         —         —
+glaube-R        0.0425    0.0364    0.0340
+zweistufig      0.0761         —         —
+glaube-D        0.0479    0.0337    0.0297
+maeher          0.3988    0.2519    0.1425
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_lse\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 1.0 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0463)
+[14:29] loch / mi
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=893ms
+    glaube-1  cov=0.0450 erg=0.03839 ig=  809.20 rmse=0.1072 len=5.60 t=655ms
+    glaube    cov=0.0171 erg=0.00551 ig=  899.87 rmse=0.0724 len=18.64 t=1979ms
+    zweistufig cov=0.0273 erg=0.02413 ig=  899.45 rmse=0.0639 len=8.54 t=1325ms
+    glaube-D  cov=0.0187 erg=0.02470 ig=  954.32 rmse=0.0344 len=22.59 t=19928ms
+    maeher    cov=0.0196 erg=0.04939 ig=  703.43 rmse=0.1217 len=22.88 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      697.78    0.1332     5.08     893
+glaube-1          0.0450     0.03839      809.20    0.1072     5.60     655
+glaube-R          0.0171     0.00551      899.87    0.0724    18.64    1979
+zweistufig        0.0273     0.02413      899.45    0.0639     8.54    1325
+glaube-D          0.0187     0.02470      954.32    0.0344    22.59   19928
+maeher            0.0196     0.04939      703.43    0.1217    22.88       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 18.61):
+Mission           6.14     12.29     18.61
+-------------------------------------------
+orakel               —         —         —
+glaube-1             —         —         —
+glaube-R        0.0358    0.0213    0.0171
+zweistufig      0.0436         —         —
+glaube-D        0.0358    0.0228    0.0191
+maeher          0.3146    0.1241    0.0347
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_mi\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 1.2 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0325)
+[14:30] loch / eid
+Geraet: cuda   Checkpoint: ../checkpoints/netz2d_laenge.pt
+Holdout-Formen: A
+Missionen: orakel, glaube-1, glaube-R, zweistufig, glaube-D, maeher
+Vorwissen: Muster 'loch', Grundwahrheit im bekannten Gebiet (sigma=0.0), ausserhalb kein Wissen
+
+[1/1] A
+    orakel    cov=0.0392 erg=0.01941 ig=  697.78 rmse=0.1332 len=5.08 t=850ms
+    glaube-1  cov=0.0533 erg=0.14197 ig=  608.85 rmse=0.1023 len=11.98 t=652ms
+    glaube    cov=0.0226 erg=0.04144 ig=  919.24 rmse=0.0615 len=29.59 t=1977ms
+    zweistufig cov=0.0341 erg=0.02312 ig=  851.90 rmse=0.0594 len=19.68 t=1320ms
+    glaube-D  cov=0.0242 erg=0.06928 ig=  951.98 rmse=0.0350 len=32.03 t=20047ms
+    maeher    cov=0.0268 erg=0.05206 ig=  716.98 rmse=0.1013 len=31.68 t=0ms
+
+  [csv] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_eid\metriken.csv
+
+==============================================================================
+Mission        Abdeckung   Ergodisch  InfoGewinn      RMSE   Laenge      ms
+------------------------------------------------------------------------------
+orakel            0.0392     0.01941      697.78    0.1332     5.08     850
+glaube-1          0.0533     0.14197      608.85    0.1023    11.98     652
+glaube-R          0.0226     0.04144      919.24    0.0615    29.59    1977
+zweistufig        0.0341     0.02312      851.90    0.0594    19.68    1320
+glaube-D          0.0242     0.06928      951.98    0.0350    32.03   20047
+maeher            0.0268     0.05206      716.98    0.1013    31.68       0
+==============================================================================
+
+Abdeckung bei fester Weglaenge (Referenz glaube-R = 29.41):
+Mission           9.70     19.41     29.41
+-------------------------------------------
+orakel               —         —         —
+glaube-1        0.0533         —         —
+glaube-R        0.0482    0.0346    0.0226
+zweistufig      0.0542    0.0343         —
+glaube-D        0.0525    0.0318    0.0249
+maeher          0.2715    0.0978    0.0295
+  [json] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_eid\bahnen.json
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_eid\formen.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_eid\anytime.png
+  [viz] ../../visualisierungen/01_phi_kreuz_laenge/trajektorien/loch_eid\zweistufig.png
+
+Variante D: 30 Runden a 10%, Anfahrten 0.0 % der Strecke (Einstieg: netz)
+
+Variante E: die ungeplante Verbindungsfahrt ist im Mittel 2.1 % der Gesamtstrecke
+           (Abdeckung nur der zweiten Phase: 0.0508)

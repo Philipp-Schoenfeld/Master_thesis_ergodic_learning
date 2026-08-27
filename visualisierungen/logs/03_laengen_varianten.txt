@@ -1,0 +1,171 @@
+=== L=5 ===
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cuda  n_samples=8  ODE steps=100
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r64_K10_669659e0dab5.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] 2D_Laenge_L5  (D=384, N=256)  lambda_erg=1300.0
+
+==============================================================================================================
+  Mittelwerte über 25 Holdout-Formen (niedriger ist besser, außer diversity)
+==============================================================================================================
+  Modell                                          E_ergodic   E_total  coverage  path_len  diversity t/traj [ms]
+  ----------------------------------------------------------------------------------------------------------
+  2D_Laenge_L5                                       3.8298     7.195    0.0443     6.411     0.3058       670.2
+ *SVGD solver (Referenz)                             0.9238     2.188    0.0332     3.959          —           —
+  ----------------------------------------------------------------------------------------------------------
+  * bester ergodischer Wert. E_total ist die vollständige Solver-Zielfunktion.
+
+  Geschrieben nach ../visualisierungen/03_laengen_varianten/metriken/L5/: summary.csv, per_shape.csv, results.json
+
+==============================================================================================================
+  Visualisierung (beste von 5, Hindernis: both)
+==============================================================================================================
+
+  2D_Laenge_L5
+  [off] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L5\viz_netz2d_laenge_offobstacle_L5.0_20260826_17h00min.png
+         E_ergodic=3.068  E_total=5.734  coverage=0.0433
+  [on ] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L5\viz_netz2d_laenge_onobstacle_L5.0_20260826_17h00min.png
+         E_ergodic=3.138  E_total=6.194  coverage=0.0449
+
+=== L=10 ===
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cuda  n_samples=8  ODE steps=100
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r64_K10_669659e0dab5.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] 2D_Laenge_L10  (D=384, N=256)  lambda_erg=1300.0
+
+==============================================================================================================
+  Mittelwerte über 25 Holdout-Formen (niedriger ist besser, außer diversity)
+==============================================================================================================
+  Modell                                          E_ergodic   E_total  coverage  path_len  diversity t/traj [ms]
+  ----------------------------------------------------------------------------------------------------------
+  2D_Laenge_L10                                      6.6807    10.999    0.0510     6.881     0.3159      1097.3
+ *SVGD solver (Referenz)                             0.9238     2.188    0.0332     3.959          —           —
+  ----------------------------------------------------------------------------------------------------------
+  * bester ergodischer Wert. E_total ist die vollständige Solver-Zielfunktion.
+
+  Geschrieben nach ../visualisierungen/03_laengen_varianten/metriken/L10/: summary.csv, per_shape.csv, results.json
+
+==============================================================================================================
+  Visualisierung (beste von 5, Hindernis: both)
+==============================================================================================================
+
+  2D_Laenge_L10
+  [off] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L10\viz_netz2d_laenge_offobstacle_L10.0_20260826_17h09min.png
+         E_ergodic=5.210  E_total=8.963  coverage=0.0494
+  [on ] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L10\viz_netz2d_laenge_onobstacle_L10.0_20260826_17h09min.png
+         E_ergodic=5.406  E_total=9.221  coverage=0.0496
+
+=== L=20 ===
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cuda  n_samples=8  ODE steps=100
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r64_K10_669659e0dab5.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] 2D_Laenge_L20  (D=384, N=256)  lambda_erg=1300.0
+
+==============================================================================================================
+  Mittelwerte über 25 Holdout-Formen (niedriger ist besser, außer diversity)
+==============================================================================================================
+  Modell                                          E_ergodic   E_total  coverage  path_len  diversity t/traj [ms]
+  ----------------------------------------------------------------------------------------------------------
+  2D_Laenge_L20                                      3.5409     6.803    0.0434     6.317     0.3002       659.8
+ *SVGD solver (Referenz)                             0.9238     2.188    0.0332     3.959          —           —
+  ----------------------------------------------------------------------------------------------------------
+  * bester ergodischer Wert. E_total ist die vollständige Solver-Zielfunktion.
+
+  Geschrieben nach ../visualisierungen/03_laengen_varianten/metriken/L20/: summary.csv, per_shape.csv, results.json
+
+==============================================================================================================
+  Visualisierung (beste von 5, Hindernis: both)
+==============================================================================================================
+
+  2D_Laenge_L20
+  [off] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L20\viz_netz2d_laenge_offobstacle_L20.0_20260826_17h14min.png
+         E_ergodic=2.938  E_total=5.556  coverage=0.0431
+  [on ] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L20\viz_netz2d_laenge_onobstacle_L20.0_20260826_17h14min.png
+         E_ergodic=3.063  E_total=5.872  coverage=0.0446
+
+=== L=30 ===
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cuda  n_samples=8  ODE steps=100
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r64_K10_669659e0dab5.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] 2D_Laenge_L30  (D=384, N=256)  lambda_erg=1300.0
+
+==============================================================================================================
+  Mittelwerte über 25 Holdout-Formen (niedriger ist besser, außer diversity)
+==============================================================================================================
+  Modell                                          E_ergodic   E_total  coverage  path_len  diversity t/traj [ms]
+  ----------------------------------------------------------------------------------------------------------
+  2D_Laenge_L30                                      3.5012     6.878    0.0431     6.363     0.3005       678.0
+ *SVGD solver (Referenz)                             0.9238     2.188    0.0332     3.959          —           —
+  ----------------------------------------------------------------------------------------------------------
+  * bester ergodischer Wert. E_total ist die vollständige Solver-Zielfunktion.
+
+  Geschrieben nach ../visualisierungen/03_laengen_varianten/metriken/L30/: summary.csv, per_shape.csv, results.json
+
+==============================================================================================================
+  Visualisierung (beste von 5, Hindernis: both)
+==============================================================================================================
+
+  2D_Laenge_L30
+  [off] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L30\viz_netz2d_laenge_offobstacle_L30.0_20260826_17h20min.png
+         E_ergodic=2.886  E_total=5.524  coverage=0.0434
+  [on ] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L30\viz_netz2d_laenge_onobstacle_L30.0_20260826_17h20min.png
+         E_ergodic=3.196  E_total=5.931  coverage=0.0445
+
+=== L=40 ===
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cuda  n_samples=8  ODE steps=100
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r64_K10_669659e0dab5.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] 2D_Laenge_L40  (D=384, N=256)  lambda_erg=1300.0
+
+==============================================================================================================
+  Mittelwerte über 25 Holdout-Formen (niedriger ist besser, außer diversity)
+==============================================================================================================
+  Modell                                          E_ergodic   E_total  coverage  path_len  diversity t/traj [ms]
+  ----------------------------------------------------------------------------------------------------------
+  2D_Laenge_L40                                      3.9511     7.682    0.0444     6.710     0.3055       666.7
+ *SVGD solver (Referenz)                             0.9238     2.188    0.0332     3.959          —           —
+  ----------------------------------------------------------------------------------------------------------
+  * bester ergodischer Wert. E_total ist die vollständige Solver-Zielfunktion.
+
+  Geschrieben nach ../visualisierungen/03_laengen_varianten/metriken/L40/: summary.csv, per_shape.csv, results.json
+
+==============================================================================================================
+  Visualisierung (beste von 5, Hindernis: both)
+==============================================================================================================
+
+  2D_Laenge_L40
+  [off] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L40\viz_netz2d_laenge_offobstacle_L40.0_20260826_17h26min.png
+         E_ergodic=2.934  E_total=6.231  coverage=0.0436
+  [on ] generating 25 shapes (5 candidates each)...
+  Saved -> ../visualisierungen/03_laengen_varianten/L40\viz_netz2d_laenge_onobstacle_L40.0_20260826_17h26min.png
+         E_ergodic=3.297  E_total=6.617  coverage=0.0452
+
+LAENGEN_DONE exit=0

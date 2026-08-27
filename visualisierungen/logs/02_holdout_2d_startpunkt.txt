@@ -1,0 +1,33 @@
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cuda  n_samples=8  ODE steps=100
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r64_K10_669659e0dab5.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] 2D_Startpunkt  (D=384, N=256)  lambda_erg=1300.0
+
+==============================================================================================================
+  Mittelwerte über 25 Holdout-Formen (niedriger ist besser, außer diversity)
+==============================================================================================================
+  Modell                                          E_ergodic   E_total  coverage  path_len  diversity t/traj [ms]
+  ----------------------------------------------------------------------------------------------------------
+  2D_Startpunkt                                      2.7385     3.422    0.0463     3.985     0.2805       333.1
+ *SVGD solver (Referenz)                             2.7093     3.208    0.0476     2.764          —           —
+  ----------------------------------------------------------------------------------------------------------
+  * bester ergodischer Wert. E_total ist die vollständige Solver-Zielfunktion.
+
+  Geschrieben nach ../visualisierungen/02_holdout_vergleich/metriken/2d_startpunkt/: summary.csv, per_shape.csv, results.json
+
+==============================================================================================================
+  Visualisierung (beste von 5, Hindernis: both)
+==============================================================================================================
+
+  2D_Startpunkt
+  [off] generating 25 shapes (5 candidates each)...
+  Saved → ../visualisierungen/02_holdout_vergleich/2d_startpunkt\viz_netz2d_startpunkt_offobstacle_20260826_14h10min.png
+         E_ergodic=2.088  E_total=2.663  coverage=0.0451
+  [on ] generating 25 shapes (5 candidates each)...
+  Saved → ../visualisierungen/02_holdout_vergleich/2d_startpunkt\viz_netz2d_startpunkt_onobstacle_20260826_14h10min.png
+         E_ergodic=2.131  E_total=2.635  coverage=0.0460
+

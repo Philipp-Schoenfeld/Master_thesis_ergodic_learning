@@ -1,0 +1,253 @@
+Netz: D=384 nxi=25 Orientierung=True  Epoche 1519  Verlust 0.3341
+Geraet: cuda
+  [data_3d] 25 trajectories were 2D and were lifted to the plane z=0.5
+25 Holdout-Formen: A, greek_upper_0, korean_5, digit_5, a_lc, rand_gmm_10, rand_gmm_20, rand_ana_poly_10, rand_ana_poly_20, rand_ana_poly_30, rand_gmm_complex_0, rand_gmm_complex_10, rand_gmm_complex_20, rand_gmm_complex_30, rand_ana_poly_complex_0, rand_ana_poly_complex_10, rand_ana_poly_complex_20, rand_ana_poly_complex_30, organic_0, organic_10, organic_20, organic_30, cjk_0, cjk_10, cjk_20
+  Ebene, waagerecht       15842 Dreiecke — die Trainingslage: Dichte in einer Scheibe um z = 0,5
+  Ebene, 50° gekippt      15842 Dreiecke — dieselbe Dichte, um 50 Grad aus der Trainingslage gedreht
+  Ebene, Raumdiagonale    15842 Dreiecke — Normale entlang (1,1,1) — keine Achse ausgezeichnet
+  Kugel                    5120 Dreiecke — konstante Kruemmung, die Dichte trifft eine Halbkugel
+  Würfel                     12 Dreiecke — Projektion entlang der Raumdiagonale trifft drei Seiten
+  Eiform                   5120 Dreiecke — wie die Kugel, aber ohne Symmetrie entlang der Achse
+  Stanford-Bunny          69451 Dreiecke — echtes Messnetz, konkav und konvex zugleich
+
+[1/25] A
+    Ebene, waagerecht      erg=0.00129 cov=0.0328 standoff=0.017±0.010 blick=  98.8°  L=1.66
+    Ebene, 50° gekippt     erg=0.00231 cov=0.0298 standoff=0.017±0.011 blick=  84.6°  L=1.80
+    Ebene, Raumdiagonale   erg=0.00123 cov=0.0273 standoff=0.016±0.010 blick=  85.7°  L=1.66
+    Kugel                  erg=0.00213 cov=0.0397 standoff=0.022±0.014 blick= 116.6°  L=1.86
+    Würfel                 erg=0.00365 cov=0.0574 standoff=0.034±0.022 blick=  96.7°  L=3.93
+    Eiform                 erg=0.00224 cov=0.0343 standoff=0.022±0.012 blick= 115.6°  L=1.78
+    Stanford-Bunny         erg=0.00670 cov=0.0430 standoff=0.040±0.042 blick= 108.3°  L=2.06
+
+[2/25] greek_upper_0
+    Ebene, waagerecht      erg=0.00110 cov=0.0329 standoff=0.015±0.007 blick=  95.6°  L=1.59
+    Ebene, 50° gekippt     erg=0.00189 cov=0.0308 standoff=0.015±0.009 blick=  92.5°  L=1.66
+    Ebene, Raumdiagonale   erg=0.00093 cov=0.0286 standoff=0.018±0.011 blick=  83.6°  L=1.55
+    Kugel                  erg=0.00154 cov=0.0394 standoff=0.020±0.012 blick= 114.6°  L=1.81
+    Würfel                 erg=0.00657 cov=0.0673 standoff=0.035±0.021 blick= 118.8°  L=3.79
+    Eiform                 erg=0.00163 cov=0.0332 standoff=0.018±0.011 blick= 116.1°  L=1.73
+    Stanford-Bunny         erg=0.01046 cov=0.0477 standoff=0.042±0.034 blick= 105.1°  L=2.42
+
+[3/25] korean_5
+    Ebene, waagerecht      erg=0.00098 cov=0.0354 standoff=0.024±0.017 blick=  88.6°  L=2.46
+    Ebene, 50° gekippt     erg=0.00142 cov=0.0353 standoff=0.023±0.015 blick=  89.8°  L=2.43
+    Ebene, Raumdiagonale   erg=0.00115 cov=0.0310 standoff=0.021±0.014 blick=  90.3°  L=2.18
+    Kugel                  erg=0.00318 cov=0.0569 standoff=0.052±0.046 blick= 104.3°  L=3.18
+    Würfel                 erg=0.00713 cov=0.0781 standoff=0.043±0.028 blick= 107.4°  L=4.46
+    Eiform                 erg=0.00208 cov=0.0506 standoff=0.035±0.032 blick= 111.4°  L=2.92
+    Stanford-Bunny         erg=0.02204 cov=0.0604 standoff=0.060±0.039 blick=  93.1°  L=2.74
+
+[4/25] digit_5
+    Ebene, waagerecht      erg=0.00170 cov=0.0284 standoff=0.023±0.017 blick=  91.5°  L=1.93
+    Ebene, 50° gekippt     erg=0.00331 cov=0.0522 standoff=0.031±0.022 blick=  95.2°  L=1.88
+    Ebene, Raumdiagonale   erg=0.00185 cov=0.0289 standoff=0.021±0.014 blick=  93.4°  L=1.89
+    Kugel                  erg=0.01070 cov=0.0500 standoff=0.031±0.020 blick= 117.3°  L=1.68
+    Würfel                 erg=0.00489 cov=0.0737 standoff=0.055±0.048 blick=  96.5°  L=4.20
+    Eiform                 erg=0.00529 cov=0.0373 standoff=0.025±0.014 blick= 128.7°  L=1.69
+    Stanford-Bunny         erg=0.00966 cov=0.0550 standoff=0.056±0.037 blick=  97.5°  L=2.63
+
+[5/25] a_lc
+    Ebene, waagerecht      erg=0.00060 cov=0.0330 standoff=0.019±0.012 blick=  96.4°  L=1.70
+    Ebene, 50° gekippt     erg=0.00187 cov=0.0357 standoff=0.018±0.010 blick=  94.2°  L=1.69
+    Ebene, Raumdiagonale   erg=0.00155 cov=0.0310 standoff=0.016±0.011 blick=  82.4°  L=1.58
+    Kugel                  erg=0.00162 cov=0.0368 standoff=0.022±0.011 blick= 111.6°  L=1.71
+    Würfel                 erg=0.00464 cov=0.0612 standoff=0.044±0.028 blick= 106.1°  L=3.78
+    Eiform                 erg=0.00253 cov=0.0331 standoff=0.020±0.010 blick= 132.7°  L=1.54
+    Stanford-Bunny         erg=0.01178 cov=0.0498 standoff=0.052±0.054 blick= 101.9°  L=2.10
+
+[6/25] rand_gmm_10
+    Ebene, waagerecht      erg=0.00317 cov=0.0475 standoff=0.044±0.037 blick=  88.8°  L=2.57
+    Ebene, 50° gekippt     erg=0.00267 cov=0.0535 standoff=0.049±0.036 blick=  92.9°  L=2.41
+    Ebene, Raumdiagonale   erg=0.00417 cov=0.0494 standoff=0.046±0.033 blick=  91.7°  L=2.07
+    Kugel                  erg=0.01166 cov=0.0891 standoff=0.092±0.074 blick= 116.0°  L=3.29
+    Würfel                 erg=0.01562 cov=0.0996 standoff=0.092±0.058 blick= 113.9°  L=4.41
+    Eiform                 erg=0.00638 cov=0.0695 standoff=0.081±0.062 blick= 113.7°  L=2.89
+    Stanford-Bunny         erg=0.01843 cov=0.0835 standoff=0.100±0.061 blick= 101.7°  L=2.82
+
+[7/25] rand_gmm_20
+    Ebene, waagerecht      erg=0.00349 cov=0.0619 standoff=0.028±0.025 blick=  85.6°  L=1.53
+    Ebene, 50° gekippt     erg=0.00202 cov=0.0533 standoff=0.034±0.026 blick=  83.6°  L=1.98
+    Ebene, Raumdiagonale   erg=0.00248 cov=0.0527 standoff=0.032±0.025 blick=  78.3°  L=1.68
+    Kugel                  erg=0.01234 cov=0.0826 standoff=0.051±0.036 blick= 114.8°  L=1.99
+    Würfel                 erg=0.00844 cov=0.0988 standoff=0.097±0.103 blick= 115.3°  L=4.30
+    Eiform                 erg=0.00862 cov=0.0679 standoff=0.051±0.032 blick= 114.1°  L=2.08
+    Stanford-Bunny         erg=0.00957 cov=0.0642 standoff=0.064±0.057 blick= 104.9°  L=1.98
+
+[8/25] rand_ana_poly_10
+    Ebene, waagerecht      erg=0.00257 cov=0.0275 standoff=0.021±0.022 blick=  97.0°  L=2.46
+    Ebene, 50° gekippt     erg=0.00119 cov=0.0282 standoff=0.020±0.024 blick=  95.4°  L=2.20
+    Ebene, Raumdiagonale   erg=0.00385 cov=0.0312 standoff=0.023±0.025 blick=  84.7°  L=1.71
+    Kugel                  erg=0.00366 cov=0.0405 standoff=0.027±0.014 blick= 125.0°  L=1.68
+    Würfel                 erg=0.00460 cov=0.0625 standoff=0.048±0.070 blick= 115.7°  L=3.96
+    Eiform                 erg=0.00214 cov=0.0344 standoff=0.027±0.018 blick= 115.5°  L=1.90
+    Stanford-Bunny         erg=0.00902 cov=0.0417 standoff=0.047±0.044 blick=  95.7°  L=1.83
+
+[9/25] rand_ana_poly_20
+    Ebene, waagerecht      erg=0.00088 cov=0.0258 standoff=0.019±0.014 blick=  92.5°  L=2.22
+    Ebene, 50° gekippt     erg=0.00378 cov=0.0285 standoff=0.016±0.010 blick= 102.7°  L=1.97
+    Ebene, Raumdiagonale   erg=0.00236 cov=0.0280 standoff=0.015±0.011 blick=  70.6°  L=1.32
+    Kugel                  erg=0.00255 cov=0.0321 standoff=0.022±0.036 blick= 107.4°  L=1.99
+    Würfel                 erg=0.00390 cov=0.0589 standoff=0.038±0.052 blick= 111.3°  L=4.19
+    Eiform                 erg=0.00123 cov=0.0365 standoff=0.026±0.035 blick= 104.7°  L=2.11
+    Stanford-Bunny         erg=0.01665 cov=0.0497 standoff=0.060±0.046 blick=  95.4°  L=2.03
+
+[10/25] rand_ana_poly_30
+    Ebene, waagerecht      erg=0.00148 cov=0.0385 standoff=0.025±0.015 blick=  96.3°  L=1.79
+    Ebene, 50° gekippt     erg=0.00317 cov=0.0454 standoff=0.029±0.017 blick=  81.3°  L=1.77
+    Ebene, Raumdiagonale   erg=0.00108 cov=0.0402 standoff=0.020±0.012 blick=  81.3°  L=1.88
+    Kugel                  erg=0.00659 cov=0.0428 standoff=0.035±0.034 blick= 116.7°  L=3.19
+    Würfel                 erg=0.00763 cov=0.0611 standoff=0.039±0.036 blick= 105.1°  L=3.63
+    Eiform                 erg=0.01158 cov=0.0472 standoff=0.039±0.027 blick= 107.6°  L=2.51
+    Stanford-Bunny         erg=0.01018 cov=0.0603 standoff=0.066±0.056 blick=  99.7°  L=2.67
+
+[11/25] rand_gmm_complex_0
+    Ebene, waagerecht      erg=0.00219 cov=0.0592 standoff=0.078±0.057 blick=  87.8°  L=2.14
+    Ebene, 50° gekippt     erg=0.00506 cov=0.0596 standoff=0.075±0.050 blick=  88.3°  L=1.81
+    Ebene, Raumdiagonale   erg=0.00297 cov=0.0503 standoff=0.075±0.048 blick=  86.6°  L=1.70
+    Kugel                  erg=0.01014 cov=0.0893 standoff=0.065±0.046 blick= 104.4°  L=2.28
+    Würfel                 erg=0.01331 cov=0.1090 standoff=0.116±0.099 blick=  97.9°  L=5.07
+    Eiform                 erg=0.01126 cov=0.0756 standoff=0.069±0.046 blick= 106.9°  L=2.38
+    Stanford-Bunny         erg=0.01249 cov=0.0794 standoff=0.072±0.063 blick= 104.6°  L=2.46
+
+[12/25] rand_gmm_complex_10
+    Ebene, waagerecht      erg=0.00229 cov=0.0460 standoff=0.155±0.139 blick=  89.8°  L=2.48
+    Ebene, 50° gekippt     erg=0.00239 cov=0.0458 standoff=0.169±0.135 blick=  91.8°  L=2.58
+    Ebene, Raumdiagonale   erg=0.00209 cov=0.0427 standoff=0.147±0.123 blick=  96.2°  L=2.25
+    Kugel                  erg=0.01237 cov=0.0702 standoff=0.129±0.114 blick= 104.4°  L=3.04
+    Würfel                 erg=0.02293 cov=0.1107 standoff=0.275±0.169 blick=  78.0°  L=4.22
+    Eiform                 erg=0.00891 cov=0.0711 standoff=0.113±0.088 blick= 103.3°  L=2.76
+    Stanford-Bunny         erg=0.00780 cov=0.0769 standoff=0.164±0.121 blick=  90.6°  L=2.87
+
+[13/25] rand_gmm_complex_20
+    Ebene, waagerecht      erg=0.00569 cov=0.0544 standoff=0.057±0.036 blick=  95.1°  L=2.63
+    Ebene, 50° gekippt     erg=0.00273 cov=0.0551 standoff=0.054±0.029 blick=  90.7°  L=2.73
+    Ebene, Raumdiagonale   erg=0.00201 cov=0.0466 standoff=0.042±0.028 blick=  88.1°  L=2.33
+    Kugel                  erg=0.00824 cov=0.0781 standoff=0.158±0.079 blick=  87.1°  L=2.98
+    Würfel                 erg=0.03055 cov=0.1185 standoff=0.275±0.184 blick=  96.5°  L=4.56
+    Eiform                 erg=0.00965 cov=0.0872 standoff=0.134±0.063 blick=  77.6°  L=2.06
+    Stanford-Bunny         erg=0.01167 cov=0.0789 standoff=0.103±0.079 blick= 113.6°  L=2.79
+
+[14/25] rand_gmm_complex_30
+    Ebene, waagerecht      erg=0.00289 cov=0.0623 standoff=0.036±0.034 blick=  87.1°  L=2.20
+    Ebene, 50° gekippt     erg=0.00207 cov=0.0483 standoff=0.035±0.029 blick=  94.4°  L=2.69
+    Ebene, Raumdiagonale   erg=0.00194 cov=0.0422 standoff=0.034±0.028 blick=  89.5°  L=2.47
+    Kugel                  erg=0.00871 cov=0.0804 standoff=0.063±0.039 blick= 117.7°  L=3.26
+    Würfel                 erg=0.00739 cov=0.0972 standoff=0.111±0.097 blick= 100.8°  L=5.00
+    Eiform                 erg=0.01029 cov=0.0587 standoff=0.064±0.042 blick= 113.4°  L=3.34
+    Stanford-Bunny         erg=0.00561 cov=0.0776 standoff=0.039±0.027 blick= 116.8°  L=2.42
+
+[15/25] rand_ana_poly_complex_0
+    Ebene, waagerecht      erg=0.00028 cov=0.0362 standoff=0.016±0.008 blick=  91.4°  L=1.63
+    Ebene, 50° gekippt     erg=0.00112 cov=0.0365 standoff=0.019±0.012 blick=  80.4°  L=1.69
+    Ebene, Raumdiagonale   erg=0.00070 cov=0.0330 standoff=0.017±0.011 blick=  75.4°  L=1.52
+    Kugel                  erg=0.00196 cov=0.0440 standoff=0.020±0.011 blick= 116.8°  L=1.75
+    Würfel                 erg=0.00461 cov=0.0756 standoff=0.037±0.043 blick= 101.5°  L=2.99
+    Eiform                 erg=0.00138 cov=0.0396 standoff=0.018±0.010 blick= 128.0°  L=1.63
+    Stanford-Bunny         erg=0.00934 cov=0.0541 standoff=0.049±0.046 blick= 101.9°  L=2.03
+
+[16/25] rand_ana_poly_complex_10
+    Ebene, waagerecht      erg=0.00041 cov=0.0404 standoff=0.017±0.009 blick=  97.7°  L=1.78
+    Ebene, 50° gekippt     erg=0.00084 cov=0.0378 standoff=0.017±0.012 blick=  86.0°  L=1.82
+    Ebene, Raumdiagonale   erg=0.00043 cov=0.0337 standoff=0.015±0.011 blick=  74.4°  L=1.66
+    Kugel                  erg=0.00104 cov=0.0534 standoff=0.024±0.020 blick= 116.1°  L=1.88
+    Würfel                 erg=0.00334 cov=0.0796 standoff=0.039±0.046 blick=  91.3°  L=3.57
+    Eiform                 erg=0.00116 cov=0.0523 standoff=0.024±0.020 blick= 106.5°  L=1.81
+    Stanford-Bunny         erg=0.00773 cov=0.0550 standoff=0.046±0.032 blick= 101.1°  L=2.29
+
+[17/25] rand_ana_poly_complex_20
+    Ebene, waagerecht      erg=0.00067 cov=0.0238 standoff=0.020±0.017 blick=  96.3°  L=2.15
+    Ebene, 50° gekippt     erg=0.00067 cov=0.0266 standoff=0.019±0.012 blick=  82.0°  L=2.38
+    Ebene, Raumdiagonale   erg=0.00030 cov=0.0261 standoff=0.019±0.015 blick=  81.9°  L=1.90
+    Kugel                  erg=0.00221 cov=0.0350 standoff=0.022±0.014 blick= 105.1°  L=2.47
+    Würfel                 erg=0.00496 cov=0.0429 standoff=0.027±0.015 blick= 103.6°  L=4.09
+    Eiform                 erg=0.00542 cov=0.0423 standoff=0.024±0.017 blick= 107.3°  L=1.84
+    Stanford-Bunny         erg=0.00184 cov=0.0498 standoff=0.028±0.020 blick=  93.1°  L=2.09
+
+[18/25] rand_ana_poly_complex_30
+    Ebene, waagerecht      erg=0.00158 cov=0.0279 standoff=0.014±0.009 blick=  89.9°  L=1.67
+    Ebene, 50° gekippt     erg=0.00188 cov=0.0426 standoff=0.023±0.017 blick=  95.6°  L=1.69
+    Ebene, Raumdiagonale   erg=0.00099 cov=0.0342 standoff=0.018±0.013 blick=  83.8°  L=1.53
+    Kugel                  erg=0.00212 cov=0.0498 standoff=0.030±0.032 blick= 106.9°  L=2.02
+    Würfel                 erg=0.00541 cov=0.0642 standoff=0.048±0.058 blick= 104.2°  L=5.06
+    Eiform                 erg=0.00196 cov=0.0482 standoff=0.027±0.026 blick= 110.5°  L=1.90
+    Stanford-Bunny         erg=0.00998 cov=0.0478 standoff=0.056±0.041 blick= 106.5°  L=2.52
+
+[19/25] organic_0
+    Ebene, waagerecht      erg=0.00301 cov=0.0330 standoff=0.021±0.010 blick=  88.5°  L=2.39
+    Ebene, 50° gekippt     erg=0.00372 cov=0.0295 standoff=0.019±0.010 blick=  88.2°  L=2.52
+    Ebene, Raumdiagonale   erg=0.00227 cov=0.0283 standoff=0.020±0.010 blick=  92.4°  L=2.34
+    Kugel                  erg=0.00623 cov=0.0479 standoff=0.027±0.010 blick= 124.3°  L=2.95
+    Würfel                 erg=0.01159 cov=0.0893 standoff=0.089±0.101 blick= 104.2°  L=5.74
+    Eiform                 erg=0.00711 cov=0.0408 standoff=0.026±0.015 blick= 109.8°  L=3.12
+    Stanford-Bunny         erg=0.01544 cov=0.0635 standoff=0.056±0.043 blick= 104.9°  L=2.66
+
+[20/25] organic_10
+    Ebene, waagerecht      erg=0.00232 cov=0.0277 standoff=0.019±0.012 blick=  92.2°  L=2.10
+    Ebene, 50° gekippt     erg=0.00200 cov=0.0280 standoff=0.021±0.009 blick=  81.5°  L=2.02
+    Ebene, Raumdiagonale   erg=0.00167 cov=0.0268 standoff=0.021±0.009 blick=  85.0°  L=1.83
+    Kugel                  erg=0.00344 cov=0.0350 standoff=0.024±0.011 blick= 116.1°  L=2.53
+    Würfel                 erg=0.00547 cov=0.0544 standoff=0.042±0.047 blick=  92.9°  L=4.59
+    Eiform                 erg=0.00301 cov=0.0382 standoff=0.022±0.011 blick= 123.6°  L=2.05
+    Stanford-Bunny         erg=0.00478 cov=0.0413 standoff=0.044±0.032 blick= 101.8°  L=2.60
+
+[21/25] organic_20
+    Ebene, waagerecht      erg=0.00098 cov=0.0309 standoff=0.015±0.008 blick=  88.8°  L=1.60
+    Ebene, 50° gekippt     erg=0.00179 cov=0.0335 standoff=0.021±0.017 blick=  84.9°  L=2.36
+    Ebene, Raumdiagonale   erg=0.00156 cov=0.0300 standoff=0.015±0.013 blick=  82.0°  L=1.49
+    Kugel                  erg=0.00105 cov=0.0454 standoff=0.026±0.048 blick= 102.8°  L=2.42
+    Würfel                 erg=0.00770 cov=0.0790 standoff=0.038±0.047 blick=  82.5°  L=3.46
+    Eiform                 erg=0.00228 cov=0.0498 standoff=0.022±0.019 blick= 111.6°  L=1.47
+    Stanford-Bunny         erg=0.00890 cov=0.0524 standoff=0.050±0.051 blick= 107.0°  L=2.63
+
+[22/25] organic_30
+    Ebene, waagerecht      erg=0.00100 cov=0.0289 standoff=0.011±0.007 blick= 104.9°  L=0.84
+    Ebene, 50° gekippt     erg=0.00066 cov=0.0236 standoff=0.011±0.008 blick=  92.0°  L=1.17
+    Ebene, Raumdiagonale   erg=0.00057 cov=0.0216 standoff=0.011±0.008 blick=  91.4°  L=1.09
+    Kugel                  erg=0.00160 cov=0.0292 standoff=0.014±0.010 blick= 110.0°  L=1.03
+    Würfel                 erg=0.00254 cov=0.0449 standoff=0.024±0.021 blick= 115.1°  L=2.38
+    Eiform                 erg=0.00126 cov=0.0305 standoff=0.015±0.009 blick= 130.2°  L=0.77
+    Stanford-Bunny         erg=0.00420 cov=0.0319 standoff=0.039±0.041 blick=  96.8°  L=1.70
+
+[23/25] cjk_0
+    Ebene, waagerecht      erg=0.00226 cov=0.0401 standoff=0.052±0.027 blick=  90.9°  L=3.30
+    Ebene, 50° gekippt     erg=0.00275 cov=0.0431 standoff=0.045±0.023 blick=  94.7°  L=2.77
+    Ebene, Raumdiagonale   erg=0.00169 cov=0.0361 standoff=0.044±0.022 blick=  86.5°  L=2.55
+    Kugel                  erg=0.00398 cov=0.0616 standoff=0.078±0.052 blick=  99.9°  L=3.34
+    Würfel                 erg=0.02215 cov=0.0966 standoff=0.126±0.094 blick= 111.2°  L=6.16
+    Eiform                 erg=0.00349 cov=0.0589 standoff=0.073±0.047 blick= 108.5°  L=3.26
+    Stanford-Bunny         erg=0.02697 cov=0.0682 standoff=0.079±0.038 blick=  96.6°  L=3.06
+
+[24/25] cjk_10
+    Ebene, waagerecht      erg=0.00362 cov=0.0322 standoff=0.042±0.034 blick=  94.0°  L=2.79
+    Ebene, 50° gekippt     erg=0.00443 cov=0.0366 standoff=0.041±0.036 blick=  88.7°  L=3.01
+    Ebene, Raumdiagonale   erg=0.00277 cov=0.0349 standoff=0.039±0.032 blick=  84.9°  L=2.70
+    Kugel                  erg=0.01206 cov=0.0465 standoff=0.043±0.032 blick= 113.4°  L=2.50
+    Würfel                 erg=0.01318 cov=0.0808 standoff=0.085±0.075 blick= 122.6°  L=4.55
+    Eiform                 erg=0.00382 cov=0.0465 standoff=0.048±0.033 blick= 106.7°  L=3.05
+    Stanford-Bunny         erg=0.01407 cov=0.0593 standoff=0.063±0.055 blick=  94.9°  L=2.61
+
+[25/25] cjk_20
+    Ebene, waagerecht      erg=0.00310 cov=0.0382 standoff=0.049±0.036 blick= 105.4°  L=2.55
+    Ebene, 50° gekippt     erg=0.00120 cov=0.0442 standoff=0.050±0.038 blick=  88.2°  L=2.47
+    Ebene, Raumdiagonale   erg=0.00243 cov=0.0350 standoff=0.046±0.034 blick=  96.9°  L=2.32
+    Kugel                  erg=0.00845 cov=0.0553 standoff=0.079±0.064 blick= 111.3°  L=3.24
+    Würfel                 erg=0.02001 cov=0.0896 standoff=0.079±0.061 blick= 107.9°  L=5.62
+    Eiform                 erg=0.00357 cov=0.0443 standoff=0.041±0.031 blick= 115.7°  L=3.22
+    Stanford-Bunny         erg=0.02153 cov=0.0617 standoff=0.073±0.048 blick=  98.1°  L=2.72
+
+  [csv] ../visualisierungen/02_holdout_vergleich/3d_flaechen\metriken.csv
+  [json] ../visualisierungen/02_holdout_vergleich/3d_flaechen/bahnen.json
+
+==============================================================================
+Oberflaeche             Ergodisch  Abdeckung   Standoff    Blick   Laenge
+------------------------------------------------------------------------------
+Ebene, waagerecht         0.00198     0.0378      0.033    93.2°     2.09
+Ebene, 50° gekippt        0.00228     0.0393      0.035    89.6°     2.14
+Ebene, Raumdiagonale      0.00180     0.0348      0.032    85.5°     1.89
+Kugel                     0.00558     0.0532      0.047   111.2°     2.40
+Würfel                    0.00969     0.0780      0.077   103.9°     4.31
+Eiform                    0.00473     0.0491      0.043   112.8°     2.23
+Stanford-Bunny            0.01147     0.0581      0.062   101.3°     2.43
+==============================================================================
+Gesamtzeit 353 s
+3D_VOLL_DONE exit=0
