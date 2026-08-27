@@ -1,0 +1,159 @@
+{
+  "config": {
+    "logo": "/home/philipp/Documents/Uni/Master_thesis/iasLogo.jpg",
+    "checkpoint": "/media/philipp/storage/Dokumente/Uni/Master_thesis/thesis_architecture/checkpoints/cond_particles_crossattn_flow_matching_particle_ergodic_date_08_26_04h30min_nxi25_D384_N256_C75_flip0.0_START_FLAT400_L500_ERGLOSS-SINKHORN-w1300-blur0.05-tp2_ep0500.pt",
+    "out_dir": "/media/philipp/storage/Dokumente/Uni/Master_thesis/thesis_architecture/results_ias_logo_test",
+    "iters": [
+      500,
+      1000
+    ],
+    "edge_sigma": 0.025,
+    "fill_frac": 0.8,
+    "erg_K": 10,
+    "x0": [
+      0.12,
+      0.12
+    ],
+    "x1_linear": [
+      0.12,
+      0.88
+    ],
+    "dt": 0.05,
+    "tsteps": 200,
+    "step_size": 0.01,
+    "h": 0.01,
+    "score_scale": 1.0,
+    "grid_res": 128,
+    "device": "cpu",
+    "seed": 0,
+    "quiet": true
+  },
+  "results": {
+    "linear_iters500": {
+      "init_name": "linear",
+      "n_iter": 500,
+      "wall_time_s": 3.452610969543457,
+      "metrics": {
+        "E_ergodic": 38.93195724487305,
+        "E_smooth": 0.02262350171804428,
+        "E_boundary": 0.0,
+        "E_total": 38.95458074659109,
+        "coverage": 0.11043018847703934,
+        "path_len": 2.9941728115081787
+      },
+      "init_metrics": {
+        "E_ergodic": 117.0431900024414,
+        "E_smooth": 6.102452516643098e-06,
+        "E_boundary": 0.0,
+        "E_total": 117.04319610489392,
+        "coverage": 0.37870800495147705,
+        "path_len": 0.7592853307723999
+      }
+    },
+    "linear_iters1000": {
+      "init_name": "linear",
+      "n_iter": 1000,
+      "wall_time_s": 5.578694820404053,
+      "metrics": {
+        "E_ergodic": 31.816242218017578,
+        "E_smooth": 0.03153615444898605,
+        "E_boundary": 0.0,
+        "E_total": 31.847778372466564,
+        "coverage": 0.0838790163397789,
+        "path_len": 3.217047691345215
+      },
+      "init_metrics": {
+        "E_ergodic": 117.0431900024414,
+        "E_smooth": 6.102452516643098e-06,
+        "E_boundary": 0.0,
+        "E_total": 117.04319610489392,
+        "coverage": 0.37870800495147705,
+        "path_len": 0.7592853307723999
+      }
+    },
+    "heuristic_iters500": {
+      "init_name": "heuristic",
+      "n_iter": 500,
+      "wall_time_s": 4.051000356674194,
+      "metrics": {
+        "E_ergodic": 0.5211445689201355,
+        "E_smooth": 0.2502223253250122,
+        "E_boundary": 0.0,
+        "E_total": 0.7713668942451477,
+        "coverage": 0.027799956500530243,
+        "path_len": 5.543193817138672
+      },
+      "init_metrics": {
+        "E_ergodic": 1.6278252601623535,
+        "E_smooth": 0.19073651731014252,
+        "E_boundary": 0.0,
+        "E_total": 1.818561777472496,
+        "coverage": 0.038295529782772064,
+        "path_len": 4.341102123260498
+      }
+    },
+    "heuristic_iters1000": {
+      "init_name": "heuristic",
+      "n_iter": 1000,
+      "wall_time_s": 6.506517171859741,
+      "metrics": {
+        "E_ergodic": 0.5022153258323669,
+        "E_smooth": 0.2638365924358368,
+        "E_boundary": 0.0,
+        "E_total": 0.7660519182682037,
+        "coverage": 0.027194790542125702,
+        "path_len": 5.637093544006348
+      },
+      "init_metrics": {
+        "E_ergodic": 1.6278252601623535,
+        "E_smooth": 0.19073651731014252,
+        "E_boundary": 0.0,
+        "E_total": 1.818561777472496,
+        "coverage": 0.038295529782772064,
+        "path_len": 4.341102123260498
+      }
+    },
+    "model_iters500": {
+      "init_name": "model",
+      "n_iter": 500,
+      "wall_time_s": 2.972568988800049,
+      "metrics": {
+        "E_ergodic": 0.9287220239639282,
+        "E_smooth": 0.08953501284122467,
+        "E_boundary": 0.0,
+        "E_total": 1.018257036805153,
+        "coverage": 0.03729519993066788,
+        "path_len": 3.8239338397979736
+      },
+      "init_metrics": {
+        "E_ergodic": 1.0148000717163086,
+        "E_smooth": 0.07299205660820007,
+        "E_boundary": 0.0,
+        "E_total": 1.0877921283245087,
+        "coverage": 0.047061920166015625,
+        "path_len": 3.0822904109954834
+      }
+    },
+    "model_iters1000": {
+      "init_name": "model",
+      "n_iter": 1000,
+      "wall_time_s": 5.448450088500977,
+      "metrics": {
+        "E_ergodic": 0.5228351950645447,
+        "E_smooth": 0.10156714916229248,
+        "E_boundary": 0.0,
+        "E_total": 0.6244023442268372,
+        "coverage": 0.03516384959220886,
+        "path_len": 4.029733657836914
+      },
+      "init_metrics": {
+        "E_ergodic": 1.0148000717163086,
+        "E_smooth": 0.07299205660820007,
+        "E_boundary": 0.0,
+        "E_total": 1.0877921283245087,
+        "coverage": 0.047061920166015625,
+        "path_len": 3.0822904109954834
+      }
+    }
+  }
+}

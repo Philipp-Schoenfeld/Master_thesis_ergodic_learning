@@ -30,7 +30,8 @@ for _p in (os.path.join(_root, 'bsplinax-main'), os.path.join(_root, 'src')):
 from bsplinax.bspline import BsplineBasisClamped
 from flow_matching_cond_particles_length import (
     ParticleCrossAttnFlowNetwork, compute_particle_cfm_loss,
-    generate_particle_trajectories,
+    generate_particle_trajectories, lade_modellzustand,
+    ruecksetzen_laengenkopf, uebernehmen_aus,
 )
 
 sys.path.append(os.path.join(_here, 'ergodic_dataset_generator'))
@@ -158,19 +159,34 @@ def _load_shapes(nxi, grid_res=128):
     train_densities = {}
     val_densities = {}
     
-    print(f"  Precomputing {grid_res}x{grid_res} density grids for all shapes (this takes a moment)...")
+    print(f"  Precomputing {grid_res}x{grid_res} density grids (dedupliziert)...")
     train_lengths, val_lengths = {}, {}
+    # Je Zielverteilung liegen bis zu neunzehn Zeilen vor, die sich nur in der
+    # Iterationszahl unterscheiden — ihre Dichte ist dieselbe. Ohne diesen
+    # Zwischenspeicher wird sie neunzehnmal gerechnet und neunzehnmal
+    # gespeichert: 20.593 Gitter zu 128x128 float32 sind 1,35 GB, wo 1.187
+    # Gitter 78 MB genuegen, und `pdf_on_grid` laeuft ueber JAX 17-mal
+    # oefter als noetig. Geschluesselt wird ueber die Dichteparameter selbst,
+    # nicht ueber den Formnamen — das ist exakt und nicht bloss plausibel.
+    dichte_cache = {}
     for blob, label, split, density_params_str, laenge, n_iters in rows:
         xy = np.frombuffer(blob, dtype=np.float32).reshape(-1, 2)
         idx = np.linspace(0, len(xy) - 1, nxi).astype(int)
-        
-        params = json.loads(density_params_str)
-        # We don't need gx, gy for this
-        d_map, _, _ = pdf_on_grid(params, resolution=grid_res)
-        # Normalize strictly to max=1.0 for consistency
-        if d_map.max() > 0:
-            d_map /= d_map.max()
-            
+
+        d_map = dichte_cache.get(density_params_str)
+        if d_map is None:
+            params = json.loads(density_params_str)
+            # We don't need gx, gy for this
+            d_map, _, _ = pdf_on_grid(params, resolution=grid_res)
+            # Normalize strictly to max=1.0 for consistency
+            if d_map.max() > 0:
+                d_map = d_map / d_map.max()
+            # Das Gitter wird ab hier von mehreren Schluesseln geteilt. Schreibschutz,
+            # damit eine spaetere Aenderung nicht unbemerkt alle Varianten trifft.
+            if hasattr(d_map, 'setflags'):
+                d_map.setflags(write=False)
+            dichte_cache[density_params_str] = d_map
+
         # Jede Form kommt mehrfach vor, einmal je Iterationszahl. Der
         # Schluessel muss die Varianten unterscheiden, sonst ueberschreiben
         # sie sich gegenseitig und uebrig bliebe je Form eine.
@@ -202,15 +218,27 @@ def _build_dataset(train_shapes, train_densities, holdout_shapes, holdout_densit
     
     shape_keys = list(train_shapes.keys())
     density_grid_tensors = []
-    
-    for i, lbl in enumerate(shape_keys):
+    # `_load_shapes` gibt fuer alle Varianten einer Zielverteilung dasselbe
+    # Array-Objekt zurueck. Dieselbe Karte darf deshalb auch nur einmal in den
+    # Stapel; `shape_indices` zeigt danach auf den geteilten Eintrag. Das ist
+    # gefahrlos, weil `shape_indices` ausschliesslich dazu dient, in
+    # `density_grids_stack` zu indizieren (siehe `sample_particles`).
+    gitter_index = {}
+
+    for lbl in shape_keys:
         base = train_shapes[lbl]
         d_map = train_densities[lbl]
-        density_grid_tensors.append(torch.tensor(d_map, dtype=torch.float32))
-        
+        kennung = id(d_map)
+        gi = gitter_index.get(kennung)
+        if gi is None:
+            gi = len(density_grid_tensors)
+            gitter_index[kennung] = gi
+            density_grid_tensors.append(
+                torch.tensor(np.asarray(d_map), dtype=torch.float32))
+
         tiled = np.tile(base[None], (copies_per_char, 1, 1))
         all_x1.append(tiled)
-        all_indices.extend([i] * copies_per_char)
+        all_indices.extend([gi] * copies_per_char)
         L = (train_lengths or {}).get(lbl, 0.0)
         all_lengths.extend([L] * copies_per_char)
 
@@ -222,7 +250,11 @@ def _build_dataset(train_shapes, train_densities, holdout_shapes, holdout_densit
     shape_indices = torch.tensor(all_indices[perm], dtype=torch.long).to(device)
     lengths = torch.tensor(np.array(all_lengths)[perm], dtype=torch.float32).to(device)
     
-    density_grids_stack = torch.stack(density_grid_tensors).to(device) # (num_train_shapes, 128, 128)
+    density_grids_stack = torch.stack(density_grid_tensors).to(device)
+    _mb = density_grids_stack.numel() * 4 / 2**20
+    _mb_alt = len(shape_keys) * density_grids_stack[0].numel() * 4 / 2**20
+    print(f"  Dichtekarten: {len(density_grid_tensors)} eindeutige fuer "
+          f"{len(shape_keys)} Varianten ({_mb:.0f} MB statt {_mb_alt:.0f} MB)")
     
     # Precompute sampled particles for holdout shapes for visualization
     holdout_particles = {}
@@ -264,6 +296,11 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     ckpt_dict['p_drop_length'] = args.p_drop_length
     ckpt_dict['n_flat'] = getattr(args, 'n_flat', 0)
     ckpt_dict['start_cond'] = True
+    # Wie log_ref/log_scale gehoert auch die Frequenzwahl in den Checkpoint:
+    # ohne sie kann die Inferenz nicht wissen, welche Kodierung im Training
+    # galt, und wuerde die Laenge stillschweigend anders verstehen.
+    ckpt_dict['length_freqs'] = args.length_freqs
+    ckpt_dict['init_from'] = getattr(args, 'init_from', None) or ''
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt_dict['wandb_id'] = wandb.run.id
     torch.save(ckpt_dict, path)
@@ -346,10 +383,43 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, le
 
     if args.resume and os.path.isfile(args.resume):
         ckpt = torch.load(args.resume, map_location=x1_clean.device, weights_only=True)
-        model.load_state_dict(ckpt['model_state_dict'])
+        # `lade_modellzustand` verwirft die Frequenzpuffer des Checkpoints.
+        # Ohne das wuerde ein vor der Korrektur entstandener Stand die
+        # Frequenzen des neuen Modells ueberschreiben, und --length_freqs
+        # waere wirkungslos, ohne dass irgendetwas auffiele.
+        lade_modellzustand(model, ckpt['model_state_dict'])
         opt.load_state_dict(ckpt['optimizer_state_dict'])
         scheduler.load_state_dict(ckpt['scheduler_state_dict'])
         start_epoch = ckpt['epoch'] + 1
+        # Hat der Checkpoint eine andere Frequenzwahl, sind die Gewichte des
+        # Laengenkopfs auf eine andere Kodierung bezogen und bedeutungslos.
+        # Das wird per Vorgabe selbst erkannt, statt es einem vergessenen
+        # Schalter zu ueberlassen: die Folge waere ein Lauf, der aussieht wie
+        # er soll und trotzdem nichts lernt.
+        alt_freqs = ckpt.get('length_freqs', 'oktaven')
+        gewechselt = alt_freqs != args.length_freqs
+        if gewechselt:
+            print(f"  [Laden] Frequenzwahl gewechselt: {alt_freqs} -> "
+                  f"{args.length_freqs}. Die Gewichte des Laengenkopfs "
+                  f"beziehen sich auf die alte Kodierung.")
+        setze_zurueck = (gewechselt if args.reset_length_emb == 'auto'
+                         else args.reset_length_emb == 'ja')
+        if gewechselt and not setze_zurueck:
+            print("  [!] WARNUNG: --reset_length_emb nein trainiert den "
+                  "Laengenkopf auf Gewichten weiter, die zu einer anderen "
+                  "Kodierung gehoeren.")
+        if setze_zurueck:
+            ruecksetzen_laengenkopf(model)
+            # Der Optimiererzustand (Adam-Momente) dieser Parameter gehoert
+            # mit zurueckgesetzt — sonst schiebt die angesammelte Bewegung
+            # der alten, bedeutungslosen Gradienten die frischen Gewichte
+            # sofort wieder in eine willkuerliche Richtung.
+            n_weg = 0
+            for p_ in list(model.length_emb.parameters()) + [model.null_length_token]:
+                if opt.state.pop(p_, None) is not None:
+                    n_weg += 1
+            print(f"  [Laden] Optimiererzustand von {n_weg} Tensoren des "
+                  f"Laengenkopfs verworfen.")
         print(f"  Resumed from epoch {start_epoch} (loss={ckpt['loss']:.5f})")
 
     import signal
@@ -580,6 +650,16 @@ def run(args):
     # mit demselben Glob auf die Checkpoints des jeweils anderen zu — der lange
     # Lauf wuerde vom Stand des kurzen fortsetzen.
     args.run_str += f"_LEN-pd{args.p_drop_length:g}"
+    # Eigener Marker fuer die korrigierte Laengenkodierung. Ohne ihn waeren
+    # die Checkpoints beider Frequenzwahlen unter demselben Namen, und die
+    # Fortsetzungslogik der Kette wuerde sie vermischen.
+    if args.length_freqs != 'oktaven':
+        args.run_str += f"_{args.length_freqs.upper()}FREQ"
+    # Der Warmstart gehoert in den Namen: sonst waeren die Checkpoints des
+    # Vergleichs — von Grund auf gegen warmgestartet — nicht zu trennen, und
+    # die Fortsetzungslogik wuerde sie vermischen.
+    if getattr(args, 'init_from', None):
+        args.run_str += "_FROMSTART"
     if getattr(args, 'tag', None):
         args.run_str += f"_{args.tag}"
     # Distinct marker for runs that use the ergodic coverage term in the loss, so
@@ -632,13 +712,43 @@ def run(args):
     model = ParticleCrossAttnFlowNetwork(
         nxi=args.nxi, nd=args.nd, D=args.D,
         log_ref=args.log_ref, log_scale=args.log_scale,
+        length_freq_mode=args.length_freqs,
     ).to(device)
+    _spanne = model.length_emb.periodenspanne(_L.min() if len(_L) else 1.0,
+                                              _L.max() if len(_L) else 2.0)
+    print(f"  Laengenkodierung: {args.length_freqs}, "
+          f"Bereich = {_spanne:.2f} Perioden der niedrigsten Frequenz")
+    if _spanne >= 1.0:
+        print(f"  [!] WARNUNG: >= 1 Periode bedeutet, dass verschiedene "
+              f"Laengen identisch kodiert werden und das Netz sie nicht "
+              f"unterscheiden kann. Mit --length_freqs linear beheben.")
+
+    # Warmstart aus einem Modell ohne Laengeneingang. Bewusst hier und nicht
+    # in train(): ein spaeteres --resume laedt danach und ueberschreibt ihn,
+    # sodass ein Glied der Kette nach dem ersten Lauf normal fortsetzt, statt
+    # jedes Mal wieder beim Ausgangsmodell zu beginnen.
+    if args.init_from:
+        if not os.path.isfile(args.init_from):
+            raise FileNotFoundError(f"--init_from: {args.init_from} fehlt")
+        _q = torch.load(args.init_from, map_location=device, weights_only=False)
+        print(f"  Warmstart aus {os.path.basename(args.init_from)} "
+              f"(Epoche {_q.get('epoch', '?')}, nxi={_q.get('nxi', '?')}, "
+              f"Verlust {_q.get('loss', float('nan')):.4f})")
+        uebernehmen_aus(model, _q['model_state_dict'])
+        # Der Laengenkopf existiert in der Quelle nicht und ist frisch. Sein
+        # Ausgang wird auf null gesetzt, damit das erweiterte Netz zu Beginn
+        # funktional bitgleich mit dem Ausgangsmodell ist — dessen FiLM-
+        # Projektionen sind, anders als bei einem neuen Netz, bereits
+        # trainiert und wuerden einen zufaelligen Laengenvektor sofort
+        # durchreichen.
+        ruecksetzen_laengenkopf(model)
+        del _q
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"  Model params: {params:,}\n")
 
     if args.load_model and os.path.isfile(args.load_model):
         ckpt = torch.load(args.load_model, map_location=device, weights_only=True)
-        model.load_state_dict(ckpt['model_state_dict'])
+        lade_modellzustand(model, ckpt['model_state_dict'])
         print(f"  Loaded checkpoint from {args.load_model}")
     else:
         if args.use_wandb:
@@ -684,6 +794,8 @@ def run(args):
             'epoch': args.epochs - 1,
             'length_cond': True,
             'log_ref': args.log_ref, 'log_scale': args.log_scale,
+            'length_freqs': args.length_freqs,
+            'init_from': getattr(args, 'init_from', None) or '',
             'p_drop_length': args.p_drop_length,
             'cfg_weight': args.cfg_weight, 'p_drop': args.p_drop,
             'db': _DB_PATH,
@@ -783,6 +895,34 @@ def parse_args():
     p.add_argument('--use_wandb',      action='store_true', default=False)
     p.add_argument('--wandb_project',  type=str, default='flow-matching')
     p.add_argument('--run_name',       type=str, default=None)
+    p.add_argument('--init_from', type=str, default=None,
+                   help='Checkpoint eines Modells OHNE Laengeneingang, dessen '
+                        'Gewichte als Warmstart uebernommen werden (z. B. das '
+                        'auskonvergierte startpunktkonditionierte Netz). Die '
+                        'Architekturen unterscheiden sich nur um fuenf '
+                        'Tensoren; pos_emb wird bei abweichendem nxi entlang '
+                        'der Kontrollpunktachse interpoliert. Anders als '
+                        '--resume werden Optimierer, Zeitplan und Epochenzahl '
+                        'NICHT uebernommen: es ist ein neuer Lauf. Liegt '
+                        'zugleich ein --resume-Stand vor, gewinnt dieser.')
+    p.add_argument('--length_freqs', default='oktaven',
+                   choices=['oktaven', 'linear'],
+                   help='Frequenzen der Laengenkodierung. "oktaven" (2^k*pi) '
+                        'ist die bisherige Wahl und bleibt Vorgabe, damit '
+                        'bestehende Laeufe reproduzierbar bleiben; sie kodiert '
+                        'auf diesem Datensatz aber mehrdeutig (3,34 Perioden, '
+                        'L=4,00/10,22/24,17 sind bitgleich). "linear" (0,25*k) '
+                        'ist die korrigierte Wahl.')
+    p.add_argument('--reset_length_emb', default='auto',
+                   choices=['auto', 'ja', 'nein'],
+                   help='Beim Fortsetzen die Laengen-Einbettung und ihren '
+                        'Optimiererzustand frisch initialisieren. "auto" '
+                        '(Vorgabe) tut das genau dann, wenn der Checkpoint '
+                        'mit einer anderen Frequenzwahl entstand — dann sind '
+                        'die 154.760 Parameter des Laengenpfads auf eine '
+                        'andere Kodierung bezogen, waehrend der uebrige '
+                        'Zustand gueltig bleibt. "ja" erzwingt, "nein" '
+                        'unterdrueckt das Ruecksetzen.')
     p.add_argument('--p_drop_length', type=float, default=0.1,
                    help='Anteil der Trainingsbeispiele, bei denen die Laenge '
                         'durch den Null-Token ersetzt wird. Erst dadurch '

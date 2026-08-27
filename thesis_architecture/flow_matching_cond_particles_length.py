@@ -54,7 +54,10 @@ class SinusoidalTimeEmbedding(nn.Module):
             torch.arange(half, dtype=torch.float32)
             * -(math.log(10_000.0) / (half - 1))
         )
-        self.register_buffer("freqs", freqs)
+        # persistent=False wie bei allen Frequenzpuffern dieser Datei: sie
+        # sind Entwurfskonstanten, kein gelernter Zustand. Im state_dict
+        # wuerden sie beim Laden die Wahl des Modells ueberschreiben.
+        self.register_buffer("freqs", freqs, persistent=False)
         self.proj = nn.Sequential(
             nn.Linear(D, D * 2), nn.SiLU(), nn.Linear(D * 2, D),
         )
@@ -229,7 +232,12 @@ class StartEmbedding(nn.Module):
 
     def __init__(self, D: int = 128, nd: int = 2, n_freq: int = 8):
         super().__init__()
-        self.register_buffer('freqs', 2.0 ** torch.arange(n_freq).float() * math.pi)
+        # persistent=False: die Frequenzen sind eine Entwurfsentscheidung,
+        # kein gelernter Zustand. Landen sie im state_dict, ueberschreibt ein
+        # alter Checkpoint beim Laden stillschweigend die Wahl des neuen
+        # Modells — der Fehler faellt nirgends auf, weil nichts abstuerzt.
+        self.register_buffer('freqs', 2.0 ** torch.arange(n_freq).float() * math.pi,
+                             persistent=False)
         self.net = nn.Sequential(
             nn.Linear(nd * n_freq * 2, D), nn.SiLU(), nn.Linear(D, D))
 
@@ -253,16 +261,64 @@ class LengthEmbedding(nn.Module):
     `log_ref` und `log_scale` kommen aus dem Datensatz und stehen im
     Checkpoint, damit die Inferenz dieselbe Normierung benutzt wie das
     Training.
+
+    **Die Wahl der Frequenzen ist nicht frei** (`freq_mode`):
+
+      'oktaven'  2^k * pi, k = 0..n_freq-1. Die Uebernahme aus der
+                 Ortskodierung — und dort richtig, weil eine Koordinate in
+                 [0,1] liegt und die niedrigste Frequenz somit eine halbe
+                 Periode durchlaeuft. Fuer die Laenge ist sie falsch: u ist
+                 durch die Standardabweichung geteilt und liegt bei diesem
+                 Datensatz in [-3,33 ; +3,35]. Da jede Frequenz ein Vielfaches
+                 von pi ist, ist der GANZE Merkmalsvektor periodisch in u mit
+                 der Periode 2 — der Bereich umfasst 3,34 Perioden, und
+                 L = 4,00 / 10,22 / 24,17 sind bitgleiche Eingaben (gemessen:
+                 max. Merkmalsdifferenz 8e-06). Das Netz kann diese Laengen
+                 nicht unterscheiden, nicht einmal im Prinzip.
+
+      'linear'   0,25 * k, k = 1..n_freq. Die niedrigste Frequenz durchlaeuft
+                 ueber den halben Wertebereich weniger als eine Viertelperiode
+                 und liefert damit die glatte, monotone Komponente, die der
+                 Oktavenstapel hier nicht hat. Aehnlichkeit zur Referenz
+                 L = 11: 1,00 / 0,64 bei L = 8 und 15 / 0,05 bei L = 6 —
+                 also ein sauberer Abfall statt eines Sprungs.
+
+    Voreinstellung bleibt 'oktaven', damit bestehende Checkpoints und
+    Auswertungen unveraendert reproduzierbar sind; `periodenspanne()` macht
+    den Mangel pruefbar.
     """
 
+    FREQ_MODI = ('oktaven', 'linear')
+
     def __init__(self, D: int = 128, n_freq: int = 8,
-                 log_ref: float = 5.0, log_scale: float = 1.5):
+                 log_ref: float = 5.0, log_scale: float = 1.5,
+                 freq_mode: str = 'oktaven'):
         super().__init__()
-        self.register_buffer('freqs', 2.0 ** torch.arange(n_freq).float() * math.pi)
+        if freq_mode not in self.FREQ_MODI:
+            raise ValueError(f"freq_mode={freq_mode!r}, erlaubt: {self.FREQ_MODI}")
+        self.freq_mode = freq_mode
+        if freq_mode == 'oktaven':
+            freqs = 2.0 ** torch.arange(n_freq).float() * math.pi
+        else:
+            freqs = torch.arange(1, n_freq + 1).float() * 0.25
+        # persistent=False, siehe StartEmbedding: sonst ueberschreibt ein alter
+        # Checkpoint die hier getroffene Wahl stillschweigend.
+        self.register_buffer('freqs', freqs, persistent=False)
         self.log_ref = float(log_ref)
         self.log_scale = float(log_scale)
         self.net = nn.Sequential(
             nn.Linear(n_freq * 2, D), nn.SiLU(), nn.Linear(D, D))
+
+    def periodenspanne(self, l_min: float, l_max: float) -> float:
+        """Wie viele Perioden der *niedrigsten* Frequenz deckt [l_min, l_max] ab?
+
+        Ist der Wert >= 1, gibt es innerhalb des Bereichs Laengenpaare mit
+        identischer Kodierung. Bei `oktaven` sind alle Frequenzen Vielfache
+        von pi, der ganze Merkmalsvektor ist dann periodisch in u mit der
+        Periode 2 — Kollisionen sind also exakt, nicht naeherungsweise.
+        """
+        u = self.normiere(torch.tensor([float(l_min), float(l_max)]))
+        return float((u[1] - u[0]).abs() * float(self.freqs.min()) / math.pi)
 
     def normiere(self, length: torch.Tensor) -> torch.Tensor:
         u = torch.log1p(length.clamp(min=0.0)) - math.log1p(self.log_ref)
@@ -275,14 +331,127 @@ class LengthEmbedding(nn.Module):
         return self.net(feat)
 
 
+def lade_modellzustand(model, state_dict, strict: bool = True, verbose: bool = True):
+    """`load_state_dict`, das die Frequenzpuffer alter Checkpoints verwirft.
+
+    Bis zur Korrektur der Laengenkodierung waren `*.freqs` als *persistente*
+    Puffer im state_dict. Ein alter Checkpoint, in ein Modell mit korrigierten
+    Frequenzen geladen, ueberschreibt sie damit stillschweigend — die
+    Korrektur waere wirkungslos, und nichts wuerde sich beschweren. Genau
+    diese Klasse von Fehler soll hier nicht wieder auftreten, deshalb werden
+    die Schluessel explizit entfernt und das Entfernen gemeldet.
+
+    Rueckgabe wie bei `load_state_dict`: (missing_keys, unexpected_keys).
+    """
+    weg = [k for k in list(state_dict) if k.endswith('.freqs')]
+    if weg:
+        state_dict = {k: v for k, v in state_dict.items() if k not in weg}
+        if verbose:
+            print(f"  [Laden] {len(weg)} Frequenzpuffer aus dem Checkpoint "
+                  f"verworfen ({', '.join(weg)}); es gelten die Frequenzen "
+                  f"des Modells.")
+    return model.load_state_dict(state_dict, strict=strict)
+
+
+def ruecksetzen_laengenkopf(model, verbose: bool = True, null_ausgang: bool = True):
+    """Laengen-Einbettung und Null-Token frisch initialisieren.
+
+    Gedacht fuer zwei Faelle: einen Lauf fortsetzen, dessen Frequenzen
+    fehlerhaft waren, und einen Warmstart aus einem Modell, das noch gar
+    keinen Laengeneingang hatte. In beiden Faellen sind Ruecken, Tokenizer und
+    Cross-Attention gueltig trainiert, nur die 154.760 Parameter des
+    Laengenpfads taugen nichts.
+
+    `null_ausgang` initialisiert die **letzte** Schicht der Einbettung mit
+    null. Das ist hier nicht dasselbe wie bei einem frischen Netz: dort sind
+    die FiLM-Projektionen der Residualbloecke ohnehin null, ein zufaellig
+    initialisierter Laengenkopf bliebe also folgenlos. Bei einem vortrainierten
+    Modell sind sie es *nicht* — ein zufaelliger Laengenvektor wuerde die
+    bereits gelernte Konditionierung vom ersten Schritt an stoeren. Mit
+    Nullausgang ist das erweiterte Modell zu Beginn funktional bitgleich mit
+    dem Ausgangsmodell, und der Laengeneingang gewinnt nur so viel Einfluss,
+    wie er Verlust spart. Ein toter Pfad entsteht dabei nicht, wohl aber ein
+    verzoegerter: im ersten Schritt bekommt nur die *letzte* Schicht einen
+    Gradienten — er ist das Produkt aus dem Rueckwaertssignal und den (von
+    null verschiedenen) Aktivierungen davor. Die frueheren Schichten folgen
+    ab dem zweiten Schritt, sobald die letzte nicht mehr null ist. Dasselbe
+    Verhalten hat eine Zero-Convolution.
+    """
+    schichten = [m for m in model.length_emb.net if isinstance(m, nn.Linear)]
+    for i, m in enumerate(schichten):
+        letzte = (i == len(schichten) - 1)
+        if letzte and null_ausgang:
+            nn.init.zeros_(m.weight)
+        else:
+            nn.init.xavier_uniform_(m.weight)
+        nn.init.zeros_(m.bias)
+    nn.init.zeros_(model.null_length_token)
+    if verbose:
+        n = sum(p.numel() for p in model.length_emb.parameters())
+        wie = "Ausgang null" if null_ausgang else "voll zufaellig"
+        print(f"  [Laden] Laengenkopf zurueckgesetzt "
+              f"({n + model.null_length_token.numel():,} Parameter, {wie}).")
+    return model
+
+
+def uebernehmen_aus(model, state_dict, verbose: bool = True):
+    """Gewichte aus einem Modell ohne Laengeneingang uebernehmen (Warmstart).
+
+    Der Anwendungsfall: das startpunktkonditionierte Netz ist auskonvergiert,
+    und die laengenkonditionierte Architektur ist bis auf fuenf Tensoren
+    identisch mit ihm. Statt bei null anzufangen, wird sein Zustand
+    uebernommen und nur der Laengenkopf neu angelegt.
+
+    Zwei Anpassungen sind noetig:
+
+    * `*.freqs` werden verworfen (siehe `lade_modellzustand`).
+    * `pos_emb` haengt als (1, D, nxi) an der Zahl der Kontrollpunkte. Weicht
+      sie ab, wird linear entlang der Kontrollpunktachse interpoliert. Das ist
+      hier sinnvoll und nicht bloss ein Notbehelf: der Index kodiert, *wie
+      weit entlang der Kurve* ein Token sitzt, und diese Groesse ist stetig.
+      Ein Abschneiden oder Auffuellen mit Rauschen waere es nicht.
+
+    Alles, was im Quellzustand fehlt, behaelt seine frische Initialisierung.
+    """
+    zustand = {k: v for k, v in state_dict.items() if not k.endswith('.freqs')}
+    eigen = model.state_dict()
+
+    if 'pos_emb' in zustand and zustand['pos_emb'].shape != eigen['pos_emb'].shape:
+        alt = zustand['pos_emb']
+        neu_n = eigen['pos_emb'].shape[-1]
+        zustand['pos_emb'] = torch.nn.functional.interpolate(
+            alt.float(), size=neu_n, mode='linear', align_corners=True
+        ).to(alt.dtype)
+        if verbose:
+            print(f"  [Warmstart] pos_emb von n_xi={alt.shape[-1]} auf "
+                  f"{neu_n} interpoliert.")
+
+    passt = {k: v for k, v in zustand.items()
+             if k in eigen and eigen[k].shape == v.shape}
+    verworfen = [k for k in zustand if k not in passt]
+    frisch = [k for k in eigen if k not in passt]
+    model.load_state_dict(passt, strict=False)
+    if verbose:
+        n = sum(v.numel() for v in passt.values())
+        print(f"  [Warmstart] {len(passt)} Tensoren uebernommen "
+              f"({n:,} Parameter).")
+        if verworfen:
+            print(f"  [Warmstart] {len(verworfen)} Tensoren der Quelle passen "
+                  f"nicht und wurden verworfen: {verworfen}")
+        print(f"  [Warmstart] frisch initialisiert bleiben: {frisch}")
+    return frisch
+
+
 class ParticleCrossAttnFlowNetwork(nn.Module):
     def __init__(self, nxi: int = 20, nd: int = 2, D: int = 128,
                  n_heads: int = 8, kernel_size: int = 3,
-                 log_ref: float = 5.0, log_scale: float = 1.5):
+                 log_ref: float = 5.0, log_scale: float = 1.5,
+                 length_freq_mode: str = 'oktaven'):
         super().__init__()
         self.nxi = nxi
         self.nd  = nd
         self.D   = D
+        self.length_freq_mode = length_freq_mode
 
         self.mpd_layer = MPDLayer(nd=nd, D=D, kernel_size=kernel_size)
         self.pos_emb   = nn.Parameter(torch.randn(1, D, nxi) * 0.02)
@@ -294,7 +463,8 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
 
         self.start_emb = StartEmbedding(D=D, nd=nd)
 
-        self.length_emb = LengthEmbedding(D=D, log_ref=log_ref, log_scale=log_scale)
+        self.length_emb = LengthEmbedding(D=D, log_ref=log_ref, log_scale=log_scale,
+                                          freq_mode=length_freq_mode)
         # Was das Netz sehen soll, wenn keine Laenge vorgegeben ist. Null
         # initialisiert: ein weggelassenes Laengensignal entspricht zu
         # Trainingsbeginn exakt dem bisherigen Verhalten.
