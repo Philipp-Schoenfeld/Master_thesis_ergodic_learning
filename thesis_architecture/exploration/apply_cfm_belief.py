@@ -236,7 +236,8 @@ class CfmPlanner:
         return torch.einsum('pi,kid->kpd', self.B, cps.float().to(self.device))
 
     def plan(self, particles, n_candidates=1, start=None, length=None,
-             length_cfg_weight=0.0):
+             length_cfg_weight=0.0, obstacle=None, obstacle_weight=20.0,
+             obstacle_t_start=0.3):
         """`start` wirkt nur bei einem startpunkt-konditionierten Checkpoint,
         `length` nur bei einem zusaetzlich laengen-konditionierten.
 
@@ -256,7 +257,9 @@ class CfmPlanner:
         out = self._gen(self.model, particles.to(self.device),
                         num_samples=n_candidates, nxi=self.nxi,
                         steps=self.steps, device=str(self.device),
-                        cfg_weight=self.cfg_weight, **kw)
+                        cfg_weight=self.cfg_weight, obstacle=obstacle,
+                        obstacle_weight=obstacle_weight,
+                        obstacle_t_start=obstacle_t_start, **kw)
         cps = out[0] if isinstance(out, tuple) else out
         self.last_wallclock = time.perf_counter() - t0
         return cps.detach()

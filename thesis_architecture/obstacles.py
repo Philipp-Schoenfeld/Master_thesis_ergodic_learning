@@ -115,6 +115,40 @@ class CircleObstacle:
                                 edgecolor='#424242', lw=1.5, zorder=zorder))
 
 
+class CompositeObstacle:
+    """A collection of obstacles (e.g. drawn via UI)."""
+    def __init__(self, obstacles=None):
+        self.obstacles = list(obstacles) if obstacles else []
+
+    def mask(self, X, Y, inflated=False):
+        m = np.zeros_like(X, dtype=bool)
+        for o in self.obstacles:
+            m |= o.mask(X, Y, inflated=inflated)
+        return m
+
+    def penalty(self, P):
+        if not self.obstacles:
+            return 0.0 if not _is_torch(P) else _torch.zeros_like(P[..., 0]).sum()
+        return sum(o.penalty(P) for o in self.obstacles)
+
+    def grad_penalty(self, P):
+        if not self.obstacles:
+            return np.zeros_like(P) if not _is_torch(P) else _torch.zeros_like(P)
+        return sum(o.grad_penalty(P) for o in self.obstacles)
+
+    def violation(self, P):
+        if not self.obstacles:
+            return np.zeros_like(P[..., 0]) if not _is_torch(P) else _torch.zeros_like(P[..., 0])
+        if _is_torch(P):
+            return _torch.stack([o.violation(P) for o in self.obstacles], dim=0).amax(dim=0)
+        else:
+            return np.max([o.violation(P) for o in self.obstacles], axis=0)
+
+    def draw(self, ax, zorder=1.5, show_margin=True):
+        for o in self.obstacles:
+            o.draw(ax, zorder=zorder, show_margin=show_margin)
+
+
 # ── B-Spline coupling ─────────────────────────────────────────────────────────
 _BASIS_CACHE = {}
 
@@ -190,6 +224,11 @@ def polish_out_of_obstacle(cps, obstacle, B, max_iters=250, tol=1e-7,
     deterministic nudge perpendicular to the curve tangent at the deepest point.
     Normal descent then restores the shape.
     """
+    if hasattr(obstacle, 'obstacles'):
+        for obs in obstacle.obstacles:
+            cps = polish_out_of_obstacle(cps, obs, B, max_iters, tol, stall_patience, stall_rtol)
+        return cps
+
     cps = cps.clone()
     last_v, stalled_for = None, 0
 
@@ -236,6 +275,9 @@ def max_violation(cps, obstacle, B):
     Measured against `radius`, not `effective_radius`: the margin is a guidance
     cushion, the reported violation should be the physical one.
     """
+    if hasattr(obstacle, 'obstacles'):
+        return max([max_violation(cps, o, B) for o in obstacle.obstacles] + [0.0])
+
     curve = _torch.einsum('pi,bid->bpd', B, cps)
     d = curve - _torch.as_tensor(obstacle.center, dtype=curve.dtype,
                                  device=curve.device)
