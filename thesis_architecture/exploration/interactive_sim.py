@@ -47,6 +47,8 @@ import matplotlib.colors as mcolors      # noqa: E402
 import matplotlib.patches as mpatches    # noqa: E402
 from matplotlib.widgets import RadioButtons, Slider, Button  # noqa: E402
 
+from mujoco_sim.board import MAX_TIP_SPEED, max_ui_speed  # noqa: E402
+
 from common.data import load_truth               # noqa: E402
 from common.belief import GPBelief                # noqa: E402
 from common.observation import measure, thin       # noqa: E402
@@ -81,11 +83,12 @@ SOLVER_DESC = {
     'D': 'D — plan long, execute short, replan',
 }
 
-INIT_MODES = ['Net', 'Linear', 'Heuristic']
+INIT_MODES = ['CFM', 'Linear', 'Heuristic', 'Manual']
 INIT_DESC = {
-    'Net': 'Trained CFM-Net (amortized)',
+    'CFM': 'Trained CFM-Net (amortized)',
     'Linear': 'Diagonal + Gradient Optimization',
     'Heuristic': 'TSP+Serpentine + Gradient Opt.',
+    'Manual': 'Draw manually + Gradient Opt.',
 }
 
 # Erklaerungstexte fuer die Info-Knoepfe neben den Live-Metriken.
@@ -236,14 +239,20 @@ class Mission:
             sp_np = pos.detach().cpu().numpy()
 
         if self.planner._default_init is not None:
-            # Linear-Modus: baue eine frische Diagonale vom Startpunkt aus
-            t = np.linspace(0, 1, 25)[:, None]
-            # Ziele auf das gegenueberliegende Quadrat-Zentrum (0.9, 0.9) oder (0.1, 0.1)
-            target = np.array([0.9, 0.9]) if sp_np.sum() < 1.0 else np.array([0.1, 0.1])
-            cps = sp_np + t * (target - sp_np)
-            cps = np.clip(cps, 0.02, 0.98)
-            init_t = torch.from_numpy(cps).float().unsqueeze(0).to(self.planner.device)
-            return {'init': init_t}
+            if self.planner._default_init == 'Manual':
+                drawn = getattr(self, 'app', None).manual_init_drawn
+                if getattr(self, 'app', None):
+                    self.app.manual_init_drawn = None
+                return {'init': drawn}
+            else:
+                # Linear-Modus: baue eine frische Diagonale vom Startpunkt aus
+                t = np.linspace(0, 1, 25)[:, None]
+                # Ziele auf das gegenueberliegende Quadrat-Zentrum (0.9, 0.9) oder (0.1, 0.1)
+                target = np.array([0.9, 0.9]) if sp_np.sum() < 1.0 else np.array([0.1, 0.1])
+                cps = sp_np + t * (target - sp_np)
+                cps = np.clip(cps, 0.02, 0.98)
+                init_t = torch.from_numpy(cps).float().unsqueeze(0).to(self.planner.device)
+                return {'init': init_t}
         
         # Heuristik: aus Phi-Gitter eine Serpentinen-Bahn bauen
         return {'init': self._heuristic_init_from_phi(phi, sp_np)}
@@ -331,7 +340,10 @@ class Mission:
     def _rounds_A(self):
         with torch.no_grad():
             mu, sd = self.belief.posterior_grid()
-            phi = acb.zieldichte(mu, sd, self.args.kappa0, self.args)
+            if getattr(self.args, 'allknowing_mode', False):
+                phi = self.truth
+            else:
+                phi = acb.zieldichte(mu, sd, self.args.kappa0, self.args)
             parts = acb.phi_particles(phi, self.args.n_particles,
                                       mode=self.args.phi_mode,
                                       device=self.args.device)
@@ -342,8 +354,11 @@ class Mission:
             if pos is not None:
                 init_kw['start'] = pos
                 
-            cps = self.planner.plan(parts, n_candidates=self.args.n_candidates,
-                                    obstacle=self.args.obstacle, obstacle_weight=5000.0, **init_kw)
+            if self.planner.__class__.__name__ == 'CfmPlanner':
+                init_kw['obstacle'] = self.args.obstacle
+                init_kw['obstacle_weight'] = 5000.0
+                
+            cps = self.planner.plan(parts, n_candidates=self.args.n_candidates, **init_kw)
             curve = acb.best_candidate(self.planner.render(cps), phi)
             curve = self._refine(curve, phi)
         yield dict(round=0, n_rounds=1, phi=phi, mu=mu, sd=sd, seg=curve,
@@ -357,7 +372,10 @@ class Mission:
             with torch.no_grad():
                 kap = kappa_schedule(r, n_rounds, self.args.kappa0, self.args.kappa1)
                 mu, sd = self.belief.posterior_grid()
-                phi = acb.zieldichte(mu, sd, kap, self.args)
+                if getattr(self.args, 'allknowing_mode', False):
+                    phi = self.truth
+                else:
+                    phi = acb.zieldichte(mu, sd, kap, self.args)
                 parts = acb.phi_particles(phi, self.args.n_particles,
                                           mode=self.args.phi_mode,
                                           device=self.args.device)
@@ -369,8 +387,11 @@ class Mission:
                 if pos is not None:
                     init_kw['start'] = pos
                     
-                cps = self.planner.plan(parts, n_candidates=self.args.n_candidates,
-                                        obstacle=self.args.obstacle, obstacle_weight=5000.0, **init_kw)
+                if self.planner.__class__.__name__ == 'CfmPlanner':
+                    init_kw['obstacle'] = self.args.obstacle
+                    init_kw['obstacle_weight'] = 5000.0
+                    
+                cps = self.planner.plan(parts, n_candidates=self.args.n_candidates, **init_kw)
                 curve = acb.best_candidate(self.planner.render(cps), phi)
                 curve = self._refine(curve, phi)
                 if self.driven:
@@ -395,7 +416,11 @@ class Mission:
                                               self.args.device)
                          if here is not None else None)
                 mu, sd = self.belief.posterior_grid()
-                phi, v = acb.debt_density(mu, sd, visit, kap, self.args)
+                if getattr(self.args, 'allknowing_mode', False):
+                    phi = self.truth
+                    v = visit if visit is not None else torch.zeros_like(phi)
+                else:
+                    phi, v = acb.debt_density(mu, sd, visit, kap, self.args)
                 parts = acb.phi_particles(phi, self.args.n_particles,
                                           mode=self.args.phi_mode,
                                           device=self.args.device)
@@ -403,8 +428,12 @@ class Mission:
                 init_kw = self._get_init(phi, pos=pos)
                 if pos is not None:
                     init_kw['start'] = pos
-                cps = self.planner.plan(parts, n_candidates=self.args.n_candidates,
-                                        obstacle=self.args.obstacle, obstacle_weight=5000.0, **init_kw)
+                    
+                if self.planner.__class__.__name__ == 'CfmPlanner':
+                    init_kw['obstacle'] = self.args.obstacle
+                    init_kw['obstacle_weight'] = 5000.0
+                    
+                cps = self.planner.plan(parts, n_candidates=self.args.n_candidates, **init_kw)
                 curve = acb.best_candidate(self.planner.render(cps), phi)
                 curve = self._refine(curve, phi)
                 T = curve.shape[0]
@@ -575,9 +604,19 @@ class App:
     GP_RES = 64
     TRUTH_RES = 96
     FRAME_MS = 55
+
+    #: Agentengeschwindigkeit beim Start, in cm/s auf dem Brett. Bei 20 cm/s
+    #: folgt der MuJoCo-Arm mit ~1.5 mm mittlerem Fehler; das Slider-Maximum
+    #: MAX_TIP_SPEED ist die Grenze, ab der er sichtbar zurueckfaellt.
+    DEFAULT_SPEED_CM_S = 20
     PLAN_TIME_EST_INIT = 1.5  # Sekunden; wird nach der ersten Runde kalibriert
 
-    def __init__(self, ckpt, shapes, device, seed):
+    def __init__(self, ckpt, shapes, device, seed, shared_truth=None, agent_info_array=None, shared_obstacles=None):
+        self.shared_truth = shared_truth
+        self.agent_info_array = agent_info_array
+        self.shared_obstacles = shared_obstacles
+        self.eraser_mode = False
+        self.allknowing_mode = False
         self.device = device
         self.seed = seed
         print(f"Loading checkpoint: {ckpt}")
@@ -591,8 +630,15 @@ class App:
         self.solver = 'A'
         self.phi_ui = 'ucb'
         self.phi_view = 'Φ'   # Toggle: 'Φ', 'μ' oder 'σ'
-        self.init_mode = 'Netz'  # 'Netz', 'Linear', 'Heuristik'
+        self.init_mode = 'CFM'  # 'CFM', 'Linear', 'Heuristic', 'Manual'
         self.kappa = 3.0     # fuer ucb/eid/stretch/mi
+        
+        # State for manual drawing initialization
+        self.manual_init_drawn = None
+        self.waiting_for_manual_init = False
+        self.is_drawing_manual = False
+        self.manual_path = []
+        self.manual_line = None
         self.mass_w = 0.5    # fuer mass -- direkter Anteil, nicht ueber kappa
         self.niveau_tau = 0.25 # fuer niveau -- Schwellwert tau
         self.svgd_iters = 0  # 0 = kein SVGD, Regler in der GUI geht bis 1000
@@ -621,10 +667,16 @@ class App:
         
         self.nxi_ui = 25       # Default number of B-Spline control points
         self.sensor_radius_ui = 0.06  # Default agent radius
+        self.target_length_ui = 0.0   # Default Target Length
         
         self.obstacles = []
         self.obs_patches = []
         self._dragging_obs = False
+
+        if self.shared_truth is not None:
+            with self.shared_truth.get_lock():
+                np_truth = np.frombuffer(self.shared_truth.get_obj(), dtype=np.float64).reshape((self.TRUTH_RES, self.TRUTH_RES))
+                np_truth[:] = self.truths[self.shape_i].detach().cpu().numpy()[:]
 
         self._build_figure()
         self.reset(replan=True)
@@ -850,22 +902,51 @@ class App:
         self.b_next.on_clicked(lambda e: self._change_shape(+1))
 
         # Clear Obstacles
-        ax_obs = self.fig.add_axes([btn_x, 0.09, btn_w, 0.028])
+        ax_obs = self.fig.add_axes([btn_x, 0.09, btn_w, 0.026])
         self.b_obs = Button(ax_obs, 'Clear Obstacles')
         self.b_obs.on_clicked(self._on_clear_obstacles)
 
         # Define Target
-        ax_def_tgt = self.fig.add_axes([btn_x, 0.13, btn_w, 0.028])
+        ax_def_tgt = self.fig.add_axes([btn_x, 0.12, btn_w, 0.026])
         self.b_def_tgt = Button(ax_def_tgt, 'Define Target')
         self.b_def_tgt.on_clicked(self._open_drawing_window)
 
+        # Eraser Mode
+        ax_eraser = self.fig.add_axes([btn_x, 0.15, btn_w, 0.026])
+        self.b_eraser = Button(ax_eraser, 'Eraser Mode: OFF')
+        def toggle_eraser(event):
+            self.eraser_mode = not self.eraser_mode
+            self.b_eraser.label.set_text(f'Eraser Mode: {"ON" if self.eraser_mode else "OFF"}')
+            self.fig.canvas.draw_idle()
+        self.b_eraser.on_clicked(toggle_eraser)
+
+        # Allknowing Mode
+        ax_allknowing = self.fig.add_axes([btn_x, 0.18, btn_w, 0.026])
+        self.b_allknowing = Button(ax_allknowing, 'Mode: Explore')
+        def toggle_allknowing(event):
+            self.allknowing_mode = not self.allknowing_mode
+            self.b_allknowing.label.set_text(f'Mode: {"Allknowing" if self.allknowing_mode else "Explore"}')
+            self.reset(replan=True)
+            self.fig.canvas.draw_idle()
+        self.b_allknowing.on_clicked(toggle_allknowing)
+
         # Play / Reset
-        ax_play = self.fig.add_axes([btn_x, 0.17, btn_half, 0.045])
+        ax_play = self.fig.add_axes([btn_x, 0.21, btn_half, 0.038])
         self.b_play = Button(ax_play, '▶ Play')
         self.b_play.on_clicked(self._on_play)
-        ax_reset = self.fig.add_axes([btn_x + btn_half + btn_gap, 0.17, btn_half, 0.045])
+        ax_reset = self.fig.add_axes([btn_x + btn_half + btn_gap, 0.21, btn_half, 0.038])
         self.b_reset = Button(ax_reset, 'Reset')
         self.b_reset.on_clicked(lambda e: self.reset(replan=True))
+
+        # Open Writeboard
+        ax_open_wb = self.fig.add_axes([btn_x, 0.26, btn_w, 0.026])
+        self.b_open_wb = Button(ax_open_wb, 'Open Writeboard')
+        self.b_open_wb.on_clicked(self._on_open_writeboard)
+
+        # Open MuJoCo
+        ax_open_mj = self.fig.add_axes([btn_x, 0.29, btn_w, 0.026])
+        self.b_open_mj = Button(ax_open_mj, 'Open MuJoCo')
+        self.b_open_mj.on_clicked(self._on_open_mujoco)
 
         slider_x = 0.63
         slider_w = 0.14
@@ -874,9 +955,13 @@ class App:
         self._tuning_rect = (slider_x, 0.14, slider_w, 0.028)
         self._build_tuning_slider()
 
-        # Tempo-Slider
+        # Tempo-Slider: Agentengeschwindigkeit in cm/s auf dem Brett, damit sie
+        # direkt mit der des Roboterarms vergleichbar ist. Das Maximum ist das,
+        # was der Arm noch sauber abfaehrt (siehe mujoco_sim/board.py).
         ax_speed = self.fig.add_axes([slider_x, 0.04, slider_w, 0.028])
-        self.s_speed = Slider(ax_speed, 'Speed', 1, 8, valinit=3, valstep=1, color='#555555')
+        self.s_speed = Slider(ax_speed, 'Speed cm/s', 2, round(MAX_TIP_SPEED * 100),
+                              valinit=self.DEFAULT_SPEED_CM_S, valstep=1,
+                              color='#555555')
 
         # SVGD-Slider
         ax_svgd = self.fig.add_axes([slider_x, 0.09, slider_w, 0.028])
@@ -893,6 +978,11 @@ class App:
         ax_radius = self.fig.add_axes([slider_x, 0.24, slider_w, 0.028])
         self.s_radius = Slider(ax_radius, 'Agent Radius', 0.01, 0.15, valinit=self.sensor_radius_ui, valstep=0.01, color='#FF8F00')
         self.s_radius.on_changed(self._on_sensor_radius)
+
+        # Target Length-Slider
+        ax_length = self.fig.add_axes([slider_x, 0.29, slider_w, 0.028])
+        self.s_length = Slider(ax_length, 'Target Length', 0.0, 10.0, valinit=self.target_length_ui, valstep=0.1, color='#FF5722')
+        self.s_length.on_changed(self._on_target_length)
 
         # ── Live-Ansichten für μ und σ unten rechts ──────────────────────────
         self.ax_mu_live = self.fig.add_axes([0.79, 0.03, 0.09, 0.20])
@@ -955,9 +1045,16 @@ class App:
                           svgd_iters=self.svgd_iters, phi_tau=self.niveau_tau,
                           sensor_radius=self.sensor_radius_ui)
         args.obstacle = CompositeObstacle(self.obstacles) if len(self.obstacles) > 0 else None
+        args.allknowing_mode = self.allknowing_mode
+        if self.target_length_ui > 0:
+            args.target_length = self.target_length_ui
+            args.target_length_cfg = 2.0
+        else:
+            args.target_length = None
+            args.target_length_cfg = 0.0
 
         # ── Planer-Auswahl ────────────────────────────────────────────────
-        if self.init_mode == 'Netz':
+        if self.init_mode == 'CFM':
             planner = self.planner
         else:
             from common.planner import GradientPlanner
@@ -971,11 +1068,14 @@ class App:
             # Flag fuer `_get_init`:
             if self.init_mode == 'Linear':
                 planner._default_init = "Linear"
-            else:  # 'Heuristik'
+            elif self.init_mode == 'Manual':
+                planner._default_init = "Manual"
+            else:  # 'Heuristic'
                 planner._default_init = None  # wird dynamisch pro Runde aus Phi gebaut
 
         self.mission = Mission(planner, truth, belief, args, self.solver,
                                svgd=self.svgd, nxi_ui=self.nxi_ui)
+        self.mission.app = self
         self.gen = self.mission.rounds()
         self.truth_np = truth.detach().cpu().numpy()
         self.prior_pts_np = prior_pts.detach().cpu().numpy()
@@ -986,6 +1086,7 @@ class App:
         self.driven_np = np.zeros((0, 2))
         self.cur = None
         self.play_idx = 0
+        self.play_arc = 0.0
         self.playing = False
         self.finished = False
         self.b_play.label.set_text('▶ Play')
@@ -1024,6 +1125,12 @@ class App:
         seinem eigenen (jetzt verwaisten) Generator und kann `self.mission`
         der neuen Mission nicht mehr verfaelschen.
         """
+        if self.init_mode == 'Manual' and self.manual_init_drawn is None:
+            self.waiting_for_manual_init = True
+            self.prog_txt.set_text('Wait for initialization input (Draw in World)')
+            self.fig.canvas.draw_idle()
+            return
+            
         if hasattr(self, 'mission'):
             self.mission.current_step = 'inference'
         self.busy = True
@@ -1102,6 +1209,7 @@ class App:
 
         self.cur = res['val']
         self.play_idx = 0
+        self.play_arc = 0.0
         r, n = self.cur['round'], self.cur['n_rounds']
         self.status_txt.set_text(f"Solver {self.solver} — Round {r + 1}/{n}")
 
@@ -1171,20 +1279,57 @@ class App:
         self.agent_disk.set_radius(self.sensor_radius_ui)
         self.reset(replan=True)
 
+    def _on_target_length(self, val):
+        self.target_length_ui = float(val)
+        self.reset(replan=True)
+
+    def _on_open_writeboard(self, event):
+        import multiprocessing as mp
+        if not hasattr(self, 'p_wb') or not self.p_wb.is_alive():
+            from writeboard import run_writeboard
+            self.p_wb = mp.Process(target=run_writeboard, args=(self.shared_truth, self.agent_info_array, self.shared_obstacles))
+            self.p_wb.start()
+
+    def _on_open_mujoco(self, event):
+        import multiprocessing as mp
+        if not hasattr(self, 'p_mj') or not self.p_mj.is_alive():
+            from mujoco_sim.run_mujoco import run_mujoco_sim
+            self.p_mj = mp.Process(target=run_mujoco_sim, args=(self.agent_info_array, self.shared_truth))
+            self.p_mj.start()
+
     def _change_shape(self, d):
         self.custom_truth_np = None
         self.custom_prior_mask = None
         self.shape_i = (self.shape_i + d) % len(self.names)
+        if self.shared_truth is not None:
+            with self.shared_truth.get_lock():
+                np_truth = np.frombuffer(self.shared_truth.get_obj(), dtype=np.float64).reshape((self.TRUTH_RES, self.TRUTH_RES))
+                np_truth[:] = self.truths[self.shape_i].detach().cpu().numpy()[:]
         self.reset(replan=True)
 
     def _on_clear_obstacles(self, event):
-        self.obstacles.clear()
-        for p in self.obs_patches:
-            p.remove()
-        self.obs_patches.clear()
+        if self.shared_obstacles is not None:
+            with self.shared_obstacles.get_lock():
+                arr = np.frombuffer(self.shared_obstacles.get_obj(), dtype=np.float64)
+                arr[:] = 0.0
+        else:
+            self.obstacles.clear()
+            for p in self.obs_patches:
+                p.remove()
+            self.obs_patches.clear()
         self.reset(replan=True)
 
     def _on_press(self, event):
+        if getattr(self, 'waiting_for_manual_init', False) and event.inaxes == self.ax_world:
+            self.is_drawing_manual = True
+            self.manual_path = [(event.xdata, event.ydata)]
+            if getattr(self, 'manual_line', None) is not None:
+                self.manual_line.remove()
+                self.manual_line = None
+            self.manual_line, = self.ax_world.plot([event.xdata], [event.ydata], color='#D81B60', lw=2.5, ls='--', zorder=20)
+            self.fig.canvas.draw_idle()
+            return
+
         if event.inaxes == self.ax_obs_template:
             if len(self.obstacles) >= 10:
                 print("Max 10 obstacles allowed.")
@@ -1194,6 +1339,13 @@ class App:
             self.obs_drag_margin.set_visible(False)
 
     def _on_motion(self, event):
+        if getattr(self, 'is_drawing_manual', False) and event.inaxes == self.ax_world:
+            self.manual_path.append((event.xdata, event.ydata))
+            xdata, ydata = zip(*self.manual_path)
+            self.manual_line.set_data(xdata, ydata)
+            self.fig.canvas.draw_idle()
+            return
+            
         if getattr(self, '_dragging_obs', False):
             if event.inaxes == self.ax_world:
                 self.obs_drag_patch.center = (event.xdata, event.ydata)
@@ -1206,20 +1358,57 @@ class App:
             self.fig.canvas.draw_idle()
 
     def _on_release(self, event):
+        if getattr(self, 'is_drawing_manual', False):
+            self.is_drawing_manual = False
+            if len(self.manual_path) > 1:
+                arr = np.array(self.manual_path)
+                dists = np.sqrt(np.sum(np.diff(arr, axis=0)**2, axis=1))
+                cum_dist = np.insert(np.cumsum(dists), 0, 0)
+                if cum_dist[-1] > 0.01:
+                    eval_dists = np.linspace(0, cum_dist[-1], 25)
+                    interp_x = np.interp(eval_dists, cum_dist, arr[:, 0])
+                    interp_y = np.interp(eval_dists, cum_dist, arr[:, 1])
+                    cps = np.stack([interp_x, interp_y], axis=-1)
+                    cps = np.clip(cps, 0.02, 0.98)
+                    self.manual_init_drawn = torch.from_numpy(cps).float().unsqueeze(0).to(self.device)
+                    self.waiting_for_manual_init = False
+                    if getattr(self, 'manual_line', None) is not None:
+                        self.manual_line.remove()
+                        self.manual_line = None
+                    self._advance_round()
+                else:
+                    if getattr(self, 'manual_line', None) is not None:
+                        self.manual_line.remove()
+                        self.manual_line = None
+            else:
+                if getattr(self, 'manual_line', None) is not None:
+                    self.manual_line.remove()
+                    self.manual_line = None
+            self.fig.canvas.draw_idle()
+            return
+
         if getattr(self, '_dragging_obs', False):
             self._dragging_obs = False
             self.obs_drag_patch.set_visible(False)
             self.obs_drag_margin.set_visible(False)
             if event.inaxes == self.ax_world:
                 new_obs = CircleObstacle(center=(event.xdata, event.ydata), margin=0.0)
-                self.obstacles.append(new_obs)
-                
-                patch = mpatches.Circle(new_obs.center, new_obs.radius, facecolor='#9E9E9E', alpha=0.75, edgecolor='#424242', lw=1.5, zorder=6)
-                margin = mpatches.Circle(new_obs.center, new_obs.effective_radius, facecolor='none', edgecolor='#424242', lw=0.8, ls=':', alpha=0.6, zorder=6)
-                self.ax_world.add_patch(patch)
-                self.ax_world.add_patch(margin)
-                self.obs_patches.extend([patch, margin])
-                
+                if self.shared_obstacles is not None:
+                    with self.shared_obstacles.get_lock():
+                        arr = np.frombuffer(self.shared_obstacles.get_obj(), dtype=np.float64)
+                        for i in range(10):
+                            if arr[i*3+2] == 0.0:  # empty slot
+                                arr[i*3] = event.xdata
+                                arr[i*3+1] = event.ydata
+                                arr[i*3+2] = new_obs.radius
+                                break
+                else:
+                    self.obstacles.append(new_obs)
+                    patch = mpatches.Circle(new_obs.center, new_obs.radius, facecolor='#9E9E9E', alpha=0.75, edgecolor='#424242', lw=1.5, zorder=6)
+                    margin = mpatches.Circle(new_obs.center, new_obs.effective_radius, facecolor='none', edgecolor='#424242', lw=0.8, ls=':', alpha=0.6, zorder=6)
+                    self.ax_world.add_patch(patch)
+                    self.ax_world.add_patch(margin)
+                    self.obs_patches.extend([patch, margin])
                 self.reset(replan=True)
             self.fig.canvas.draw_idle()
 
@@ -1373,6 +1562,10 @@ class App:
         if self.draw_target_grid.max() > 0:
             norm_grid = self.draw_target_grid / self.draw_target_grid.max()
             self.custom_truth_np = torch.from_numpy(norm_grid).float().to(self.device)
+            if self.shared_truth is not None:
+                with self.shared_truth.get_lock():
+                    np_truth = np.frombuffer(self.shared_truth.get_obj(), dtype=np.float64).reshape((self.TRUTH_RES, self.TRUTH_RES))
+                    np_truth[:] = norm_grid[:]
         else:
             self.custom_truth_np = None
             
@@ -1411,16 +1604,72 @@ class App:
                 pass
 
     def _tick_inner(self):
+        if self.shared_obstacles is not None:
+            with self.shared_obstacles.get_lock():
+                arr = np.frombuffer(self.shared_obstacles.get_obj(), dtype=np.float64).copy()
+            new_obstacles = []
+            for i in range(10):
+                x, y, r = arr[i*3], arr[i*3+1], arr[i*3+2]
+                if r > 0:
+                    new_obstacles.append(CircleObstacle(center=(x, y), margin=0.0))
+            current_obs_data = [(o.center[0], o.center[1], o.radius) for o in self.obstacles]
+            new_obs_data = [(o.center[0], o.center[1], o.radius) for o in new_obstacles]
+            if current_obs_data != new_obs_data:
+                self.obstacles = new_obstacles
+                for p in self.obs_patches:
+                    p.remove()
+                self.obs_patches.clear()
+                for obs in self.obstacles:
+                    patch = mpatches.Circle(obs.center, obs.radius, facecolor='#9E9E9E', alpha=0.75, edgecolor='#424242', lw=1.5, zorder=6)
+                    margin = mpatches.Circle(obs.center, obs.effective_radius, facecolor='none', edgecolor='#424242', lw=0.8, ls=':', alpha=0.6, zorder=6)
+                    self.ax_world.add_patch(patch)
+                    self.ax_world.add_patch(margin)
+                    self.obs_patches.extend([patch, margin])
+                if not self.busy:
+                    self.reset(replan=True)
+                    return
+
+        if self.shared_truth is not None:
+            with self.shared_truth.get_lock():
+                np_truth = np.frombuffer(self.shared_truth.get_obj(), dtype=np.float64).reshape((self.TRUTH_RES, self.TRUTH_RES))
+                self.truth_np = np_truth.copy()
+            self.custom_truth_np = torch.from_numpy(self.truth_np).float().to(self.device)
+            self.img_truth.set_data(self.truth_np)
+            if hasattr(self, 'mission'):
+                self.mission.truth = self.custom_truth_np
+                
+        if self.agent_info_array is not None:
+            pos = (0.5, 0.5)
+            if self.cur is not None:
+                seg = self.cur['seg'].detach().cpu().numpy()
+                pos = seg[max(self.play_idx - 1, 0)] if len(seg) else (0.5, 0.5)
+            elif len(self.driven_np) > 0:
+                pos = self.driven_np[-1]
+            with self.agent_info_array.get_lock():
+                self.agent_info_array[:] = [pos[0], pos[1], self.sensor_radius_ui, 1.0 if self.eraser_mode else 0.0]
+
         if self.busy:
             self._poll_plan()
             self._redraw()
             return
         if self.playing and not self.finished and self.cur is not None:
             seg = self.cur['seg'].detach().cpu().numpy()
-            step = max(1, int(round(len(seg) / (14 * self.s_speed.val))))
-            new_idx = min(len(seg), self.play_idx + step)
-            self._reveal(seg[self.play_idx:new_idx],
-                        radius=self.mission.args.sensor_radius)
+            new_idx = self._advance_index(seg, self.play_idx)
+            pts = seg[self.play_idx:new_idx]
+            self._reveal(pts, radius=self.mission.args.sensor_radius)
+            
+            if self.eraser_mode and len(pts) > 0 and self.shared_truth is not None:
+                with self.shared_truth.get_lock():
+                    np_truth = np.frombuffer(self.shared_truth.get_obj(), dtype=np.float64).reshape((self.TRUTH_RES, self.TRUTH_RES))
+                    pts_2d = np.atleast_2d(pts)
+                    d2 = ((self.XX[None] - pts_2d[:, 0, None, None]) ** 2
+                          + (self.YY[None] - pts_2d[:, 1, None, None]) ** 2)
+                    mask = (d2 <= self.mission.args.sensor_radius ** 2).any(axis=0)
+                    np_truth[mask] = 0.0
+                    self.truth_np = np_truth.copy()
+                self.custom_truth_np = torch.from_numpy(self.truth_np).float().to(self.device)
+                self.mission.truth = self.custom_truth_np
+            
             self.play_idx = new_idx
             if self.play_idx >= len(seg):
                 self.driven_np = np.concatenate([self.driven_np, seg], axis=0)
@@ -1428,10 +1677,41 @@ class App:
                 self._advance_round()
         self._redraw()
 
+    def _advance_index(self, seg, idx):
+        """
+        Naechster Playback-Index, getaktet nach **Bogenlaenge** statt nach
+        Index.
+
+        Vorher wurde die Bahn in einer festen Zahl von Ticks abgefahren
+        (`len(seg) / (14 * speed)` Punkte pro Tick), d. h. das Tempo hing an der
+        Laenge der geplanten Bahn: eine lange Runde wurde genauso schnell
+        "durchgespult" wie eine kurze, oft weit schneller als der Roboterarm
+        folgen kann. Jetzt legt der Agent pro Sekunde eine feste Strecke auf dem
+        Brett zurueck -- dieselbe physikalische Geschwindigkeit, mit der die
+        MuJoCo-Seite den Arm faehrt.
+        """
+        if len(seg) < 2:
+            return len(seg)
+        arc = np.concatenate([[0.0],
+                              np.cumsum(np.linalg.norm(np.diff(seg, axis=0), axis=1))])
+        if idx <= 0:                      # neue Bahn -> Wegzaehler zuruecksetzen
+            self.play_arc = 0.0
+        speed_ui = max_ui_speed(self.s_speed.val / 100.0)   # UI-Einheiten pro Sekunde
+        # Der Weg wird als Fliesskomma aufsummiert. Wuerde stattdessen pro Tick
+        # mindestens ein Stuetzpunkt uebersprungen, liefe eine grob abgetastete
+        # Bahn schneller als eingestellt -- bei 120 Punkten waeren aus 20 cm/s
+        # rund 32 cm/s geworden.
+        self.play_arc += speed_ui * (self.FRAME_MS / 1000.0)
+        new_idx = int(np.searchsorted(arc, self.play_arc, side='left'))
+        return int(min(len(seg), max(idx, new_idx)))
+
     # ── Zeichnen ─────────────────────────────────────────────────────────
     def _redraw(self):
         rgba = self.cmap(np.clip(self.truth_np, 0, 1))
-        rgba[..., 3] = np.where(self.visible, 0.55, 0.0)
+        if getattr(self, 'allknowing_mode', False):
+            rgba[..., 3] = 0.55
+        else:
+            rgba[..., 3] = np.where(self.visible, 0.55, 0.0)
         self.img_world.set_data(rgba)
         self.scat_prior.set_offsets(self.prior_pts_np)
 

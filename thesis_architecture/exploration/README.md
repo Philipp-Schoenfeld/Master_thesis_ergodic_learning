@@ -145,3 +145,105 @@ common/
 Der Wechsel zwischen den beiden Planern ist eine Zeile — dieselbe Mission,
 derselbe Glaube, derselbe Messprozess. Genau dort wird messbar, was
 Amortisierung bringt.
+
+## MuJoCo-Roboterarm (`mujoco_sim/`)
+
+Ein Franka Panda mit Radiergummi am Endeffektor fährt vor einem aufrecht
+stehenden Writeboard. Zwei Betriebsarten:
+
+```bash
+# Standalone: die gespeicherte ergodische Bahn einer Form abfahren
+python -m mujoco_sim.run_mujoco --shape A
+python -m mujoco_sim.run_mujoco --shape A --erase --speed 0.5
+python -m mujoco_sim.run_mujoco --list-shapes
+
+# Live, von der 2D-Schaltzentrale getrieben (drei Prozesse)
+python main.py
+```
+
+Die Bahn kommt aus `3D_ergodic_learning/ergodic_dataset_robot.db`, die
+Zieldichte aus `ergodic_dataset_775.db` (in reinem NumPy gerastert, kein JAX
+nötig). Beim ersten Aufruf einer Form wird die Gelenkbahn geplant (~20 s) und
+in `mujoco_sim/cache/` abgelegt; danach startet sie sofort.
+
+```
+mujoco_sim/
+  board.py       Board-Geometrie (eine Quelle der Wahrheit), (u,v)<->Welt,
+                 Laden von Bahn und Zieldichte
+  ik.py          Aufgabenprioritäts-IK für die Radiergummi-Spitze
+  run_mujoco.py  Szene, Playback, Live-Modus, CLI
+```
+
+### Warum die IK so aussieht
+
+Der Radiergummi ist ein Zylinder — die Drehung um seine eigene Achse ist
+bedeutungslos. Die IK stellt deshalb eine strenge Prioritätenkette auf die
+sieben Armgelenke:
+
+1. **Position** der Spitze (hart, 3 DOF)
+2. **Werkzeugachse** gegen die Brettnormale (im Nullraum von 1)
+3. **Abstand zu den Gelenkgrenzen** (im verbleibenden Nullraum)
+
+Zwei Punkte entscheiden darüber, ob das überhaupt konvergiert:
+
+- Der Orientierungsfehler muss im **Welt**-Frame stehen, weil die Rotationszeilen
+  von `mj_jacSite` Welt-Frame sind (`mju_subQuat` liefert ihn im lokalen Frame).
+  Diese Verwechslung war die Ursache dafür, dass das Handgelenk bei ~180° hängen
+  blieb und ein Zufalls-Jitter als Notausstieg nötig war.
+- Gesättigte Gelenke müssen **gesperrt und der Schritt neu gelöst** werden. Ein
+  blosses `clip(q + dq)` verfälscht die Schrittrichtung und lässt die Lösung
+  mehrere Millimeter neben einem gut erreichbaren Ziel stehenbleiben.
+
+Zufalls-Startwerte landen auf sehr verschiedenen IK-Zweigen, von denen nur
+manche das ganze Brett bedienen können. Der Planer siebt deshalb alle Startwerte
+auf einer ausgedünnten Bahn vor und verfolgt nur die aussichtsreichsten in voller
+Auflösung; gewertet wird zuerst „erreicht die Bahn", dann flache Werkzeuglage,
+dann Gelenkglätte.
+
+### Warum ein Vorhalt auf den Sollwert
+
+Die Panda-Aktuatoren sind PD-Stellglieder (`gainprm=kp`, `biasprm=[0,-kp,-kd]`),
+ein Gelenk hinkt seinem Kommando also um `kd/kp · q̇` hinterher — hier 100 ms.
+Da die Gelenkbahn vorab geplant ist, wird einfach `q_soll(t + kd/kp)` kommandiert.
+Das senkt den Nachlauf der Spitze auf der 'A'-Bahn von 28 mm auf 6 mm; im
+Live-Modus (Vorhalt aus der Cursor-Geschwindigkeit) von 16 mm auf 2 mm.
+
+### Agententempo in der Schaltzentrale
+
+Der Agent im 2D-Panel und der Arm in MuJoCo laufen jetzt mit **derselben
+physikalischen Geschwindigkeit**. Der Tempo-Regler heisst deshalb `Speed cm/s`
+und meint Zentimeter pro Sekunde auf dem Brett; sein Maximum ist
+`MAX_TIP_SPEED` aus `mujoco_sim/board.py` — das Tempo, das der Arm noch sauber
+abfaehrt. Beide Seiten lesen dieselbe Konstante.
+
+Vorher wurde die Bahn nach *Index* getaktet
+(`step = len(seg) / (14 * speed)` Stuetzpunkte pro 55-ms-Tick). Das hatte zwei
+Fehler:
+
+- Das Tempo hing an der Laenge der geplanten Runde, nicht an der Strecke. Eine
+  lange und eine kurze Bahn wurden in gleich vielen Ticks abgefahren; auf der
+  'A'-Bahn (301 cm) kam der Agent auf ~90 cm/s, also das Dreifache dessen, was
+  der Arm halten kann.
+- Der Regler war invertiert: `speed` steht im *Nenner*, ein hoeherer Wert machte
+  den Agenten langsamer.
+
+Jetzt wird nach Bogenlaenge getaktet, mit einem Fliesskomma-Wegzaehler
+(`play_arc`). Der Zaehler ist noetig, weil ein erzwungener Mindestschritt von
+einem Stuetzpunkt pro Tick eine grob abgetastete Bahn wieder zu schnell laufen
+liesse — bei 120 Punkten waeren aus 20 cm/s rund 32 cm/s geworden.
+
+Gemessen auf der 'A'-Bahn, Abstand Arm zu Agent:
+
+| Taktung | Tempo | mittlerer Abstand | max |
+|---|---|---|---|
+| alt, Regler 3 | 90 cm/s | 44 mm | 143 mm |
+| alt, Regler 8 | 55 cm/s | 87 mm | 259 mm |
+| neu, 20 cm/s | 20 cm/s | 11 mm | 44 mm |
+| neu, 30 cm/s | 30 cm/s | 22 mm | 54 mm |
+
+Dazu wird das Gelenkkommando im Live-Modus auf die Panda-Datenblattgrenzen
+(`JOINT_VMAX`) begrenzt. Die Online-IK muss gelegentlich auf einen anderen
+Loesungszweig wechseln — am zuverlaessigsten unten in der Brettmitte — und
+kommandierte diesen Sprung sonst als einzelnen ~46 rad/s-Schritt, dem der Arm
+nicht folgen kann. Mit der Begrenzung sinkt der schlimmste Ausreisser von 95 mm
+auf 26 mm, und die Spitze bleibt durchgehend hinter der Brettflaeche.

@@ -1,0 +1,49 @@
+<mujoco model="panda ergodic writeboard">
+  <!-- 
+    We do NOT set meshdir here. The included panda.xml already has
+    <compiler meshdir="assets"/> which resolves relative to panda.xml's location.
+    MuJoCo handles this correctly with <include>.
+  -->
+
+  <include file="menagerie/franka_emika_panda/panda.xml"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="120" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    
+    <!-- Dynamic writeboard texture (96x96 matching shared_truth resolution) -->
+    <texture type="2d" name="writeboard_tex" width="96" height="96" builtin="flat" rgb1="1 1 1"/>
+    <material name="writeboard_mat" texture="writeboard_tex" emission="0.3"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+
+    <!-- Writeboard: a thin flat panel in front of the robot, standing upright.
+         The board face is in the YZ plane (perpendicular to X axis).
+         size="0.005 0.3 0.3" gives a 0.6m x 0.6m visible surface (Y and Z). -->
+    <body name="writeboard_body" pos="0.55 0 0.45">
+      <geom name="writeboard" type="box" size="0.005 0.3 0.3"
+            material="writeboard_mat" contype="0" conaffinity="0"/>
+    </body>
+
+    <!-- Mocap body: invisible tracking target. The Panda hand is welded to this. -->
+    <body name="target" pos="0.54 0 0.45" mocap="true">
+      <geom type="sphere" size="0.015" rgba="1 0.2 0.2 0.4" contype="0" conaffinity="0"/>
+    </body>
+  </worldbody>
+
+  <equality>
+    <!-- Weld the hand body to the mocap target. The physics solver moves all
+         joints to satisfy this constraint, effectively solving IK in real-time. -->
+    <weld body1="target" body2="hand" solimp="0.95 0.99 0.001" solref="0.005 1"/>
+  </equality>
+</mujoco>

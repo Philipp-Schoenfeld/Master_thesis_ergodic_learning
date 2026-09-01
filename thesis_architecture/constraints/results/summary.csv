@@ -1,0 +1,10 @@
+constraint,variante,n,metrik,vorher,nachher
+01_keepin_workspace,keepin_box,25,austritt,0.14349557906389238,0.0
+01_keepin_workspace,keepin_box,25,austritt,0.14349557906389238,0.0
+01_keepin_workspace,keepin_circle,25,austritt,0.22522019624710082,0.0
+02_waypoint_anchor,waypoints_start_via_end,25,pin_fehler,0.5171468013525009,9.223752090292691e-07
+03_max_curvature,curvature,25,kappa_peak,3165.559194946289,25.541662292480467
+04_path_length,length_exact_0.7,25,rel_fehler,0.4285714285714286,0.007427014573213562
+04_path_length,length_exact_0.7,25,rel_fehler,0.4285714285714286,0.007427014573213562
+04_path_length,length_exact_1.3,25,rel_fehler,-0.23076923076923075,-0.03149466699932472
+05_se3_alignment,alignment,75,cos_tn,0.03004466046889623,0.016419295811404784
