@@ -106,6 +106,43 @@ Ablesbar daraus:
   sichtbar auf den **Pyramidenkanten**, also genau dort, wo das Normalenfeld
   springt.
 
+### Kraft gegen gelernte Konditionierung (Constraint 4, dritter Arm)
+
+`04_path_length/run_compare_conditioning.py` holt den Vergleich nach, den die
+Haupttabelle **nicht** enthält: dieselbe Ziellänge einmal per Inferenz-Kraft
+und einmal über den trainierten FiLM-Längenkanal des Checkpoints. Der Ladder
+ist absolut statt relativ, weil die Einbettung als
+`u = (log1p(L) − log1p(log_ref)) / log_scale` normiert und `log_ref = 11.05`
+ist — das Trainingszentrum liegt also bei L ≈ 11, während das Modell
+unkonditioniert nur L ≈ 6.3 erzeugt.
+
+Ergebnis über 150 Kombinationen (25 Formen × 6 Ziellängen):
+
+| angeforderte Länge | 4 | 6 | 8 | 11 | 14 | 18 |
+|---|---|---|---|---|---|---|
+| erreicht, **Konditionierung** | 6.37 | 6.34 | 6.38 | 6.33 | 6.36 | 6.32 |
+| erreicht, **Kraft** | 4.02 | 6.02 | 7.86 | 9.85 | 10.82 | 11.17 |
+
+**Die Konditionierung hat null Längenautorität.** Über einen 4.5-fachen
+Anforderungsbereich schwankt die erreichte Länge um 0.06; das Modell gibt
+unabhängig von der Vorgabe die natürliche Länge der jeweiligen Form aus. Die
+Kraft folgt der Vorgabe bis ca. 8 nahezu exakt und sättigt dann bei ~11 — der
+Spline mit 64 Kontrollpunkten nimmt nicht mehr Länge auf.
+
+Das liegt nicht an einem zu leisen Signal. Im Sampler verwirft `cond_drop_mask`
+nur die *Dichte*-Konditionierung, beide CFG-Zweige sehen dieselbe Länge, sie
+kürzt sich in der Differenz weitgehend weg — dafür existiert der separate
+`length_cfg_weight`. Aufdrehen hilft aber nicht: bei `length_cfg=6` wird die
+Antwort gegenläufig (Ziel 4 → L 6.94, Ziel 18 → L 5.17) und die Coverage
+verschlechtert sich von 0.0415 auf 0.0705.
+
+Offener Verdacht, noch nicht geprüft: `log_ref = 11.05` gegen tatsächlich
+erzeugte 6.3 ist rund Faktor 2. Das könnte ein **Definitions-Mismatch der
+Länge** sein — Trainingslabels auf der rohen Wegpunkt-Polylinie gegen die hier
+gemessene Bogenlänge der 256-Punkt-B-Spline. Nachprüfbar, indem man die
+Längenverteilung in `ergodic_dataset_length.db` direkt gegen die gerenderte
+Bahnlänge derselben Einträge hält.
+
 ### Eine Metrik, die *nicht* funktioniert
 
 `anteil_ueber` (Anteil der Kurvenpunkte über κ_max) taugt bei Constraint 3
