@@ -17,3 +17,8 @@ __pycache__/
 # 201 MB — ueber GitHubs hartem Limit von 100 MB je Datei. Wird per Drive
 # uebertragen; die uebrigen Datenbanken (7-10 MB) bleiben im Repo.
 thesis_architecture/ergodic_dataset_generator/ergodic_dataset_length.db
+
+# Dieselbe 618-MB-Datenbank wie oben, aber unter dem Pfad, in dem sie beim
+# Arbeiten landet. Ohne diese Zeile blockiert sie jeden Push (GitHub lehnt
+# Dateien ueber 100 MB serverseitig ab, unabhaengig von der Commit-Reihenfolge).
+thesis_architecture/exploration/modelle_und_Datenbank/ergodic_dataset_3d.db
