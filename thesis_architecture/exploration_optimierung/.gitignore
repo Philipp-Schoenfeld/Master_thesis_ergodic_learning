@@ -1,0 +1,6 @@
+# Ergebnisse der Suche gehoeren nicht in die Historie: der Zwischenspeicher
+# umfasst bei der vollen Suche 768 Dateien (rund 40 MB) und entsteht auf dem
+# Cluster, die Tabellen und Abbildungen lassen sich daraus jederzeit mit
+# `--reweight` und `plots.py` neu erzeugen. Uebertragen wird der Ordner per
+# rsync, nicht per git.
+results/
