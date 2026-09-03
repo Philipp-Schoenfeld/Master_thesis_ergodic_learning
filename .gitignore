@@ -3,8 +3,14 @@ thesis_architecture/checkpoints/*
 
 # Zu gross fuer GitHub (Limit: 100 MB je Datei) — per Drive uebertragen.
 3D_ergodic_learning/ergodic_dataset_3d.db
+3D_ergodic_learning/ergodic_dataset_3d_no_offset.db
 3D_ergodic_learning/cache/
 transfer/
+
+# Lokales Hilfsskript zum manuellen Neubau der 3D-DB (schtasks-Task), gehoert
+# nicht ins Repo.
+3D_ergodic_learning/regen_db_offset_fix.bat
+3D_ergodic_learning/regen_db_offset_fix.log
 
 # Rohe Bahnendaten der Auswertungen, 13-21 MB je Datei, zusammen ueber 800 MB.
 # Regenerierbar aus den Skripten, gehoeren nicht dauerhaft in die Historie.

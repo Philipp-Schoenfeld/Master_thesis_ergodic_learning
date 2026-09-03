@@ -15,7 +15,8 @@ Fuer jeden Bahnpunkt (u,v) wird ein Strahl durch die Projektionsebene in die
 Szene geschossen. Der erste Treffer liefert den Oberflaechenpunkt p und die
 Flaechennormale n. Daraus:
 
-    Position     x = p + standoff * n          (auf der Aussenseite)
+    Position     x = p + standoff * n          (Default standoff=0.0: x = p,
+                                                 exakt auf der Flaeche)
     Blickachse   z = -n                        (senkrecht auf die Flaeche)
     Vorwaerts    x_achse = Tangente, auf die Tangentialebene projiziert
     Rest         y = z x x_achse
@@ -113,7 +114,7 @@ def matrix_to_rot6(R):
 
 
 # ── Ein Eintrag ──────────────────────────────────────────────────────────────
-def projiziere(surface, rc, dens2d, xy, standoff=0.12, n_particles=512,
+def projiziere(surface, rc, dens2d, xy, standoff=0.0, n_particles=512,
                n_surface=20000, seed=0):
     """-> dict mit Bahn (T,3), Rahmen (T,6), Partikeln (N,4) und Guetemassen."""
     e1, e2, w = surfaces._frame(surface.view)
@@ -183,7 +184,7 @@ def main():
     p.add_argument('--db_in', default=DB_IN)
     p.add_argument('--db_out', default=DB_OUT)
     p.add_argument('--surfaces', nargs='+', default=surfaces.KEYS)
-    p.add_argument('--standoff', type=float, default=0.12)
+    p.add_argument('--standoff', type=float, default=0.0)
     p.add_argument('--n_particles', type=int, default=512)
     p.add_argument('--dens_res', type=int, default=128)
     p.add_argument('--build', action='store_true')
