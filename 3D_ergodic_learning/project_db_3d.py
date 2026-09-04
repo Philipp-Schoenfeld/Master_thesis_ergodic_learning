@@ -27,10 +27,28 @@ naeherungsweise, sondern per Konstruktion.
 Wo nichts getroffen wird
 ------------------------
 Eine 2D-Bahn laeuft gelegentlich ueber den Rand der Silhouette hinaus; dort
-gibt es keinen Treffer. Statt solche Punkte zu verwerfen (was Luecken in die
-Bahn risse) wird auf den *naechstgelegenen* Oberflaechenpunkt zurueckgegriffen.
-Der Anteil solcher Punkte wird je Eintrag mitgeschrieben — er ist das
-wichtigste Guetemass dieser Datenbank.
+gibt es keinen Treffer. Diese Rohpunkte werden verworfen statt auf den
+*naechstgelegenen* Oberflaechenpunkt auszuweichen (frueheres Verhalten) — der
+naechstgelegene Punkt liegt zwar auf der Flaeche, aber bei konvexen Formen
+(Kugel, Wuerfel, ...) nicht notwendig nahe an der Bahn: er kann, je nach
+Kruemmung, auf einer ganz anderen Stelle der Flaeche landen und riss dadurch
+lange Spruenge in die Bahn statt Luecken. `n_points` je Eintrag ist deshalb
+variabel und wird mitgeschrieben; die bestehende Downstream-Auswahl von `nxi`
+Kontrollpunkten (`np.linspace(0, n_points-1, nxi)` in `data_surfaces.py`)
+verteilt sich einfach ueber die kuerzere, aber saubere Restbahn. Der Anteil
+verworfener Punkte (`miss_frac`) und der groesste verbleibende Sprung
+(`jump_max`) werden weiterhin je Eintrag mitgeschrieben — sie sind die
+wichtigsten Guetemasse dieser Datenbank.
+
+Zufaelliger Startpunkt
+----------------------
+`ergodic_pairs.x0` (2D) ist der zufaellige Startpunkt, von dem aus der
+SVGD/CE-Solver die Bahn ueberhaupt erst geplant hat — nicht identisch mit
+`trajectory[0]`, das bereits einen ersten Zeitschritt Dynamik zurueckgelegt
+hat. Er wird durch denselben Projektor wie die Bahn geworfen (Einzelpunkt,
+mit Fallback auf den naechstgelegenen Punkt bei Fehlschuss — fuer einen
+einzelnen Referenzpunkt ist das harmlos, es gibt keine Nachbarn, zu denen ein
+Sprung entstehen koennte) und als `start_pos`/`start_rot6` mitgespeichert.
 
     python project_db_3d.py --preview          # 25 Beispiele zum Pruefen
     python project_db_3d.py --build            # die Datenbank schreiben
@@ -115,8 +133,14 @@ def matrix_to_rot6(R):
 
 # ── Ein Eintrag ──────────────────────────────────────────────────────────────
 def projiziere(surface, rc, dens2d, xy, standoff=0.0, n_particles=512,
-               n_surface=20000, seed=0):
-    """-> dict mit Bahn (T,3), Rahmen (T,6), Partikeln (N,4) und Guetemassen."""
+               n_surface=20000, seed=0, x0=None):
+    """-> dict mit Bahn (T,3), Rahmen (T,6), Partikeln (N,4), optional
+    Startpunkt (`start_pos` (3,), `start_rot6` (6,)) und Guetemassen.
+
+    T kann kleiner als `len(xy)` sein: Rohpunkte ohne Treffer werden
+    verworfen statt auf den naechstgelegenen Oberflaechenpunkt auszuweichen
+    (siehe Modul-Docstring, Abschnitt "Wo nichts getroffen wird").
+    """
     e1, e2, w = surfaces._frame(surface.view)
 
     # Ausdehnung der Flaeche in der Projektionsebene — dieselbe Bezugsgroesse
@@ -126,15 +150,20 @@ def projiziere(surface, rc, dens2d, xy, standoff=0.0, n_particles=512,
     a0, a1 = a.min(), a.max()
     b0, b1 = bb.min(), bb.max()
 
-    # Startpunkte weit vor der Flaeche, entlang der Blickrichtung
+    def strahlursprung(uv):
+        """Startpunkte weit vor der Flaeche, entlang der Blickrichtung."""
+        return (np.outer(a0 + uv[:, 0] * (a1 - a0), e1)
+                + np.outer(b0 + uv[:, 1] * (b1 - b0), e2)) - 4.0 * w
+
     uv = np.asarray(xy, dtype=np.float64)
-    org = (np.outer(a0 + uv[:, 0] * (a1 - a0), e1)
-           + np.outer(b0 + uv[:, 1] * (b1 - b0), e2)) - 4.0 * w
+    org = strahlursprung(uv)
     hitp, hitn, ok = rc.shoot(org, w)
 
-    if (~ok).any():                     # Fehlschuesse: naechster Punkt
-        cp, cn = rc.closest(org[~ok] + 4.0 * w)
-        hitp[~ok], hitn[~ok] = cp, cn
+    # Fehlschuesse: Rohpunkt verwerfen statt auf den naechstgelegenen
+    # Oberflaechenpunkt auszuweichen — der kann bei konvexen Formen weit von
+    # der eigentlichen Bahn entfernt liegen und riss lange Spruenge hinein.
+    fehlschuss = float((~ok).mean())
+    hitp, hitn = hitp[ok], hitn[ok]
 
     # Normalen nach aussen richten (dem Projektor zugewandt)
     flip = (hitn @ (-w)) < 0
@@ -147,9 +176,31 @@ def projiziere(surface, rc, dens2d, xy, standoff=0.0, n_particles=512,
     pts, nrm, wt = surfaces.project(surface, dens2d, n_points=n_surface, seed=seed)
     parts = surfaces.particles_from_projection(pts, wt, n_particles, seed=seed)
 
+    # ── Zufaelliger Startpunkt (Solver-Initialisierung, siehe Docstring) ──
+    start_pos = start_rot6 = None
+    if x0 is not None:
+        x0uv = np.asarray([x0], dtype=np.float64)
+        sp, sn, sok = rc.shoot(strahlursprung(x0uv), w)
+        if not sok[0]:                  # Einzelpunkt: Ausweichen ist harmlos
+            sp, sn = rc.closest(strahlursprung(x0uv) + 4.0 * w)
+        if (sn[0] @ (-w)) < 0:
+            sn[0] = -sn[0]
+        start_pos = (sp[0] + standoff * sn[0]).astype(np.float32)
+        z = -sn[0] / max(np.linalg.norm(sn[0]), 1e-8)
+        fwd = pos[0] - start_pos                    # zeigt zum Bahnanfang
+        fwd = fwd - (fwd @ z) * z
+        if np.linalg.norm(fwd) < 1e-6:
+            fwd = np.array([1.0, 0.0, 0.0]) - (np.array([1.0, 0.0, 0.0]) @ z) * z
+        x_ax = fwd / max(np.linalg.norm(fwd), 1e-8)
+        y_ax = np.cross(z, x_ax)
+        start_rot6 = np.concatenate([x_ax, y_ax]).astype(np.float32)
+
     # ── Guetemasse ──────────────────────────────────────────────────────
     d_surf = np.linalg.norm(pos - hitp, axis=-1)
-    sprung = np.linalg.norm(np.diff(pos, axis=0), axis=-1)
+    if len(pos) > 1:
+        sprung = np.linalg.norm(np.diff(pos, axis=0), axis=-1)
+    else:
+        sprung = np.zeros(1)
     senk = np.rad2deg(np.arccos(np.clip(
         (-R[..., 2] * hitn).sum(-1), -1, 1)))                # sollte 0 sein
     return dict(pos=pos.astype(np.float32),
@@ -157,23 +208,25 @@ def projiziere(surface, rc, dens2d, xy, standoff=0.0, n_particles=512,
                 parts=parts.astype(np.float32),
                 flaeche=pts.astype(np.float32), gewicht=wt.astype(np.float32),
                 treffer_ok=ok,
-                fehlschuss=float((~ok).mean()),
+                fehlschuss=fehlschuss,
                 standoff=float(d_surf.mean()),
                 standoff_sd=float(d_surf.std()),
                 sprung_max=float(sprung.max()),
                 sprung_mittel=float(sprung.mean()),
                 senk_max=float(senk.max()),
-                getroffen=float((wt > 1e-3).mean()))
+                getroffen=float((wt > 1e-3).mean()),
+                start_pos=start_pos, start_rot6=start_rot6)
 
 
 def lade_paare(db, splits=('train', 'val')):
     c = sqlite3.connect(db)
-    q = ("SELECT shape_name, split, density_params, trajectory FROM ergodic_pairs "
+    q = ("SELECT shape_name, split, density_params, trajectory, x0 FROM ergodic_pairs "
          f"WHERE split IN ({','.join('?' * len(splits))}) ORDER BY id ASC")
     out = []
-    for nm, sp, dp, blob in c.execute(q, splits):
+    for nm, sp, dp, blob, x0 in c.execute(q, splits):
         xy = np.frombuffer(blob, dtype=np.float32).reshape(-1, 2).astype(np.float64)
-        out.append((nm, sp, json.loads(dp), np.clip(xy, 0.0, 1.0)))
+        out.append((nm, sp, json.loads(dp), np.clip(xy, 0.0, 1.0),
+                   np.clip(np.asarray(json.loads(x0), dtype=np.float64), 0.0, 1.0)))
     c.close()
     return out
 
@@ -207,14 +260,14 @@ def main():
         # Beispiele quer ueber Formen und Flaechen streuen
         wahl, i = [], 0
         while len(wahl) < a.preview:
-            nm, sp, dp, xy = paare[(i * 37) % len(paare)]
-            wahl.append((nm, sp, dp, xy, a.surfaces[len(wahl) % len(a.surfaces)]))
+            nm, sp, dp, xy, x0 = paare[(i * 37) % len(paare)]
+            wahl.append((nm, sp, dp, xy, x0, a.surfaces[len(wahl) % len(a.surfaces)]))
             i += 1
         eintraege = []
-        for nm, sp, dp, xy, sk in wahl:
+        for nm, sp, dp, xy, x0, sk in wahl:
             d2, _, _ = pdf_on_grid(dp, resolution=a.dens_res)
             d2 = np.asarray(d2, np.float64); d2 /= max(d2.max(), 1e-12)
-            r = projiziere(surf[sk], rcs[sk], d2, xy, a.standoff, a.n_particles)
+            r = projiziere(surf[sk], rcs[sk], d2, xy, a.standoff, a.n_particles, x0=x0)
             rs = np.random.default_rng(0)
             P, W = r['flaeche'], r['gewicht']
             lit = np.flatnonzero(W > 1e-3); dark = np.flatnonzero(W <= 1e-3)
@@ -224,6 +277,8 @@ def main():
             eintraege.append(dict(
                 shape=nm, split=sp, surface=sk,
                 pos=r['pos'].round(4).tolist(), rot6=r['rot6'].round(4).tolist(),
+                start_pos=r['start_pos'].round(4).tolist(),
+                start_rot6=r['start_rot6'].round(4).tolist(),
                 flaeche=P[keep].round(4).tolist(),
                 gewicht=W[keep].round(3).tolist(),
                 miss=(~r['treffer_ok']).astype(int).tolist(),
@@ -256,6 +311,7 @@ def main():
         id INTEGER PRIMARY KEY AUTOINCREMENT, shape_name TEXT, split TEXT,
         surface TEXT, standoff REAL, density_params TEXT,
         traj_pos BLOB, traj_rot6 BLOB, particles BLOB,
+        start_pos BLOB, start_rot6 BLOB, start_xy TEXT,
         n_points INTEGER, n_particles INTEGER,
         miss_frac REAL, standoff_mean REAL, standoff_sd REAL,
         jump_max REAL, perp_max_deg REAL, hit_frac REAL)''')
@@ -264,19 +320,22 @@ def main():
 
     import time
     t0 = time.perf_counter()
-    for i, (nm, sp, dp, xy) in enumerate(paare):
+    for i, (nm, sp, dp, xy, x0) in enumerate(paare):
         d2, _, _ = pdf_on_grid(dp, resolution=a.dens_res)
         d2 = np.asarray(d2, np.float64); d2 /= max(d2.max(), 1e-12)
         for sk in a.surfaces:
-            r = projiziere(surf[sk], rcs[sk], d2, xy, a.standoff, a.n_particles)
+            r = projiziere(surf[sk], rcs[sk], d2, xy, a.standoff, a.n_particles, x0=x0)
             con.execute('''INSERT INTO ergodic_pairs_3d
                 (shape_name, split, surface, standoff, density_params,
-                 traj_pos, traj_rot6, particles, n_points, n_particles,
+                 traj_pos, traj_rot6, particles, start_pos, start_rot6, start_xy,
+                 n_points, n_particles,
                  miss_frac, standoff_mean, standoff_sd, jump_max,
                  perp_max_deg, hit_frac)
-                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
                 (nm, sp, sk, a.standoff, json.dumps(dp),
                  r['pos'].tobytes(), r['rot6'].tobytes(), r['parts'].tobytes(),
+                 r['start_pos'].tobytes(), r['start_rot6'].tobytes(),
+                 json.dumps(x0.tolist()),
                  len(r['pos']), a.n_particles, r['fehlschuss'], r['standoff'],
                  r['standoff_sd'], r['sprung_max'], r['senk_max'], r['getroffen']))
         if (i + 1) % 100 == 0:

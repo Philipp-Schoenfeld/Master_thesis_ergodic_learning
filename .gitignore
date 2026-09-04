@@ -4,6 +4,7 @@ thesis_architecture/checkpoints/*
 # Zu gross fuer GitHub (Limit: 100 MB je Datei) — per Drive uebertragen.
 3D_ergodic_learning/ergodic_dataset_3d.db
 3D_ergodic_learning/ergodic_dataset_3d_no_offset.db
+3D_ergodic_learning/ergodic_dataset_3d_PREJUMPFIX_tmp.db
 3D_ergodic_learning/cache/
 transfer/
 

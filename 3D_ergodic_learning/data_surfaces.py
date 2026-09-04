@@ -38,9 +38,12 @@ def load_surface_db(db_path=DEFAULT_DB, nxi=25, surfaces=None,
        `parts` (N, 4).
 
     `max_jump` und `max_miss` filtern ueber die mitgeschriebenen Guetemasse.
-    Ein Sprung entsteht, wo zwei benachbarte Bahnpunkte auf verschiedene Seiten
-    einer Kante treffen; ein Fehlschuss dort, wo die 2D-Bahn ueber die
-    Silhouette hinauslief und der naechstgelegene Punkt einspringen musste.
+    Ein Fehlschuss entsteht, wo die 2D-Bahn ueber die Silhouette hinauslief;
+    solche Rohpunkte sind in `traj_pos`/`traj_rot6` bereits entfernt (siehe
+    `project_db_3d.py`), `n_points` also ggf. kleiner als die volle Rohbahn.
+    Ein Sprung ist trotzdem moeglich, wo zwei der verbliebenen Punkte auf
+    verschiedenen Seiten einer laengeren Fehlschuss-Luecke oder einer Kante
+    liegen.
     """
     con = sqlite3.connect(db_path)
     q = ("SELECT shape_name, split, surface, traj_pos, traj_rot6, particles, "
