@@ -1,0 +1,52 @@
+{
+  "zeitpunkt": "2026-09-05T23:03:45",
+  "konfiguration": {
+    "mode": "beide",
+    "models": [
+      "ucb",
+      "eid",
+      "mass",
+      "niveau"
+    ],
+    "n_max": 12,
+    "n_min": 1,
+    "n_shapes": 25,
+    "search": "voll",
+    "param_points": 16,
+    "seeds": 2,
+    "ckpt": "/home/stud_schonfeld/Master_thesis/transfer/netz2d_startpunkt.pt",
+    "device": null,
+    "workers": 14,
+    "lambda_len": 0.02,
+    "lambda_time": 0.004,
+    "quality": "cov",
+    "debt_weight": 0.6,
+    "visit_sat": 1.0,
+    "visit_halflife": 3.0,
+    "sensor_radius": 0.06,
+    "gp_noise": 0.05,
+    "meas_noise": 0.02,
+    "n_particles": 256,
+    "max_obs": 64,
+    "n_prior": 0,
+    "truth_res": 96,
+    "flow_steps": 100,
+    "estimate_only": false,
+    "reweight": false,
+    "status": false,
+    "max_evals": null,
+    "zwischenstand": 16,
+    "max_stunden": 23.0,
+    "tag": null
+  },
+  "svgd_raster": [
+    0,
+    25,
+    50,
+    100,
+    200,
+    400
+  ],
+  "laengeneinheit": 1.4142135623730951,
+  "n_spuren": 768
+}
