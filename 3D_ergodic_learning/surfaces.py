@@ -155,7 +155,14 @@ class Surface:
         return float(self.mesh.area)
 
 
-def build(key):
+def _build_alt(key):
+    """Die zehn urspruenglichen Flaechen, unveraendert.
+
+    Diese Funktion ist bewusst nicht angefasst worden. `run_surface_eval.py`,
+    `plot_surfaces.py` und `export_surface_viewer.py` bauen darauf auf, und die
+    Vergleichszahlen der bisherigen Auswertungen haengen daran, dass genau
+    dieselben Netze mit genau denselben Blickrichtungen herauskommen.
+    """
     import trimesh
     if key == 'ebene_flach':
         return Surface(key, 'Ebene, waagerecht', _plane_mesh((0, 0, 1)),
@@ -201,6 +208,355 @@ def build(key):
 
 KEYS = ['ebene_flach', 'ebene_gekippt', 'ebene_diagonal',
         'kugel', 'wuerfel', 'ei', 'bunny', 'prisma', 'kegel', 'torus']
+
+# `KEYS` bleibt absichtlich diese Zehnerliste. Die drei Auswertungsskripte
+# durchlaufen sie ohne Argument; waere sie auf vierundachtzig Flaechen
+# angewachsen, haetten sie ihr Verhalten stillschweigend geaendert. Die neue,
+# vollstaendige Liste heisst `alle_keys()` und muss ausdruecklich angefordert
+# werden.
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  Die erweiterte Flaechenliste
+# ═════════════════════════════════════════════════════════════════════════════
+#
+# Acht Gruppen, weil sie beim Training verschieden gewichtet werden sollen:
+#
+#   ebene         zehn Lagen derselben unverzerrten Projektion. `ebene_flach`
+#                 ist die Trainingslage der bisherigen Laeufe und bekommt
+#                 deshalb ein eigenes Gewicht — sie ist der Bezugspunkt, gegen
+#                 den sich alles Neue messen lassen muss.
+#   primitiv      die sieben bisherigen Koerper plus die dreissig aus
+#                 koerper.py — konvex oder rotationssymmetrisch.
+#   buchstabe     die sechsundzwanzig extrudierten Grossbuchstaben.
+#   extern        gemessene und modellierte Netze, die das Aufnahmetor
+#                 bestanden haben.
+#   organismus    fuenfundvierzig Metaball-Koerper (organismen.py) — glatt und
+#                 nicht konvex, weder Primitiv noch Rotationskoerper.
+#   baugruppe     fuenfundzwanzig boolesche Verknuepfungen (baugruppen.py) —
+#                 durchgehende Loecher, Kerben, mehrteilige Formen.
+#   superquadrik  achtundzwanzig Formen einer stetigen Familie zwischen Kasten
+#                 und Stern (superquadriken.py).
+#   wort          fuenfundzwanzig kurze Wortkoerper (woerter.py) — mehrteilige,
+#                 scharfkantige Silhouetten mit Zwischenraum statt nur Kanten.
+#
+# Zurueckgehalten wird ueber beide Achsen getrennt: Flaechen mit `heldout=True`
+# im Verzeichnis kommen im Training nie vor.
+
+GRUPPEN = ('ebene', 'primitiv', 'buchstabe', 'extern',
+          'organismus', 'baugruppe', 'superquadrik', 'wort')
+
+
+def _fibonacci_halbkugel(n, ausschluss=None, min_winkel=25.0):
+    """n moeglichst gleichverteilte Richtungen auf der oberen Halbkugel.
+
+    Die goldene Spirale verteilt Punkte auf der Kugel gleichmaessiger als
+    Zufall oder ein Winkelraster, das an den Polen zusammenlaeuft. Richtungen,
+    die einer bereits vergebenen zu nahe kommen, fallen heraus — sonst laege
+    eine der neuen Ebenen praktisch auf `ebene_flach` und brächte nichts.
+    """
+    phi = np.pi * (3.0 - np.sqrt(5.0))
+    m = 4 * n + 16                       # ueberziehen, danach aussortieren
+    out = []
+    aus = [np.asarray(a, np.float64) / np.linalg.norm(a)
+           for a in (ausschluss or [])]
+    kappa = np.cos(np.deg2rad(min_winkel))
+    for i in range(m):
+        z = 1.0 - (i + 0.5) / m          # 1 .. -1
+        if z < 0.05:                     # nur die obere Halbkugel
+            continue
+        r = np.sqrt(max(1.0 - z * z, 0.0))
+        a = phi * i
+        v = np.array([r * np.cos(a), r * np.sin(a), z])
+        v /= np.linalg.norm(v)
+        if any(abs(float(v @ b)) > kappa for b in aus + out):
+            continue
+        out.append(v)
+        if len(out) >= n:
+            break
+    return out
+
+
+def _ebenen():
+    """Zehn Ebenen: die drei bestehenden plus sieben neue Normalen."""
+    fest = {
+        'ebene_flach': np.array([0.0, 0.0, 1.0]),
+        'ebene_gekippt': np.array([0.0, np.sin(np.deg2rad(50)),
+                                   np.cos(np.deg2rad(50))]),
+        'ebene_diagonal': np.ones(3) / np.sqrt(3),
+    }
+    eintraege = {}
+    for k, n in fest.items():
+        eintraege[k] = (n / np.linalg.norm(n), '')
+    for i, v in enumerate(_fibonacci_halbkugel(7, ausschluss=list(fest.values()))):
+        eintraege[f'ebene_fib_{i}'] = (
+            v, 'gleichverteilte Normale aus der Fibonacci-Halbkugel')
+    return eintraege
+
+
+def _registry_bauen():
+    import koerper
+    import text_volumen
+    import organismen
+    import baugruppen
+    import superquadriken
+    import woerter
+    reg = {}
+
+    def _legen(k, eintrag):
+        """Eintragen, aber niemals stillschweigend ueberschreiben.
+
+        Aufgefallen war das an `kegel`: `koerper.py` hatte den Namen ebenfalls
+        vergeben, und die spaeter eingetragene Fassung verdraengte die alte.
+        Der Fehler war nach aussen unsichtbar — `build('kegel')` lieferte ueber
+        die `KEYS`-Abkuerzung weiter das richtige Netz, aber die Flaechenzahl
+        war um eins zu klein, und `build_erweitert` haette ein anderes Netz
+        gebaut als `build`. Genau die Sorte Unterschied, die man in einer
+        Guete-Tabelle mit vierundachtzig Zeilen nicht mehr findet.
+        """
+        if k in reg:
+            raise KeyError(f'Flaechenschluessel {k!r} doppelt vergeben — '
+                           f'die Gruppen {reg[k]["gruppe"]!r} und '
+                           f'{eintrag["gruppe"]!r} benutzen ihn beide.')
+        reg[k] = eintrag
+
+    for k, (nrm, notiz) in _ebenen().items():
+        if k in ('ebene_flach', 'ebene_gekippt', 'ebene_diagonal'):
+            _legen(k, dict(gruppe='ebene', alt=True, view=None, notiz=notiz))
+            continue
+        _legen(k, dict(
+            label=f'Ebene, Normale ({nrm[0]:+.2f},{nrm[1]:+.2f},{nrm[2]:+.2f})',
+            bauer=(lambda v=nrm: _plane_mesh(v)), gruppe='ebene',
+            view=-nrm, notiz=notiz, heldout=False))
+
+    for k in ('kugel', 'wuerfel', 'ei', 'bunny', 'prisma', 'kegel', 'torus'):
+        _legen(k, dict(gruppe='primitiv' if k != 'bunny' else 'extern',
+                       alt=True, view=None, notiz=''))
+
+    for tab, heldout in ((koerper.KOERPER, False),
+                         (koerper.KOERPER_HELDOUT, True)):
+        for k, (label, bauer, notiz) in tab.items():
+            _legen(k, dict(label=label, bauer=bauer, gruppe='primitiv',
+                           view=(0.0, 0.0, -1.0), notiz=notiz,
+                           heldout=heldout))
+
+    for tab, heldout in ((text_volumen.TEXT_KOERPER, False),
+                         (text_volumen.TEXT_HELDOUT, True)):
+        for k, (label, bauer, notiz) in tab.items():
+            _legen(k, dict(label=label, bauer=bauer, gruppe='buchstabe',
+                           view=(0.0, 0.0, -1.0), notiz=notiz,
+                           heldout=heldout))
+
+    # ── Erweiterung auf 200 Flaechen: vier neue, selbstgemachte Kategorien ──
+    # Aus jeder ein kleiner Anteil zurueckgehalten (zwei je Kategorie), damit
+    # `val_flaeche` (bekannte Dichte, unbekannte Geometrie) auch die neuen
+    # Formfamilien prueft und nicht nur die urspruenglichen.
+    _HELDOUT_NEU = {
+        'organismus_00', 'organismus_38',
+        'bg_hantel_var', 'bg_bogen_var',
+        'sq_kreuzquer_lang', 'sq_fass_lang',
+        'wort_vita', 'wort_ias',
+    }
+    for k, (label, bauer, notiz) in organismen.ORGANISMEN.items():
+        _legen(k, dict(label=label, bauer=bauer, gruppe='organismus',
+                       view=(0.0, 0.0, -1.0), notiz=notiz,
+                       heldout=k in _HELDOUT_NEU))
+    for k, (label, bauer, notiz) in baugruppen.BAUGRUPPEN.items():
+        _legen(k, dict(label=label, bauer=bauer, gruppe='baugruppe',
+                       view=(0.0, 0.0, -1.0), notiz=notiz,
+                       heldout=k in _HELDOUT_NEU))
+    for k, (label, bauer, notiz) in superquadriken.SUPERQUADRIKEN.items():
+        _legen(k, dict(label=label, bauer=bauer, gruppe='superquadrik',
+                       view=(0.0, 0.0, -1.0), notiz=notiz,
+                       heldout=k in _HELDOUT_NEU))
+    for k, (label, bauer, notiz) in woerter.WOERTER_KOERPER.items():
+        _legen(k, dict(label=label, bauer=bauer, gruppe='wort',
+                       view=(0.0, 0.0, -1.0), notiz=notiz,
+                       heldout=k in _HELDOUT_NEU))
+    return reg
+
+
+_REGISTRY = None
+
+
+def registry():
+    """key -> Eintrag. Wird beim ersten Zugriff gebaut, danach behalten.
+
+    Die externen Netze stehen nicht darin: sie muessen heruntergeladen und
+    durchs Aufnahmetor geschickt werden, und beides soll nicht bei jedem
+    Import passieren. `externe_aufnehmen()` traegt sie nach.
+    """
+    global _REGISTRY
+    if _REGISTRY is None:
+        _REGISTRY = _registry_bauen()
+    return _REGISTRY
+
+
+def externe_aufnehmen(verbose=True):
+    """Die externen Netze pruefen und die bestandenen ins Verzeichnis legen.
+
+    -> (aufgenommen [keys], abgelehnt {key: begruendung})
+    """
+    import externe_netze
+    reg = registry()
+    ja, nein = externe_netze.aufnehmen(verbose=verbose)
+    neu = []
+    for k, (label, mesh, notiz) in ja.items():
+        schl = f'extern_{k}'
+        reg[schl] = dict(label=label, bauer=(lambda m=mesh: m),
+                         gruppe='extern', view=(0.0, -1.0, 0.0), notiz=notiz,
+                         heldout=False)
+        neu.append(schl)
+    return neu, nein
+
+
+def alle_keys(gruppen=None, mit_heldout=False, nur_heldout=False):
+    """Schluessel der erweiterten Liste, nach Gruppe gefiltert."""
+    reg = registry()
+    out = []
+    for k, e in reg.items():
+        h = bool(e.get('heldout', False))
+        if nur_heldout and not h:
+            continue
+        if not mit_heldout and not nur_heldout and h:
+            continue
+        if gruppen and e['gruppe'] not in gruppen:
+            continue
+        out.append(k)
+    return out
+
+
+def gruppe_von(key):
+    return registry()[key]['gruppe']
+
+
+# ── Zufaellige Blickrichtungen ───────────────────────────────────────────────
+
+def guete_richtung(mesh, richtung, n=600, seed=0):
+    """Wie brauchbar ein Blickwinkel auf ein Netz ist.
+
+    Zwei Zahlen, die verschiedene Dinge messen:
+
+    * `treffer` — Anteil des Projektionsquadrats, unter dem ueberhaupt
+      Geometrie liegt. Das ist der Flaechenanteil der Silhouette. Ist er
+      klein, faellt der groesste Teil der 2D-Dichte neben den Koerper, und die
+      projizierte Bahn besteht ueberwiegend aus Naechster-Punkt-Ersatz.
+    * `fehlschuss` — Anteil der Strahlen, die auf einen *tatsaechlich
+      vorhandenen* Oberflaechenpunkt gezielt sind und ihn trotzdem verfehlen.
+      Bei einem geschlossenen Koerper ist das null; steigt der Wert, ist das
+      Netz aus dieser Richtung durchlaessig.
+
+    Die beiden zu trennen ist der Kern: eine Kugel hat aus jeder Richtung
+    `treffer` = pi/4 und `fehlschuss` = 0. Ein offener Helm kann `treffer` =
+    0,7 und trotzdem `fehlschuss` = 0,1 haben. Nur die zweite Zahl sagt etwas
+    ueber die Netzqualitaet.
+    """
+    import open3d as o3d
+    import trimesh
+    e1, e2, w = _frame(richtung)
+    szene = o3d.t.geometry.RaycastingScene()
+    szene.add_triangles(o3d.t.geometry.TriangleMesh(
+        o3d.core.Tensor(np.asarray(mesh.vertices), dtype=o3d.core.float32),
+        o3d.core.Tensor(np.asarray(mesh.faces), dtype=o3d.core.int32)))
+
+    P, _ = trimesh.sample.sample_surface(mesh, n, seed=int(seed))
+    P = np.asarray(P, dtype=np.float64)
+    a, b = P @ e1, P @ e2
+    a0, a1, b0, b1 = a.min(), a.max(), b.min(), b.max()
+
+    def _anteil(u, v):
+        org = (np.outer(u, e1) + np.outer(v, e2)) - 4.0 * w
+        d = np.tile(w.astype(np.float32), (len(org), 1))
+        rays = o3d.core.Tensor(np.hstack([org.astype(np.float32), d]),
+                               dtype=o3d.core.float32)
+        return float(np.isfinite(szene.cast_rays(rays)['t_hit'].numpy()).mean())
+
+    rng = np.random.default_rng(int(seed) + 7)
+    treffer = _anteil(rng.uniform(a0, a1, n), rng.uniform(b0, b1, n))
+    fehlschuss = 1.0 - _anteil(a, b)
+    return dict(treffer=treffer, fehlschuss=fehlschuss)
+
+
+MIN_TREFFER = 0.55
+MAX_FEHLSCHUSS = 0.25
+
+
+def zufaellige_blickrichtung(rng, mesh, min_treffer=MIN_TREFFER,
+                             max_fehlschuss=MAX_FEHLSCHUSS, versuche=24,
+                             meiden=(), min_winkel=35.0, n=600):
+    """Eine Blickrichtung aus der Halbkugel ziehen, bis sie taugt.
+
+    -> (richtung (3,), guete dict, bestanden bool)
+
+    Verworfen wird bei zu kleiner Silhouette oder zu durchlaessigem Netz, und
+    ebenso, wenn die Richtung einer schon vergebenen zu nahe kommt — zwei fast
+    gleiche Winkel auf derselben Flaeche waeren zwei fast gleiche Eintraege.
+
+    Findet sich nach `versuche` Zuegen keine, die beide Schwellen haelt, wird
+    die beste gefundene zurueckgegeben und `bestanden` ist False. Das ist
+    Absicht: es gibt Koerper — der Armadillo etwa, mit seinen abstehenden
+    Gliedmassen — deren Silhouette aus *keiner* Richtung 55 % des Quadrats
+    fuellt. Sie hier stumm fallenzulassen hiesse, die Flaechenliste von einer
+    Schwelle bestimmen zu lassen, statt von der Geometrie. Der Bauer schreibt
+    stattdessen mit, welche Winkel nur mit Abstrichen genommen wurden, und die
+    Guetefilter der Datenbank raeumen danach je Eintrag auf.
+    """
+    kappa = np.cos(np.deg2rad(min_winkel))
+    gemieden = [np.asarray(m, np.float64) / max(np.linalg.norm(m), 1e-12)
+                for m in meiden]
+    beste, beste_g, beste_punkte = None, None, -np.inf
+    for i in range(versuche):
+        v = rng.normal(size=3)
+        nv = np.linalg.norm(v)
+        if nv < 1e-9:
+            continue
+        v = v / nv
+        if any(float(v @ m) > kappa for m in gemieden):
+            continue
+        g = guete_richtung(mesh, v, n=n, seed=int(rng.integers(0, 2 ** 31)))
+        # Punktzahl nur fuer den Rueckfall: viel Silhouette, wenig Durchlass.
+        punkte = g['treffer'] - 2.0 * g['fehlschuss']
+        if punkte > beste_punkte:
+            beste, beste_g, beste_punkte = v, g, punkte
+        if g['treffer'] >= min_treffer and g['fehlschuss'] <= max_fehlschuss:
+            return v, g, True
+    if beste is None:                      # alle Zuege lagen zu nah an `meiden`
+        v = rng.normal(size=3)
+        v /= max(np.linalg.norm(v), 1e-12)
+        return v, guete_richtung(mesh, v, n=n), False
+    return beste, beste_g, False
+
+
+def blickrichtungen(rng, mesh, anzahl=2, **kw):
+    """`anzahl` moeglichst verschiedene brauchbare Richtungen."""
+    out = []
+    for _ in range(anzahl):
+        v, g, ok = zufaellige_blickrichtung(
+            rng, mesh, meiden=[r for r, _, _ in out], **kw)
+        out.append((v, g, ok))
+    return out
+
+
+def build_erweitert(key):
+    """Eine Flaeche aus der erweiterten Liste bauen."""
+    e = registry()[key]
+    if e.get('alt'):
+        return _build_alt(key)
+    return Surface(key, e['label'], e['bauer'](), view=e['view'],
+                   note=e['notiz'])
+
+
+def build(key):
+    """Eine Flaeche bauen.
+
+    Fuer die zehn urspruenglichen Schluessel laeuft das ueber `_build_alt` und
+    liefert Netz *und* Blickrichtung unveraendert; die bestehenden
+    Auswertungsskripte merken von der Erweiterung nichts. Alles andere kommt
+    aus dem Verzeichnis, das dabei beim ersten Mal gebaut wird.
+    """
+    if key in KEYS:
+        return _build_alt(key)
+    return build_erweitert(key)
 
 
 # ── Projektion ───────────────────────────────────────────────────────────────

@@ -23,3 +23,24 @@ jaxlib>=0.4.30
 
 # Experiment tracking
 wandb>=0.17.0
+
+# ── 3D-Zielflaechen (3D_ergodic_learning/) ───────────────────────────────────
+# Netzverarbeitung und Strahlenwerfen fuer die projizierte 3D-Datenbank.
+trimesh>=4.0.0
+open3d>=0.18.0
+scipy>=1.11.0
+
+# Buchstaben als Volumenkoerper (text_volumen.py):
+#   TextPath -> shapely-Polygon -> trimesh.creation.extrude_polygon
+# mapbox-earcut wird nirgends direkt importiert, aber extrude_polygon braucht
+# es zum Triangulieren von Polygonen mit Loechern (O, A, B, R, 0) und scheitert
+# ohne es.
+shapely>=2.0.0
+mapbox-earcut>=1.0.0
+
+# Erweiterung auf 200 Zielflaechen (organismen.py, baugruppen.py):
+# Marching Cubes fuer die Metaball-Organismen, manifold3d als Backend fuer
+# trimesh.boolean bei den Baugruppen — ohne manifold3d faellt trimesh beim
+# booleschen Schneiden still auf ein nicht mehr wasserdichtes Ergebnis zurueck.
+scikit-image>=0.22.0
+manifold3d>=3.0.0

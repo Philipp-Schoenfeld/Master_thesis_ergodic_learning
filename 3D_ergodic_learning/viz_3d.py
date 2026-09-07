@@ -171,11 +171,16 @@ def draw_frames(ax, curve, R, n_arrows=14, length=0.09, axis=2):
 
 def panel(ax, base, gen_cps, particles, volume, title, obstacle=None,
           bspline_pts=512, bspline_deg=5, elev=22, azim=-58, floor_shadow=True,
-          gen_R=None, base_R=None):
+          gen_R=None, base_R=None, start=None):
     """One complete holdout panel.
 
     `gen_R` / `base_R` are (T, 3, 3) frames along the *rendered* curve; pass
     None to keep the position-only picture.
+
+    `start` (3,) ist der Punkt, auf den das Netz konditioniert wurde. Er wird
+    als eigener Marker gezeichnet, weil man ihm sonst nicht ansieht, ob die
+    erzeugte Bahn ihn wirklich trifft — und genau das ist die Frage, die das
+    Bild bei eingeschalteter Startpunkt-Konditionierung beantworten soll.
     """
     ax.set_facecolor('white')
     ax.view_init(elev=elev, azim=azim)
@@ -191,6 +196,16 @@ def panel(ax, base, gen_cps, particles, volume, title, obstacle=None,
     if base_R is not None and base is not None:
         draw_frames(ax, cp_to_bspline(np.asarray(base), bspline_pts, bspline_deg),
                     base_R, length=0.07)
+
+    if start is not None:
+        s = np.asarray(start, dtype=float).reshape(-1)[:3]
+        ax.scatter([s[0]], [s[1]], [s[2]], s=70, facecolor='white',
+                   edgecolor=GEN_GREEN, linewidth=1.8, depthshade=False,
+                   zorder=12, label='konditionierter Start')
+        if floor_shadow:
+            ax.scatter([s[0]], [s[1]], zs=0.0, zdir='z', s=26,
+                       facecolor='none', edgecolor=GEN_GREEN, linewidth=0.9,
+                       alpha=0.3, depthshade=False)
 
     style_axes3d(ax, title)
 

@@ -48,6 +48,7 @@ def load_model(ckpt_path, device):
         length_cond=length_cond,
         log_ref=ckpt.get('log_ref', 5.0),
         log_scale=ckpt.get('log_scale', 1.5),
+        length_freqs=ckpt.get('length_freqs', 'oktaven'),
     )
 
     if ckpt.get('selfsupervised', False):
@@ -57,9 +58,16 @@ def load_model(ckpt_path, device):
         module = 'flow_matching_particles_selfsupervised'
     elif length_cond:
         from flow_matching_cond_particles_length import ParticleCrossAttnFlowNetwork
+        # length_freq_mode muss aus dem Checkpoint kommen, nicht aus dem
+        # Klassendefault: die Frequenzpuffer sind persistent=False und stehen
+        # deshalb nicht im state_dict. Ohne diese Weitergabe wuerde ein mit
+        # 'linear' trainiertes Netz hier mit den 'oktaven'-Frequenzen neu
+        # aufgebaut und die Laengenkonditionierung waere zur Auswertung wieder
+        # mehrdeutig, obwohl das Training sie korrekt gelernt hat.
         model = ParticleCrossAttnFlowNetwork(
             nxi=nxi, nd=nd, D=D, log_ref=meta['log_ref'],
-            log_scale=meta['log_scale']).to(device)
+            log_scale=meta['log_scale'],
+            length_freq_mode=meta['length_freqs']).to(device)
         kind = 'flow'
         module = 'flow_matching_cond_particles_length'
     elif start_cond:

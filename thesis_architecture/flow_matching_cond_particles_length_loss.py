@@ -1,0 +1,807 @@
+r"""
+flow_matching_cond_particles_length_loss.py
+============================================
+Kopie von `flow_matching_cond_particles_length.py`, ergaenzt um einen
+**expliziten Laengen-Loss** auf den vorhergesagten Kontrollpunkten.
+
+Die Laengenkonditionierung dort wirkt bisher ausschliesslich ueber den
+Eingang: `length` geht per FiLM in `time_cond` ein, aber nichts im Loss
+vergleicht die Laenge der tatsaechlich erzeugten Bahn mit der Vorgabe. Das
+Netz hat also nie einen direkten Trainingsanreiz, den zugesagten Zusammenhang
+auch zu lernen — er entsteht nur, wenn das Signal auf dem Umweg ueber den
+CFM-Loss zufaellig nuetzlich ist. `compute_particle_cfm_loss` bekommt hier
+einen zusaetzlichen Parameter `lambda_length`, der genau diese Luecke
+schliesst: aus der Flow-Matching-Vorhersage `v_t` laesst sich am aktuellen
+Zeitschritt ein Endpunkt-Schaetzer `x1_hat = xt + (1-t)*v_t` bilden (derselbe
+Trick, den der ErgLoss-Term schon benutzt), dessen Sehnenlaenge dann direkt
+gegen `length_batch` regressiert wird.
+
+Warum eine Kopie und kein Flag auf der bestehenden Datei: der Vergleich soll
+zwei unabhaengig checkpointete, parallel trainierte Modelle liefern (reine
+FiLM-Konditionierung gegen FiLM-Konditionierung + Loss-Term), nicht zwei
+Konfigurationen desselben Laufs. Architektonisch ist die Kopie bitgleich —
+`ParticleCrossAttnFlowNetwork` aendert sich nicht, nur die Loss-Funktion.
+
+Kopie des Partikel-Cross-Attention-Netzes, zusaetzlich auf einen **Startpunkt**
+konditioniert.
+
+Warum eine Kopie und kein Schalter: das bestehende Netz traegt die gefahrenen
+Vergleiche dieser Arbeit, und ein zusaetzlicher Eingang aendert die Form des
+Zustands. Eine Kopie laesst beide nebeneinander bestehen.
+
+Die Konditionierung
+-------------------
+Der Startpunkt ist ein **globaler** Wert — er gilt fuer die ganze Bahn, nicht
+fuer einzelne Bahnpunkte. Genau dafuer ist FiLM gedacht, und genau dort sitzt
+im Netz schon ein Pfad: die Flusszeit `t` wird ueber `ConvResBlock.film_proj`
+eingespeist. Der Startpunkt wird auf denselben Weg gelegt und dort mit der
+Zeiteinbettung addiert.
+
+    z = time_emb(t) + start_emb(p0)      ->  FiLM in jedem ConvResBlock
+
+Das hat drei Vorteile gegenueber den Alternativen:
+
+* **Kein zusaetzlicher Aufmerksamkeitspfad.** Ein Startpunkt als weiteres
+  Token in der Partikelwolke waere ein Punkt unter 256 und ginge im Mittel
+  unter; als eigener Cross-Attention-Block waere es ein neuer Block mit
+  eigenen Gewichten fuer eine dreistellige Zahl.
+* **Der Weg ist erwiesen tragfaehig.** Ueber denselben Pfad laeuft die
+  Zeitkonditionierung, ohne die Flow Matching gar nicht funktionieren wuerde.
+* **Nullinitialisierung bleibt erhalten.** `film_proj` ist null-initialisiert;
+  zu Trainingsbeginn wirkt der Startpunkt also gar nicht und das Netz
+  verhaelt sich wie das unkonditionierte. Der Einfluss waechst mit dem
+  Training statt es zu destabilisieren.
+
+**Zusaetzlich** wird der Startpunkt hart in die Ausgabe geschrieben: der erste
+Kontrollpunkt wird durch `p0` ersetzt. Die FiLM-Konditionierung allein wuerde
+die Bedingung nur *lernen* — mit der harten Setzung ist sie erfuellt, und das
+Netz muss seine Kapazitaet auf den Rest der Bahn verwenden. Das ist derselbe
+Gedanke, an dem die `segment`-Variante im 2D-Zweig gescheitert ist: dort wurde
+der Startpunkt erzwungen, ohne ihn je als Eingang zu geben, und das Modell
+sollte etwas treffen, das es nicht kannte. Hier bekommt es beides.
+"""
+
+import math
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class SinusoidalTimeEmbedding(nn.Module):
+    def __init__(self, D: int):
+        super().__init__()
+        assert D % 2 == 0, "D must be even for sinusoidal embedding."
+        half = D // 2
+        freqs = torch.exp(
+            torch.arange(half, dtype=torch.float32)
+            * -(math.log(10_000.0) / (half - 1))
+        )
+        # persistent=False wie bei allen Frequenzpuffern dieser Datei: sie
+        # sind Entwurfskonstanten, kein gelernter Zustand. Im state_dict
+        # wuerden sie beim Laden die Wahl des Modells ueberschreiben.
+        self.register_buffer("freqs", freqs, persistent=False)
+        self.proj = nn.Sequential(
+            nn.Linear(D, D * 2), nn.SiLU(), nn.Linear(D * 2, D),
+        )
+
+    def forward(self, t: torch.Tensor) -> torch.Tensor:
+        t = t.view(-1)
+        args = t[:, None] * self.freqs[None, :]
+        emb = torch.cat([args.sin(), args.cos()], dim=-1)
+        return self.proj(emb)
+
+class GaussianFourierProjection2D(nn.Module):
+    def __init__(self, embed_dim: int, scale: float = 1.0):
+        super().__init__()
+        self.W = nn.Parameter(torch.randn(2, embed_dim // 2) * scale, requires_grad=False)
+        
+    def forward(self, x: torch.Tensor):
+        x_proj = x @ self.W * 2.0 * math.pi
+        return torch.cat([torch.sin(x_proj), torch.cos(x_proj)], dim=-1)
+
+
+class ParticleTokenizer(nn.Module):
+    """
+    Translates raw point cloud particles [x, y, mu] into tokens for cross-attention.
+    Applies Gaussian Fourier Features to (x,y) to avoid Spectral Bias,
+    then concatenates mu and processes via MLP.
+    """
+    def __init__(self, D: int):
+        super().__init__()
+        self.D = D
+        self.pos_enc = GaussianFourierProjection2D(embed_dim=D//2, scale=1.0)
+        self.mlp = nn.Sequential(
+            nn.Linear(D//2 + 1, D), nn.SiLU(), nn.Linear(D, D),
+        )
+        self.out_norm = nn.LayerNorm(D)
+
+    def forward(self, particles: torch.Tensor) -> torch.Tensor:
+        """
+        particles: (B, N, 3) — coordinate + density
+        Returns:   (B, N, D) particle tokens
+        """
+        xy = particles[:, :, :2]
+        mu = particles[:, :, 2:3]
+        pos_feat = self.pos_enc(xy)
+        features = torch.cat([pos_feat, mu], dim=-1)
+        tokens = self.mlp(features)
+        tokens = self.out_norm(tokens)
+        return tokens
+
+class ConvResBlock(nn.Module):
+    def __init__(self, in_ch: int, out_ch: int, cond_dim: int = 128,
+                 kernel_size: int = 3, stride: int = 1):
+        super().__init__()
+        pad = kernel_size // 2
+        self.conv1 = nn.Conv1d(in_ch, out_ch, kernel_size, stride=stride, padding=pad)
+        self.norm1 = nn.GroupNorm(num_groups=min(8, out_ch), num_channels=out_ch)
+        self.film_proj = nn.Linear(cond_dim, out_ch * 2)
+        nn.init.zeros_(self.film_proj.weight)
+        nn.init.zeros_(self.film_proj.bias)
+        self.conv2 = nn.Conv1d(out_ch, out_ch, kernel_size, stride=1, padding=pad)
+        self.norm2 = nn.GroupNorm(num_groups=min(8, out_ch), num_channels=out_ch)
+        self.act   = nn.SiLU()
+        self.residual = (
+            nn.Conv1d(in_ch, out_ch, kernel_size=1, stride=stride)
+            if (in_ch != out_ch or stride != 1) else nn.Identity()
+        )
+
+    def forward(self, x: torch.Tensor, cond: torch.Tensor = None) -> torch.Tensor:
+        h = self.norm1(self.conv1(x))
+        if cond is not None:
+            film_params = self.film_proj(cond).unsqueeze(-1)
+            gamma, beta = film_params.chunk(2, dim=1)
+            h = h * (1.0 + gamma) + beta
+        h = self.act(h)
+        h = self.norm2(self.conv2(h))
+        return self.act(h + self.residual(x))
+
+class CrossAttentionBlock(nn.Module):
+    def __init__(self, q_dim: int, kv_dim: int, n_heads: int = 8):
+        super().__init__()
+        self.cross_attn = nn.MultiheadAttention(
+            embed_dim=q_dim, num_heads=n_heads, batch_first=True,
+        )
+        self.cross_attn_norm = nn.LayerNorm(q_dim)
+        self.kv_proj = nn.Sequential(
+            nn.Linear(kv_dim, q_dim), nn.SiLU(), nn.Linear(q_dim, q_dim),
+            nn.LayerNorm(q_dim),
+        )
+
+    def forward(self, x: torch.Tensor, kv: torch.Tensor) -> torch.Tensor:
+        if kv is None:
+            return x
+        B, C, L = x.shape
+        q = x.permute(0, 2, 1)
+        kv_proj = self.kv_proj(kv)
+        q_norm = self.cross_attn_norm(q)
+        ca_out, _ = self.cross_attn(q_norm, kv_proj, kv_proj)
+        q = q + ca_out
+        return q.permute(0, 2, 1)
+
+class UNetBackboneParticles(nn.Module):
+    def __init__(self, D: int, n_heads: int = 8, kernel_size: int = 3):
+        super().__init__()
+        D4 = D * 4  
+        self.enc1 = ConvResBlock(D,   D,   cond_dim=D, kernel_size=kernel_size, stride=1)
+        self.enc2 = ConvResBlock(D,   D*2, cond_dim=D, kernel_size=kernel_size, stride=2)
+        self.enc3 = ConvResBlock(D*2, D4,  cond_dim=D, kernel_size=kernel_size, stride=2)
+
+        self.bot1 = ConvResBlock(D4, D4, cond_dim=D, kernel_size=kernel_size, stride=1)
+        self.bot2 = ConvResBlock(D4, D4, cond_dim=D, kernel_size=kernel_size, stride=1)
+
+        self.self_attn = nn.MultiheadAttention(embed_dim=D4, num_heads=n_heads, batch_first=True)
+        self.self_attn_norm = nn.LayerNorm(D4)
+
+        self.bot_cross_attn = CrossAttentionBlock(q_dim=D4, kv_dim=D, n_heads=n_heads)
+        self.dec1_cross_attn = CrossAttentionBlock(q_dim=D*2, kv_dim=D, n_heads=n_heads)
+        self.dec2_cross_attn = CrossAttentionBlock(q_dim=D, kv_dim=D, n_heads=n_heads)
+
+        self.dec1 = ConvResBlock(D4 + D*2, D*2, cond_dim=D, kernel_size=kernel_size, stride=1)
+        self.dec2 = ConvResBlock(D*2 + D,  D,   cond_dim=D, kernel_size=kernel_size, stride=1)
+
+    def forward(self, x: torch.Tensor, time_cond: torch.Tensor, particle_tokens: torch.Tensor = None) -> torch.Tensor:
+        e1 = self.enc1(x, time_cond)                             
+        e2 = self.enc2(e1, time_cond)                            
+        e3 = self.enc3(e2, time_cond)                            
+
+        b = self.bot1(e3, time_cond)                             
+        B_size, C, L = b.shape
+        b_seq = b.permute(0, 2, 1)                              
+        b_seq_norm = self.self_attn_norm(b_seq)
+        sa_out, _ = self.self_attn(b_seq_norm, b_seq_norm, b_seq_norm)  
+        b_seq = b_seq + sa_out                                  
+        b = b_seq.permute(0, 2, 1)                              
+
+        b = self.bot_cross_attn(b, particle_tokens)              
+        b = self.bot2(b, time_cond)                              
+
+        b_up  = F.interpolate(b, size=e2.shape[-1], mode='linear', align_corners=False)
+        d1    = self.dec1(torch.cat([b_up, e2], dim=1), time_cond)  
+        d1 = self.dec1_cross_attn(d1, particle_tokens)
+
+        d1_up = F.interpolate(d1, size=e1.shape[-1], mode='linear', align_corners=False)
+        d2    = self.dec2(torch.cat([d1_up, e1], dim=1), time_cond) 
+        d2 = self.dec2_cross_attn(d2, particle_tokens)
+        return d2
+
+class FlowHead(nn.Module):
+    def __init__(self, D: int, nd: int):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(D, D), nn.LayerNorm(D), nn.SiLU(), nn.Linear(D, nd),
+        )
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.net(x.permute(0, 2, 1))
+
+class MPDLayer(nn.Module):
+    def __init__(self, nd: int, D: int, kernel_size: int = 3):
+        super().__init__()
+        self.conv = nn.Conv1d(nd, D, kernel_size, stride=1, padding=kernel_size // 2)
+        self.norm = nn.LayerNorm(D)
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        h = self.conv(x.permute(0, 2, 1))                       
+        return self.norm(h.permute(0, 2, 1)).permute(0, 2, 1)
+
+class StartEmbedding(nn.Module):
+    """Startpunkt (B, nd) -> (B, D). Fourier-Merkmale, dann MLP.
+
+    Rohe Koordinaten in [0,1] sind fuer ein MLP ein schlechter Eingang: kleine
+    Verschiebungen erzeugen kleine Aenderungen, und das Netz muesste die
+    Aufloesung selbst herstellen. Dieselben Fourier-Merkmale, die der
+    Partikel-Tokenizer fuer die Ortskodierung benutzt, loesen das hier auch.
+    """
+
+    def __init__(self, D: int = 128, nd: int = 2, n_freq: int = 8):
+        super().__init__()
+        # persistent=False: die Frequenzen sind eine Entwurfsentscheidung,
+        # kein gelernter Zustand. Landen sie im state_dict, ueberschreibt ein
+        # alter Checkpoint beim Laden stillschweigend die Wahl des neuen
+        # Modells — der Fehler faellt nirgends auf, weil nichts abstuerzt.
+        self.register_buffer('freqs', 2.0 ** torch.arange(n_freq).float() * math.pi,
+                             persistent=False)
+        self.net = nn.Sequential(
+            nn.Linear(nd * n_freq * 2, D), nn.SiLU(), nn.Linear(D, D))
+
+    def forward(self, p0: torch.Tensor) -> torch.Tensor:
+        a = p0.unsqueeze(-1) * self.freqs                    # (B, nd, F)
+        feat = torch.cat([a.sin(), a.cos()], dim=-1).flatten(1)
+        return self.net(feat)
+
+
+class LengthEmbedding(nn.Module):
+    """Pfadlaenge (B,) -> (B, D). Logarithmisch, dann Fourier, dann MLP.
+
+    Der Logarithmus ist keine Kosmetik. Die Laengen im Datensatz spannen ueber
+    eine Groessenordnung — hundert Iterationen ergeben eine kurze Schleife,
+    zehntausend einen dicht gefalteten Pfad. Linear kodiert laegen fast alle
+    Trainingsbeispiele im unteren Zehntel des Wertebereichs, und die
+    Fourier-Merkmale haetten dort kaum Aufloesung.
+
+        u = (log(1 + L) - log(1 + log_ref)) / log_scale
+
+    `log_ref` und `log_scale` kommen aus dem Datensatz und stehen im
+    Checkpoint, damit die Inferenz dieselbe Normierung benutzt wie das
+    Training.
+
+    **Die Wahl der Frequenzen ist nicht frei** (`freq_mode`):
+
+      'oktaven'  2^k * pi, k = 0..n_freq-1. Die Uebernahme aus der
+                 Ortskodierung — und dort richtig, weil eine Koordinate in
+                 [0,1] liegt und die niedrigste Frequenz somit eine halbe
+                 Periode durchlaeuft. Fuer die Laenge ist sie falsch: u ist
+                 durch die Standardabweichung geteilt und liegt bei diesem
+                 Datensatz in [-3,33 ; +3,35]. Da jede Frequenz ein Vielfaches
+                 von pi ist, ist der GANZE Merkmalsvektor periodisch in u mit
+                 der Periode 2 — der Bereich umfasst 3,34 Perioden, und
+                 L = 4,00 / 10,22 / 24,17 sind bitgleiche Eingaben (gemessen:
+                 max. Merkmalsdifferenz 8e-06). Das Netz kann diese Laengen
+                 nicht unterscheiden, nicht einmal im Prinzip.
+
+      'linear'   0,25 * k, k = 1..n_freq. Die niedrigste Frequenz durchlaeuft
+                 ueber den halben Wertebereich weniger als eine Viertelperiode
+                 und liefert damit die glatte, monotone Komponente, die der
+                 Oktavenstapel hier nicht hat. Aehnlichkeit zur Referenz
+                 L = 11: 1,00 / 0,64 bei L = 8 und 15 / 0,05 bei L = 6 —
+                 also ein sauberer Abfall statt eines Sprungs.
+
+    Voreinstellung bleibt 'oktaven', damit bestehende Checkpoints und
+    Auswertungen unveraendert reproduzierbar sind; `periodenspanne()` macht
+    den Mangel pruefbar.
+    """
+
+    FREQ_MODI = ('oktaven', 'linear')
+
+    def __init__(self, D: int = 128, n_freq: int = 8,
+                 log_ref: float = 5.0, log_scale: float = 1.5,
+                 freq_mode: str = 'oktaven'):
+        super().__init__()
+        if freq_mode not in self.FREQ_MODI:
+            raise ValueError(f"freq_mode={freq_mode!r}, erlaubt: {self.FREQ_MODI}")
+        self.freq_mode = freq_mode
+        if freq_mode == 'oktaven':
+            freqs = 2.0 ** torch.arange(n_freq).float() * math.pi
+        else:
+            freqs = torch.arange(1, n_freq + 1).float() * 0.25
+        # persistent=False, siehe StartEmbedding: sonst ueberschreibt ein alter
+        # Checkpoint die hier getroffene Wahl stillschweigend.
+        self.register_buffer('freqs', freqs, persistent=False)
+        self.log_ref = float(log_ref)
+        self.log_scale = float(log_scale)
+        self.net = nn.Sequential(
+            nn.Linear(n_freq * 2, D), nn.SiLU(), nn.Linear(D, D))
+
+    def periodenspanne(self, l_min: float, l_max: float) -> float:
+        """Wie viele Perioden der *niedrigsten* Frequenz deckt [l_min, l_max] ab?
+
+        Ist der Wert >= 1, gibt es innerhalb des Bereichs Laengenpaare mit
+        identischer Kodierung. Bei `oktaven` sind alle Frequenzen Vielfache
+        von pi, der ganze Merkmalsvektor ist dann periodisch in u mit der
+        Periode 2 — Kollisionen sind also exakt, nicht naeherungsweise.
+        """
+        u = self.normiere(torch.tensor([float(l_min), float(l_max)]))
+        return float((u[1] - u[0]).abs() * float(self.freqs.min()) / math.pi)
+
+    def normiere(self, length: torch.Tensor) -> torch.Tensor:
+        u = torch.log1p(length.clamp(min=0.0)) - math.log1p(self.log_ref)
+        return u / self.log_scale
+
+    def forward(self, length: torch.Tensor) -> torch.Tensor:
+        u = self.normiere(length.reshape(-1, 1))
+        a = u * self.freqs
+        feat = torch.cat([a.sin(), a.cos()], dim=-1)
+        return self.net(feat)
+
+
+def lade_modellzustand(model, state_dict, strict: bool = True, verbose: bool = True):
+    """`load_state_dict`, das die Frequenzpuffer alter Checkpoints verwirft.
+
+    Bis zur Korrektur der Laengenkodierung waren `*.freqs` als *persistente*
+    Puffer im state_dict. Ein alter Checkpoint, in ein Modell mit korrigierten
+    Frequenzen geladen, ueberschreibt sie damit stillschweigend — die
+    Korrektur waere wirkungslos, und nichts wuerde sich beschweren. Genau
+    diese Klasse von Fehler soll hier nicht wieder auftreten, deshalb werden
+    die Schluessel explizit entfernt und das Entfernen gemeldet.
+
+    Rueckgabe wie bei `load_state_dict`: (missing_keys, unexpected_keys).
+    """
+    weg = [k for k in list(state_dict) if k.endswith('.freqs')]
+    if weg:
+        state_dict = {k: v for k, v in state_dict.items() if k not in weg}
+        if verbose:
+            print(f"  [Laden] {len(weg)} Frequenzpuffer aus dem Checkpoint "
+                  f"verworfen ({', '.join(weg)}); es gelten die Frequenzen "
+                  f"des Modells.")
+    return model.load_state_dict(state_dict, strict=strict)
+
+
+def ruecksetzen_laengenkopf(model, verbose: bool = True, null_ausgang: bool = True):
+    """Laengen-Einbettung und Null-Token frisch initialisieren.
+
+    Gedacht fuer zwei Faelle: einen Lauf fortsetzen, dessen Frequenzen
+    fehlerhaft waren, und einen Warmstart aus einem Modell, das noch gar
+    keinen Laengeneingang hatte. In beiden Faellen sind Ruecken, Tokenizer und
+    Cross-Attention gueltig trainiert, nur die 154.760 Parameter des
+    Laengenpfads taugen nichts.
+
+    `null_ausgang` initialisiert die **letzte** Schicht der Einbettung mit
+    null. Das ist hier nicht dasselbe wie bei einem frischen Netz: dort sind
+    die FiLM-Projektionen der Residualbloecke ohnehin null, ein zufaellig
+    initialisierter Laengenkopf bliebe also folgenlos. Bei einem vortrainierten
+    Modell sind sie es *nicht* — ein zufaelliger Laengenvektor wuerde die
+    bereits gelernte Konditionierung vom ersten Schritt an stoeren. Mit
+    Nullausgang ist das erweiterte Modell zu Beginn funktional bitgleich mit
+    dem Ausgangsmodell, und der Laengeneingang gewinnt nur so viel Einfluss,
+    wie er Verlust spart. Ein toter Pfad entsteht dabei nicht, wohl aber ein
+    verzoegerter: im ersten Schritt bekommt nur die *letzte* Schicht einen
+    Gradienten — er ist das Produkt aus dem Rueckwaertssignal und den (von
+    null verschiedenen) Aktivierungen davor. Die frueheren Schichten folgen
+    ab dem zweiten Schritt, sobald die letzte nicht mehr null ist. Dasselbe
+    Verhalten hat eine Zero-Convolution.
+    """
+    schichten = [m for m in model.length_emb.net if isinstance(m, nn.Linear)]
+    for i, m in enumerate(schichten):
+        letzte = (i == len(schichten) - 1)
+        if letzte and null_ausgang:
+            nn.init.zeros_(m.weight)
+        else:
+            nn.init.xavier_uniform_(m.weight)
+        nn.init.zeros_(m.bias)
+    nn.init.zeros_(model.null_length_token)
+    if verbose:
+        n = sum(p.numel() for p in model.length_emb.parameters())
+        wie = "Ausgang null" if null_ausgang else "voll zufaellig"
+        print(f"  [Laden] Laengenkopf zurueckgesetzt "
+              f"({n + model.null_length_token.numel():,} Parameter, {wie}).")
+    return model
+
+
+def uebernehmen_aus(model, state_dict, verbose: bool = True):
+    """Gewichte aus einem Modell ohne Laengeneingang uebernehmen (Warmstart).
+
+    Der Anwendungsfall: das startpunktkonditionierte Netz ist auskonvergiert,
+    und die laengenkonditionierte Architektur ist bis auf fuenf Tensoren
+    identisch mit ihm. Statt bei null anzufangen, wird sein Zustand
+    uebernommen und nur der Laengenkopf neu angelegt.
+
+    Zwei Anpassungen sind noetig:
+
+    * `*.freqs` werden verworfen (siehe `lade_modellzustand`).
+    * `pos_emb` haengt als (1, D, nxi) an der Zahl der Kontrollpunkte. Weicht
+      sie ab, wird linear entlang der Kontrollpunktachse interpoliert. Das ist
+      hier sinnvoll und nicht bloss ein Notbehelf: der Index kodiert, *wie
+      weit entlang der Kurve* ein Token sitzt, und diese Groesse ist stetig.
+      Ein Abschneiden oder Auffuellen mit Rauschen waere es nicht.
+
+    Alles, was im Quellzustand fehlt, behaelt seine frische Initialisierung.
+    """
+    zustand = {k: v for k, v in state_dict.items() if not k.endswith('.freqs')}
+    eigen = model.state_dict()
+
+    if 'pos_emb' in zustand and zustand['pos_emb'].shape != eigen['pos_emb'].shape:
+        alt = zustand['pos_emb']
+        neu_n = eigen['pos_emb'].shape[-1]
+        zustand['pos_emb'] = torch.nn.functional.interpolate(
+            alt.float(), size=neu_n, mode='linear', align_corners=True
+        ).to(alt.dtype)
+        if verbose:
+            print(f"  [Warmstart] pos_emb von n_xi={alt.shape[-1]} auf "
+                  f"{neu_n} interpoliert.")
+
+    passt = {k: v for k, v in zustand.items()
+             if k in eigen and eigen[k].shape == v.shape}
+    verworfen = [k for k in zustand if k not in passt]
+    frisch = [k for k in eigen if k not in passt]
+    model.load_state_dict(passt, strict=False)
+    if verbose:
+        n = sum(v.numel() for v in passt.values())
+        print(f"  [Warmstart] {len(passt)} Tensoren uebernommen "
+              f"({n:,} Parameter).")
+        if verworfen:
+            print(f"  [Warmstart] {len(verworfen)} Tensoren der Quelle passen "
+                  f"nicht und wurden verworfen: {verworfen}")
+        print(f"  [Warmstart] frisch initialisiert bleiben: {frisch}")
+    return frisch
+
+
+class ParticleCrossAttnFlowNetwork(nn.Module):
+    def __init__(self, nxi: int = 20, nd: int = 2, D: int = 128,
+                 n_heads: int = 8, kernel_size: int = 3,
+                 log_ref: float = 5.0, log_scale: float = 1.5,
+                 length_freq_mode: str = 'oktaven'):
+        super().__init__()
+        self.nxi = nxi
+        self.nd  = nd
+        self.D   = D
+        self.length_freq_mode = length_freq_mode
+
+        self.mpd_layer = MPDLayer(nd=nd, D=D, kernel_size=kernel_size)
+        self.pos_emb   = nn.Parameter(torch.randn(1, D, nxi) * 0.02)
+        self.time_emb = SinusoidalTimeEmbedding(D=D)
+        
+        self.particle_tokenizer = ParticleTokenizer(D=D)
+        
+        self.null_particle_token = nn.Parameter(torch.zeros(1, 1, D))
+
+        self.start_emb = StartEmbedding(D=D, nd=nd)
+
+        self.length_emb = LengthEmbedding(D=D, log_ref=log_ref, log_scale=log_scale,
+                                          freq_mode=length_freq_mode)
+        # Was das Netz sehen soll, wenn keine Laenge vorgegeben ist. Null
+        # initialisiert: ein weggelassenes Laengensignal entspricht zu
+        # Trainingsbeginn exakt dem bisherigen Verhalten.
+        self.null_length_token = nn.Parameter(torch.zeros(1, D))
+
+        self.backbone = UNetBackboneParticles(D=D, n_heads=n_heads, kernel_size=kernel_size)
+        self.flow_head = FlowHead(D=D, nd=nd)
+
+    def forward(self, x: torch.Tensor, t: torch.Tensor,
+                particles: torch.Tensor,
+                cond_drop_mask: torch.Tensor = None,
+                start: torch.Tensor = None,
+                length: torch.Tensor = None,
+                length_drop_mask: torch.Tensor = None):
+        """Zeit, Startpunkt und Pfadlaenge laufen ueber denselben FiLM-Pfad.
+
+        `length_drop_mask` (B,) setzt das Laengen-Embedding einzelner
+        Beispiele auf den Null-Token. Damit lernt dasselbe Netz beides: eine
+        Laenge einhalten, und ohne Vorgabe frei planen. Ohne dieses Dropout
+        gaebe es zur Inferenz keinen unkonditionierten Zweig, und
+        klassifikatorfreie Fuehrung waere nicht moeglich.
+        """
+        tokens = self.mpd_layer(x)
+        tokens = tokens + self.pos_emb
+        time_cond = self.time_emb(t)
+        if start is not None:
+            time_cond = time_cond + self.start_emb(start)
+        if length is not None:
+            le = self.length_emb(length)
+            if length_drop_mask is not None:
+                m = length_drop_mask.view(-1, 1).to(le.dtype)
+                le = le * (1.0 - m) + self.null_length_token * m
+            time_cond = time_cond + le
+
+        particle_tokens = self.particle_tokenizer(particles)   
+
+        if cond_drop_mask is not None:
+            mask = cond_drop_mask.view(-1, 1, 1).to(particle_tokens.dtype)  
+            # Broadcasting self.null_particle_token along sequence length
+            particle_tokens = particle_tokens * (1.0 - mask) + self.null_particle_token * mask
+
+        out = self.backbone(tokens, time_cond, particle_tokens)      
+
+        v_t = self.flow_head(out)                                
+
+        return v_t, None
+
+def compute_particle_cfm_loss(
+    model: nn.Module,
+    x1_batch: torch.Tensor,
+    particle_batch: torch.Tensor,
+    p_drop: float = 0.0,
+    ergodic=None,
+    length_batch: torch.Tensor = None,
+    p_drop_length: float = 0.1,
+    lambda_length: float = 0.0,
+) -> tuple:
+    """Conditional flow-matching loss, optionally with an ergodic coverage term
+    and an explicit length-matching term.
+
+    Returns (total_loss, components) where components maps a name to a detached
+    scalar tensor, so the runner can log the terms separately.
+    """
+    B = x1_batch.shape[0]
+    device = x1_batch.device
+    x0    = torch.randn_like(x1_batch)
+    t     = torch.rand(B, device=device)
+    t_exp = t.view(B, 1, 1)
+    xt    = (1 - t_exp) * x0 + t_exp * x1_batch
+    ut    = x1_batch - x0
+
+    cond_drop_mask = (torch.rand(B, device=device) < p_drop)
+    # Der Startpunkt ist der erste Punkt der *augmentierten* Zielbahn. Das in
+    # der Datenbank gespeicherte x0 waere nach Drehung, Skalierung und
+    # Verschiebung falsch — und der Fehler waere still: das Netz bekaeme eine
+    # Bedingung, die zu seiner Zielbahn nicht passt, und lernte, sie zu
+    # ignorieren.
+    start = x1_batch[:, 0, :].detach()
+
+    # Die Laenge wird in zehn Prozent der Faelle weggelassen. Sie bekommt eine
+    # *eigene* Maske und nicht die der Partikel: sonst faende das Netz nie den
+    # Fall vor, in dem die Zieldichte bekannt, die Laenge aber freigestellt
+    # ist — und genau der ist der interessante zur Inferenz.
+    length_drop_mask = None
+    if length_batch is not None and p_drop_length > 0.0:
+        length_drop_mask = (torch.rand(B, device=device) < p_drop_length)
+
+    v_t, lambda0 = model(xt, t, particle_batch,
+                         cond_drop_mask=cond_drop_mask, start=start,
+                         length=length_batch, length_drop_mask=length_drop_mask)
+
+    loss_cfm = torch.mean((v_t - ut) ** 2)
+    total = loss_cfm
+    parts = {'cfm': loss_cfm.detach()}
+
+    # Beide Zusatzterme brauchen denselben Endpunkt-Schaetzer; einmal bilden
+    # und teilen, statt ihn zweimal zu berechnen.
+    need_x1_hat = (ergodic is not None and ergodic.weight > 0.0) or \
+                  (lambda_length > 0.0 and length_batch is not None)
+    x1_hat = xt + (1.0 - t_exp) * v_t if need_x1_hat else None
+
+    if ergodic is not None and ergodic.weight > 0.0:
+        loss_erg = ergodic(x1_hat, particle_batch, t)
+        total = total + ergodic.weight * loss_erg
+        parts['erg'] = loss_erg.detach()
+
+    if lambda_length > 0.0 and length_batch is not None:
+        # Sehnenlaenge der vorhergesagten Kontrollpunkte — billig und
+        # differenzierbar, im selben Raum wie x1_hat selbst (keine
+        # B-Spline-Rendering-Matmul im heissen Trainingspfad noetig).
+        pred_len = torch.linalg.norm(x1_hat[:, 1:] - x1_hat[:, :-1], dim=-1).sum(dim=1)
+        # Nur an Beispielen werten, deren Laenge dem Netz tatsaechlich als
+        # Eingang diente (length_drop_mask == False). Sonst lernte der
+        # unkonditionierte Zweig, sich auf eine Laenge zuzubewegen, die er nie
+        # zu sehen bekommt — derselbe Grund, aus dem `length_drop_mask` schon
+        # die FiLM-Konditionierung maskiert.
+        keep = (~length_drop_mask).float() if length_drop_mask is not None \
+               else torch.ones_like(pred_len)
+        denom = keep.sum().clamp(min=1.0)
+        # Relativer statt absoluter Fehler: Laengen im Datensatz spannen ueber
+        # eine Groessenordnung, ein absoluter Fehler wuerde lange Bahnen
+        # dominieren lassen und kurze praktisch ungewertet lassen.
+        rel_err = (pred_len - length_batch).abs() / length_batch.clamp(min=1e-3)
+        # t-Rampe, wie beim Ergodic-Term auf demselben x1_hat (ErgodicLoss.forward,
+        # ergodic_metric.py): bei kleinem t ist x1_hat = xt + (1-t)*v_t ein
+        # Ein-Schritt-Sprung aus praktisch reinem Rauschen zum Endpunkt und damit
+        # als Kurve im Wesentlichen zufaellig. Ohne Daempfung zaehlt eine aus
+        # Rauschen berechnete Sehnenlaenge (leicht das 10-50-fache der Zieldichte)
+        # mit vollem Gewicht mit — das erklaerte einen train/length-Wert von
+        # 300-550 bei einer eigentlich relativen, auf O(1) begrenzten Fehlermetrik,
+        # und korrelierte mit kollabierten, extrem kurzen generierten Bahnen. Der
+        # Ergodic-Term auf demselben x1_hat hat diese Rampe seit jeher; der
+        # Laengen-Term wurde ohne sie hinzugefuegt.
+        length_t_power = ergodic.t_power if ergodic is not None else 2.0
+        if length_t_power > 0:
+            rel_err = rel_err * t.float() ** length_t_power
+        loss_length = (keep * rel_err).sum() / denom
+        total = total + lambda_length * loss_length
+        parts['length'] = loss_length.detach()
+
+    return total, parts
+
+@torch.no_grad()
+def generate_particle_trajectories(
+    model: nn.Module,
+    particles: torch.Tensor,
+    num_samples: int = 1,
+    nxi: int = 20,
+    nd:  int = 2,
+    steps: int = 100,
+    device: str = 'cpu',
+    cfg_weight: float = 2.0,
+    obstacle=None,
+    obstacle_weight: float = 20.0,
+    obstacle_t_start: float = 0.3,
+    bspline_pts: int = 256,
+    bspline_deg: int = 5,
+    polish_steps: int = 250,
+    generator: torch.Generator = None,
+    start: torch.Tensor = None,
+    length: torch.Tensor = None,
+    length_cfg_weight: float = 0.0,
+    resample: bool = False,
+    ziel_abstand: float = 0.05,
+    min_nxi: int = 8,
+    bspline_deg_out: int = 5,
+) -> tuple:
+    """Integrate the flow ODE, optionally repelling the curve from an obstacle.
+
+    With `obstacle=None` the behaviour is unchanged. Otherwise a repulsion term
+    is added to the velocity at inference time only — the model itself never
+    sees the obstacle and is conditioned on the unmodified target density.
+    """
+    model.eval()
+    if particles.ndim == 2:
+        particles = particles.unsqueeze(0)
+    if particles.shape[0] == 1 and num_samples > 1:
+        particles = particles.expand(num_samples, -1, -1).contiguous()
+    particles = particles.to(device)
+
+    x  = torch.randn(num_samples, nxi, nd, device=device, generator=generator)
+    dt = 1.0 / steps
+
+    length_b = None
+    if length is not None:
+        length_b = torch.as_tensor(length, device=device, dtype=torch.float32).reshape(-1)
+        if length_b.numel() == 1:
+            length_b = length_b.expand(num_samples).contiguous()
+
+    start_b = None
+    if start is not None:
+        start_b = start.to(device).reshape(-1, nd)
+        if start_b.shape[0] == 1 and num_samples > 1:
+            start_b = start_b.expand(num_samples, -1).contiguous()
+
+    B_basis = None
+    if obstacle is not None:
+        from obstacles import basis_torch, curve_repulsion_grad
+        B_basis = basis_torch(nxi, bspline_pts, bspline_deg, device=device)
+
+    mask_batch = torch.cat([
+        torch.zeros(num_samples, dtype=torch.bool, device=device),
+        torch.ones(num_samples,  dtype=torch.bool, device=device),
+    ], dim=0)
+    particle_batch = torch.cat([particles, particles], dim=0)
+
+    lambda0_accum = None
+
+    for step in range(steps):
+        t = torch.full((num_samples,), step * dt, device=device)
+        t_batch = torch.cat([t, t], dim=0)
+        x_batch = torch.cat([x, x], dim=0)
+
+        start_batch = (None if start is None
+                       else torch.cat([start_b, start_b], dim=0))
+        len_batch = (None if length_b is None
+                     else torch.cat([length_b, length_b], dim=0))
+        v_batch, lam_batch = model(
+            x_batch, t_batch, particle_batch, cond_drop_mask=mask_batch,
+            start=start_batch, length=len_batch,
+        )
+        v_cond, v_null = v_batch.chunk(2, dim=0)
+        v = v_null + cfg_weight * (v_cond - v_null)
+
+        # Getrennte Fuehrung fuer die Laenge. Der dritte Durchgang benutzt
+        # dieselbe Zieldichte, aber den Null-Token statt der Laenge; die
+        # Differenz zeigt, was die Laengenvorgabe am Vektorfeld aendert. Ohne
+        # dies waere die Laenge an dieselbe Staerke gebunden wie die
+        # Dichtekonditionierung, obwohl beides verschiedene Fragen sind.
+        if length_b is not None and length_cfg_weight != 0.0:
+            v_frei, _ = model(
+                x, t, particles, cond_drop_mask=torch.zeros(
+                    num_samples, dtype=torch.bool, device=device),
+                start=start_b, length=length_b,
+                length_drop_mask=torch.ones(num_samples, dtype=torch.bool,
+                                            device=device))
+            v = v + length_cfg_weight * (v_cond - v_frei)
+
+        if obstacle is not None:
+            # Ramp: at small t the state is still essentially Gaussian noise, so
+            # repelling it is meaningless and only distorts the flow. Start at
+            # t_start and grow quadratically to full strength at t = 1.
+            t_now = step * dt
+            if t_now >= obstacle_t_start:
+                s = (t_now - obstacle_t_start) / max(1.0 - obstacle_t_start, 1e-8)
+                v = v - (obstacle_weight * s ** 2) * curve_repulsion_grad(
+                    x, obstacle, B_basis)
+
+        x = x + v * dt
+
+        if lam_batch is not None:
+            lam_cond, _ = lam_batch.chunk(2, dim=0)
+            lambda0_accum = lam_cond
+
+    # Polish: the ramp alone does not guarantee hard clearance. A few pure
+    # descent steps on the penalty drive the remaining violation to zero while
+    # leaving the shape produced by the flow essentially untouched.
+    if obstacle is not None and polish_steps > 0:
+        from obstacles import polish_out_of_obstacle
+        x = polish_out_of_obstacle(x, obstacle, B_basis, max_iters=polish_steps)
+
+    if start_b is not None:
+        # Die Bedingung *erfuellen* statt sie nur zu lernen: der erste
+        # Kontrollpunkt ist der Startpunkt. Die FiLM-Konditionierung sorgt
+        # dafuer, dass der Rest der Bahn dazu passt — ohne sie waere das harte
+        # Setzen ein Sprung, den das Netz nicht kommen sah. Genau daran ist die
+        # `segment`-Variante im 2D-Zweig gescheitert: dort wurde der Startpunkt
+        # erzwungen, ohne ihn je als Eingang zu geben.
+        x = x.clone()
+        x[:, 0, :] = start_b
+
+    if resample:
+        x = _resample_kontrollpunkte(x, ziel_abstand=ziel_abstand,
+                                     min_nxi=min_nxi, deg=bspline_deg_out)
+
+    return x, lambda0_accum
+
+
+def _resample_kontrollpunkte(cps, ziel_abstand=0.05, min_nxi=8, deg=5,
+                             pts=512):
+    """Kontrollpunkte an die tatsaechliche Bahnlaenge anpassen.
+
+    Trainiert wird mit einem festen, hohen `nxi`, damit auch die langen,
+    dicht gefalteten Pfade Details behalten. Eine kurze Bahn braucht so viele
+    Kontrollpunkte nicht: sie liegen dann so dicht, dass zwischen ihnen kaum
+    Weg liegt, was die Kurve empfindlich gegen kleine Ausreisser macht.
+
+        neues_nxi = max(min_nxi, int(L / ziel_abstand))
+
+    Die Laenge wird auf der *gerenderten* Kurve gemessen, nicht auf dem
+    Kontrollpunktzug — letzterer ist bei einem B-Spline vom Grad 5 deutlich
+    laenger als die Kurve, die er beschreibt.
+
+    Alle Ziehungen eines Aufrufs bekommen dasselbe neue `nxi`, damit der
+    Rueckgabewert ein Tensor bleibt und kein Ragged-Batch. Gerechnet wird es
+    aus der mittleren Laenge.
+    """
+    from obstacles import bspline_basis_matrix
+    B, nxi, nd = cps.shape
+    Bm = torch.from_numpy(bspline_basis_matrix(nxi, pts, deg)).to(
+        device=cps.device, dtype=cps.dtype)
+    kurve = torch.einsum('pi,bid->bpd', Bm, cps)
+    L = torch.linalg.norm(kurve[:, 1:] - kurve[:, :-1], dim=-1).sum(dim=1)
+    neu = int(max(min_nxi, min(nxi, round(float(L.mean()) / max(ziel_abstand, 1e-6)))))
+    if neu >= nxi:
+        return cps
+    # Gleichmaessig entlang der *Bogenlaenge* abtasten, nicht entlang des
+    # Parameters: bei ungleichmaessiger Geschwindigkeit waeren sonst dort
+    # viele Punkte, wo die Kurve langsam ist.
+    aus = []
+    for b in range(B):
+        d = torch.linalg.norm(kurve[b, 1:] - kurve[b, :-1], dim=-1)
+        cum = torch.cat([torch.zeros(1, device=d.device, dtype=d.dtype),
+                         torch.cumsum(d, 0)])
+        ziel = torch.linspace(0.0, float(cum[-1]), neu, device=d.device,
+                              dtype=d.dtype)
+        idx = torch.searchsorted(cum, ziel).clamp(0, pts - 1)
+        aus.append(kurve[b, idx])
+    return torch.stack(aus, dim=0)

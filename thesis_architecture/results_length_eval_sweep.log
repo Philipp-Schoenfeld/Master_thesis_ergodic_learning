@@ -1,0 +1,34 @@
+=== OhneLoss / baseline (target_length=none) -> results_length_eval_20260901/OhneLoss_baseline ===
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cpu  n_samples=3  ODE steps=50
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r48_K10_56ff36866df7.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] OhneLoss  (D=384, N=256)  lambda_erg=1300.0
+
+=== OhneLoss / L04 (target_length=4) -> results_length_eval_20260901/OhneLoss_L04 ===
+
+==============================================================================
+  Model evaluation on the holdout split
+  device=cpu  n_samples=3  ODE steps=50
+==============================================================================
+  Targets loaded from cache: targets_25shapes_r48_K10_56ff36866df7.npz (25 shapes)
+  Holdout shapes: 25
+  Loaded [flow   ] OhneLoss  (D=384, N=256)  lambda_erg=1300.0
+
+==============================================================================================================
+  Mittelwerte über 25 Holdout-Formen (niedriger ist besser, außer diversity)
+==============================================================================================================
+  Modell                                          E_ergodic   E_total  coverage  path_len  diversity t/traj [ms]
+  ----------------------------------------------------------------------------------------------------------
+  OhneLoss                                           2.5409     7.949    0.0399     6.525     0.2834      4991.4
+ *SVGD solver (Referenz)                             0.9252     2.190    0.0333     3.959          —           —
+  ----------------------------------------------------------------------------------------------------------
+  * bester ergodischer Wert. E_total ist die vollständige Solver-Zielfunktion.
+
+  Geschrieben nach results_length_eval_20260901/OhneLoss_L04/: summary.csv, per_shape.csv, results.json
+
+
+=== OhneLoss / L30 (target_length=30) -> results_length_eval_20260901/OhneLoss_L30 ===

@@ -1,0 +1,581 @@
+{
+ "summary": [
+  {
+   "model": "OhneLoss",
+   "kind": "flow",
+   "E_ergodic": 2.708200283050537,
+   "E_smooth": 5.423820943832397,
+   "E_boundary": 0.1978725827811286,
+   "E_total": 8.32989396095276,
+   "coverage": 0.0401333224773407,
+   "path_len": 6.683263654708862,
+   "diversity": 0.2889497083425522,
+   "t_infer_ms": 212.91992176440544
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "kind": "solver",
+   "E_ergodic": 0.9237943613529205,
+   "E_smooth": 1.262505806684494,
+   "E_boundary": 0.0020312101021409037,
+   "E_total": 2.1883313822746278,
+   "coverage": 0.033230095505714416,
+   "path_len": 3.9587173080444336,
+   "diversity": NaN,
+   "t_infer_ms": NaN
+  }
+ ],
+ "per_shape": [
+  {
+   "model": "OhneLoss",
+   "shape": "A",
+   "E_ergodic": 1.9154995679855347,
+   "E_smooth": 3.7763524055480957,
+   "E_boundary": 0.017665620893239975,
+   "E_total": 5.709517478942871,
+   "coverage": 0.03463397175073624,
+   "path_len": 5.598872661590576
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "greek_upper_0",
+   "E_ergodic": 1.2277655601501465,
+   "E_smooth": 3.5795211791992188,
+   "E_boundary": 0.029674183577299118,
+   "E_total": 4.836960792541504,
+   "coverage": 0.03174011781811714,
+   "path_len": 5.994135856628418
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "korean_5",
+   "E_ergodic": 2.398430824279785,
+   "E_smooth": 5.435332298278809,
+   "E_boundary": 0.028725408017635345,
+   "E_total": 7.862488746643066,
+   "coverage": 0.04216236621141434,
+   "path_len": 6.518734931945801
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "digit_5",
+   "E_ergodic": 3.222264528274536,
+   "E_smooth": 3.9734513759613037,
+   "E_boundary": 0.04293359816074371,
+   "E_total": 7.238649368286133,
+   "coverage": 0.03506367281079292,
+   "path_len": 5.688065528869629
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "a_lc",
+   "E_ergodic": 0.7414568662643433,
+   "E_smooth": 2.7357635498046875,
+   "E_boundary": 0.0,
+   "E_total": 3.477220296859741,
+   "coverage": 0.03146140277385712,
+   "path_len": 5.15997838973999
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_gmm_10",
+   "E_ergodic": 2.0399320125579834,
+   "E_smooth": 9.677753448486328,
+   "E_boundary": 0.5874265432357788,
+   "E_total": 12.305112838745117,
+   "coverage": 0.05194584280252457,
+   "path_len": 9.963218688964844
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_gmm_20",
+   "E_ergodic": 3.8418781757354736,
+   "E_smooth": 9.499595642089844,
+   "E_boundary": 0.4069444239139557,
+   "E_total": 13.748418807983398,
+   "coverage": 0.05477495491504669,
+   "path_len": 9.242566108703613
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_ana_poly_10",
+   "E_ergodic": 9.96036148071289,
+   "E_smooth": 3.659182548522949,
+   "E_boundary": 0.010196850635111332,
+   "E_total": 13.629741668701172,
+   "coverage": 0.04678758606314659,
+   "path_len": 4.747681617736816
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_ana_poly_20",
+   "E_ergodic": 4.454904556274414,
+   "E_smooth": 2.333383083343506,
+   "E_boundary": 0.012361908331513405,
+   "E_total": 6.800649642944336,
+   "coverage": 0.031156383454799652,
+   "path_len": 4.404780864715576
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_ana_poly_30",
+   "E_ergodic": 4.344825267791748,
+   "E_smooth": 3.7350521087646484,
+   "E_boundary": 0.030369246378540993,
+   "E_total": 8.110246658325195,
+   "coverage": 0.033540382981300354,
+   "path_len": 5.38234806060791
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_gmm_complex_0",
+   "E_ergodic": 1.8354371786117554,
+   "E_smooth": 9.077583312988281,
+   "E_boundary": 1.2900404930114746,
+   "E_total": 12.203062057495117,
+   "coverage": 0.056111738085746765,
+   "path_len": 9.841991424560547
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_gmm_complex_10",
+   "E_ergodic": 2.3819539546966553,
+   "E_smooth": 12.843506813049316,
+   "E_boundary": 0.7349151372909546,
+   "E_total": 15.960376739501953,
+   "coverage": 0.053154848515987396,
+   "path_len": 9.71561336517334
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_gmm_complex_20",
+   "E_ergodic": 2.642061710357666,
+   "E_smooth": 7.718957901000977,
+   "E_boundary": 0.4394010603427887,
+   "E_total": 10.800420761108398,
+   "coverage": 0.05025377869606018,
+   "path_len": 9.981199264526367
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_gmm_complex_30",
+   "E_ergodic": 1.9134825468063354,
+   "E_smooth": 8.782958030700684,
+   "E_boundary": 0.1221659928560257,
+   "E_total": 10.818607330322266,
+   "coverage": 0.051859885454177856,
+   "path_len": 9.567957878112793
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_ana_poly_complex_0",
+   "E_ergodic": 1.2696502208709717,
+   "E_smooth": 3.1483607292175293,
+   "E_boundary": 0.0,
+   "E_total": 4.418010711669922,
+   "coverage": 0.036162056028842926,
+   "path_len": 4.824419021606445
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_ana_poly_complex_10",
+   "E_ergodic": 1.5859408378601074,
+   "E_smooth": 4.159869194030762,
+   "E_boundary": 0.0010826828656718135,
+   "E_total": 5.74689245223999,
+   "coverage": 0.03834540396928787,
+   "path_len": 5.889835357666016
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_ana_poly_complex_20",
+   "E_ergodic": 2.6031277179718018,
+   "E_smooth": 3.4144973754882812,
+   "E_boundary": 0.0,
+   "E_total": 6.017625331878662,
+   "coverage": 0.0288548581302166,
+   "path_len": 5.297463417053223
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "rand_ana_poly_complex_30",
+   "E_ergodic": 3.163421154022217,
+   "E_smooth": 4.78367280960083,
+   "E_boundary": 0.0733739361166954,
+   "E_total": 8.020467758178711,
+   "coverage": 0.030329789966344833,
+   "path_len": 5.72296142578125
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "organic_0",
+   "E_ergodic": 2.3350863456726074,
+   "E_smooth": 7.163364887237549,
+   "E_boundary": 0.30016452074050903,
+   "E_total": 9.798615455627441,
+   "coverage": 0.04264692962169647,
+   "path_len": 7.865699768066406
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "organic_10",
+   "E_ergodic": 3.1499762535095215,
+   "E_smooth": 3.2896556854248047,
+   "E_boundary": 0.22882065176963806,
+   "E_total": 6.668452262878418,
+   "coverage": 0.038259394466876984,
+   "path_len": 5.760101318359375
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "organic_20",
+   "E_ergodic": 2.8638124465942383,
+   "E_smooth": 3.257739543914795,
+   "E_boundary": 0.0,
+   "E_total": 6.121551990509033,
+   "coverage": 0.03619375824928284,
+   "path_len": 5.204128265380859
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "organic_30",
+   "E_ergodic": 1.7869592905044556,
+   "E_smooth": 2.1783623695373535,
+   "E_boundary": 0.0,
+   "E_total": 3.9653215408325195,
+   "coverage": 0.023117411881685257,
+   "path_len": 3.6774141788482666
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "cjk_0",
+   "E_ergodic": 2.0858211517333984,
+   "E_smooth": 6.0425124168396,
+   "E_boundary": 0.029072627425193787,
+   "E_total": 8.1574068069458,
+   "coverage": 0.04705920070409775,
+   "path_len": 7.416335105895996
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "cjk_10",
+   "E_ergodic": 1.387527346611023,
+   "E_smooth": 5.386836051940918,
+   "E_boundary": 0.04234343394637108,
+   "E_total": 6.816706657409668,
+   "coverage": 0.0365222692489624,
+   "path_len": 6.174374103546143
+  },
+  {
+   "model": "OhneLoss",
+   "shape": "cjk_20",
+   "E_ergodic": 2.5534300804138184,
+   "E_smooth": 5.942258834838867,
+   "E_boundary": 0.5191362500190735,
+   "E_total": 9.014824867248535,
+   "coverage": 0.04119505733251572,
+   "path_len": 7.441714763641357
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "A",
+   "E_ergodic": 0.8694829940795898,
+   "E_smooth": 0.9591067433357239,
+   "E_boundary": 0.0,
+   "E_total": 1.828589677810669,
+   "coverage": 0.028829120099544525,
+   "path_len": 4.296726226806641
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "greek_upper_0",
+   "E_ergodic": 0.8745958805084229,
+   "E_smooth": 0.8718011379241943,
+   "E_boundary": 0.0,
+   "E_total": 1.7463970184326172,
+   "coverage": 0.02866153046488762,
+   "path_len": 4.288121700286865
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "korean_5",
+   "E_ergodic": 0.3248695433139801,
+   "E_smooth": 0.9060264229774475,
+   "E_boundary": 0.0,
+   "E_total": 1.23089599609375,
+   "coverage": 0.033834733068943024,
+   "path_len": 3.917619228363037
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "digit_5",
+   "E_ergodic": 0.3043818771839142,
+   "E_smooth": 0.6653872132301331,
+   "E_boundary": 0.0,
+   "E_total": 0.9697691202163696,
+   "coverage": 0.025460559874773026,
+   "path_len": 3.8679986000061035
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "a_lc",
+   "E_ergodic": 0.6382088661193848,
+   "E_smooth": 0.619936466217041,
+   "E_boundary": 0.0,
+   "E_total": 1.2581453323364258,
+   "coverage": 0.026712484657764435,
+   "path_len": 3.1881284713745117
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_gmm_10",
+   "E_ergodic": 1.0251716375350952,
+   "E_smooth": 1.9763412475585938,
+   "E_boundary": 0.0,
+   "E_total": 3.0015130043029785,
+   "coverage": 0.048977479338645935,
+   "path_len": 4.804698944091797
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_gmm_20",
+   "E_ergodic": 1.1665937900543213,
+   "E_smooth": 1.0099440813064575,
+   "E_boundary": 0.0,
+   "E_total": 2.1765379905700684,
+   "coverage": 0.0510164275765419,
+   "path_len": 4.176462173461914
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_ana_poly_10",
+   "E_ergodic": 0.6417074203491211,
+   "E_smooth": 1.1813008785247803,
+   "E_boundary": 0.0,
+   "E_total": 1.8230082988739014,
+   "coverage": 0.020946811884641647,
+   "path_len": 3.201753616333008
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_ana_poly_20",
+   "E_ergodic": 0.24520011246204376,
+   "E_smooth": 0.721502959728241,
+   "E_boundary": 0.0,
+   "E_total": 0.9667030572891235,
+   "coverage": 0.021085355430841446,
+   "path_len": 3.486877679824829
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_ana_poly_30",
+   "E_ergodic": 1.078553557395935,
+   "E_smooth": 0.2026204764842987,
+   "E_boundary": 0.0,
+   "E_total": 1.2811740636825562,
+   "coverage": 0.02259603887796402,
+   "path_len": 2.720508098602295
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_gmm_complex_0",
+   "E_ergodic": 1.6524014472961426,
+   "E_smooth": 0.9445251226425171,
+   "E_boundary": 0.005632065236568451,
+   "E_total": 2.6025588512420654,
+   "coverage": 0.052527252584695816,
+   "path_len": 4.742816925048828
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_gmm_complex_10",
+   "E_ergodic": 1.7131510972976685,
+   "E_smooth": 1.1726845502853394,
+   "E_boundary": 0.008794956840574741,
+   "E_total": 2.8946306705474854,
+   "coverage": 0.05540367215871811,
+   "path_len": 4.948203086853027
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_gmm_complex_20",
+   "E_ergodic": 2.289898157119751,
+   "E_smooth": 1.4548909664154053,
+   "E_boundary": 0.00440312922000885,
+   "E_total": 3.749192237854004,
+   "coverage": 0.05389292538166046,
+   "path_len": 4.840909481048584
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_gmm_complex_30",
+   "E_ergodic": 1.4129751920700073,
+   "E_smooth": 2.067741632461548,
+   "E_boundary": 0.0,
+   "E_total": 3.4807167053222656,
+   "coverage": 0.05373186990618706,
+   "path_len": 4.578649520874023
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_ana_poly_complex_0",
+   "E_ergodic": 2.2447052001953125,
+   "E_smooth": 2.3381123542785645,
+   "E_boundary": 0.0,
+   "E_total": 4.582817554473877,
+   "coverage": 0.033723946660757065,
+   "path_len": 3.995406150817871
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_ana_poly_complex_10",
+   "E_ergodic": 0.40073296427726746,
+   "E_smooth": 1.9211536645889282,
+   "E_boundary": 0.0,
+   "E_total": 2.3218865394592285,
+   "coverage": 0.03337973728775978,
+   "path_len": 3.8344943523406982
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_ana_poly_complex_20",
+   "E_ergodic": 0.49154749512672424,
+   "E_smooth": 0.6037179231643677,
+   "E_boundary": 0.0,
+   "E_total": 1.0952653884887695,
+   "coverage": 0.020489253103733063,
+   "path_len": 3.4993178844451904
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "rand_ana_poly_complex_30",
+   "E_ergodic": 0.2080259472131729,
+   "E_smooth": 0.9881461262702942,
+   "E_boundary": 0.0,
+   "E_total": 1.1961721181869507,
+   "coverage": 0.020201142877340317,
+   "path_len": 3.9295542240142822
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "organic_0",
+   "E_ergodic": 1.0381150245666504,
+   "E_smooth": 0.5133051872253418,
+   "E_boundary": 0.0,
+   "E_total": 1.5514202117919922,
+   "coverage": 0.030475324019789696,
+   "path_len": 3.937941789627075
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "organic_10",
+   "E_ergodic": 0.4631701111793518,
+   "E_smooth": 1.5796300172805786,
+   "E_boundary": 0.0,
+   "E_total": 2.042800188064575,
+   "coverage": 0.02216377854347229,
+   "path_len": 3.431122303009033
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "organic_20",
+   "E_ergodic": 0.5548911094665527,
+   "E_smooth": 0.27571624517440796,
+   "E_boundary": 0.0,
+   "E_total": 0.8306073546409607,
+   "coverage": 0.03114144131541252,
+   "path_len": 2.431368350982666
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "organic_30",
+   "E_ergodic": 1.3285983800888062,
+   "E_smooth": 1.4737194776535034,
+   "E_boundary": 0.0,
+   "E_total": 2.8023178577423096,
+   "coverage": 0.021511968225240707,
+   "path_len": 2.2195398807525635
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "cjk_0",
+   "E_ergodic": 0.5416771173477173,
+   "E_smooth": 2.198690414428711,
+   "E_boundary": 0.0,
+   "E_total": 2.7403674125671387,
+   "coverage": 0.03374028950929642,
+   "path_len": 5.771851539611816
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "cjk_10",
+   "E_ergodic": 0.9684222340583801,
+   "E_smooth": 2.261476993560791,
+   "E_boundary": 0.0,
+   "E_total": 3.2298991680145264,
+   "coverage": 0.030577732250094414,
+   "path_len": 4.0700531005859375
+  },
+  {
+   "model": "SVGD solver (Referenz)",
+   "shape": "cjk_20",
+   "E_ergodic": 0.6177818775177002,
+   "E_smooth": 2.6551668643951416,
+   "E_boundary": 0.031950101256370544,
+   "E_total": 3.304898738861084,
+   "coverage": 0.02967151254415512,
+   "path_len": 4.787809371948242
+  }
+ ],
+ "shapes": [
+  "A",
+  "greek_upper_0",
+  "korean_5",
+  "digit_5",
+  "a_lc",
+  "rand_gmm_10",
+  "rand_gmm_20",
+  "rand_ana_poly_10",
+  "rand_ana_poly_20",
+  "rand_ana_poly_30",
+  "rand_gmm_complex_0",
+  "rand_gmm_complex_10",
+  "rand_gmm_complex_20",
+  "rand_gmm_complex_30",
+  "rand_ana_poly_complex_0",
+  "rand_ana_poly_complex_10",
+  "rand_ana_poly_complex_20",
+  "rand_ana_poly_complex_30",
+  "organic_0",
+  "organic_10",
+  "organic_20",
+  "organic_30",
+  "cjk_0",
+  "cjk_10",
+  "cjk_20"
+ ],
+ "config": {
+  "checkpoints": [
+   "checkpoints/cond_particles_crossattn_flow_matching_particle_ergodic_date_08_31_17h02min_nxi64_D384_N256_C2_flip0.0_START_FLAT7540_LEN-pd0.1_LINEARFREQ_WARMFIX_ERGLOSS-SINKHORN-w1300-blur0.05-tp2_ep0120.pt"
+  ],
+  "labels": [
+   "OhneLoss"
+  ],
+  "n_samples": 8,
+  "steps": 100,
+  "grid_res": 64,
+  "erg_K": 10,
+  "solver_T": 100,
+  "bspline_deg": 5,
+  "seed": 0,
+  "device": null,
+  "out": "results_length_eval_20260901/OhneLoss_L30",
+  "visualize": false,
+  "viz_dir": null,
+  "viz_n_gen": 5,
+  "viz_obstacle_mode": "both",
+  "viz_all_candidates": false,
+  "target_length": 30.0,
+  "target_length_cfg": 0.0
+ }
+}

@@ -105,6 +105,41 @@ class ParticleTokenizer(nn.Module):
         return tokens
 
 
+class StartEmbedding(nn.Module):
+    """Startpunkt (B, nd) -> (B, D). Fourier-Merkmale, dann MLP.
+
+    Uebernommen aus der 2D-Fassung, mit einem Unterschied, an dem der
+    Warmstart haengt: die **letzte** Linear-Schicht ist auf null gesetzt,
+    Gewicht und Bias. Damit gibt der Block bei Epoche 0 exakt den Nullvektor
+    aus, die Addition auf `time_cond` ist die Identitaet, und ein aus dem
+    bestehenden Checkpoint geladenes Netz rechnet bitgenau dasselbe wie zuvor.
+
+    Ohne diesen Null-Init waere der Warmstart wertlos: das 87,5-M-Netz kaeme
+    aus 1750 Epochen und bekaeme im ersten Schritt ein zufaellig initialisiertes
+    Signal in seine Zeitkonditionierung addiert — genau die Stelle, an der jeder
+    FiLM-Block des U-Netzes haengt. Der Verlust spraenge, und die 1750 Epochen
+    waeren zum Teil wieder eingerissen.
+
+    Rohe Koordinaten in [0,1] sind fuer ein MLP ein schlechter Eingang: kleine
+    Verschiebungen erzeugen kleine Aenderungen, und das Netz muesste die
+    Aufloesung selbst herstellen. Dieselben Fourier-Merkmale, die der
+    Partikel-Tokenizer fuer die Ortskodierung benutzt, loesen das hier auch.
+    """
+
+    def __init__(self, D: int = 128, nd: int = ND, n_freq: int = 8):
+        super().__init__()
+        self.register_buffer('freqs', 2.0 ** torch.arange(n_freq).float() * math.pi)
+        self.net = nn.Sequential(
+            nn.Linear(nd * n_freq * 2, D), nn.SiLU(), nn.Linear(D, D))
+        nn.init.zeros_(self.net[-1].weight)
+        nn.init.zeros_(self.net[-1].bias)
+
+    def forward(self, p0: torch.Tensor) -> torch.Tensor:
+        a = p0.unsqueeze(-1) * self.freqs                    # (B, nd, F)
+        feat = torch.cat([a.sin(), a.cos()], dim=-1).flatten(1)
+        return self.net(feat)
+
+
 class ConvResBlock(nn.Module):
     def __init__(self, in_ch: int, out_ch: int, cond_dim: int = 128,
                  kernel_size: int = 3, stride: int = 1):
@@ -280,12 +315,14 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
 
     def __init__(self, nxi: int = 25, nd: int = ND, D: int = 128,
                  n_heads: int = 8, kernel_size: int = 3,
-                 predict_orientation: bool = False):
+                 predict_orientation: bool = False,
+                 start_cond: bool = False):
         super().__init__()
         self.nxi = nxi
         self.nd  = nd
         self.D   = D
         self.predict_orientation = predict_orientation
+        self.start_cond = start_cond
         # The sequence input carries position and, if enabled, the 6D rotation.
         self.in_dim = nd + (6 if predict_orientation else 0)
 
@@ -297,6 +334,15 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
 
         self.null_particle_token = nn.Parameter(torch.zeros(1, 1, D))
 
+        if start_cond:
+            # Der Startpunkt bekommt einen eigenen Abwurf-Platzhalter, getrennt
+            # von dem der Partikel. CFG laeuft weiter ueber die Partikel; der
+            # Startpunkt soll unabhaengig davon abschaltbar sein, damit sich zur
+            # Inferenzzeit messen laesst, was er beitraegt — mit demselben
+            # Gewichtsstand, ohne zweites Training.
+            self.start_emb = StartEmbedding(D=D, nd=nd)
+            self.null_start_token = nn.Parameter(torch.zeros(1, D))
+
         self.backbone = UNetBackboneParticles(D=D, n_heads=n_heads, kernel_size=kernel_size)
         self.flow_head = FlowHead(D=D, nd=nd)
         if predict_orientation:
@@ -304,11 +350,25 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
 
     def forward(self, x: torch.Tensor, t: torch.Tensor,
                 particles: torch.Tensor,
-                cond_drop_mask: torch.Tensor = None):
-        """x: (B, nxi, in_dim). Returns (v_pos, v_rot) with v_rot None if off."""
+                cond_drop_mask: torch.Tensor = None,
+                start: torch.Tensor = None,
+                start_drop_mask: torch.Tensor = None):
+        """x: (B, nxi, in_dim). Returns (v_pos, v_rot) with v_rot None if off.
+
+        `start` (B, nd) wird ueber FiLM zur Zeitkonditionierung addiert —
+        dieselbe Stelle wie in der 2D-Fassung. Bleibt es None, ist der Aufruf
+        Zeichen fuer Zeichen der alte.
+        """
         tokens = self.mpd_layer(x)
         tokens = tokens + self.pos_emb
         time_cond = self.time_emb(t)
+
+        if self.start_cond and start is not None:
+            emb = self.start_emb(start)
+            if start_drop_mask is not None:
+                m = start_drop_mask.view(-1, 1).to(emb.dtype)
+                emb = emb * (1.0 - m) + self.null_start_token * m
+            time_cond = time_cond + emb
 
         particle_tokens = self.particle_tokenizer(particles)
 
@@ -330,6 +390,7 @@ def compute_particle_cfm_loss(
     ergodic=None,
     orientation=None,
     w_cfm_rot: float = 1.0,
+    p_drop_start: float = 0.0,
 ) -> tuple:
     """Conditional flow-matching loss, optionally with an ergodic coverage term.
 
@@ -345,7 +406,19 @@ def compute_particle_cfm_loss(
     ut    = x1_batch - x0
 
     cond_drop_mask = (torch.rand(B, device=device) < p_drop)
-    v_pos, v_rot = model(xt, t, particle_batch, cond_drop_mask=cond_drop_mask)
+
+    # Der Startpunkt ist der erste Bahnpunkt des *augmentierten* Ziels, nicht
+    # des rohen. Die Augmentierung dreht, skaliert und verschiebt die Bahn; ein
+    # Startpunkt aus dem unveraenderten Ziel zeigte dann woandershin als die
+    # Kurve, die das Netz treffen soll.
+    start = start_drop = None
+    if getattr(model, 'start_cond', False):
+        start = x1_batch[:, 0, :model.nd].detach()
+        if p_drop_start > 0.0:
+            start_drop = (torch.rand(B, device=device) < p_drop_start)
+
+    v_pos, v_rot = model(xt, t, particle_batch, cond_drop_mask=cond_drop_mask,
+                         start=start, start_drop_mask=start_drop)
     v_t = v_pos if v_rot is None else torch.cat([v_pos, v_rot], dim=-1)
 
     # Position and orientation are reported separately: they live on different
@@ -420,6 +493,8 @@ def generate_particle_trajectories(
     bspline_deg: int = 5,
     polish_steps: int = 250,
     generator: torch.Generator = None,
+    start: torch.Tensor = None,
+    drop_start: bool = False,
 ) -> tuple:
     """Integrate the flow ODE, optionally repelling the curve from an obstacle.
 
@@ -433,6 +508,16 @@ def generate_particle_trajectories(
     if particles.shape[0] == 1 and num_samples > 1:
         particles = particles.expand(num_samples, -1, -1).contiguous()
     particles = particles.to(device)
+
+    # Startpunkt auf die Stapelgroesse bringen — mit derselben Vorsicht wie bei
+    # den Partikeln oben: `ndim == 1` allein reicht nicht, ein bereits
+    # vorgebatchter Tensor der Form (1, nd) muss ebenfalls aufgefaechert
+    # werden. Genau daran ist die Partikelfassung frueher gescheitert.
+    start_b = None
+    if start is not None and getattr(model, 'start_cond', False):
+        start_b = torch.as_tensor(start).to(device).reshape(-1, nd).float()
+        if start_b.shape[0] == 1 and num_samples > 1:
+            start_b = start_b.expand(num_samples, -1).contiguous()
 
     state_dim = getattr(model, 'in_dim', nd)
     x  = torch.randn(num_samples, nxi, state_dim, device=device, generator=generator)
@@ -449,13 +534,26 @@ def generate_particle_trajectories(
     ], dim=0)
     particle_batch = torch.cat([particles, particles], dim=0)
 
+    # Der Startpunkt bleibt in beiden Haelften des CFG-Stapels derselbe: die
+    # klassifikatorfreie Fuehrung soll die *Dichte* verstaerken, nicht den
+    # Startpunkt. `drop_start` schaltet ihn fuer beide Haelften zugleich ab —
+    # das ist die Ablation zur Inferenzzeit, ohne zweites Training.
+    start_batch = start_drop_batch = None
+    if start_b is not None:
+        start_batch = torch.cat([start_b, start_b], dim=0)
+        if drop_start:
+            start_drop_batch = torch.ones(2 * num_samples, dtype=torch.bool,
+                                          device=device)
+
     for step in range(steps):
         t = torch.full((num_samples,), step * dt, device=device)
         t_batch = torch.cat([t, t], dim=0)
         x_batch = torch.cat([x, x], dim=0)
 
         v_pos, v_rot = model(x_batch, t_batch, particle_batch,
-                             cond_drop_mask=mask_batch)
+                             cond_drop_mask=mask_batch,
+                             start=start_batch,
+                             start_drop_mask=start_drop_batch)
         v_batch = v_pos if v_rot is None else torch.cat([v_pos, v_rot], dim=-1)
         v_cond, v_null = v_batch.chunk(2, dim=0)
         v = v_null + cfg_weight * (v_cond - v_null)
@@ -483,6 +581,17 @@ def generate_particle_trajectories(
         pos = polish_out_of_obstacle(x[..., :nd].contiguous(), obstacle,
                                      B_basis, max_iters=polish_steps)
         x = torch.cat([pos, x[..., nd:]], dim=-1) if x.shape[-1] > nd else pos
+
+    if start_b is not None and not drop_start:
+        # Die Bedingung *erfuellen* statt sie nur zu lernen: bei einem
+        # geklemmten B-Spline ist der erste Kontrollpunkt der Kurvenanfang, also
+        # wird er auf den Startpunkt gesetzt. Nur der Ortsblock — der
+        # Startpunkt sagt nichts darueber, wohin der Sensor dabei schauen soll.
+        # Die FiLM-Konditionierung sorgt dafuer, dass der Rest der Bahn dazu
+        # passt; ohne sie waere das harte Setzen ein Sprung, den das Netz nicht
+        # kommen sah.
+        x = x.clone()
+        x[:, 0, :nd] = start_b
 
     # (positions, 6D rotations) — the second is None when orientation is off, so
     # the return signature stays compatible with position-only callers.

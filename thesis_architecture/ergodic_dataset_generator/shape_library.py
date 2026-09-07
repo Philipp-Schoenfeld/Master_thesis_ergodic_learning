@@ -198,6 +198,36 @@ def _letter(char, filled=True, n=250, sigma=None, fontproperties=None):
     return points_to_gmm(pts, sigma=sigma)
 
 
+def _word(text, n=400, sigma=None):
+    """Ein ganzes Wort als Zieldichte.
+
+    Zwei Dinge unterscheiden ein Wort von einem einzelnen Buchstaben:
+
+    **Die Schriftgroesse muss mitwachsen.** `render_text` zeichnet in ein
+    Quadrat von einem Zoll. Bei den festen 72 pt der Buchstaben laeuft schon
+    ein Wort aus vier Zeichen seitlich heraus, und der Rasterizer schneidet es
+    stillschweigend an seiner Filtergrenze ab — die Punktwolke sieht dann
+    vollstaendig aus, obwohl der erste und der letzte Buchstabe fehlen.
+    Gemessen ueber alle dreissig Woerter beruehren beim Richtwert
+    ``72 * 1.6 / len`` noch **zwanzig** von ihnen den Rand, bei ``1.3`` zwei,
+    bei ``1.1`` keines. Deshalb steht hier 1.1 und nicht 1.6.
+
+    **Die Punktwolke wird auf die Bounding-Box gestreckt.** Woerter sind breit
+    und flach (Seitenverhaeltnis 1,9 bis 4,4). Isotrop eingepasst blieben sie
+    ein duennes Band in der Bildmitte — und weil `surfaces.project` die
+    2D-Ebene ueber die *ganze* Ausdehnung der Zielflaeche legt, wuerde von
+    jedem Koerper nur ein Streifen beschienen. Anisotrop auf [0.08, 0.92]^2
+    gestreckt fuellt das Wort das Quadrat, die Buchstaben stehen dann in die
+    Hoehe gezogen da, und die Zieldichte behaelt ihre Buchstaben-Topologie.
+    """
+    fs = 72.0 * 1.1 / max(len(text), 2)
+    pts = render_text(text, n_points=n, font_size=fs)
+    lo, hi = pts.min(axis=0), pts.max(axis=0)
+    span = np.maximum(hi - lo, 1e-9)
+    pts = 0.08 + (pts - lo) / span * (0.92 - 0.08)
+    return points_to_gmm(pts, sigma=_SIGMA_FILL if sigma is None else sigma)
+
+
 def _outline(pts, n=250, sigma=None):
     if sigma is None:
         sigma = _SIGMA_STROKE
@@ -880,8 +910,43 @@ CJK_CHARS = [
     '鏡', '鐘', '笛', '琴', '書'
 ]
 
+# ── Woerter ──────────────────────────────────────────────────────────────────
+# Dreissig kurze Woerter — halb Alltagsbegriffe, halb Vornamen. Sie schliessen
+# eine Luecke im Datensatz: einzelne Buchstaben sind eine *zusammenhaengende*
+# Dichte, ein Wort sind vier bis fuenf getrennte Inseln in einer Reihe. Genau
+# diese Form von Mehrmodigkeit muss eine ergodische Bahn beherrschen, und im
+# bestehenden Bestand kam sie nur zufaellig ueber die GMM-Formen vor.
+WORDS = ['Vibe', 'Spark', 'Crisp', 'Mint', 'Glow', 'Drift', 'Plum', 'Echo',
+         'Swift', 'Peak', 'Dawn', 'Hush', 'Wave', 'Blink', 'Roam',
+         'Liam', 'Emma', 'Noah', 'Ava', 'James', 'Mia', 'Luke', 'Zoe',
+         'Jack', 'Lily', 'Cole', 'Ruby', 'Finn', 'Jane', 'Blake']
+
+# Sechs Woerter bleiben ganz aus dem Training heraus. Zurueckgehalten wird das
+# *Wort*, nicht einzelne Startpunkte davon: der Holdout soll eine unbekannte
+# Dichte pruefen, und haette das Netz dieselbe Dichte mit einem anderen x0
+# schon gesehen, waere das keine.
+WORDS_VAL = ['Glow', 'Hush', 'Noah', 'Zoe', 'Ruby', 'Blake']
+
+# Je Wort vier Startpunkte. `generate_shapes` legt einen Eintrag je Namen an,
+# also braucht jeder Startpunkt einen eigenen Namen; `wort_<name>` bleibt
+# daneben als kanonischer Schluessel der reinen Form bestehen.
+N_WORD_X0 = 4
+
+
+def word_shape_names(split='train'):
+    """Namen der Wort-Startpunkt-Varianten. train: 96, val: 24."""
+    quelle = WORDS_VAL if split == 'val' else [w for w in WORDS
+                                               if w not in WORDS_VAL]
+    return [f'wort_{w.lower()}_x{k}' for w in quelle
+            for k in range(N_WORD_X0)]
+
+
 # Map name → builder lambda (deferred so import is fast)
 _BUILDERS = {
+    # ── Woerter (kanonisch + Startpunkt-Varianten) ───────────────────────────
+    **{f'wort_{w.lower()}': (lambda t=w: _word(t)) for w in WORDS},
+    **{f'wort_{w.lower()}_x{k}': (lambda t=w: _word(t))
+       for w in WORDS for k in range(N_WORD_X0)},
     # ── Letters (uppercase) ──────────────────────────────────────────────────
     **{c: (lambda ch=c: _letter(ch)) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'},
     # ── Letters (lowercase) ──────────────────────────────────────────────────
