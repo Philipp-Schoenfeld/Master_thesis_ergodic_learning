@@ -352,6 +352,20 @@ def train(model, x1_clean, shape_indices, volumes, loss_fn, args,
         start_epoch = ckpt['epoch'] + 1
         print(f"  Resumed from epoch {start_epoch} (loss={ckpt['loss']:.5f})")
 
+    if start_epoch >= args.epochs:
+        # Ein Kettenglied, das auf einen bereits fertig trainierten Checkpoint
+        # trifft (start_epoch >= args.epochs), durchlaeuft die Schleife unten
+        # kein einziges Mal. Ohne dieses fruehe Return griff der Code danach
+        # trotzdem die "nach der letzten Epoche immer sichern"-Zeile und schrieb
+        # einen Phantom-Checkpoint mit epoch=start_epoch und dem nie neu
+        # gesetzten avg=0.0 als Loss. Die Ein-Checkpoint-Rotation loeschte dabei
+        # den echten Endstand und ersetzte ihn durch diesen mit loss=0.0 und
+        # einer um eins zu hohen Epochennummer (beobachtet bei Job 149544/149545,
+        # siehe check_nooffset200_preflight.bash).
+        print(f"  Bereits bei Epoche {start_epoch}/{args.epochs} abgeschlossen — "
+              f"kein Training, kein neuer Checkpoint.")
+        return
+
     import signal
     class TerminateInterrupt(Exception): pass
     def _sigterm(signum, frame): raise TerminateInterrupt()
