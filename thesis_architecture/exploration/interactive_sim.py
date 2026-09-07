@@ -55,7 +55,7 @@ from common.belief import GPBelief                # noqa: E402
 from common.observation import measure, thin       # noqa: E402
 from common.acquisition import kappa_schedule       # noqa: E402
 from common.metrics import (coverage_vs_truth, information_gain,  # noqa: E402
-                            path_length)
+                            path_length, trim_to_length)
 
 import apply_cfm_belief as acb                      # noqa: E402
 import ergodic_core as ergo                         # noqa: E402
@@ -71,6 +71,11 @@ DEFAULT_CKPT = os.path.join(_root, 'transfer', 'netz2d_startpunkt.pt')
 C_ROUNDS = 4
 D_ROUNDS = 8
 D_EXECUTE_FRAC = 0.15
+#: Rundenzahl fuer Solver B (Length-Unit Rollout) -- deckt sich mit n_max=12
+#: der Cluster-Studie (`kurven_*.csv`), damit sich derselbe Bereich, den
+#: "Parameterauswertung" schon zeigt, hier live und animiert nachvollziehen
+#: laesst.
+B_ROUNDS = 12
 
 # ucb/mass/eid direkt aus common/acquisition.py; 'niveau' ist die
 # Niveaumengen-Schaetzung, in acquisition.py als `phi_lse` gefuehrt.
@@ -95,9 +100,37 @@ OPTIMAL_POLICY = {
                       J=0.2581),
 }
 
-SOLVERS = ['A (Open Loop)', 'C (Receding Horizon)', 'D (Ergodic Debt)']
+#: Antwortkurve J(Parameter) je Modell aus derselben Studie (ohne SVGD,
+#: gemittelt ueber 2 Seeds und alle 25 Holdout-Formen), 16 Rasterpunkte je
+#: Modell -- siehe `exploration_optimierung/results/suche_ohne_svgd.csv`.
+#: Grundlage fuer den "Parameterauswertung"-Knopf: die Kurve wird angezeigt,
+#: der Regler laeuft ueber ihren Wertebereich.
+PARAM_CURVES = {
+    'niveau': [(0.02,0.32949),(0.0787,0.30273),(0.1373,0.28032),(0.196,0.28405),
+               (0.2547,0.27592),(0.3133,0.27427),(0.372,0.2745),(0.4307,0.26735),
+               (0.4893,0.26515),(0.548,0.26356),(0.6067,0.26521),(0.6653,0.26347),
+               (0.724,0.26756),(0.7827,0.26415),(0.8413,0.27039),(0.9,0.27271)],
+    'ucb':    [(0.15,0.27749),(0.1985,0.28263),(0.2626,0.2748),(0.3474,0.2773),
+               (0.4597,0.27432),(0.6082,0.27736),(0.8047,0.27455),(1.0648,0.2752),
+               (1.4088,0.2815),(1.864,0.28066),(2.4662,0.28113),(3.2631,0.28314),
+               (4.3174,0.28484),(5.7123,0.29096),(7.558,0.28562),(10.0,0.28783)],
+    'mass':   [(0.05,0.29377),(0.11,0.30436),(0.17,0.30194),(0.23,0.29075),
+               (0.29,0.29227),(0.35,0.28794),(0.41,0.27868),(0.47,0.26692),
+               (0.53,0.27357),(0.59,0.27467),(0.65,0.2749),(0.71,0.26864),
+               (0.77,0.27278),(0.83,0.27655),(0.89,0.28749),(0.95,0.29414)],
+    'eid':    [(0.15,0.29455),(0.1985,0.30112),(0.2626,0.29299),(0.3474,0.28352),
+               (0.4597,0.28242),(0.6082,0.30369),(0.8047,0.29921),(1.0648,0.28386),
+               (1.4088,0.29508),(1.864,0.28552),(2.4662,0.28943),(3.2631,0.27652),
+               (4.3174,0.27649),(5.7123,0.27796),(7.558,0.27702),(10.0,0.27599)],
+}
+PARAM_LABEL = {'ucb': 'κ (kappa)', 'eid': 'κ (kappa)', 'mass': 'w', 'niveau': 'τ (tau)'}
+PARAM_LOG_SCALE = {'ucb': True, 'eid': True, 'mass': False, 'niveau': False}
+
+SOLVERS = ['A (Open Loop)', 'B (Length-Unit Rollout)', 'C (Receding Horizon)',
+          'D (Ergodic Debt)']
 SOLVER_DESC = {
     'A': 'A — plan once, execute once',
+    'B': 'B — plan, drive one length unit, replan (repeat)',
     'C': 'C — receding horizon (belief grows)',
     'D': 'D — plan long, execute short, replan',
 }
@@ -201,7 +234,42 @@ class Mission:
         self.nxi_ui = nxi_ui
         self.driven = []
         self.current_step = 'inference'
-        
+        #: Optionaler gelernter Regler (`exploration_optimierung/policy/`).
+        #: Ist er gesetzt, waehlt er in Solver B je Runde Phi-Modell,
+        #: Parameter und SVGD-Budget neu, statt die Reglerstellungen der GUI
+        #: zu benutzen. Die Regel selbst ist dieselbe wie in der Batch-
+        #: Auswertung -- hier nur Runde fuer Runde sichtbar.
+        self.policy = None
+        self.last_action = None
+
+    def _apply_policy(self, r, n_rounds, mu, sd, visit):
+        """Den gelernten Regler fragen und `self.args` danach stellen.
+
+        Der Regler sieht genau dieselben Groessen wie in der Batch-Auswertung
+        (GP-Mittelwert, Unsicherheit, Besuchsdichte, gefahrene Bahn, Runde) --
+        insbesondere **nicht** die Wahrheit.
+        """
+        from exploration_optimierung.policy.features import Zustand
+        from exploration_optimierung.mission import PHI_MODELS
+
+        z = Zustand(mu=mu, sd=sd, visit=visit, driven=self.path_so_far(),
+                    runde=r, n_max=n_rounds, n_obs=int(self.belief.n_obs))
+        modell, param, svgd_iters = self.policy(r, [z])[0]
+        pname, intern = PHI_MODELS[modell]
+        self.args.phi_model = intern
+        if pname == 'kappa':
+            self.args.kappa0 = float(param)
+        elif pname == 'w':
+            w = min(max(float(param), 0.0), 0.98)
+            self.args.kappa0 = w / max(1e-6, 1.0 - w)
+        else:                                    # tau
+            self.args.phi_tau = float(param)
+            self.args.kappa0 = 1.0
+        self.args.kappa = self.args.kappa0
+        self.args.svgd_iters = int(svgd_iters)
+        self.last_action = (modell, float(param), int(svgd_iters))
+        return self.last_action
+
     def _project_bspline(self, curve):
         if self.nxi_ui == 25:
             return curve
@@ -239,6 +307,8 @@ class Mission:
     def rounds(self):
         if self.variant == 'A':
             return self._rounds_A()
+        if self.variant == 'B':
+            return self._rounds_B()
         if self.variant == 'C':
             return self._rounds_C()
         return self._rounds_D()
@@ -386,6 +456,77 @@ class Mission:
             self._observe(curve)
             self.driven.append(curve.detach())
 
+    def _rounds_B(self, n_rounds=B_ROUNDS):
+        """Length-Unit Rollout: plan -> drive exactly one length unit (the
+        domain diagonal, sqrt(2)) -> update the belief -> replan, repeated.
+
+        Same mechanics as `exploration_optimierung.mission.LaengenMission`
+        (aging debt density via `visitation_recent`, fixed-length execution
+        via `trim_to_length` + `resample_arclength`) -- the mission that was
+        actually optimized -- run here round by round instead of vorgebatcht
+        over all holdout shapes, so it can be watched live and animated.
+        Unlike Solver D it does not anneal kappa/tau/w and does not execute a
+        fixed *fraction* of the plan; every round drives the same length,
+        which is what makes rounds comparable to `n` in the optimization
+        (`n=6` there means exactly six of these rounds)."""
+        from exploration_optimierung.mission import (LENGTH_UNIT,
+                                                      resample_arclength,
+                                                      visitation_recent)
+        for r in range(n_rounds):
+            with torch.no_grad():
+                here = self.path_so_far()
+                visit = (visitation_recent(
+                    here, self.belief.res, self.args.visit_bandwidth,
+                    self.args.device,
+                    half_life=self.args.visit_halflife * LENGTH_UNIT)
+                    if here is not None else None)
+                mu, sd = self.belief.posterior_grid()
+                if self.policy is not None:
+                    self._apply_policy(r, n_rounds, mu, sd, visit)
+                if getattr(self.args, 'allknowing_mode', False):
+                    phi = self.truth
+                    v = visit if visit is not None else torch.zeros_like(phi)
+                else:
+                    phi, v = acb.debt_density(mu, sd, visit, self.args.kappa0,
+                                              self.args)
+                parts = acb.phi_particles(phi, self.args.n_particles,
+                                          mode=self.args.phi_mode,
+                                          device=self.args.device)
+                pos = here[-1] if here is not None else None
+                init_kw = self._get_init(phi, pos=pos)
+                if pos is not None:
+                    init_kw['start'] = pos
+
+                if self.planner.__class__.__name__ == 'CfmPlanner':
+                    init_kw['obstacle'] = self.args.obstacle
+                    init_kw['obstacle_weight'] = 5000.0
+
+                cps = self.planner.plan(parts, n_candidates=self.args.n_candidates, **init_kw)
+                curve = acb.best_candidate(self.planner.render(cps), phi)
+                curve = self._refine(curve, phi)
+
+                # SVGD kann den ersten Punkt verschieben -- den Versatz als
+                # kurzes Anschlussstueck mitfahren, statt ihn zu ueberspringen
+                # (identisch zu `LaengenMission._execute_one_unit`).
+                if pos is not None:
+                    gap = float((curve[0] - pos.to(curve.device)).norm())
+                    if gap > 1e-6:
+                        al = torch.linspace(0, 1, 8, device=curve.device,
+                                            dtype=curve.dtype).unsqueeze(-1)
+                        link = (pos.to(curve.device).unsqueeze(0) * (1 - al)
+                               + curve[0].unsqueeze(0) * al)
+                        curve = torch.cat([link, curve], dim=0)
+
+                seg = trim_to_length(curve, LENGTH_UNIT)
+                n_pts = max(8, int(round(72 * path_length(seg) / LENGTH_UNIT)))
+                seg = resample_arclength(seg, n_pts)
+            yield dict(round=r, n_rounds=n_rounds, phi=phi, mu=mu, sd=sd,
+                      seg=seg, kappa=self.args.kappa0, visit=v,
+                      aktion=self.last_action)
+            with torch.no_grad():
+                self._observe(seg)
+                self.driven.append(seg.detach())
+
     def _rounds_C(self, n_rounds=C_ROUNDS):
         for r in range(n_rounds):
             with torch.no_grad():
@@ -478,6 +619,7 @@ def build_args(device, phi_model='ucb', kappa0=3.0, svgd_iters=0, phi_tau=0.25, 
     a.gp_noise = 0.05
     a.visit_sat = 0.25
     a.debt_weight = 1.0
+    a.visit_halflife = 3.0  # nur von Solver B genutzt, dort auf Studienwert ueberschrieben
     a.device = device
     a.phi_mode = 'uniform'
     a.phi_quantile = 0.5
@@ -551,10 +693,19 @@ class App:
         self.niveau_tau = 0.25 # fuer niveau -- Schwellwert tau
         self.svgd_iters = 0  # 0 = kein SVGD, Regler in der GUI geht bis 1000
         self.svgd = SvgdRefiner(seed=seed)
+        #: Gelernter Regler aus `exploration_optimierung/policy/`, per Knopf
+        #: zugeschaltet. None = die Regler-Widgets gelten (bisheriges Verhalten).
+        self.learned_policy = None
 
         self.gx = np.linspace(0, 1, self.TRUTH_RES)
         self.gy = np.linspace(0, 1, self.TRUTH_RES)
         self.XX, self.YY = np.meshgrid(self.gx, self.gy)
+
+        # Eigenes Gitter fuer das Phi-Panel (GP_RES != TRUTH_RES) -- Grundlage
+        # der Niveaulinien-Overlays in `_redraw`.
+        self.gp_ax = np.linspace(0, 1, self.GP_RES)
+        self.gp_XX, self.gp_YY = np.meshgrid(self.gp_ax, self.gp_ax)
+        self._niveau_artists = []
 
         # Planung (Netz-Vorwaertspass) laeuft in einem Hintergrund-Thread,
         # damit die GUI waehrend dessen nicht einfriert; der Fortschrittsbalken
@@ -857,6 +1008,13 @@ class App:
         self.b_open_mj = Button(ax_open_mj, 'Open MuJoCo')
         self.b_open_mj.on_clicked(self._on_open_mujoco)
 
+        # Parameterauswertung: J(Parameter)-Kurve des aktuellen Phi-Modells
+        # aus der Missionsoptimierung, mit Regler und Live-Trajektorie/-J.
+        ax_paramval = self.fig.add_axes([btn_x, 0.317, btn_w, 0.02])
+        self.b_paramval = Button(ax_paramval, 'Parameterauswertung',
+                                 color='#e3e6f0', hovercolor='#d2d7e8')
+        self.b_paramval.on_clicked(self._on_param_analysis)
+
         slider_x = 0.63
         slider_w = 0.14
         
@@ -900,6 +1058,15 @@ class App:
         self.b_optimal = Button(ax_optimal, '★ Optimal Policy',
                                 color='#FFD54F', hovercolor='#FFCA28')
         self.b_optimal.on_clicked(self._on_optimal_policy)
+
+        # Gelernter Regler: waehlt Phi-Modell, Parameter und SVGD-Budget je
+        # Runde neu, statt sie fest zu lassen (Option A/B aus
+        # `exploration_optimierung/policy/`). Nur fuer Solver B sinnvoll --
+        # das ist die Mission, auf der die Regler trainiert wurden.
+        ax_learned = self.fig.add_axes([slider_x, 0.348, slider_w, 0.022])
+        self.b_learned = Button(ax_learned, '◆ Learned Policy: OFF',
+                                color='#B3E5FC', hovercolor='#81D4FA')
+        self.b_learned.on_clicked(self._on_learned_policy)
 
         # ── Live-Ansichten für μ und σ unten rechts ──────────────────────────
         self.ax_mu_live = self.fig.add_axes([0.79, 0.03, 0.09, 0.20])
@@ -963,6 +1130,13 @@ class App:
                           sensor_radius=self.sensor_radius_ui)
         args.obstacle = CompositeObstacle(self.obstacles) if len(self.obstacles) > 0 else None
         args.allknowing_mode = self.allknowing_mode
+        if self.solver == 'B':
+            # Dieselben Debt-Dichte-Werte wie in der Cluster-Studie
+            # (`exploration_optimierung.mission.build_mission_args`), nicht
+            # die aelteren Solver-D-Voreinstellungen aus `build_args` oben.
+            args.debt_weight = 0.6
+            args.visit_sat = 1.0
+            args.visit_halflife = 3.0
         if self.target_length_ui > 0:
             args.target_length = self.target_length_ui
             args.target_length_cfg = 2.0
@@ -993,6 +1167,7 @@ class App:
         self.mission = Mission(planner, truth, belief, args, self.solver,
                                svgd=self.svgd, nxi_ui=self.nxi_ui)
         self.mission.app = self
+        self.mission.policy = getattr(self, 'learned_policy', None)
         self.gen = self.mission.rounds()
         self.truth_np = truth.detach().cpu().numpy()
         self.prior_pts_np = prior_pts.detach().cpu().numpy()
@@ -1235,6 +1410,304 @@ class App:
         self.reset(replan=True)
         self.fig.canvas.draw_idle()
 
+    #: Reihenfolge, in der nach einem gelernten Regler gesucht wird: erst der
+    #: PPO-Agent (Option B), dann das Wertmodell (Option A). Fehlt beides,
+    #: sagt der Knopf, welcher Lauf noch fehlt.
+    _LEARNED_KANDIDATEN = [
+        ('B · PPO', 'policy_b.pt'),
+        ('A · Wertmodell', 'policy_a.pt'),
+    ]
+
+    def _on_learned_policy(self, event):
+        """Gelernten Regler an- oder abschalten.
+
+        An heisst: die Mission fragt je Runde das trainierte Modell nach
+        (Phi-Modell, Parameter, SVGD-Budget), statt die Reglerstellungen
+        stehen zu lassen. Die Regler-Widgets bleiben sichtbar, wirken aber
+        nicht mehr — deshalb sagt die Statuszeile in jeder Runde, was
+        tatsaechlich gewaehlt wurde.
+        """
+        import os
+        if getattr(self, 'learned_policy', None) is not None:
+            self.learned_policy = None
+            self.b_learned.label.set_text('◆ Learned Policy: OFF')
+            self.status_txt.set_text('Learned Policy aus — es gelten wieder '
+                                     'die Regler oben.')
+            self.reset(replan=True)
+            self.fig.canvas.draw_idle()
+            return
+
+        from exploration_optimierung.policy import POLICY_DIR
+        for titel, datei in self._LEARNED_KANDIDATEN:
+            pfad = os.path.join(POLICY_DIR, datei)
+            if not os.path.exists(pfad):
+                continue
+            try:
+                if datei == 'policy_b.pt':
+                    from exploration_optimierung.policy.ppo import RLRichtlinie
+                    self.learned_policy = RLRichtlinie.laden(pfad,
+                                                             device=self.device)
+                else:
+                    from exploration_optimierung.policy.model import WertRichtlinie
+                    self.learned_policy = WertRichtlinie.laden(pfad,
+                                                               device=self.device)
+            except Exception as exc:                       # noqa: BLE001
+                self.status_txt.set_text(f"{datei} liess sich nicht laden: {exc}")
+                self.fig.canvas.draw_idle()
+                return
+            self.b_learned.label.set_text(f'◆ Learned Policy: {titel}')
+            hinweis = ('' if self.solver.startswith('B') else
+                       "  —  nur Solver B benutzt ihn, bitte dort umschalten")
+            self.status_txt.set_text(
+                f"Learned Policy an: {titel} ({datei}). Waehlt Φ-Modell, "
+                f"Parameter und SVGD je Runde selbst.{hinweis}")
+            self.reset(replan=True)
+            self.fig.canvas.draw_idle()
+            return
+
+        self.status_txt.set_text(
+            "Kein gelernter Regler unter policy/ablage/ — erst "
+            "`python -m exploration_optimierung.policy.oracle` und danach "
+            "`...policy.train` (Option A) bzw. `...policy.ppo` (Option B) "
+            "laufen lassen.")
+        self.fig.canvas.draw_idle()
+
+    def _on_param_analysis(self, event):
+        self._open_param_analysis_window()
+
+    #: Bis zu wie vielen Ausfuehrungen ein Rollout im Popup geht -- deckt sich
+    #: mit `n_max` der Cluster-Studie (`kurven_*.csv`, n=1..12). Wegen des
+    #: Rollout-Tricks (siehe `mission.LaengenMission.run`) liefert *ein* Lauf
+    #: die Bahn und J fuer jedes n in diesem Bereich, der n-Regler im Popup
+    #: rechnet danach nur noch um, er startet keine neue Mission.
+    _N_MAX_POPUP = 12
+
+    def _open_param_analysis_window(self):
+        """Zweites Fenster: J(Parameter)-Kurve des aktuell gewaehlten
+        Phi-Modells (aus PARAM_CURVES, derselben Studie wie OPTIMAL_POLICY)
+        plus zwei Regler -- Parameter und n (Ausfuehrungen). Beim Loslassen
+        des Parameter-Reglers laeuft im Hintergrund eine *echte*
+        Laengeneinheit-Mission bis n=12 fuer die aktuell angezeigte Form,
+        genau wie in der Cluster-Optimierung
+        (`exploration_optimierung.mission.run_config`). Weil eine n-Runden-
+        Mission jede kuerzere als Praefix enthaelt, liefert dieser eine
+        Rollout Bahn und Metriken fuer *jedes* n von 1 bis 12 auf einmal
+        (derselbe Trick wie in der Studie selbst) -- der n-Regler wertet also
+        nur noch den schon vorliegenden Rollout neu aus, ohne erneut zu
+        planen, und reagiert deshalb sofort beim Ziehen."""
+        model = self.phi_ui
+        if model not in PARAM_CURVES:
+            self.status_txt.set_text(f"Keine Parameterauswertung fuer Phi-Modell '{model}'.")
+            return
+        from exploration_optimierung import mission as opt_mission
+        from common.acquisition import phi_lse
+
+        n_max = self._N_MAX_POPUP
+        pts = PARAM_CURVES[model]
+        xs = [p[0] for p in pts]
+        ys = [p[1] for p in pts]
+        lo, hi = xs[0], xs[-1]
+        label = PARAM_LABEL[model]
+        log_x = PARAM_LOG_SCALE[model]
+        cur = {'mass': self.mass_w, 'niveau': self.niveau_tau}.get(model, self.kappa)
+        cur = min(max(cur, lo), hi)
+
+        fig = plt.figure(figsize=(9.6, 8.0), facecolor='white')
+        try:
+            fig.canvas.manager.set_window_title(f'Parameterauswertung — {model}')
+        except Exception:
+            pass
+
+        ax_curve = fig.add_axes([0.11, 0.62, 0.84, 0.31])
+        style(ax_curve)
+        if log_x:
+            ax_curve.set_xscale('log')
+        ax_curve.plot(xs, ys, '-o', color='#1565C0', ms=4, lw=1.6, zorder=3)
+        best_i = int(np.argmin(ys))
+        ax_curve.plot([xs[best_i]], [ys[best_i]], 'o', color='#00C853', ms=9, zorder=4)
+        (marker,) = ax_curve.plot([cur, cur], [min(ys), max(ys)], '--',
+                                  color='#888', lw=1.2, zorder=2)
+        ax_curve.set_xlabel(label, fontsize=9.5)
+        ax_curve.set_ylabel('J  (Studie, ohne SVGD, eigenes n je Punkt)', fontsize=9)
+        ax_curve.set_title(f"{model} — Optimum bei {label.split(' ')[0]} = {xs[best_i]:.3g}"
+                           f"  (J = {ys[best_i]:.4f})", fontsize=10.5, color='#1A1A2E')
+
+        ax_slider = fig.add_axes([0.16, 0.555, 0.70, 0.028])
+        slider = Slider(ax_slider, label, lo, hi, valinit=cur,
+                        valfmt='%1.3f', color='#1565C0')
+
+        ax_n_slider = fig.add_axes([0.16, 0.505, 0.70, 0.028])
+        n_slider = Slider(ax_n_slider, 'n (Ausführungen)', 1, n_max,
+                          valinit=6, valstep=1, color='#FF5722')
+
+        ax_traj = fig.add_axes([0.08, 0.06, 0.42, 0.33])
+        style(ax_traj); ax_traj.grid(False)
+        truth_np = self.truths[self.shape_i].detach().cpu().numpy()
+        ax_traj.imshow(truth_np, origin='lower', extent=[0, 1, 0, 1],
+                       cmap=self.cmap, alpha=0.55)
+        (path_line,) = ax_traj.plot([], [], color='#00C853', lw=2.2, alpha=0.95)
+        ax_traj.set_title(self.names[self.shape_i], fontsize=9.5, color='#1A1A2E')
+        ax_traj.set_xlim(0, 1); ax_traj.set_ylim(0, 1)
+
+        ax_info = fig.add_axes([0.55, 0.06, 0.38, 0.33])
+        ax_info.axis('off')
+        info_txt = ax_info.text(0.0, 1.0, 'Berechne...', va='top', ha='left',
+                                fontsize=11, family='monospace', color='#1A1A2E',
+                                transform=ax_info.transAxes)
+        status_txt = fig.text(0.5, 0.475, '', ha='center', fontsize=9,
+                              color='#888')
+
+        # state['rows']/['snapshots']: je ein Eintrag fuer n=1..n_max aus
+        # *einem* Rollout -- der n-Regler liest daraus nur noch, er plant nie
+        # selbst neu.
+        state = {'busy': False, 'thread': None, 'pending': None,
+                 'rows': None, 'snapshots': None, 'belief_snapshots': None,
+                 'param': None}
+        overlay_artists = []
+
+        def worker(param_val):
+            # Baut die Mission direkt auf (statt ueber `run_config`), weil
+            # `on_round` schon waehrend `m.run(...)` auf `m` zugreifen muss --
+            # `run_config` gibt `m` erst zurueck, wenn der Rollout fertig ist.
+            out = {}
+            try:
+                names = [self.names[self.shape_i]]
+                truths = self.truths[self.shape_i:self.shape_i + 1]
+                args = opt_mission.build_mission_args(
+                    str(truths.device), phi_model=model, param=param_val)
+                m = opt_mission.LaengenMission(
+                    self.planner, truths, names, args,
+                    svgd_iters=self.svgd_iters, seed=self.seed)
+                snaps, belief_snaps = [], []
+
+                def on_round(r, n_total):
+                    snaps.append(m.driven[0].detach().cpu().numpy().copy())
+                    mu_r, sd_r = m.beliefs[0].posterior_grid()
+                    belief_snaps.append((mu_r.detach().cpu().numpy().copy(),
+                                        sd_r.detach().cpu().numpy().copy()))
+
+                rows = m.run(n_max, on_round=on_round)
+                out['ok'] = dict(rows=rows, snapshots=snaps,
+                                 belief_snapshots=belief_snaps, param=param_val)
+            except Exception as exc:  # noqa: BLE001 — soll im Fenster sichtbar sein
+                out['err'] = repr(exc)
+            state['thread_result'] = out
+
+        def render_for_n(n):
+            if state['rows'] is None:
+                return
+            n = int(min(max(n, 1), len(state['rows'])))
+            row = state['rows'][n - 1]
+            time_s_total = row['plan_s'] + row['svgd_s']
+            share = n / n_max
+            J = row['cov_norm'] + 0.02 * n + 0.004 * time_s_total * share
+            seg = state['snapshots'][n - 1]
+            path_line.set_data(seg[:, 0], seg[:, 1])
+
+            for art in overlay_artists:
+                try:
+                    art.remove()
+                except Exception:
+                    pass
+            overlay_artists.clear()
+            if model == 'niveau':
+                mu_r, sd_r = state['belief_snapshots'][n - 1]
+                tau = state['param']
+                try:
+                    cs = ax_traj.contour(self.gp_XX, self.gp_YY, mu_r,
+                                         levels=[tau], colors='#1A1A2E',
+                                         linewidths=1.6, linestyles='--',
+                                         zorder=6)
+                    ax_traj.clabel(cs, fmt=f'μ=τ={tau:.2f}', fontsize=7.5,
+                                   inline=True)
+                    overlay_artists.append(cs)
+                    phi_band = phi_lse(torch.from_numpy(mu_r),
+                                       torch.from_numpy(sd_r), tau=tau)
+                    band = ax_traj.contourf(
+                        self.gp_XX, self.gp_YY, phi_band.numpy(),
+                        levels=[0.25, 0.75], colors=['#00838F'], alpha=0.22,
+                        zorder=5)
+                    overlay_artists.append(band)
+                except Exception:
+                    pass
+
+            info_txt.set_text(
+                f"Phi-Modell    {model}\n"
+                f"{label:<12} {state['param']:.4f}\n"
+                f"SVGD-Iters    {self.svgd_iters}  (aus Hauptfenster)\n"
+                f"n             {n} / {n_max}\n"
+                f"\n"
+                f"J             {J:.4f}\n"
+                f"q (cov_norm)  {row['cov_norm']:.4f}\n"
+                f"cov           {row['cov']:.4f}\n"
+                f"erg_truth     {row['erg_truth']:.4f}\n"
+                f"Rechenzeit    {time_s_total * share:.2f} s (von {time_s_total:.2f} s / n={n_max})")
+            fig.canvas.draw_idle()
+
+        def trigger(param_val):
+            if state['busy']:
+                state['pending'] = param_val
+                return
+            state['busy'] = True
+            state['thread_result'] = None
+            status_txt.set_text(
+                f"Berechne Mission (n=1…{n_max}, SVGD={self.svgd_iters}) ...")
+            marker.set_xdata([param_val, param_val])
+            fig.canvas.draw_idle()
+            th = threading.Thread(target=worker, args=(param_val,), daemon=True)
+            state['thread'] = th
+            th.start()
+
+        def poll():
+            if not state['busy']:
+                return
+            if state['thread'].is_alive():
+                return
+            state['busy'] = False
+            res = state.get('thread_result') or {}
+            if 'err' in res:
+                status_txt.set_text(f"Fehler: {res['err']}")
+            elif 'ok' in res:
+                status_txt.set_text('')
+                state['rows'] = res['ok']['rows']
+                state['snapshots'] = res['ok']['snapshots']
+                state['param'] = res['ok']['param']
+                render_for_n(n_slider.val)
+            if state['pending'] is not None:
+                pv, state['pending'] = state['pending'], None
+                trigger(pv)
+
+        timer = fig.canvas.new_timer(interval=150)
+        timer.add_callback(poll)
+        timer.start()
+        fig._param_analysis_timer = timer  # Referenz halten, sonst GC
+
+        dragging = {'on': False}
+
+        def on_press(evt):
+            if evt.inaxes == ax_slider:
+                dragging['on'] = True
+
+        def on_release(evt):
+            if dragging['on']:
+                dragging['on'] = False
+                trigger(float(slider.val))
+
+        def on_move(val):
+            marker.set_xdata([val, val])
+            fig.canvas.draw_idle()
+
+        def on_n_change(val):
+            render_for_n(val)
+
+        fig.canvas.mpl_connect('button_press_event', on_press)
+        fig.canvas.mpl_connect('button_release_event', on_release)
+        slider.on_changed(on_move)
+        n_slider.on_changed(on_n_change)
+
+        trigger(cur)
+        fig.show()
+
     def _no_companion_arrays(self):
         """Writeboard/MuJoCo brauchen die Shared-Memory-Arrays, die nur
         `main.py` (die "Schaltzentrale") anlegt und durchreicht -- bei einem
@@ -1407,6 +1880,59 @@ class App:
         # Label-Wechsel hier explizit angestossen werden.
         self.fig.canvas.draw_idle()
 
+    def _clear_niveau_overlay(self):
+        for art in self._niveau_artists:
+            try:
+                art.remove()
+            except Exception:
+                pass
+        self._niveau_artists = []
+
+    def _draw_niveau_overlay(self, mu_grid, phi_grid):
+        """Spezialisierte Darstellung fuer das Niveaumengen-Modell ('niveau').
+
+        Phi = P(f(x) > tau) ist selbst schon ein Wahrscheinlichkeitsfeld in
+        [0,1] und sieht als reine Heatmap aus wie jede andere Zieldichte auch
+        -- genau das verdeckt seinen eigentlichen Unterschied: es beantwortet
+        nicht "wie dicht ist es hier", sondern "gehoert dieser Ort zur Form,
+        ja oder nein". Zwei Overlays machen das sichtbar:
+
+          * eine gestrichelte Niveaulinie bei mu = tau -- die Grenze, *wenn*
+            der Posterior-Mittelwert schon exakt der Wahrheit entspraeche;
+          * ein schraffiertes Band bei 0.25 < Phi < 0.75 -- der Streifen, in
+            dem der GP-Glaube noch nicht entschieden hat, ob ein Ort innerhalb
+            oder ausserhalb der Form liegt. Das Band schrumpft mit jeder
+            Messung in seiner Naehe (sigma faellt) und macht so das zentrale
+            Argument fuer 'niveau' aus der Optimierung anschaulich: es sucht
+            gezielt an dieser Grenze, statt Flaeche nach Dichte abzugrasen.
+
+        Nur bei Phi-Modell 'niveau' und nur in den Ansichten Phi/mu gezeichnet
+        -- bei sigma ergibt die tau-Linie auf mu keinen Sinn.
+        """
+        self._clear_niveau_overlay()
+        if self.phi_ui != 'niveau' or self.phi_view not in ('Φ', 'μ'):
+            return
+        tau = self.niveau_tau
+        try:
+            cs = self.ax_phi.contour(self.gp_XX, self.gp_YY, mu_grid,
+                                     levels=[tau], colors='#1A1A2E',
+                                     linewidths=1.8, linestyles='--', zorder=6)
+            # Labels NICHT einzeln in _niveau_artists aufnehmen: `cs.remove()`
+            # raeumt sie automatisch mit ab, ein zusaetzlicher Text-Remove
+            # danach wirft `ValueError: list.remove(x): x not in list`
+            # (matplotlib haelt die Label-Texte intern schon an `cs`).
+            self.ax_phi.clabel(cs, fmt=f'μ=τ={tau:.2f}', fontsize=8, inline=True)
+            self._niveau_artists.append(cs)
+        except Exception:
+            pass
+        try:
+            band = self.ax_phi.contourf(self.gp_XX, self.gp_YY, phi_grid,
+                                        levels=[0.25, 0.75], colors=['#00838F'],
+                                        alpha=0.22, zorder=5)
+            self._niveau_artists.append(band)
+        except Exception:
+            pass
+
     def _update_phi_title(self):
         """Titel des rechten Panels: zeigt die mathematische Definition
         des gewaehlten Phi-Modells, oder den Komponentennamen bei mu/sigma."""
@@ -1423,6 +1949,8 @@ class App:
             }
             defn = phi_defs.get(self.phi_ui, 'Φ')
             t = f'{defn}   —   Target Density from GP Belief'
+        if self.phi_ui == 'niveau' and self.phi_view in ('Φ', 'μ'):
+            t += '\ndashed: μ=τ level line   ·   band: 0.25<Φ<0.75 (unsettled boundary)'
         self.ax_phi.set_title(t, fontsize=11, color='#1A1A2E', loc='left')
         self.fig.canvas.draw_idle()
 
@@ -1784,9 +2312,10 @@ class App:
             else:
                 show = phi
             self.img_phi.set_data(show)
+            self._draw_niveau_overlay(mu_grid, phi)
             self.line_plan.set_data(seg[:, 0], seg[:, 1])
             if self.phi_ui == 'niveau':
-                tag = 'τ=0.25 (fest)'
+                tag = 'τ=%.2f' % self.niveau_tau
             elif self.phi_ui == 'mass':
                 kr = self.cur['kappa']
                 tag = 'w=%.2f' % (kr / (1.0 + kr))
@@ -1794,12 +2323,24 @@ class App:
                 tag = 'κ=%.2f' % self.cur['kappa']
             svgd_tag = (f'  ·  +SVGD×{self.svgd_iters}' if self.svgd_iters > 0
                        else '')
-            self.round_txt.set_text(
-                f"{SOLVER_DESC[self.solver]}  ·  Φ={self.phi_ui}  ·  {tag}"
-                f"{svgd_tag}")
+            aktion = self.cur.get('aktion')
+            if aktion is not None:
+                # Mit gelerntem Regler zeigen die Regler-Widgets nicht mehr,
+                # was gefahren wird -- also die tatsaechlich gewaehlte
+                # Einstellung dieser Runde anschreiben.
+                modell, param, svgd_it = aktion
+                self.round_txt.set_text(
+                    f"{SOLVER_DESC[self.solver]}  ·  gelernt: Φ={modell}  ·  "
+                    f"{param:.3f}" +
+                    (f'  ·  +SVGD×{svgd_it}' if svgd_it > 0 else ''))
+            else:
+                self.round_txt.set_text(
+                    f"{SOLVER_DESC[self.solver]}  ·  Φ={self.phi_ui}  ·  {tag}"
+                    f"{svgd_tag}")
         else:
             self.line_driven.set_data(self.driven_np[:, 0], self.driven_np[:, 1])
             self.line_preview.set_data([], [])
+            self._clear_niveau_overlay()
 
         self._update_metrics()
         self.fig.canvas.draw_idle()

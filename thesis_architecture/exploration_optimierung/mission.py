@@ -380,10 +380,27 @@ class LaengenMission:
                    Glaube Struktur. Das ist der in `exploration/README.md`
                    beschriebene entartete Anfangszustand — hier kein Fehler,
                    sondern die Aufgabenstellung.
+        policy:    Optionaler Regler, der die Einstellung **je Runde und Form**
+                   neu waehlt, statt `args`/`svgd_iters` fest zu lassen.
+                   Signatur `policy(r, zustaende) -> [Aktion, ...]`, ein Eintrag
+                   je Form, wobei `zustaende` die `Zustand`-Objekte dieser Runde
+                   sind (mu, sd, Besuchsdichte, gefahrene Bahn — alles ohne die
+                   Wahrheit, ein echter Agent kennt sie nicht) und eine Aktion
+                   `(phi_modell, param, svgd_iters)` ist.
+
+                   Der Hook ist die gemeinsame Schnittstelle der beiden
+                   gelernten Regler in `policy/`: die ueberwachte Richtlinie
+                   (Option A) und der RL-Agent (Option B) benutzen denselben
+                   Simulator wie die feste Einstellung, es aendert sich nur,
+                   wer die Aktion liefert. `policy=None` faehrt exakt den
+                   bisherigen Weg — dieselbe Reihenfolge der Zufallszahlen,
+                   damit die bereits gerechneten Studien reproduzierbar
+                   bleiben.
     """
 
     def __init__(self, planner, truths, names, args, svgd_iters=0,
-                 gp_res=64, n_prior=0, seed=0, nxi_refine=25, pool=None):
+                 gp_res=64, n_prior=0, seed=0, nxi_refine=25, pool=None,
+                 policy=None):
         self.planner = planner
         self.truths = truths
         self.names = names
@@ -393,6 +410,7 @@ class LaengenMission:
         self.seed = seed
         self.nxi_refine = nxi_refine
         self.pool = pool
+        self.policy = policy
         self.device = truths.device
         self.S = truths.shape[0]
 
@@ -417,22 +435,58 @@ class LaengenMission:
         self.svgd_s = 0.0
 
     # -- eine Runde ---------------------------------------------------------
-    def _phi_and_particles(self):
-        phis, parts = [], []
+    def _felder(self, i):
+        """mu, sd und die altersgewichtete Besuchsdichte einer Form.
+
+        Getrennt von der Zieldichte, weil ein Regler diese drei Felder
+        *vor* seiner Entscheidung sehen muss — Phi haengt ja gerade von der
+        Entscheidung ab. Ohne die Trennung koennte eine Richtlinie nur auf
+        die Rundennummer schauen.
+        """
+        mu, sd = self.beliefs[i].posterior_grid()
+        visit = (visitation_recent(self.driven[i], self.gp_res,
+                                   self.args.visit_bandwidth,
+                                   str(self.device),
+                                   half_life=self.args.visit_halflife
+                                   * LENGTH_UNIT)
+                 if self.driven[i] is not None else None)
+        return mu, sd, visit
+
+    def _args_fuer(self, aktion):
+        """Aktion `(modell, param, svgd)` -> Namensobjekt fuer `debt_density`.
+
+        Uebernimmt alle Missionsparameter (Sensorradius, Abdeckungsschuld,
+        Halbwertszeit, ...) aus `self.args`, damit ein Regler nur das aendert,
+        was er auch entscheiden darf — Zieldichte-Modell und dessen Regler.
+        Alles andere bleibt die Betriebseinstellung der Studie.
+        """
+        modell, param, _svgd = aktion
+        return build_mission_args(
+            str(self.device), phi_model=modell, param=param,
+            debt_weight=self.args.debt_weight, visit_sat=self.args.visit_sat,
+            sensor_radius=self.args.sensor_radius, gp_noise=self.args.gp_noise,
+            n_particles=self.args.n_particles, meas_noise=self.args.noise,
+            max_obs=self.args.max_obs,
+            visit_halflife=self.args.visit_halflife,
+            phi_mode=self.args.phi_mode)
+
+    def _phi_and_particles(self, felder, aktionen=None):
+        """Zieldichten und Partikelwolken aller Formen einer Runde.
+
+        `aktionen` ist entweder None (feste Einstellung `self.args` fuer alle
+        Formen, der Weg der bisherigen Studien) oder eine Liste je Form.
+        """
+        phis, parts, argss = [], [], []
         for i in range(self.S):
-            mu, sd = self.beliefs[i].posterior_grid()
-            visit = (visitation_recent(self.driven[i], self.gp_res,
-                                       self.args.visit_bandwidth,
-                                       str(self.device),
-                                       half_life=self.args.visit_halflife
-                                       * LENGTH_UNIT)
-                     if self.driven[i] is not None else None)
-            phi, _ = acb.debt_density(mu, sd, visit, self.args.kappa, self.args)
+            mu, sd, visit = felder[i]
+            a = self.args if aktionen is None else self._args_fuer(aktionen[i])
+            phi, _ = acb.debt_density(mu, sd, visit, a.kappa, a)
             phis.append(phi)
-            parts.append(acb.phi_particles(phi, self.args.n_particles,
-                                           mode=self.args.phi_mode,
+            argss.append(a)
+            parts.append(acb.phi_particles(phi, a.n_particles,
+                                           mode=a.phi_mode,
                                            device=str(self.device)))
-        return phis, torch.stack(parts)
+        return phis, torch.stack(parts), argss
 
     def _execute_one_unit(self, curve, i):
         """Von `curve` genau eine Laengeneinheit ab der aktuellen Position.
@@ -457,10 +511,10 @@ class LaengenMission:
         n_pts = max(8, int(round(PTS_PER_UNIT * path_length(seg) / LENGTH_UNIT)))
         return resample_arclength(seg, n_pts)
 
-    def _row(self, i, r):
+    def _row(self, i, r, aktion=None):
         drv = self.driven[i]
         cov = float(coverage_vs_truth(drv, self.truths[i]))
-        return {
+        row = {
             'shape': self.names[i],
             'n_exec': r + 1,
             'cov': cov,
@@ -472,10 +526,61 @@ class LaengenMission:
             'path_len': path_length(drv),
             'n_obs': int(self.beliefs[i].n_obs),
         }
+        if aktion is not None:
+            # Eigene Spaltennamen, damit `run_config` seine festen
+            # Einstellungsspalten (`phi_model`/`param`/`svgd_iters`) weiter
+            # ueberschreiben darf, ohne die *gewaehlte* Aktion zu verdecken.
+            row['gewaehlt_modell'] = aktion[0]
+            row['gewaehlt_param'] = float(aktion[1])
+            row['gewaehlt_svgd'] = int(aktion[2])
+        return row
 
-    def round(self, r):
+    def _refine_gruppiert(self, curves, phis, iters_je_form):
+        """SVGD, wenn nicht alle Formen dieselbe Iterationszahl haben.
+
+        `refine_batch` kennt nur *eine* gemeinsame Iterationszahl. Ein Regler
+        darf die Zahl aber je Form waehlen, deshalb ein Aufruf je vorkommender
+        Zahl statt einem fuer alle — dieselbe Gruppierungsidee wie in
+        `greedy_per_round.run_greedy_wide`.
+        """
+        refined = [None] * self.S
+        for n_iters in sorted(set(int(x) for x in iters_je_form)):
+            idx = [i for i in range(self.S) if int(iters_je_form[i]) == n_iters]
+            teil = refine_batch(curves[idx], [phis[i] for i in idx], n_iters,
+                                nxi=self.nxi_refine, pool=self.pool)
+            for j, i in enumerate(idx):
+                refined[i] = teil[j]
+        return refined
+
+    def zustaende(self, r, n_max, felder=None):
+        """Die Sicht des Reglers auf diese Runde — je Form ein `Zustand`.
+
+        Bewusst ohne die Wahrheit: `truths` steht dem Simulator zur Auswertung
+        zur Verfuegung, dem Regler nicht. Wer hier die Wahrheit hineinreichte,
+        wuerde eine Richtlinie bauen, die es in der Anwendung nicht geben kann.
+        """
+        from .policy.features import Zustand
+        felder = felder if felder is not None else [self._felder(i)
+                                                    for i in range(self.S)]
+        return [Zustand(mu=felder[i][0], sd=felder[i][1], visit=felder[i][2],
+                        driven=self.driven[i], runde=r, n_max=n_max,
+                        n_obs=int(self.beliefs[i].n_obs), name=self.names[i])
+                for i in range(self.S)]
+
+    def round(self, r, n_max=None):
         """Eine Planung + eine gefahrene Laengeneinheit fuer alle Formen."""
-        phis, parts = self._phi_and_particles()
+        felder = [self._felder(i) for i in range(self.S)]
+
+        aktionen = None
+        if self.policy is not None:
+            aktionen = self.policy(
+                r, self.zustaende(r, n_max or (r + 1), felder=felder))
+            if len(aktionen) != self.S:
+                raise ValueError(
+                    f"Regler lieferte {len(aktionen)} Aktionen fuer {self.S} "
+                    "Formen — erwartet wird genau eine je Form.")
+
+        phis, parts, argss = self._phi_and_particles(felder, aktionen)
 
         starts = None
         if any(d is not None for d in self.driven):
@@ -493,8 +598,12 @@ class LaengenMission:
         self.plan_s += time.perf_counter() - t0
 
         t0 = time.perf_counter()
-        refined = refine_batch(curves, phis, self.svgd_iters,
-                               nxi=self.nxi_refine, pool=self.pool)
+        if aktionen is None:
+            refined = refine_batch(curves, phis, self.svgd_iters,
+                                   nxi=self.nxi_refine, pool=self.pool)
+        else:
+            refined = self._refine_gruppiert(curves, phis,
+                                             [a[2] for a in aktionen])
         self.svgd_s += time.perf_counter() - t0
 
         rows = []
@@ -502,13 +611,14 @@ class LaengenMission:
             curve = torch.as_tensor(refined[i], device=self.device,
                                     dtype=torch.float32).clamp(0.0, 1.0)
             seg = self._execute_one_unit(curve, i)
-            pts, vals = measure(seg, self.truths[i], noise_std=self.args.noise,
-                                sensor_radius=self.args.sensor_radius)
-            self.beliefs[i].observe(*thin(pts, vals,
-                                          max_points=self.args.max_obs))
+            a = argss[i]
+            pts, vals = measure(seg, self.truths[i], noise_std=a.noise,
+                                sensor_radius=a.sensor_radius)
+            self.beliefs[i].observe(*thin(pts, vals, max_points=a.max_obs))
             self.driven[i] = (seg if self.driven[i] is None
                               else torch.cat([self.driven[i], seg], dim=0))
-            rows.append(self._row(i, r))
+            rows.append(self._row(i, r,
+                                  None if aktionen is None else aktionen[i]))
         return rows
 
     def run(self, n_max, on_round=None):
@@ -522,7 +632,7 @@ class LaengenMission:
         torch.manual_seed(self.seed)
         rows = []
         for r in range(n_max):
-            rows += self.round(r)
+            rows += self.round(r, n_max=n_max)
             if on_round is not None:
                 on_round(r, n_max)
         for row in rows:
@@ -535,7 +645,8 @@ class LaengenMission:
 # Aufbau
 # ---------------------------------------------------------------------------
 
-def load_holdout(resolution=96, device='cuda', shapes=None, limit=None):
+def load_holdout(resolution=96, device='cuda', shapes=None, limit=None,
+                 split='val'):
     """Die Holdout-Formen als wahre Dichten.
 
     `split='val'` der Trainingsdatenbank ist deckungsgleich mit
@@ -543,8 +654,16 @@ def load_holdout(resolution=96, device='cuda', shapes=None, limit=None):
     angenommen. Es wird ueber die Datenbank geladen, weil `load_truth` die
     Formen dort schon max-normiert und in der Reihenfolge liefert, die auch
     die uebrigen Auswertungen des Projekts benutzen.
+
+    `split='train'` liefert die Formen, auf denen das Planernetz trainiert
+    wurde. Fuer die Studien selbst ist das die falsche Menge — dort geht es um
+    ungesehene Formen. Gebraucht wird es von den gelernten Reglern in
+    `policy/`: wer die 25 Validierungsformen ausschliesslich zum Testen
+    behalten will, trainiert die Richtlinie auf diesem Split. Dass das
+    Planernetz sie kennt, stoert dabei nicht — gelernt wird ja nicht die Bahn,
+    sondern die Wahl der Einstellung.
     """
-    names, truths = load_truth(labels=shapes, n=(limit or 999), split='val',
+    names, truths = load_truth(labels=shapes, n=(limit or 999), split=split,
                                resolution=resolution, device=device)
     if limit is not None:
         names, truths = names[:limit], truths[:limit]
@@ -565,12 +684,18 @@ def build_planner(ckpt=DEFAULT_CKPT, device='cuda', pts=256, flow_steps=100,
 
 
 def run_config(planner, truths, names, phi_model, param, n_max,
-               svgd_iters=0, seed=0, pool=None, on_round=None, **kw):
-    """Ein vollstaendiger Rollout fuer eine Einstellung. -> Zeilen."""
+               svgd_iters=0, seed=0, pool=None, on_round=None, policy=None,
+               **kw):
+    """Ein vollstaendiger Rollout fuer eine Einstellung. -> Zeilen.
+
+    Mit `policy` wird `(phi_model, param, svgd_iters)` nur noch als
+    Ausgangs-/Vergleichseinstellung gefuehrt; entschieden wird je Runde vom
+    Regler. Die uebrigen Missionsparameter (`**kw`) gelten unveraendert weiter.
+    """
     args = build_mission_args(str(truths.device), phi_model=phi_model,
                               param=param, **kw)
     m = LaengenMission(planner, truths, names, args, svgd_iters=svgd_iters,
-                       seed=seed, pool=pool)
+                       seed=seed, pool=pool, policy=policy)
     rows = m.run(n_max, on_round=on_round)
     for row in rows:
         row.update(phi_model=phi_model, param=float(param),
