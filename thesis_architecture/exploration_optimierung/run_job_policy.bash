@@ -98,6 +98,26 @@ echo "=========================================================="
 nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null || true
 python -c "import torch;print('torch',torch.__version__,'cuda',torch.cuda.is_available())"
 
+# ── Grobe Erwartung, bevor irgendetwas rechnet ─────────────────────────────
+# Bezugswert: 0,38 s je geplanter Partikelwolke bei flow_steps=100, gemessen
+# auf einer RTX 2070 SUPER. Die Planung ist rechengebunden und skaliert ab
+# Stapelgroesse 16 linear, deshalb genuegt die Zahl der Wolken als Mass. Eine
+# schnellere Karte verschiebt alles proportional nach unten; die Stufen
+# richten sich ohnehin nach dem Budget, das hier ist nur die Vorwarnung.
+N_BUCKETS=$(echo $SVGD_BUCKETS | wc -w)
+K=$(( 4 * PARAM_PUNKTE * N_BUCKETS ))
+WOLKEN_ORAKEL=$(( N_SHAPES * K * N_MAX * SEEDS ))
+WOLKEN_EVAL=$(( N_SHAPES * K * EVAL_NMAX * SEEDS ))
+MIN_ORAKEL=$(( WOLKEN_ORAKEL * 38 / 100 / 60 ))
+MIN_EVAL_ORAKEL=$(( WOLKEN_EVAL * 38 / 100 / 60 ))
+echo "  Kandidaten je Entscheidung: $K"
+echo "  Erwartung (Massstab RTX 2070 SUPER, schnellere Karte entsprechend weniger):"
+echo "    Stufe 1 Orakel        ~${MIN_ORAKEL} min  (${WOLKEN_ORAKEL} geplante Wolken)"
+echo "    Stufe 2 Option A      ~10 min"
+echo "    Stufe 3 PPO           bis $(( PPO_ITER * 65 / 60 )) min (${PPO_ITER} Iterationen; Budget bremst frueher)"
+echo "    Stufe 4 Auswertung    ~10 min + ~${MIN_EVAL_ORAKEL} min fuer die Orakelspalte"
+echo "    Summe                 ~$(( MIN_ORAKEL + 10 + PPO_ITER * 65 / 60 + 10 + MIN_EVAL_ORAKEL )) min von ${GESAMT_MIN} min"
+
 # ── 1. Orakel ──────────────────────────────────────────────────────────────
 if [ "$FORCE" != "1" ] && [ -s "$ERG/policy_datensatz.csv" ]; then
   echo; echo "[1/4] Orakel uebersprungen — $ERG/policy_datensatz.csv liegt vor (FORCE=1 erzwingt neu)."

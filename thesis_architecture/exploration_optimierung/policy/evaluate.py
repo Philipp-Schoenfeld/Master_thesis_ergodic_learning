@@ -272,8 +272,20 @@ def main(argv=None):
     letzte_dauer = 0.0
     try:
         for name, pol in regler.items():
-            if name != 'fest' and budget.abgelaufen(letzte_dauer):
-                print(f"  {TITEL[name]} ausgelassen ({budget.grund()})")
+            # Was der naechste Regler kosten wird. Fuer die gelernten ist es
+            # ungefaehr das, was der vorige gebraucht hat; das Orakel probiert
+            # dagegen je Entscheidung *alle* Kandidaten durch und kostet
+            # entsprechend ein Vielfaches. Ohne diese Schaetzung faengt es
+            # womoeglich mit zehn Minuten Restzeit an und laeuft zwei Stunden
+            # ueber das Budget — es hat, anders als die Stufen davor, keinen
+            # eigenen Ausstieg mitten in der Mission (der wuerde die
+            # Rundenzahl verschieben und den Vergleich unbrauchbar machen).
+            erwartet = letzte_dauer
+            if name == 'orakel':
+                erwartet = letzte_dauer * max(len(pol.kandidaten), 1)
+            if name != 'fest' and budget.abgelaufen(erwartet):
+                print(f"  {TITEL[name]} ausgelassen ({budget.grund()}; "
+                      f"geschaetzt {erwartet / 60:.0f} min noetig)")
                 continue
             spuren = []
             t0 = time.perf_counter()

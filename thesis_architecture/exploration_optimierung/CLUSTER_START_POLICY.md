@@ -86,10 +86,40 @@ Zeit. Jede Stufe bekommt ihr Budget als `--max_minuten` und **hört von selbst
 geordnet auf** — sie schreibt, was sie hat, statt vom Zeitlimit abgeschnitten
 zu werden. `--signal=SIGTERM@120` wirkt zusätzlich.
 
-Grobe Erwartung (lokal auf einer RTX 2070 SUPER gemessen, Cluster-GPU eher
-schneller): Orakel ≈ 2,5–4 h (24 000 geplante Wolken bei 0,38 s je Wolke),
-Option A wenige Minuten, PPO füllt den Rest, Auswertung mit Orakelspalte
-≈ 1–1,5 h.
+### Reichen die 12 Stunden?
+
+Nach der gemessenen Rechenzeit ja, mit rund zwei Stunden Luft. Maßstab ist
+**0,38 s je geplanter Partikelwolke** bei `flow_steps = 100` — gemessen auf
+einer RTX 2070 SUPER; die Planung ist rechengebunden und wächst ab
+Stapelgröße 16 linear, deshalb genügt die Zahl der Wolken als Maß. Das Skript
+druckt dieselbe Rechnung beim Start, bevor irgendetwas rechnet.
+
+| Stufe | Rechnung | Erwartung |
+|---|---|---|
+| 1 · Orakel | 25 Formen × 48 Kandidaten × 10 Runden × 2 Seeds = 24 000 Wolken | **~2,5 h** (+ ~15 min SVGD) |
+| 2 · Option A | MLP auf ~24 000 Zeilen, 5 Falten | **~10 min** |
+| 3 · PPO | 200 Iterationen à ~65 s (2 Episoden × 8 Runden × 8 Formen) | **~3,6 h** |
+| 4 · Auswertung | 3 Regler à ~3 min **+ Orakelspalte** 25 × 48 × 8 × 2 = 19 200 Wolken | **~2,2 h** |
+| | | **Summe ~8,5 h von 11,5 h** |
+
+Die Orakelspalte in Stufe 4 ist mit Abstand der teuerste Wahlposten — sie
+kostet allein so viel wie die ganze übrige Auswertung mal vierzig, weil sie je
+Entscheidung alle 48 Kandidaten durchspielt. Sie bleibt trotzdem drin: ohne sie
+ist nicht einzuordnen, wie viel vom Erreichbaren die gelernten Regler holen.
+
+**Wenn es doch knapp wird**, bricht nichts ab, sondern die Kette gibt der Reihe
+nach nach: PPO macht weniger Iterationen (die Zahl ist eine Obergrenze, nicht
+ein Soll), und reicht es am Ende nicht mehr für die Orakelspalte, wird
+*sie* ausgelassen und alles andere geschrieben. Die Schätzung dafür ist
+bewusst konservativ — das Orakel kostet als einziger Regler ein Vielfaches des
+vorigen, und genau dieser Faktor steht in der Abschätzung.
+
+Auf einer schnelleren Karte als der 2070 SUPER (auf `stud` der Normalfall)
+schrumpft alles proportional, eher auf 5–6 h. Auf einer langsameren Karte
+greift die Reihenfolge oben.
+
+Billiger geht es über den Kandidatenraum, der quadratisch durchschlägt:
+`PARAM_PUNKTE=3` spart in Stufe 1 und 4 je ein Viertel, `SEEDS=1` die Hälfte.
 
 ### 4. Zusehen
 
