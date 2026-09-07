@@ -829,6 +829,260 @@ def test_cfm_loss_integration():
           f"{float(a):.4f} -> {float(d):.4f}")
 
 
+# ── 12. Erweiterte Flaechenliste: Koerper, Buchstaben, Blickrichtungen ───────
+def _netzstapel():
+    """Ist die Netzverarbeitung da? -> (ja, was fehlt)
+
+    trimesh, open3d, shapely und mapbox_earcut werden gebraucht, um die
+    Zielflaechen zu *bauen*. Das passiert beim Datenbankbau, nicht beim
+    Training: der Runner liest fertige Bahnen, Rahmen und Partikel aus der
+    Tabelle und fasst nie ein Dreiecksnetz an. Auf dem Rechenknoten fehlt der
+    Stapel deshalb, und das ist in Ordnung.
+
+    Die vier Pruefungen hier auszusetzen ist kein Nachgeben: sie pruefen den
+    Bau der Flaechen, und der ist zu diesem Zeitpunkt laengst geschehen und in
+    der Datenbank festgeschrieben. Sie muessen dort gruen sein, wo gebaut wird.
+    Ein harter Abbruch wuerde stattdessen einen 22-h-Job an einer Abhaengigkeit
+    scheitern lassen, die er gar nicht benutzt.
+    """
+    fehlt = []
+    for m in ('trimesh', 'open3d', 'shapely', 'mapbox_earcut'):
+        try:
+            __import__(m)
+        except ImportError:
+            fehlt.append(m)
+    return (not fehlt), fehlt
+
+
+def _ausgesetzt(name, fehlt):
+    print(f"[--]   {name:<52} uebersprungen, es fehlt: {', '.join(fehlt)}")
+
+
+def test_koerper():
+    """Jeder selbstgebaute Koerper muss wasserdicht sein.
+
+    Ist er es nicht, faellt das nicht beim Bauen auf, sondern erst beim
+    Strahlenwerfen: ein Loch im Netz laesst Strahlen durch, der Treffer landet
+    auf der Rueckseite, und die Bahn springt. In der fertigen Datenbank sieht
+    man dann nur noch einen erhoehten Sprungwert und weiss nicht, woher.
+    """
+    ok, fehlt = _netzstapel()
+    if not ok:
+        return _ausgesetzt("Koerper wasserdicht", fehlt)
+    import koerper
+    fehler = koerper.pruefen(verbose=False)
+    check("alle 30 Koerper + 2 Heldout wasserdicht", not fehler,
+          f"{len(koerper.KOERPER)}+{len(koerper.KOERPER_HELDOUT)}"
+          + (f"  Fehler: {fehler}" if fehler else ""))
+
+
+def test_buchstaben():
+    """Buchstaben-Volumen: wasserdicht, und die Loecher wirklich vorhanden.
+
+    Das Geschlecht ist der Test, den die Wasserdichtheit nicht leistet. Ein
+    'O', dessen Innenring faelschlich als zweite Aussenkontur behandelt wurde,
+    ist ein wasserdichter *Klotz* — die Even-Odd-Regel waere kaputt, und die
+    Silhouette haette ihr entscheidendes Merkmal verloren.
+    """
+    ok, fehlt = _netzstapel()
+    if not ok:
+        return _ausgesetzt("Buchstaben-Volumen", fehlt)
+    import text_volumen
+    fehler = text_volumen.pruefen(verbose=False)
+    check("alle 26 Buchstaben + 2 Ziffern wasserdicht", not fehler,
+          f"{len(text_volumen.TEXT_KOERPER)}+{len(text_volumen.TEXT_HELDOUT)}"
+          + (f"  Fehler: {fehler}" if fehler else ""))
+
+    erwartet = {'O': 1, 'A': 1, 'B': 2, 'D': 1, 'P': 1, 'Q': 1, 'R': 1,
+                'H': 0, 'L': 0, '1': 0, '5': 0}
+    schlecht = []
+    for c, g_soll in erwartet.items():
+        m = text_volumen.baue(c)
+        g = (2 - m.euler_number) // 2
+        if g != g_soll:
+            schlecht.append(f'{c}: Geschlecht {g} statt {g_soll}')
+    check("Loecher der Glyphen stimmen (Even-Odd-Regel)", not schlecht,
+          "; ".join(schlecht) if schlecht else
+          "O/A/D/P/Q/R=1, B=2, H/L/1/5=0")
+
+
+def test_flaechenliste():
+    """Die Erweiterung darf die bestehende Liste nicht anfassen."""
+    ok, fehlt = _netzstapel()
+    if not ok:
+        return _ausgesetzt("erweiterte Flaechenliste", fehlt)
+    import surfaces
+    check("KEYS ist unveraendert die alte Zehnerliste",
+          surfaces.KEYS == ['ebene_flach', 'ebene_gekippt', 'ebene_diagonal',
+                            'kugel', 'wuerfel', 'ei', 'bunny', 'prisma',
+                            'kegel', 'torus'],
+          f"{len(surfaces.KEYS)} Schluessel")
+
+    s = surfaces.build('ebene_flach')
+    check("build('ebene_flach') liefert weiter die Trainingslage",
+          np.allclose(s.view, [0, 0, -1]), f"view={s.view}")
+
+    alle = surfaces.alle_keys()
+    gruppen = {g: sum(1 for k in alle if surfaces.gruppe_von(k) == g)
+               for g in surfaces.GRUPPEN}
+    check("zehn Ebenen mit gleichverteilten Normalen",
+          gruppen['ebene'] == 10, str(gruppen))
+    check("Heldout-Flaechen sind aus alle_keys() heraus",
+          all(not surfaces.registry()[k].get('heldout') for k in alle),
+          f"{len(surfaces.alle_keys(nur_heldout=True))} zurueckgehalten")
+
+    # Kein Schluessel darf doppelt belegt sein — der Bauer wirft sonst.
+    reg = surfaces.registry()
+    check("jeder Flaechenschluessel genau einmal vergeben",
+          len(reg) == len(set(reg)), f"{len(reg)} Eintraege")
+
+
+def test_blickrichtung():
+    """`zufaellige_blickrichtung` liefert normierte Vektoren — und nur solche.
+
+    Der Test prueft ausserdem den Rueckfall: schlaegt das Guetetor fehl, muss
+    trotzdem eine gueltige Richtung herauskommen und `bestanden` False sein.
+    Stiller Rueckfall auf einen unnormierten oder Null-Vektor waere hier
+    besonders unangenehm, weil `_frame` ihn kommentarlos entgegennimmt.
+    """
+    ok, fehlt = _netzstapel()
+    if not ok:
+        return _ausgesetzt("Blickrichtungen normiert", fehlt)
+    import surfaces
+    rng = np.random.default_rng(3)
+    normen, flaggen = [], []
+    for k in ('kugel', 'wuerfel', 'sternprisma', 'hyperboloid',
+              'buchstabe_o', 'torus'):
+        s = surfaces.build(k)
+        for v, g, ok in surfaces.blickrichtungen(rng, s.mesh, anzahl=2,
+                                                 versuche=12, n=300):
+            normen.append(float(np.linalg.norm(v)))
+            flaggen.append(ok)
+    check("Blickrichtungen sind auf Laenge 1 normiert",
+          np.allclose(normen, 1.0, atol=1e-9),
+          f"{len(normen)} Richtungen, max |1-|v|| = "
+          f"{max(abs(1 - n) for n in normen):.2e}")
+
+    # Ein unerfuellbares Tor muss den Rueckfall ausloesen, nicht haengen.
+    m = surfaces.build('kugel').mesh
+    v, g, ok = surfaces.zufaellige_blickrichtung(
+        rng, m, min_treffer=1.01, versuche=4, n=200)
+    check("unerfuellbares Guetetor faellt sauber zurueck",
+          (not ok) and abs(np.linalg.norm(v) - 1.0) < 1e-9,
+          f"bestanden={ok}, treffer={g['treffer']:.2f}")
+
+    # Zwei Richtungen auf derselben Flaeche muessen sich unterscheiden.
+    rr = surfaces.blickrichtungen(np.random.default_rng(5),
+                                  surfaces.build('wuerfel').mesh,
+                                  anzahl=2, versuche=12, n=300)
+    winkel = np.rad2deg(np.arccos(np.clip(rr[0][0] @ rr[1][0], -1, 1)))
+    check("zwei Winkel auf einer Flaeche liegen auseinander",
+          winkel > 30.0, f"{winkel:.1f}°")
+
+
+# ── 13. Startpunkt-Konditionierung und Warmstart ─────────────────────────────
+def test_startpunkt():
+    """Der Test, an dem der ganze Warmstart haengt.
+
+    Ein Netz mit Startpunkt-Kopf muss bei Epoche 0 **bitgenau** dasselbe
+    Vektorfeld liefern wie eines ohne. Ist das nicht so, ist der Null-Init
+    kaputt, und der aus 1750 Epochen geladene Checkpoint bekaeme im ersten
+    Schritt ein zufaelliges Signal in seine Zeitkonditionierung addiert — an
+    genau der Stelle, an der jeder FiLM-Block des U-Netzes haengt.
+
+    `atol=0`: hier ist nichts zu tolerieren. Der Beitrag ist entweder exakt
+    null oder der Null-Init greift nicht.
+    """
+    from flow_matching_cond_particles_crossattn import (
+        ParticleCrossAttnFlowNetwork, compute_particle_cfm_loss,
+        generate_particle_trajectories)
+
+    B, nxi, nd, D, N = 3, 25, 3, 32, 48
+    bau = dict(nxi=nxi, nd=nd, D=D, n_heads=4, predict_orientation=True)
+
+    torch.manual_seed(7)
+    alt = ParticleCrossAttnFlowNetwork(**bau).eval()
+    torch.manual_seed(7)
+    neu = ParticleCrossAttnFlowNetwork(**bau, start_cond=True).eval()
+
+    fehlend = neu.load_state_dict(alt.state_dict(), strict=False)
+    check("Warmstart: nur start_emb.* und null_start_token fehlen",
+          all(k.startswith('start_emb.') or k == 'null_start_token'
+              for k in fehlend.missing_keys) and not fehlend.unexpected_keys,
+          f"{len(fehlend.missing_keys)} fehlend, "
+          f"{len(fehlend.unexpected_keys)} unerwartet")
+
+    x = torch.randn(B, nxi, nd + 6)
+    t = torch.rand(B)
+    parts = torch.rand(B, N, nd + 1)
+    start = torch.rand(B, nd)
+
+    with torch.no_grad():
+        a_pos, a_rot = alt(x, t, parts)
+        b_pos, b_rot = neu(x, t, parts, start=start)
+        c_pos, _ = neu(x, t, parts)                     # ganz ohne Startpunkt
+        d_pos, _ = neu(x, t, parts, start=start,
+                       start_drop_mask=torch.ones(B, dtype=torch.bool))
+    check("mit Startpunkt identisch zum warmgestarteten Netz",
+          torch.equal(a_pos, b_pos) and torch.equal(a_rot, b_rot),
+          f"max |diff| = {float((a_pos - b_pos).abs().max()):.3e}")
+    check("start=None ist der alte Aufruf, Zeichen fuer Zeichen",
+          torch.equal(a_pos, c_pos), "identisch")
+    check("abgeworfener Startpunkt ebenfalls neutral",
+          torch.equal(a_pos, d_pos), "identisch")
+
+    # Nach einem Schritt Training darf der Beitrag nicht mehr null sein —
+    # sonst waere der Kopf zwar neutral, aber auch tot.
+    #
+    # Dafuer muessen die FiLM-Projektionen erst besetzt werden. In einem frisch
+    # gebauten Netz sind sie ebenfalls null-initialisiert, und dann endet jeder
+    # Gradientenpfad aus dem U-Netz schon dort: der Startpunkt-Kopf saehe null,
+    # egal wie er selbst initialisiert ist. Das ist kein Fehler, sondern der
+    # bewusste Zustand eines Kaltstarts — `film_proj` bekommt selbst Gradient
+    # und ist nach einem Schritt besetzt, danach lernt auch der Startpunkt.
+    # Fuer diesen Lauf ist aber der *warmgestartete* Fall der interessante, und
+    # dort sind die FiLM-Gewichte seit 1750 Epochen besetzt. Genau das wird hier
+    # nachgestellt.
+    with torch.no_grad():
+        for name, p_ in neu.named_parameters():
+            if 'film_proj.weight' in name:
+                p_.normal_(0.0, 0.02)
+    opt = torch.optim.SGD(neu.parameters(), lr=1e-2)
+    neu.train()
+    torch.manual_seed(11)
+    x1 = torch.rand(B, nxi, nd + 6)
+    verlust, _ = compute_particle_cfm_loss(neu, x1, parts, p_drop_start=0.1)
+    verlust.backward()
+    g = neu.start_emb.net[-1].weight.grad
+    check("der Startpunkt-Kopf bekommt Gradient (nicht tot)",
+          g is not None and float(g.abs().max()) > 0.0,
+          f"max |grad| = {float(g.abs().max()):.3e}" if g is not None else "kein Gradient")
+    opt.step()
+    neu.eval()
+    with torch.no_grad():
+        e_pos, _ = neu(x, t, parts, start=start)
+        f_pos, _ = neu(x, t, parts, start=start + 0.3)
+    check("nach einem Schritt aendert der Startpunkt das Feld",
+          not torch.equal(e_pos, f_pos),
+          f"max |diff| = {float((e_pos - f_pos).abs().max()):.3e}")
+
+    # Erzeugung: ein Startpunkt der Form (1, nd) muss aufgefaechert werden.
+    neu.eval()
+    gen, rot = generate_particle_trajectories(
+        neu, parts[:1], num_samples=4, nxi=nxi, nd=nd, steps=3,
+        device='cpu', cfg_weight=1.0, start=torch.rand(1, nd))
+    check("generate faechert (1, nd) auf num_samples auf",
+          tuple(gen.shape) == (4, nxi, nd), str(tuple(gen.shape)))
+
+    s = torch.rand(4, nd)
+    gen2, _ = generate_particle_trajectories(
+        neu, parts[:1], num_samples=4, nxi=nxi, nd=nd, steps=3,
+        device='cpu', cfg_weight=1.0, start=s)
+    check("der erste Kontrollpunkt ist der geforderte Startpunkt",
+          torch.allclose(gen2[:, 0, :], s, atol=1e-6),
+          f"max |diff| = {float((gen2[:, 0, :] - s).abs().max()):.2e}")
+
+
 if __name__ == '__main__':
     print("\n=== 3D port sanity checks ===\n")
     test_planar_reduction()
@@ -852,6 +1106,13 @@ if __name__ == '__main__':
     test_orientation_loss()
     test_footprint_coupling()
     test_cfm_loss_integration()
+    print("\n--- erweiterte Flaechenliste ---\n")
+    test_koerper()
+    test_buchstaben()
+    test_flaechenliste()
+    test_blickrichtung()
+    print("\n--- Startpunkt-Konditionierung und Warmstart ---\n")
+    test_startpunkt()
     print()
     if _failures:
         print(f"{len(_failures)} check(s) FAILED: {_failures}")

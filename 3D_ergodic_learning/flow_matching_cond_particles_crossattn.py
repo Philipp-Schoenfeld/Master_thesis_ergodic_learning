@@ -105,6 +105,31 @@ class ParticleTokenizer(nn.Module):
         return tokens
 
 
+class StartEmbedding(nn.Module):
+    """Start point (B, nd) -> (B, D). Fourier features, then an MLP.
+
+    Ported from the 2D `flow_matching_cond_particles_start.py` — raw
+    coordinates in [0,1] are a poor MLP input for the same reason particle
+    positions are: small shifts should not require the network to invent its
+    own resolution. The last linear layer is zero-initialised so a network
+    that gains this module (e.g. a warm-started fine-tune) starts out
+    bit-identical to the version without it.
+    """
+
+    def __init__(self, D: int = 128, nd: int = ND, n_freq: int = 8):
+        super().__init__()
+        self.register_buffer('freqs', 2.0 ** torch.arange(n_freq).float() * math.pi)
+        self.net = nn.Sequential(
+            nn.Linear(nd * n_freq * 2, D), nn.SiLU(), nn.Linear(D, D))
+        nn.init.zeros_(self.net[-1].weight)
+        nn.init.zeros_(self.net[-1].bias)
+
+    def forward(self, p0: torch.Tensor) -> torch.Tensor:
+        a = p0.unsqueeze(-1) * self.freqs
+        feat = torch.cat([a.sin(), a.cos()], dim=-1).flatten(1)
+        return self.net(feat)
+
+
 class ConvResBlock(nn.Module):
     def __init__(self, in_ch: int, out_ch: int, cond_dim: int = 128,
                  kernel_size: int = 3, stride: int = 1):
@@ -280,12 +305,14 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
 
     def __init__(self, nxi: int = 25, nd: int = ND, D: int = 128,
                  n_heads: int = 8, kernel_size: int = 3,
-                 predict_orientation: bool = False):
+                 predict_orientation: bool = False,
+                 start_cond: bool = False):
         super().__init__()
         self.nxi = nxi
         self.nd  = nd
         self.D   = D
         self.predict_orientation = predict_orientation
+        self.start_cond = start_cond
         # The sequence input carries position and, if enabled, the 6D rotation.
         self.in_dim = nd + (6 if predict_orientation else 0)
 
@@ -301,14 +328,36 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
         self.flow_head = FlowHead(D=D, nd=nd)
         if predict_orientation:
             self.rot_head = FlowHead(D=D, nd=6)
+        if start_cond:
+            self.start_emb = StartEmbedding(D=D, nd=nd, n_freq=8)
+            self.null_start_token = nn.Parameter(torch.zeros(1, D))
 
     def forward(self, x: torch.Tensor, t: torch.Tensor,
                 particles: torch.Tensor,
-                cond_drop_mask: torch.Tensor = None):
-        """x: (B, nxi, in_dim). Returns (v_pos, v_rot) with v_rot None if off."""
+                cond_drop_mask: torch.Tensor = None,
+                start: torch.Tensor = None,
+                start_drop_mask: torch.Tensor = None):
+        """x: (B, nxi, in_dim). Returns (v_pos, v_rot) with v_rot None if off.
+
+        `start` (B, nd) is FiLM-added onto the time conditioning, same spot as
+        the 2D start-point port. With `start_cond=True` and no `start` given,
+        the null-start token is used instead — the inference-time ablation the
+        training plan calls for, so a surface-projection holdout with no known
+        start point runs neutrally rather than raising or guessing a value.
+        """
         tokens = self.mpd_layer(x)
         tokens = tokens + self.pos_emb
         time_cond = self.time_emb(t)
+
+        if self.start_cond:
+            if start is not None:
+                start_e = self.start_emb(start)
+                if start_drop_mask is not None:
+                    m = start_drop_mask.view(-1, 1).to(start_e.dtype)
+                    start_e = start_e * (1.0 - m) + self.null_start_token * m
+            else:
+                start_e = self.null_start_token.expand(time_cond.shape[0], -1)
+            time_cond = time_cond + start_e
 
         particle_tokens = self.particle_tokenizer(particles)
 
@@ -419,6 +468,7 @@ def generate_particle_trajectories(
     bspline_pts: int = 256,
     bspline_deg: int = 5,
     polish_steps: int = 250,
+    start: torch.Tensor = None,
     generator: torch.Generator = None,
 ) -> tuple:
     """Integrate the flow ODE, optionally repelling the curve from an obstacle.
@@ -426,6 +476,11 @@ def generate_particle_trajectories(
     With `obstacle=None` the behaviour is unchanged. Otherwise a repulsion term
     is added to the velocity at inference time only — the model itself never
     sees the obstacle and is conditioned on the unmodified target density.
+
+    `start` (nd,) or (B, nd), only meaningful if the model has `start_cond`:
+    same value is used in both branches of the particle-CFG split, since the
+    training plan keeps CFG on the particles only, not on the start point.
+    Leaving it at the default `None` runs the null-start-token ablation.
     """
     model.eval()
     if particles.ndim == 2:
@@ -433,6 +488,12 @@ def generate_particle_trajectories(
     if particles.shape[0] == 1 and num_samples > 1:
         particles = particles.expand(num_samples, -1, -1).contiguous()
     particles = particles.to(device)
+
+    start_b = None
+    if start is not None:
+        start_b = start.to(device).reshape(-1, nd)
+        if start_b.shape[0] == 1 and num_samples > 1:
+            start_b = start_b.expand(num_samples, -1).contiguous()
 
     state_dim = getattr(model, 'in_dim', nd)
     x  = torch.randn(num_samples, nxi, state_dim, device=device, generator=generator)
@@ -453,9 +514,10 @@ def generate_particle_trajectories(
         t = torch.full((num_samples,), step * dt, device=device)
         t_batch = torch.cat([t, t], dim=0)
         x_batch = torch.cat([x, x], dim=0)
+        start_batch = None if start_b is None else torch.cat([start_b, start_b], dim=0)
 
         v_pos, v_rot = model(x_batch, t_batch, particle_batch,
-                             cond_drop_mask=mask_batch)
+                             cond_drop_mask=mask_batch, start=start_batch)
         v_batch = v_pos if v_rot is None else torch.cat([v_pos, v_rot], dim=-1)
         v_cond, v_null = v_batch.chunk(2, dim=0)
         v = v_null + cfg_weight * (v_cond - v_null)

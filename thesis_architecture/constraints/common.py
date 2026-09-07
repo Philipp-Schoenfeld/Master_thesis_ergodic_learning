@@ -163,7 +163,7 @@ def _clip(g, max_abs):
 def guided_generate(model, meta, particles, force=None, num_samples=1, steps=100,
                     device='cpu', seed=0, force_weight=20.0, force_t_start=0.3,
                     polish_steps=250, polish_lr=1.0, polish_tol=1e-7,
-                    max_force=None):
+                    max_force=None, length=None, length_cfg_weight=0.0):
     """Integrate the flow ODE with an arbitrary inference-time constraint force.
 
     Mirrors `generate_particle_trajectories`'s obstacle branch exactly, only
@@ -179,6 +179,14 @@ def guided_generate(model, meta, particles, force=None, num_samples=1, steps=100
 
     With `force=None` this is plain unguided generation, which is what the
     experiments use as their reference curve.
+
+    * **Length** -- `length` drives the trained FiLM length channel of a
+      `length_cond` checkpoint, with `length_cfg_weight` as its own guidance
+      scale, exactly as `generate_particle_trajectories` does it. Left at
+      `None` the model keeps seeing its `null_length_token`, so every earlier
+      run of this function is reproduced bit for bit. Passing both `length` and
+      `force` is the one arm that combines learned conditioning with the
+      inference-time constraint.
     """
     model.eval()
     nxi, nd = meta['nxi'], meta['nd']
@@ -194,6 +202,14 @@ def guided_generate(model, meta, particles, force=None, num_samples=1, steps=100
     x = torch.randn(num_samples, nxi, nd, device=dev, generator=g)
     dt = 1.0 / steps
 
+    length_b = None
+    if length is not None:
+        length_b = torch.as_tensor(length, device=dev, dtype=torch.float32).reshape(-1)
+        if length_b.numel() == 1:
+            length_b = length_b.expand(num_samples).contiguous()
+    len_batch = None if length_b is None else torch.cat([length_b, length_b], dim=0)
+    len_kw = {} if length_b is None else dict(length=len_batch)
+
     mask_batch = torch.cat([
         torch.zeros(num_samples, dtype=torch.bool, device=dev),
         torch.ones(num_samples, dtype=torch.bool, device=dev),
@@ -203,9 +219,22 @@ def guided_generate(model, meta, particles, force=None, num_samples=1, steps=100
     for step in range(steps):
         t = torch.full((num_samples,), step * dt, device=dev)
         v_batch, _ = model(torch.cat([x, x], dim=0), torch.cat([t, t], dim=0),
-                           particle_batch, cond_drop_mask=mask_batch)
+                           particle_batch, cond_drop_mask=mask_batch, **len_kw)
         v_cond, v_null = v_batch.chunk(2, dim=0)
         v = v_null + meta['cfg_weight'] * (v_cond - v_null)
+
+        # Separate guidance for the length. `cond_drop_mask` only drops the
+        # *density* conditioning, so both CFG branches above see the same
+        # length and it largely cancels in their difference -- that is what
+        # this third pass exists for: same density, null length token, and the
+        # difference is what the length request alone does to the field.
+        if length_b is not None and length_cfg_weight != 0.0:
+            v_free, _ = model(
+                x, t, particles,
+                cond_drop_mask=torch.zeros(num_samples, dtype=torch.bool, device=dev),
+                length=length_b,
+                length_drop_mask=torch.ones(num_samples, dtype=torch.bool, device=dev))
+            v = v + length_cfg_weight * (v_cond - v_free)
 
         if force is not None:
             t_now = step * dt

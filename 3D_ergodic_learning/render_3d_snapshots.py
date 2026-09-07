@@ -16,6 +16,7 @@ import os
 
 import numpy as np
 import plotly.graph_objects as go
+from tqdm import tqdm
 
 WHITE_INFERNO = [
     [0.0, '#ffffff'], [0.25, '#fee0b6'], [0.5, '#fc8d59'],
@@ -92,7 +93,7 @@ def render_entry(entry, mesh, png_path=None, html_path=None,
                        roughness=0.5, fresnel=0.2),
         lightposition=dict(x=200, y=-150, z=250),
         flatshading=False,
-        name='oberflaeche', showscale=False, hoverinfo='skip',
+        name='surface', showscale=False, hoverinfo='skip',
     ))
 
     edges = np.vstack([f[:, [0, 1]], f[:, [1, 2]], f[:, [2, 0]]])
@@ -110,7 +111,7 @@ def render_entry(entry, mesh, png_path=None, html_path=None,
         fig.add_trace(go.Scatter3d(
             x=xs, y=ys, z=zs, mode='lines',
             line=dict(color='#c7cbd6', width=2.5),
-            hoverinfo='skip', name='umriss',
+            hoverinfo='skip', name='outline',
         ))
 
     fig.add_trace(go.Scatter3d(
@@ -118,14 +119,14 @@ def render_entry(entry, mesh, png_path=None, html_path=None,
         mode='markers',
         marker=dict(size=sizes, color=gewicht[order], colorscale=WHITE_INFERNO,
                     opacity=0.9, line=dict(width=0)),
-        hoverinfo='skip', name='zieldichte',
+        hoverinfo='skip', name='target density',
     ))
 
     fig.add_trace(go.Scatter3d(
         x=bahn[:, 0], y=bahn[:, 1], z=bahn[:, 2],
         mode='lines',
         line=dict(color='#00C853', width=9),
-        hoverinfo='skip', name='trajektorie',
+        hoverinfo='skip', name='trajectory',
     ))
     fig.add_trace(go.Scatter3d(
         x=[bahn[0, 0]], y=[bahn[0, 1]], z=[bahn[0, 2]],
@@ -202,18 +203,19 @@ def main():
     if args.shapes:
         entries = [e for e in entries if e['shape'] in args.shapes]
 
-    n = len(entries)
-    for i, entry in enumerate(entries):
+    balken = tqdm(entries, desc='Snapshots', unit='scene',
+                  bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} '
+                             '[{elapsed}<{remaining}, {rate_fmt}]{postfix}')
+    for entry in balken:
         surf = entry['surface']
         shape = entry['shape']
+        balken.set_postfix_str(f'{surf}/{shape}', refresh=False)
         sub = os.path.join(out_dir, surf)
         os.makedirs(sub, exist_ok=True)
         png_path = os.path.join(sub, f'{shape}.png') if write_png else None
         html_path = os.path.join(sub, f'{shape}.html') if write_html else None
         render_entry(entry, meshes[surf], png_path=png_path, html_path=html_path,
                      html_offline=args.html_offline, surf_alpha=args.surf_alpha)
-        if (i + 1) % 10 == 0 or i == n - 1:
-            print(f'[{i+1}/{n}] {surf}/{shape}')
 
     print('done ->', out_dir)
 

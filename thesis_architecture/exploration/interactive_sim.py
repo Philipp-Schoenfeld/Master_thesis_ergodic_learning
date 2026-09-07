@@ -24,6 +24,7 @@ Missionen in einzelne Runden, die sich anhalten und animiert abfahren lassen.
 
 import argparse
 import contextlib
+import math
 import os
 import sys
 import threading
@@ -75,6 +76,24 @@ D_EXECUTE_FRAC = 0.15
 # Niveaumengen-Schaetzung, in acquisition.py als `phi_lse` gefuehrt.
 PHI_UI = ['ucb', 'mass', 'eid', 'niveau']
 PHI_INTERNAL = {'ucb': 'ucb', 'mass': 'mass', 'eid': 'eid', 'niveau': 'lse'}
+
+#: Eine Laengeneinheit = die Diagonale der Zieldomaene [0,1]^2, dieselbe
+#: Definition wie `exploration_optimierung/mission.LENGTH_UNIT`.
+LENGTH_UNIT = math.sqrt(2.0)
+
+#: Ergebnis der vollen Holdout-Optimierung (`exploration_optimierung/
+#: optimize.py --search voll`, 25 Holdout-Formen, 2 Seeds, 768 Auswertungen
+#: mit SVGD-Verfeinerung / 128 ohne), siehe
+#: `exploration_optimierung/results/bestwerte_beide.json`. In beiden Studien
+#: gewinnt das Level-Set-Modell ('niveau', Schwelle tau); die Variante *mit*
+#: SVGD-Verfeinerung erreicht das niedrigere J (0.258 gegen 0.261 ohne SVGD)
+#: und ist deshalb die Voreinstellung des "Optimal Policy"-Knopfs.
+OPTIMAL_POLICY = {
+    'ohne_svgd': dict(phi_ui='niveau', tau=0.4307, svgd_iters=0, n_exec=6,
+                      J=0.2612),
+    'mit_svgd':  dict(phi_ui='niveau', tau=0.6067, svgd_iters=25, n_exec=6,
+                      J=0.2581),
+}
 
 SOLVERS = ['A (Open Loop)', 'C (Receding Horizon)', 'D (Ergodic Debt)']
 SOLVER_DESC = {
@@ -478,121 +497,10 @@ def build_args(device, phi_model='ucb', kappa0=3.0, svgd_iters=0, phi_tau=0.25, 
     return a
 
 
-class SvgdRefiner:
-    """Verfeinert eine geplante Bahn mit dem bestehenden SVGD-Solver
-    (SE3_SVGD/svgd_engine.py + ergodic_core.py) — Ziel ist die aktuelle
-    Zieldichte Phi der jeweiligen Runde, nicht ein fest verdrahtetes Ziel wie
-    in `SE3_SVGD/tsvec_2d.py`.
-
-    Ablauf pro Aufruf: `N_PARTICLES` Kopien der vom Netz gelieferten Bahn,
-    leicht verrauscht, als Partikelschwarm; SVGD zieht sie ueber `n_iters`
-    Adam-Schritte auf die Fourier-Koeffizienten von Phi; zurueckgegeben wird
-    der Partikel mit der niedrigsten Endenergie. `n_iters=0` ist ein reiner
-    Durchreicher (kein SVGD) -- das ist die 0-Stellung des Reglers in der GUI.
-
-    Energie- und Adam-Gewichte identisch zu `SE3_SVGD/tsvec_2d.py`
-    (W_ERGODIC=600, W_SMOOTH=15, W_BOUNDARY=30); K=8 statt dessen K=10, damit
-    dieselbe Fourier-Basis wie die "Ergodizitaet vs. Phi"-Live-Metrik benutzt
-    wird und deren Anzeige die SVGD-Verfeinerung direkt sichtbar macht.
-    """
-
-    K = 8
-    DIM = 2
-    N_PARTICLES = 8
-    JITTER = 0.01
-    W_ERGODIC, W_SMOOTH, W_BOUNDARY = 600.0, 15.0, 30.0
-
-    def __init__(self, seed=0):
-        self.k_idx = ergo.build_fourier_indices(self.K, self.DIM)
-        self.Lambda_k = ergo.compute_lambda_k(self.k_idx)
-        self.rng = np.random.default_rng(seed)
-
-    def _phi_k(self, phi_grid):
-        R = phi_grid.shape[-1]
-        xs = np.linspace(0, 1, R)
-        Xg, Yg = np.meshgrid(xs, xs)
-        grid_pts = np.stack([Xg.ravel(), Yg.ravel()], axis=-1)
-        grid_w = np.clip(phi_grid.ravel(), 0.0, None)
-        return ergo.compute_target_fourier_coeffs(grid_pts, grid_w, self.k_idx)
-
-    def _energy_and_grad(self, phi_k, obstacle=None, obstacle_weight=20.0):
-        k_idx, Lambda_k = self.k_idx, self.Lambda_k
-        W_E, W_S, W_B = self.W_ERGODIC, self.W_SMOOTH, self.W_BOUNDARY
-
-        def fn(X_flat, T):
-            X = X_flat.reshape(T, 2)
-            F = ergo.fourier_basis_nd(X, k_idx)
-            c_k = F.mean(axis=0)
-            dF = ergo.fourier_basis_grad_nd(X, k_idx)
-            diff = c_k - phi_k
-            erg_cost = 0.5 * np.sum(Lambda_k * diff ** 2)
-            erg_grad = np.einsum('m,tmd->td', Lambda_k * diff, dF) / T
-
-            sm_cost = svgde.compute_smoothness_cost_numpy(X)
-            sm_grad = svgde.compute_smoothness_grad_numpy(X)
-            bd_cost = svgde.compute_boundary_cost_numpy(X)
-            bd_grad = svgde.compute_boundary_grad_numpy(X)
-
-            energy = W_E * erg_cost + W_S * sm_cost + W_B * bd_cost
-            grad = W_E * erg_grad + W_S * sm_grad + W_B * bd_grad
-            
-            if obstacle is not None:
-                energy += obstacle_weight * obstacle.penalty(X)
-                grad += obstacle_weight * obstacle.grad_penalty(X)
-
-            return energy, grad.ravel()
-        return fn
-
-    def refine(self, curve_np, phi_np, n_iters, nxi=None, obstacle=None, obstacle_weight=20.0):
-        """curve_np: (T,2) Startbahn (vom Netz). phi_np: (R,R) Zieldichte,
-        Werte in [0,1]. -> (T,2) verfeinerte Bahn."""
-        if n_iters <= 0:
-            return curve_np
-        T = curve_np.shape[0]
-        phi_k = self._phi_k(phi_np)
-        energy_fn_orig = self._energy_and_grad(phi_k, obstacle=obstacle, obstacle_weight=obstacle_weight)
-
-        if nxi is not None and nxi != T:
-            from obstacles import bspline_basis_matrix
-            B = bspline_basis_matrix(nxi, T, 5)
-            P, _, _, _ = np.linalg.lstsq(B, curve_np, rcond=None)
-            
-            def energy_fn(P_flat, N_pts):
-                P_mat = P_flat.reshape(nxi, 2)
-                X = B @ P_mat
-                energy, grad_X = energy_fn_orig(X.ravel(), T)
-                grad_X_mat = grad_X.reshape(T, 2)
-                grad_P_mat = B.T @ grad_X_mat
-                return energy, grad_P_mat.ravel()
-
-            jitter = self.rng.normal(scale=self.JITTER, size=(self.N_PARTICLES, nxi, 2))
-            init = P[None] + jitter
-            particles = init.reshape(self.N_PARTICLES, nxi * 2)
-            
-            with open(os.devnull, 'w') as devnull, \
-                    contextlib.redirect_stderr(devnull):
-                particles, _ = svgde.run_svgd_numpy(
-                    particles, nxi, int(n_iters), energy_fn, dim=self.DIM,
-                    label='SVGD-Verfeinerung')
-                    
-            particles = particles.reshape(self.N_PARTICLES, nxi, 2)
-            scores = [energy_fn(p.ravel(), nxi)[0] for p in particles]
-            best_P = particles[int(np.argmin(scores))]
-            return B @ best_P
-        else:
-            jitter = self.rng.normal(scale=self.JITTER, size=(self.N_PARTICLES, T, 2))
-            init = np.clip(curve_np[None] + jitter, 0.02, 0.98)
-            particles = init.reshape(self.N_PARTICLES, T * 2)
-
-            with open(os.devnull, 'w') as devnull, \
-                    contextlib.redirect_stderr(devnull):
-                particles, _ = svgde.run_svgd_numpy(
-                    particles, T, int(n_iters), energy_fn_orig, dim=self.DIM,
-                    label='SVGD-Verfeinerung')
-
-            particles = particles.reshape(self.N_PARTICLES, T, 2)
-            scores = [energy_fn_orig(p.ravel(), T)[0] for p in particles]
-            return particles[int(np.argmin(scores))]
+# Die SVGD-Nachverfeinerung ist nach `common/svgd_refine.py` gezogen, damit die
+# Batch-Suche in `exploration_optimierung/` dieselbe Klasse in Arbeitsprozessen
+# benutzen kann, ohne den Matplotlib-/MuJoCo-Rumpf dieser Datei mitzuladen.
+from common.svgd_refine import SvgdRefiner  # noqa: E402,F401
 
 
 # ===========================================================================
@@ -652,6 +560,7 @@ class App:
         # damit die GUI waehrend dessen nicht einfriert; der Fortschrittsbalken
         # zeigt die verstrichene Zeit gegen eine laufend kalibrierte Schaetzung.
         self.busy = False
+        self._last_play_t = time.perf_counter()
         self.est_plan_time = self.PLAN_TIME_EST_INIT
         self.est_svgd_time = 0.5
         self._plan_thread = None
@@ -984,6 +893,14 @@ class App:
         self.s_length = Slider(ax_length, 'Target Length', 0.0, 10.0, valinit=self.target_length_ui, valstep=0.1, color='#FF5722')
         self.s_length.on_changed(self._on_target_length)
 
+        # Optimal-Policy-Knopf: uebernimmt Phi-Modell, tau/kappa/w, SVGD-Iters
+        # und Ziellaenge aus der vollen Holdout-Optimierung (siehe
+        # OPTIMAL_POLICY oben).
+        ax_optimal = self.fig.add_axes([slider_x, 0.322, slider_w, 0.022])
+        self.b_optimal = Button(ax_optimal, '★ Optimal Policy',
+                                color='#FFD54F', hovercolor='#FFCA28')
+        self.b_optimal.on_clicked(self._on_optimal_policy)
+
         # ── Live-Ansichten für μ und σ unten rechts ──────────────────────────
         self.ax_mu_live = self.fig.add_axes([0.79, 0.03, 0.09, 0.20])
         self.ax_sigma_live = self.fig.add_axes([0.90, 0.03, 0.09, 0.20])
@@ -1283,7 +1200,60 @@ class App:
         self.target_length_ui = float(val)
         self.reset(replan=True)
 
+    def _on_optimal_policy(self, event):
+        """Wendet die per Missions-Optimierung ermittelte beste Einstellung an
+        (`exploration_optimierung/optimize.py --search voll`, volle Holdout-
+        Menge von 25 Formen, 768 Auswertungen, siehe OPTIMAL_POLICY oben und
+        `exploration_optimierung/results/bestwerte_beide.json`). Setzt alle
+        betroffenen Widgets programmatisch, ohne deren Callback-Kette mehrfach
+        zu feuern -- `reset()` laeuft am Ende genau einmal."""
+        pol = OPTIMAL_POLICY['mit_svgd']
+        self.phi_ui = pol['phi_ui']
+        self.niveau_tau = pol['tau']
+        self.svgd_iters = pol['svgd_iters']
+        self.target_length_ui = round(pol['n_exec'] * LENGTH_UNIT, 1)
+
+        self.r_phi.eventson = False
+        self.r_phi.set_active(PHI_UI.index(self.phi_ui))
+        self.r_phi.eventson = True
+
+        self._rebuild_tuning_slider()
+
+        self.s_svgd.eventson = False
+        self.s_svgd.set_val(self.svgd_iters)
+        self.s_svgd.eventson = True
+
+        self.s_length.eventson = False
+        self.s_length.set_val(self.target_length_ui)
+        self.s_length.eventson = True
+
+        self._update_phi_title()
+        self.status_txt.set_text(
+            f"Optimal Policy: Φ=niveau, τ={self.niveau_tau:.2f}, "
+            f"SVGD={self.svgd_iters}, Ziellänge={self.target_length_ui:.1f} "
+            f"(J={pol['J']:.3f}, volle Holdout-Optimierung)")
+        self.reset(replan=True)
+        self.fig.canvas.draw_idle()
+
+    def _no_companion_arrays(self):
+        """Writeboard/MuJoCo brauchen die Shared-Memory-Arrays, die nur
+        `main.py` (die "Schaltzentrale") anlegt und durchreicht -- bei einem
+        Direktstart per `python interactive_sim.py` sind sie None. Ohne
+        diese Pruefung wuerde der Klick auf "Open Writeboard"/"Open MuJoCo"
+        einen Subprozess starten, der sofort mit
+        `AttributeError: 'NoneType' object has no attribute 'get_lock'`
+        abstuerzt (die 2D-Simulation selbst laeuft dabei ungestoert weiter,
+        der Fehler taucht nur unauffaellig auf der Konsole auf)."""
+        if self.shared_truth is None or self.agent_info_array is None:
+            print('[Schaltzentrale] Writeboard/MuJoCo brauchen main.py: '
+                  'starte "python main.py" statt "python interactive_sim.py", '
+                  'um sie zu oeffnen.')
+            return True
+        return False
+
     def _on_open_writeboard(self, event):
+        if self._no_companion_arrays():
+            return
         import multiprocessing as mp
         if not hasattr(self, 'p_wb') or not self.p_wb.is_alive():
             from writeboard import run_writeboard
@@ -1291,9 +1261,16 @@ class App:
             self.p_wb.start()
 
     def _on_open_mujoco(self, event):
+        if self._no_companion_arrays():
+            return
         import multiprocessing as mp
         if not hasattr(self, 'p_mj') or not self.p_mj.is_alive():
-            from mujoco_sim.run_mujoco import run_mujoco_sim
+            try:
+                from mujoco_sim.run_mujoco import run_mujoco_sim
+            except ModuleNotFoundError as e:
+                print(f"[MuJoCo] Fehler beim Laden: {e}\n"
+                      "Installiere MuJoCo mit:  pip install mujoco")
+                return
             self.p_mj = mp.Process(target=run_mujoco_sim, args=(self.agent_info_array, self.shared_truth))
             self.p_mj.start()
 
@@ -1418,7 +1395,17 @@ class App:
             self.playing = True
         else:
             self.playing = not self.playing
+        if self.playing:
+            # Frisch stempeln: sonst wuerde `_advance_index` beim naechsten
+            # Tick die seit der letzten Wiedergabe (also inkl. Pausezeit)
+            # verstrichene Zeit als Bogenlaenge nachholen wollen.
+            self._last_play_t = time.perf_counter()
         self.b_play.label.set_text('❚❚ Pause' if self.playing else '▶ Play')
+        # Der Timer-Tick zeichnet neu ausschliesslich wenn sich der
+        # Missionszustand aendert (siehe `_tick_inner`); ein reiner
+        # Play/Pause-Toggle im Ruhezustand aendert dort nichts, also muss der
+        # Label-Wechsel hier explizit angestossen werden.
+        self.fig.canvas.draw_idle()
 
     def _update_phi_title(self):
         """Titel des rechten Panels: zeigt die mathematische Definition
@@ -1603,8 +1590,25 @@ class App:
             except Exception:
                 pass
 
+    def _companion_active(self):
+        """True, sobald Writeboard oder MuJoCo-Fenster tatsaechlich laufen.
+
+        `main.py` (die "Schaltzentrale") reicht die Shared-Memory-Arrays
+        immer durch, unabhaengig davon, ob der Nutzer die Buttons "Open
+        Writeboard"/"Open MuJoCo" je gedrueckt hat. Ohne diese Abfrage wuerde
+        jeder einzelne Timer-Tick (alle FRAME_MS=55ms) Locks nehmen, ein
+        96x96-Wahrheitsgitter kopieren und in einen Torch-Tensor auf die GPU
+        umwandeln -- fuer Prozesse, die gar nicht existieren. Kostet fast
+        nichts einzeln, aber 18x/Sekunde dauerhaft, komplett umsonst, solange
+        beide Zusatzfenster geschlossen bleiben."""
+        wb = getattr(self, 'p_wb', None)
+        mj = getattr(self, 'p_mj', None)
+        return (wb is not None and wb.is_alive()) or (mj is not None and mj.is_alive())
+
     def _tick_inner(self):
-        if self.shared_obstacles is not None:
+        companion = self._companion_active()
+        changed = False
+        if self.shared_obstacles is not None and companion:
             with self.shared_obstacles.get_lock():
                 arr = np.frombuffer(self.shared_obstacles.get_obj(), dtype=np.float64).copy()
             new_obstacles = []
@@ -1629,16 +1633,23 @@ class App:
                     self.reset(replan=True)
                     return
 
-        if self.shared_truth is not None:
+        # Nur ein tatsaechlich veraendertes Wahrheitsgitter (Writeboard-Edit)
+        # rechtfertigt einen Redraw -- ein bloss offenes, aber untaetiges
+        # Writeboard soll die Schaltzentrale nicht dauerhaft auf volle
+        # Redraw-Rate zurueckwerfen.
+        if self.shared_truth is not None and companion:
             with self.shared_truth.get_lock():
                 np_truth = np.frombuffer(self.shared_truth.get_obj(), dtype=np.float64).reshape((self.TRUTH_RES, self.TRUTH_RES))
-                self.truth_np = np_truth.copy()
-            self.custom_truth_np = torch.from_numpy(self.truth_np).float().to(self.device)
-            self.img_truth.set_data(self.truth_np)
-            if hasattr(self, 'mission'):
-                self.mission.truth = self.custom_truth_np
-                
-        if self.agent_info_array is not None:
+                new_truth = np_truth.copy()
+            if not np.array_equal(new_truth, self.truth_np):
+                self.truth_np = new_truth
+                self.custom_truth_np = torch.from_numpy(self.truth_np).float().to(self.device)
+                self.img_truth.set_data(self.truth_np)
+                if hasattr(self, 'mission'):
+                    self.mission.truth = self.custom_truth_np
+                changed = True
+
+        if self.agent_info_array is not None and companion:
             pos = (0.5, 0.5)
             if self.cur is not None:
                 seg = self.cur['seg'].detach().cpu().numpy()
@@ -1653,12 +1664,13 @@ class App:
             self._redraw()
             return
         if self.playing and not self.finished and self.cur is not None:
+            changed = True
             seg = self.cur['seg'].detach().cpu().numpy()
             new_idx = self._advance_index(seg, self.play_idx)
             pts = seg[self.play_idx:new_idx]
             self._reveal(pts, radius=self.mission.args.sensor_radius)
             
-            if self.eraser_mode and len(pts) > 0 and self.shared_truth is not None:
+            if self.eraser_mode and len(pts) > 0 and self.shared_truth is not None and companion:
                 with self.shared_truth.get_lock():
                     np_truth = np.frombuffer(self.shared_truth.get_obj(), dtype=np.float64).reshape((self.TRUTH_RES, self.TRUTH_RES))
                     pts_2d = np.atleast_2d(pts)
@@ -1675,7 +1687,17 @@ class App:
                 self.driven_np = np.concatenate([self.driven_np, seg], axis=0)
                 self.cur = None  # Runde fertig gefahren — naechste wird geplant
                 self._advance_round()
-        self._redraw()
+        # Idle-Fall (nicht am Spielen, kein Zusatzfenster offen, nichts hat
+        # sich geaendert): kein Grund, alle 55ms die komplette Figur (36
+        # Achsen, ~150-250ms Zeichenzeit gemessen) plus alle Live-Metriken
+        # neu zu berechnen. Genau dieser bislang unbedingte Redraw war der
+        # Hauptgrund fuer die traege GUI im Ruhezustand -- der Timer feuerte
+        # staendig einen teuren Redraw ab, obwohl sich nichts sichtbar
+        # veraendert hatte. Explizite Nutzerinteraktionen (Slider, Buttons,
+        # Maus-Drag, Shape-Wechsel) loesen ihr eigenes `draw_idle()` bereits
+        # an Ort und Stelle aus und sind von dieser Abkuerzung unberuehrt.
+        if changed:
+            self._redraw()
 
     def _advance_index(self, seg, idx):
         """
@@ -1689,19 +1711,36 @@ class App:
         folgen kann. Jetzt legt der Agent pro Sekunde eine feste Strecke auf dem
         Brett zurueck -- dieselbe physikalische Geschwindigkeit, mit der die
         MuJoCo-Seite den Arm faehrt.
+
+        **Getaktet nach echter Wanduhrzeit, nicht nach `FRAME_MS`.** Tk's
+        `after()` reiht den naechsten Tick erst ein, *nachdem* der aktuelle
+        Callback zurueckgekehrt ist (siehe `_backend_tk.TimerTk._on_timer`)
+        -- der reale Abstand zwischen zwei Ticks ist also `FRAME_MS +
+        Zeichenzeit`, nicht `FRAME_MS`. Ein voller Figure-Redraw kostete hier
+        gemessen 150-600ms, also das 3- bis 10-fache der angenommenen 55ms.
+        Mit einem festen `FRAME_MS`-Inkrement pro Tick legte der Agent
+        dadurch pro echter Sekunde nur einen Bruchteil der eingestellten
+        Geschwindigkeit zurueck -- exakt das gemeldete "bewegt sich nur sehr
+        langsam". Jetzt wird die seit dem letzten Tick tatsaechlich
+        verstrichene Zeit gemessen und dafuer verwendet.
         """
         if len(seg) < 2:
             return len(seg)
         arc = np.concatenate([[0.0],
                               np.cumsum(np.linalg.norm(np.diff(seg, axis=0), axis=1))])
+        now = time.perf_counter()
         if idx <= 0:                      # neue Bahn -> Wegzaehler zuruecksetzen
             self.play_arc = 0.0
+            dt = self.FRAME_MS / 1000.0
+        else:
+            # Obergrenze gegen einen Zeitsprung nach einer Verzoegerung, die
+            # nichts mit Zeichenzeit zu tun hat (Fenster minimiert, Debugger-
+            # Pause, System-Suspend) -- sonst wuerde der Agent nach einer
+            # solchen Pause ein grosses Stueck der Bahn ueberspringen.
+            dt = min(now - self._last_play_t, 0.5)
+        self._last_play_t = now
         speed_ui = max_ui_speed(self.s_speed.val / 100.0)   # UI-Einheiten pro Sekunde
-        # Der Weg wird als Fliesskomma aufsummiert. Wuerde stattdessen pro Tick
-        # mindestens ein Stuetzpunkt uebersprungen, liefe eine grob abgetastete
-        # Bahn schneller als eingestellt -- bei 120 Punkten waeren aus 20 cm/s
-        # rund 32 cm/s geworden.
-        self.play_arc += speed_ui * (self.FRAME_MS / 1000.0)
+        self.play_arc += speed_ui * dt
         new_idx = int(np.searchsorted(arc, self.play_arc, side='left'))
         return int(min(len(seg), max(idx, new_idx)))
 

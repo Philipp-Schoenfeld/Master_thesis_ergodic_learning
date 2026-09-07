@@ -1,0 +1,44 @@
+{
+ "ckpt": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\transfer\\old_models\\netz3d_flaechen.pt",
+ "name": "old_netz3d_flaechen",
+ "zeit": "2026-09-03 12:09",
+ "argumente": {
+  "ckpt": "../transfer/old_models/netz3d_flaechen.pt",
+  "name": "old_netz3d_flaechen",
+  "out_root": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\3D_ergodic_learning\\auswertungen",
+  "shapes": 25,
+  "shape_names": null,
+  "surfaces": null,
+  "steps": 100,
+  "cfg_weight": 2.0,
+  "n_particles": 512,
+  "standoff_target": 0.12,
+  "seed": 0,
+  "device": null,
+  "html_offline": false,
+  "ab": 1,
+  "bis": 6,
+  "ohne_png": false
+ },
+ "nxi": 25,
+ "D": 384,
+ "orientation": true,
+ "epoch": 423,
+ "loss": 0.6975979991257191,
+ "params_mio": 87.49,
+ "meta": {
+  "epoch": 423,
+  "loss": 0.6975979991257191,
+  "nxi": 25,
+  "D": 384,
+  "orientation": true
+ },
+ "dauer_s": {
+  "1 eval": 241.1,
+  "2 meshes": 4.6,
+  "3 viewer": 2.9,
+  "4 bilder": 784.7,
+  "5 diagramme": 5.8,
+  "6 index": 2.3
+ }
+}

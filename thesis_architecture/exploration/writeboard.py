@@ -137,6 +137,11 @@ class Writeboard:
             self.fig.canvas.draw_idle()
         
     def _on_reset(self, event):
+        if self.truth_array is None:
+            self.grid[:] = 0.0
+            self.img.set_data(self.grid)
+            self.fig.canvas.draw_idle()
+            return
         with self.truth_array.get_lock():
             np_truth = np.frombuffer(self.truth_array.get_obj(), dtype=np.float64).reshape((self.TRUTH_RES, self.TRUTH_RES))
             np_truth[:] = 0.0
@@ -174,14 +179,19 @@ class Writeboard:
         y, x = np.ogrid[-y_idx:res-y_idx, -x_idx:res-x_idx]
         blob = np.exp(-(x**2 + y**2) / (2 * sigma**2))
         
-        with self.truth_array.get_lock():
-            # Read shared memory
-            np_truth = np.frombuffer(self.truth_array.get_obj(), dtype=np.float64).reshape((res, res))
-            # Modify
-            np_truth += blob * 0.25
-            np.clip(np_truth, 0, 1, out=np_truth)
-            # Update local display grid instantly for responsiveness
-            self.grid[:] = np_truth[:]
+        if self.truth_array is None:
+            # Standalone-Modus: nur lokales Grid aktualisieren
+            self.grid += blob * 0.25
+            np.clip(self.grid, 0, 1, out=self.grid)
+        else:
+            with self.truth_array.get_lock():
+                # Read shared memory
+                np_truth = np.frombuffer(self.truth_array.get_obj(), dtype=np.float64).reshape((res, res))
+                # Modify
+                np_truth += blob * 0.25
+                np.clip(np_truth, 0, 1, out=np_truth)
+                # Update local display grid instantly for responsiveness
+                self.grid[:] = np_truth[:]
             
         self.img.set_data(self.grid)
         self.fig.canvas.draw_idle()
@@ -194,12 +204,16 @@ class Writeboard:
         # Update from shared memory
         res = self.TRUTH_RES
         
-        with self.agent_info.get_lock():
-            ax, ay, a_rad, eraser_mode = self.agent_info[:]
+        if self.agent_info is not None:
+            with self.agent_info.get_lock():
+                ax, ay, a_rad, eraser_mode = self.agent_info[:]
+        else:
+            ax, ay, a_rad, eraser_mode = 0.5, 0.5, 0.06, 0.0
             
-        with self.truth_array.get_lock():
-            np_truth = np.frombuffer(self.truth_array.get_obj(), dtype=np.float64).reshape((res, res))
-            self.grid[:] = np_truth[:]
+        if self.truth_array is not None:
+            with self.truth_array.get_lock():
+                np_truth = np.frombuffer(self.truth_array.get_obj(), dtype=np.float64).reshape((res, res))
+                self.grid[:] = np_truth[:]
             
         self.img.set_data(self.grid)
         

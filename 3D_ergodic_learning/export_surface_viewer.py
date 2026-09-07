@@ -86,7 +86,7 @@ def main():
     with open(a.out, 'w') as f:
         json.dump(out, f, separators=(',', ':'))
     mb = os.path.getsize(a.out) / 2 ** 20
-    print(f'{len(szenen)} Szenen, {len(formen)} Formen × {len(flaechen)} Flächen')
+    print(f'{len(szenen)} scenes, {len(formen)} shapes \u00d7 {len(flaechen)} surfaces')
     print(f'[json] {a.out}  ({mb:.2f} MiB)')
 
 

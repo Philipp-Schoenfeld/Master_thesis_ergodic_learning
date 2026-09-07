@@ -24,6 +24,7 @@ ueberhaupt noch eine Bedeutung hat.
 import argparse, json, os, sys, time
 import numpy as np
 import torch
+from tqdm import tqdm
 
 _here = os.path.dirname(os.path.abspath(__file__))
 if _here not in sys.path:
@@ -85,13 +86,17 @@ def main():
     ck = torch.load(a.ckpt, map_location=a.device, weights_only=False)
     nxi, D = ck.get('nxi', 25), ck.get('D', 384)
     ori = bool(ck.get('orientation', False))
+    start_cond = bool(ck.get('start_cond', False))
     model = ParticleCrossAttnFlowNetwork(nxi=nxi, nd=3, D=D,
-                                         predict_orientation=ori).to(a.device)
+                                         predict_orientation=ori,
+                                         start_cond=start_cond).to(a.device)
     model.load_state_dict(ck['model_state_dict'])
     model.eval()
-    print(f"Netz: D={D} nxi={nxi} Orientierung={ori}  Epoche {ck.get('epoch','?')}"
-          f"  Verlust {ck.get('loss', float('nan')):.4f}")
-    print(f"Geraet: {a.device}")
+    if start_cond:
+        print("Start conditioning: on (no start point known -> null start token, neutral)")
+    print(f"Network: D={D} nxi={nxi} orientation={ori}  Epoch {ck.get('epoch','?')}"
+          f"  Loss {ck.get('loss', float('nan')):.4f}")
+    print(f"Device: {a.device}")
 
     # ── Holdout-Formen: die 2D-Dichten, die projiziert werden ────────────
     from shape_library import pdf_on_grid
@@ -102,8 +107,8 @@ def main():
     if a.shape_names:
         missing = [nm for nm in a.shape_names if nm not in defs]
         if missing:
-            p.error(f"Unbekannte Holdout-Form(en): {', '.join(missing)}. "
-                    f"Verfuegbar: {', '.join(sorted(defs))}")
+            p.error(f"Unknown holdout shape(s): {', '.join(missing)}. "
+                    f"Available: {', '.join(sorted(defs))}")
         for nm in a.shape_names:
             d2, _, _ = pdf_on_grid(defs[nm], resolution=a.dens_res)
             d2 = np.asarray(d2, dtype=np.float64)
@@ -115,7 +120,7 @@ def main():
             shapes_.append((nm, d2 / max(d2.max(), 1e-12)))
             if len(shapes_) >= a.shapes:
                 break
-    print(f"{len(shapes_)} Holdout-Formen: {', '.join(n for n, _ in shapes_)}")
+    print(f"{len(shapes_)} holdout shapes: {', '.join(n for n, _ in shapes_)}")
 
     k_idx, Lam = make_k_grid(a.erg_K)
     k_idx = torch.tensor(k_idx, device=a.device)
@@ -123,16 +128,20 @@ def main():
 
     surf = {k: surfaces.build(k) for k in a.surfaces}
     for k, s in surf.items():
-        print(f"  {s.label:22s} {len(s.mesh.faces):6d} Dreiecke — {s.note}")
+        print(f"  {s.label:22s} {len(s.mesh.faces):6d} triangles \u2014 {s.note}")
 
     rows, dump = [], {'meta': {k: v for k, v in vars(a).items()
                               if isinstance(v, (int, float, str, bool))},
                       'eintraege': []}
     t0 = time.perf_counter()
 
-    for si, (name, d2) in enumerate(shapes_):
-        print(f"\n[{si + 1}/{len(shapes_)}] {name}")
-        for key in a.surfaces:
+    szenen = [(si, name, d2, key)
+             for si, (name, d2) in enumerate(shapes_) for key in a.surfaces]
+    balken = tqdm(szenen, desc='Scenes', unit='scene',
+                  bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} '
+                             '[{elapsed}<{remaining}, {rate_fmt}]{postfix}')
+    for si, name, d2, key in balken:
+            balken.set_postfix_str(f'{name}/{key}', refresh=False)
             s = surf[key]
             pts_s, nrm_s, w_s = surfaces.project(
                 s, d2, n_points=a.surface_points, seed=a.seed + si)
@@ -183,9 +192,9 @@ def main():
                              standoff=so_m, standoff_sd=so_s,
                              pointing_deg=point_deg, path_len=plen,
                              hit_frac=hit))
-            print(f"    {s.label:22s} erg={erg:.5f} cov={cov:.4f} "
-                  f"standoff={so_m:.3f}±{so_s:.3f} "
-                  f"blick={point_deg:6.1f}°  L={plen:.2f}")
+            balken.write(f"  [{name:14s}] {s.label:22s} erg={erg:.5f} cov={cov:.4f} "
+                        f"standoff={so_m:.3f}\u00b1{so_s:.3f} "
+                        f"point={point_deg:6.1f}\u00b0  L={plen:.2f}")
 
             # Eine Auswahl der Oberflaeche zum Zeichnen — mit Vorrang fuer die
             # beschrifteten Punkte, damit die Dichte nicht wegsubsampelt wird.
@@ -216,16 +225,16 @@ def main():
     print(f"\n  [csv] {cp}\n  [json] {a.out_dir}/bahnen.json")
 
     print("\n" + "=" * 78)
-    print(f"{'Oberflaeche':22s} {'Ergodisch':>10s} {'Abdeckung':>10s} "
-          f"{'Standoff':>10s} {'Blick':>8s} {'Laenge':>8s}")
+    print(f"{'Surface':22s} {'Ergodic':>10s} {'Coverage':>10s} "
+          f"{'Standoff':>10s} {'Point':>8s} {'Length':>8s}")
     print("-" * 78)
     for key in a.surfaces:
         sel = [r for r in rows if r['surface'] == key]
         f = lambda k: float(np.nanmean([r[k] for r in sel]))
         print(f"{surf[key].label:22s} {f('erg'):10.5f} {f('coverage'):10.4f} "
-              f"{f('standoff'):10.3f} {f('pointing_deg'):7.1f}° {f('path_len'):8.2f}")
+              f"{f('standoff'):10.3f} {f('pointing_deg'):7.1f}\u00b0 {f('path_len'):8.2f}")
     print("=" * 78)
-    print(f"Gesamtzeit {time.perf_counter() - t0:.0f} s")
+    print(f"Total time {time.perf_counter() - t0:.0f} s")
 
 
 if __name__ == '__main__':

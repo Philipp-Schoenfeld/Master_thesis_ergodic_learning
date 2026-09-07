@@ -1,0 +1,94 @@
+{
+ "formen": [
+  "A",
+  "greek_upper_0",
+  "korean_5",
+  "digit_5",
+  "a_lc",
+  "rand_gmm_10",
+  "rand_gmm_20",
+  "rand_ana_poly_10",
+  "rand_ana_poly_20",
+  "rand_ana_poly_30",
+  "rand_gmm_complex_0",
+  "rand_gmm_complex_10",
+  "rand_gmm_complex_20",
+  "rand_gmm_complex_30",
+  "rand_ana_poly_complex_0",
+  "rand_ana_poly_complex_10",
+  "rand_ana_poly_complex_20",
+  "rand_ana_poly_complex_30",
+  "organic_0",
+  "organic_10",
+  "organic_20",
+  "organic_30",
+  "cjk_0",
+  "cjk_10",
+  "cjk_20"
+ ],
+ "flaechen": [
+  "ebene_flach",
+  "ebene_gekippt",
+  "ebene_diagonal",
+  "kugel",
+  "wuerfel",
+  "ei",
+  "bunny",
+  "prisma",
+  "kegel",
+  "torus"
+ ],
+ "labels": {
+  "ebene_flach": "Ebene, waagerecht",
+  "ebene_gekippt": "Ebene, 50\u00b0 gekippt",
+  "ebene_diagonal": "Ebene, Raumdiagonale",
+  "kugel": "Kugel",
+  "wuerfel": "W\u00fcrfel",
+  "ei": "Eiform",
+  "bunny": "Stanford-Bunny",
+  "prisma": "Dreiecksprisma",
+  "kegel": "Kegel",
+  "torus": "Torus"
+ },
+ "metriken": [
+  "erg",
+  "coverage",
+  "standoff_err",
+  "pointing_deg",
+  "path_len",
+  "hit_frac"
+ ],
+ "standoff_target": 0.12,
+ "gesamt": {
+  "erg": {
+   "mittel": 0.04642796458680727,
+   "median": 0.0463960108987853,
+   "max": 0.0944980836594784
+  },
+  "coverage": {
+   "mittel": 0.12339757627248764,
+   "median": 0.1225823387503624,
+   "max": 0.17563661932945251
+  },
+  "standoff_err": {
+   "mittel": 0.01342402450799942,
+   "median": 0.00956234067678452,
+   "max": 0.09140429377555848
+  },
+  "pointing_deg": {
+   "mittel": 23.082207807540893,
+   "median": 20.30416488647461,
+   "max": 107.23847961425781
+  },
+  "path_len": {
+   "mittel": 2.901562424659729,
+   "median": 2.7638704776763916,
+   "max": 5.670190811157227
+  },
+  "hit_frac": {
+   "mittel": 0.41866319999999996,
+   "median": 0.373425,
+   "max": 1.0
+  }
+ }
+}

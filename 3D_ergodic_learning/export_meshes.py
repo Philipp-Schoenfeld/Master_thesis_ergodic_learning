@@ -50,7 +50,7 @@ def main():
         q = np.clip(np.round(V * 1000), 0, 1000).astype(int)
         out[k] = dict(v=q.flatten().tolist(), f=F.flatten().tolist(),
                       n=len(V), t=len(F))
-        print(f'  {k:16s} {len(s.mesh.faces):7d} → {len(F):5d} Dreiecke')
+        print(f'  {k:16s} {len(s.mesh.faces):7d} → {len(F):5d} triangles')
 
     os.makedirs(os.path.dirname(a.out), exist_ok=True)
     with open(a.out, 'w') as f:

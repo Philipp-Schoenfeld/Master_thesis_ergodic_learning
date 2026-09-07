@@ -48,6 +48,7 @@ def load_model(ckpt_path, device):
         length_cond=length_cond,
         log_ref=ckpt.get('log_ref', 5.0),
         log_scale=ckpt.get('log_scale', 1.5),
+        length_freqs=ckpt.get('length_freqs', 'oktaven'),
     )
 
     if ckpt.get('selfsupervised', False):
@@ -57,9 +58,18 @@ def load_model(ckpt_path, device):
         module = 'flow_matching_particles_selfsupervised'
     elif length_cond:
         from flow_matching_cond_particles_length import ParticleCrossAttnFlowNetwork
+        # `length_freqs` MUSS mitgegeben werden. Die Frequenzen der
+        # Laengenkodierung sind ein *nicht-persistenter* Puffer (siehe
+        # LengthEmbedding), tauchen also nicht im state_dict auf: ein mit
+        # `--length_freqs linear` trainierter Checkpoint laedt ohne Fehler in
+        # ein Modell mit Oktav-Frequenzen und bekommt dann sin/cos-Merkmale,
+        # die das trainierte MLP nie gesehen hat. Die Laenge wirkt dann
+        # scheinbar gar nicht -- genau der Befund "null Laengenautoritaet" in
+        # constraints/README.md, der auf diesen fehlenden Parameter zurueckgeht.
         model = ParticleCrossAttnFlowNetwork(
             nxi=nxi, nd=nd, D=D, log_ref=meta['log_ref'],
-            log_scale=meta['log_scale']).to(device)
+            log_scale=meta['log_scale'],
+            length_freq_mode=meta['length_freqs']).to(device)
         kind = 'flow'
         module = 'flow_matching_cond_particles_length'
     elif start_cond:

@@ -1,0 +1,68 @@
+[
+  {
+    "name": "laenge",
+    "datei": "netz2d_laenge.pt",
+    "pfad": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\transfer\\netz2d_laenge.pt",
+    "meta": {
+      "nxi": 64,
+      "nd": 2,
+      "D": 384,
+      "n_particles": 256,
+      "epoch": 199,
+      "cfg_weight": 2.0,
+      "n_candidates": null,
+      "diversity_weight": null,
+      "lambda_erg": 0.0,
+      "use_obstacle": false,
+      "start_cond": false,
+      "length_cond": true,
+      "log_ref": 11.045310974121094,
+      "log_scale": 0.4041228548449263,
+      "length_freqs": "linear"
+    }
+  },
+  {
+    "name": "laenge_mitloss",
+    "datei": "netz2d_laenge_mitloss.pt",
+    "pfad": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\transfer\\netz2d_laenge_mitloss.pt",
+    "meta": {
+      "nxi": 64,
+      "nd": 2,
+      "D": 384,
+      "n_particles": 256,
+      "epoch": 199,
+      "cfg_weight": 2.0,
+      "n_candidates": null,
+      "diversity_weight": null,
+      "lambda_erg": 0.0,
+      "use_obstacle": false,
+      "start_cond": false,
+      "length_cond": true,
+      "log_ref": 11.045310974121094,
+      "log_scale": 0.4041228548449263,
+      "length_freqs": "linear"
+    }
+  },
+  {
+    "name": "startpunkt",
+    "datei": "netz2d_startpunkt.pt",
+    "pfad": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\transfer\\netz2d_startpunkt.pt",
+    "meta": {
+      "nxi": 25,
+      "nd": 2,
+      "D": 384,
+      "n_particles": 256,
+      "epoch": 159,
+      "cfg_weight": 2.0,
+      "n_candidates": null,
+      "diversity_weight": null,
+      "lambda_erg": 1300.0,
+      "use_obstacle": false,
+      "start_cond": true,
+      "length_cond": false,
+      "log_ref": 5.0,
+      "log_scale": 1.5,
+      "length_freqs": "oktaven"
+    }
+  }
+]
