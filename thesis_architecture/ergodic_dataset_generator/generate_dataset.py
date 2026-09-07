@@ -223,7 +223,10 @@ def plot_all_targets(shape_names, save_dir, resolution=70):
             shape_def = get_shape(name)
             pdf_grid, _, _ = pdf_on_grid(shape_def, resolution=resolution)
             
-            rng = np.random.default_rng(abs(hash(name)) % (2**31))
+            # Denselben Keim wie `generate_shapes` benutzen, sonst zeichnet die
+            # Vorschau eine Anfangsbahn von einem anderen Startpunkt aus als
+            # dem, mit dem spaeter wirklich geloest wird.
+            rng = np.random.default_rng(_namens_keim(name))
             x0 = tuple(rng.uniform(0.05, 0.25, size=2))
             init_traj = get_initial_trajectory(shape_def, x0=x0)
             
@@ -247,6 +250,22 @@ def plot_all_targets(shape_names, save_dir, resolution=70):
 
 
 # ── Generation ────────────────────────────────────────────────────────────────
+
+def _namens_keim(name):
+    """Zufallskeim aus einem Formnamen.
+
+    `hash()` auf Zeichenketten ist in Python je Prozess gesalzen, der Startpunkt
+    einer Form waere damit von Lauf zu Lauf ein anderer. Fuer die bestehenden
+    Modi bleibt es dabei — ihre Formen liegen laengst in der Datenbank und
+    werden beim Fortsetzen uebersprungen, ein Wechsel wuerde dort nur stillen
+    Unterschied erzeugen. Neue Laeufe koennen mit `--x0_stabil` auf eine
+    reproduzierbare Ableitung umschalten; der Wort-Modus tut das von sich aus.
+    """
+    if getattr(_ARGS, 'x0_stabil', False):
+        import zlib
+        return zlib.crc32(name.encode('utf-8')) % (2 ** 31)
+    return abs(hash(name)) % (2 ** 31)
+
 
 def generate_shapes(shape_names, split, conn, viz_dir, solver_kwargs, verbose=True):
     a, b = getattr(_ARGS, 'shapes_from', None), getattr(_ARGS, 'shapes_to', None)
@@ -276,7 +295,7 @@ def generate_shapes(shape_names, split, conn, viz_dir, solver_kwargs, verbose=Tr
         shape_def = get_shape(name)
         _, score_fn = make_pdf_and_score(shape_def)
 
-        rng = np.random.default_rng(abs(hash(name)) % (2**31))
+        rng = np.random.default_rng(_namens_keim(name))
         if getattr(_ARGS, 'x0_mode', 'ecke') == 'ueberall':
             m = getattr(_ARGS, 'x0_margin', 0.03)
             x0 = tuple(rng.uniform(m, 1.0 - m, size=2))
@@ -314,7 +333,11 @@ def generate_shapes(shape_names, split, conn, viz_dir, solver_kwargs, verbose=Tr
 def parse_args():
     p = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    p.add_argument('--mode',       choices=['preview', 'full', 'test_new', 'test_complex', 'flat'], default='preview',
+    p.add_argument('--x0_stabil', action='store_true', default=False,
+                   help='Startpunkte reproduzierbar aus dem Formnamen ableiten '
+                        '(crc32 statt des gesalzenen hash()). Der Wort-Modus '
+                        'setzt das selbst.')
+    p.add_argument('--mode',       choices=['preview', 'full', 'test_new', 'test_complex', 'flat', 'woerter'], default='preview',
                    help="'preview' = 5 shapes; 'full' = 775 shapes; 'test_new' = 10 custom test GMMs; "
                         "'test_complex' = 30 highly complex shapes; 'flat' = 400 flache Formen "
                         "(Sockel, weichgezeichnet, breite Moden, Konturen) + 12 flache Holdouts. "
@@ -409,6 +432,29 @@ def main():
         grid_path = os.path.join(_VIZ_DIR, f'test_complex_grid_iters{args.num_iters}_scale{args.score_scale}.png')
         plot_preview_grid(results, grid_path)
         print(f'\n  Test_complex complete. Check visualizations/test_complex/ and {os.path.basename(grid_path)}')
+
+    elif args.mode == 'woerter':
+        from shape_library import (word_shape_names, WORDS, WORDS_VAL,
+                                   N_WORD_X0)
+        args.x0_stabil = True          # Startpunkte reproduzierbar
+        train_names = word_shape_names('train')
+        val_names   = word_shape_names('val')
+        print('\n' + '=' * 60)
+        print('  WOERTER — %d Woerter x %d Startpunkte' % (len(WORDS), N_WORD_X0))
+        print('=' * 60)
+        print(f'  Training: {len(train_names)} Paare aus '
+              f'{len(WORDS) - len(WORDS_VAL)} Woertern')
+        print(f"  Holdout ('val'): {len(val_names)} Paare aus "
+              f"{len(WORDS_VAL)} zurueckgehaltenen Woertern "
+              f"({', '.join(WORDS_VAL)})")
+        print('  Diese Formen ergaenzen einen bestehenden Datensatz; die '
+              'bestehenden Eintraege bleiben unberuehrt.')
+        vd = os.path.join(_VIZ_DIR, 'woerter')
+        generate_shapes(train_names, split='train', conn=conn, viz_dir=vd,
+                        solver_kwargs=solver_kwargs, verbose=False)
+        generate_shapes(val_names, split='val', conn=conn, viz_dir=vd,
+                        solver_kwargs=solver_kwargs, verbose=False)
+        print('\n  Woerter fertig.')
 
     elif args.mode == 'flat':
         from shape_library import flat_shape_names

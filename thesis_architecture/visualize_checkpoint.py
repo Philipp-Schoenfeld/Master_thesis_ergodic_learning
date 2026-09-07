@@ -67,7 +67,16 @@ def cp_to_bspline(cps, pts=512, deg=5):
 
 # ── Drawing ───────────────────────────────────────────────────────────────────
 def draw_panel(ax, base_cp, gen_cps, density_grid, particles, title,
-               bspline_pts=512, bspline_deg=5, obstacle=None, free_cps=None):
+               bspline_pts=512, bspline_deg=5, obstacle=None, free_cps=None,
+               start=None):
+    """`start` ist der Punkt, auf den das Netz konditioniert wurde.
+
+    Er wird als eigener Marker gezeichnet, weil man der erzeugten Bahn sonst
+    nicht ansieht, ob sie ihn wirklich trifft — und genau das ist die Frage,
+    die ein Bild bei eingeschalteter Startpunkt-Konditionierung beantworten
+    soll. Ohne Marker sieht eine Bahn, die den Startpunkt verfehlt, genauso aus
+    wie eine, die ihn trifft.
+    """
     ax.set_facecolor('white')
 
     if density_grid is not None:
@@ -107,6 +116,12 @@ def draw_panel(ax, base_cp, gen_cps, density_grid, particles, title,
                     label='Generated' if i == 0 else '', zorder=3)
         ax.scatter(cp[:, 0], cp[:, 1], color='#00C853',
                    s=8, alpha=max(0.1, alpha * 0.65), zorder=3)
+
+    if start is not None:
+        s = np.asarray(start, dtype=float).reshape(-1)[:2]
+        ax.scatter([s[0]], [s[1]], s=70, facecolor='white',
+                   edgecolor='#00C853', linewidth=1.8, zorder=6,
+                   label='konditionierter Start')
 
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)

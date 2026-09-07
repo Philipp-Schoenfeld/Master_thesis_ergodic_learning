@@ -5,6 +5,8 @@ thesis_architecture/checkpoints/*
 3D_ergodic_learning/ergodic_dataset_3d.db
 3D_ergodic_learning/ergodic_dataset_3d_no_offset.db
 3D_ergodic_learning/ergodic_dataset_3d_PREJUMPFIX_tmp.db
+3D_ergodic_learning/ergodic_dataset_3d_79flaechen.db
+3D_ergodic_learning/ergodic_dataset_3d_alt.db
 3D_ergodic_learning/cache/
 transfer/
 

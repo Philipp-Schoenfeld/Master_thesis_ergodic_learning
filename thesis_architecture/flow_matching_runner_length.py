@@ -67,6 +67,15 @@ def augment_batch_torch(x, particles, p_flip=0.2, rot_range=20.0, scale_range=(0
     Synchronized vectorized geometric augmentation for trajectory AND particle cloud.
     x: (B, nxi, 2)
     particles: (B, N, 3) where [:,:,:2] is (x,y) and [:,:,2] is mu
+
+    Gibt zusaetzlich `scales` (B,) zurueck. Rotation, Spiegelung und
+    Verschiebung sind Isometrien und lassen die Bogenlaenge unveraendert, die
+    zufaellige Skalierung aber nicht: sie streckt oder staucht die Bahn direkt
+    um den Faktor `scales`. Ohne diesen Rueckgabewert kennt der Aufrufer die
+    tatsaechliche Laenge der augmentierten Bahn nicht und muesste die aus der
+    Datenbank vorberechnete, unskalierte Laenge weiterreichen — die dann um
+    bis zu 25% von der Laenge der Bahn abweicht, die das Netz tatsaechlich
+    sieht und nachbilden soll.
     """
     B = x.shape[0]
     device = x.device
@@ -103,8 +112,8 @@ def augment_batch_torch(x, particles, p_flip=0.2, rot_range=20.0, scale_range=(0
     
     # Re-attach mu
     part_out = torch.cat([part_coords, particles[:, :, 2:3]], dim=-1)
-    
-    return x_out, part_out
+
+    return x_out, part_out, scales.view(B)
 
 
 def sample_particles(density_grids, shape_indices, N, device, threshold=1e-5, mode='uniform'):
@@ -447,7 +456,7 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, le
                 particles_clean = sample_particles(density_grids_stack, batch_indices, args.n_particles, x1_clean.device, mode=args.sample_mode)
 
                 # 2. Augment BOTH trajectory and particles synchronously
-                batch_aug, particles_aug = augment_batch_torch(
+                batch_aug, particles_aug, scales_aug = augment_batch_torch(
                     batch_clean, particles_clean, noise_std=args.noise_std, p_flip=args.p_flip,
                     rot_range=args.rot_range, scale_range=args.scale_range,
                     trans_range=args.trans_range,
@@ -458,9 +467,17 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, le
                     device_type='cuda' if use_cuda else 'cpu',
                     dtype=torch.bfloat16,
                 ):
+                    # Die Laenge aus der Datenbank gilt fuer die unskalierte
+                    # Bahn. `batch_aug` ist um `scales_aug` gestreckt/gestaucht
+                    # (Rotation/Spiegelung/Verschiebung sind Isometrien und
+                    # aendern die Bogenlaenge nicht) — ohne diese Multiplikation
+                    # bekaeme das Netz ein Laengenziel, das bis zu 25% neben der
+                    # Laenge der Bahn liegt, die es tatsaechlich sieht.
+                    length_target = (None if lengths is None
+                                     else lengths[idx] * scales_aug)
                     loss, parts = loss_fn(
                         model, batch_aug, particles_aug,
-                        length_batch=(None if lengths is None else lengths[idx]),
+                        length_batch=length_target,
                         p_drop_length=args.p_drop_length,
                         p_drop=args.p_drop, ergodic=ergodic,
                     )
@@ -905,14 +922,14 @@ def parse_args():
                         '--resume werden Optimierer, Zeitplan und Epochenzahl '
                         'NICHT uebernommen: es ist ein neuer Lauf. Liegt '
                         'zugleich ein --resume-Stand vor, gewinnt dieser.')
-    p.add_argument('--length_freqs', default='oktaven',
+    p.add_argument('--length_freqs', default='linear',
                    choices=['oktaven', 'linear'],
                    help='Frequenzen der Laengenkodierung. "oktaven" (2^k*pi) '
-                        'ist die bisherige Wahl und bleibt Vorgabe, damit '
-                        'bestehende Laeufe reproduzierbar bleiben; sie kodiert '
-                        'auf diesem Datensatz aber mehrdeutig (3,34 Perioden, '
-                        'L=4,00/10,22/24,17 sind bitgleich). "linear" (0,25*k) '
-                        'ist die korrigierte Wahl.')
+                        'war die bisherige Wahl, kodiert auf diesem Datensatz '
+                        'aber mehrdeutig (3,34 Perioden, L=4,00/10,22/24,17 '
+                        'sind bitgleich) und nur noch zur Reproduktion alter '
+                        'Laeufe gedacht. "linear" (0,25*k) ist die korrigierte '
+                        'Wahl und jetzt Vorgabe.')
     p.add_argument('--reset_length_emb', default='auto',
                    choices=['auto', 'ja', 'nein'],
                    help='Beim Fortsetzen die Laengen-Einbettung und ihren '
