@@ -25,7 +25,9 @@
 #
 #     sbatch run_job_policy.bash
 #
-# Lokal (ohne SLURM) laeuft dieselbe Datei unveraendert:
+# Lokal (ohne SLURM) laeuft dieselbe Datei, sofern das Repo auch dort unter
+# ~/Master_thesis/thesis_architecture liegt (der feste cd-Pfad unten ist
+# absichtlich absolut, siehe Begruendung dort):
 #
 #     bash run_job_policy.bash
 #
@@ -51,7 +53,13 @@
 set -o pipefail
 
 source ~/miniconda3/etc/profile.d/conda.sh 2>/dev/null && conda activate thesis
-cd "$(dirname "$0")/.." || exit 1          # -> thesis_architecture/
+# NICHT ueber "$(dirname "$0")": unter sbatch fuehrt SLURM eine zwischen-
+# gespeicherte Kopie des Skripts aus, deren Pfad nichts mehr mit dem
+# Einreihungsort zu tun hat -- $0 zeigt dann ins Leere und der spaetere
+# "python -m exploration_optimierung..." scheitert mit ModuleNotFoundError
+# (beobachtet bei Job 151898: alle vier Stufen scheiterten in 21s). Wie jedes
+# andere Job-Skript in diesem Projekt deshalb ein fester, absoluter Pfad.
+cd ~/Master_thesis/thesis_architecture || exit 1
 
 export MPLBACKEND=Agg
 export PYTHONUNBUFFERED=1
