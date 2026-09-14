@@ -1,0 +1,18 @@
+{
+  "shape": "rand_gmm_complex_10",
+  "knowledge_condition": "none_known",
+  "method": "particles",
+  "subvariant": "eid_tuned_svgd25__replan_1_6",
+  "svgd_iters": -1,
+  "variant_id": "particles_eid_tuned_svgd25__replan_1_6",
+  "coverage": 0.03933919221162796,
+  "path_len": 8.465129852294922,
+  "E_ergodic_total": 17.568332992494106,
+  "E_ergodic_explore": 17.535037994384766,
+  "E_ergodic_exploit": 0.03329499810934067,
+  "explore_exploit_ratio": 0.0018987696587827586,
+  "coverage_per_length": 0.004647204815288568,
+  "E_ergodic_total_per_length": 2.0753766686439286,
+  "E_ergodic_explore_per_length": 2.071443474624428,
+  "E_ergodic_exploit_per_length": 0.003933194019500397
+}

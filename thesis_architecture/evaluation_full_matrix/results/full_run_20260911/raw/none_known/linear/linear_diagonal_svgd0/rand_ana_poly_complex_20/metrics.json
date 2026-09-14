@@ -1,0 +1,18 @@
+{
+  "shape": "rand_ana_poly_complex_20",
+  "knowledge_condition": "none_known",
+  "method": "linear",
+  "subvariant": "diagonal",
+  "svgd_iters": 0,
+  "variant_id": "linear_diagonal_svgd0",
+  "coverage": 0.14339794218540192,
+  "path_len": 1.3010765314102173,
+  "E_ergodic_total": 32.68180227279663,
+  "E_ergodic_explore": 32.342288970947266,
+  "E_ergodic_exploit": 0.33951330184936523,
+  "explore_exploit_ratio": 0.010497503814722156,
+  "coverage_per_length": 0.11021484034453764,
+  "E_ergodic_total_per_length": 25.119046792253886,
+  "E_ergodic_explore_per_length": 24.858098805219356,
+  "E_ergodic_exploit_per_length": 0.2609479870345304
+}

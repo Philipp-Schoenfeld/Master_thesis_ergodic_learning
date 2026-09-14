@@ -1,0 +1,18 @@
+{
+  "shape": "organic_10",
+  "knowledge_condition": "none_known",
+  "method": "linear",
+  "subvariant": "diagonal",
+  "svgd_iters": 500,
+  "variant_id": "linear_diagonal_svgd500",
+  "coverage": 0.046796318143606186,
+  "path_len": 6.121885299682617,
+  "E_ergodic_total": 14.249339655041695,
+  "E_ergodic_explore": 14.135712623596191,
+  "E_ergodic_exploit": 0.11362703144550323,
+  "explore_exploit_ratio": 0.00803829523640924,
+  "coverage_per_length": 0.007644102405190815,
+  "E_ergodic_total_per_length": 2.3276064410714192,
+  "E_ergodic_explore_per_length": 2.3090456504190047,
+  "E_ergodic_exploit_per_length": 0.01856079065241456
+}

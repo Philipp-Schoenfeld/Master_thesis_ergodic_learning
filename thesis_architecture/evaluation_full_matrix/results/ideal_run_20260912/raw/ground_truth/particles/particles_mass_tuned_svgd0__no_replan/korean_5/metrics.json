@@ -1,0 +1,18 @@
+{
+  "shape": "korean_5",
+  "knowledge_condition": "ground_truth",
+  "method": "particles",
+  "subvariant": "mass_tuned_svgd0__no_replan",
+  "svgd_iters": -1,
+  "variant_id": "particles_mass_tuned_svgd0__no_replan",
+  "coverage": 0.055418960750103,
+  "path_len": 4.869001388549805,
+  "E_ergodic_total": 7.19934669137001,
+  "E_ergodic_explore": 7.049051284790039,
+  "E_ergodic_exploit": 0.1502954065799713,
+  "explore_exploit_ratio": 0.021321366593582382,
+  "coverage_per_length": 0.011381997318881258,
+  "E_ergodic_total_per_length": 1.4786084695519632,
+  "E_ergodic_explore_per_length": 1.447740660203333,
+  "E_ergodic_exploit_per_length": 0.030867809348630246
+}

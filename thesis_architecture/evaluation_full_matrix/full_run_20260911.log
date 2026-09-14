@@ -1,0 +1,27 @@
+[eval_matrix] 25 Formen: ['A', 'greek_upper_0', 'korean_5', 'digit_5', 'a_lc', 'rand_gmm_10', 'rand_gmm_20', 'rand_ana_poly_10', 'rand_ana_poly_20', 'rand_ana_poly_30', 'rand_gmm_complex_0', 'rand_gmm_complex_10', 'rand_gmm_complex_20', 'rand_gmm_complex_30', 'rand_ana_poly_complex_0', 'rand_ana_poly_complex_10', 'rand_ana_poly_complex_20', 'rand_ana_poly_complex_30', 'organic_0', 'organic_10', 'organic_20', 'organic_30', 'cjk_0', 'cjk_10', 'cjk_20']
+[eval_matrix] [1/25] A fertig, 657.8s seit Start, 104 Zeilen
+[eval_matrix] [2/25] greek_upper_0 fertig, 1308.2s seit Start, 208 Zeilen
+[eval_matrix] [3/25] korean_5 fertig, 1959.4s seit Start, 312 Zeilen
+[eval_matrix] [4/25] digit_5 fertig, 2607.6s seit Start, 416 Zeilen
+[eval_matrix] [5/25] a_lc fertig, 3253.9s seit Start, 520 Zeilen
+[eval_matrix] [6/25] rand_gmm_10 fertig, 3899.5s seit Start, 624 Zeilen
+[eval_matrix] [7/25] rand_gmm_20 fertig, 4545.3s seit Start, 728 Zeilen
+[eval_matrix] [8/25] rand_ana_poly_10 fertig, 5191.0s seit Start, 832 Zeilen
+[eval_matrix] [9/25] rand_ana_poly_20 fertig, 5836.9s seit Start, 936 Zeilen
+[eval_matrix] [10/25] rand_ana_poly_30 fertig, 6482.8s seit Start, 1040 Zeilen
+[eval_matrix] [11/25] rand_gmm_complex_0 fertig, 7128.2s seit Start, 1144 Zeilen
+[eval_matrix] [12/25] rand_gmm_complex_10 fertig, 7775.2s seit Start, 1248 Zeilen
+[eval_matrix] [13/25] rand_gmm_complex_20 fertig, 8424.6s seit Start, 1352 Zeilen
+[eval_matrix] [14/25] rand_gmm_complex_30 fertig, 9072.5s seit Start, 1456 Zeilen
+[eval_matrix] [15/25] rand_ana_poly_complex_0 fertig, 9719.3s seit Start, 1560 Zeilen
+[eval_matrix] [16/25] rand_ana_poly_complex_10 fertig, 10365.7s seit Start, 1664 Zeilen
+[eval_matrix] [17/25] rand_ana_poly_complex_20 fertig, 11014.7s seit Start, 1768 Zeilen
+[eval_matrix] [18/25] rand_ana_poly_complex_30 fertig, 11660.5s seit Start, 1872 Zeilen
+[eval_matrix] [19/25] organic_0 fertig, 12307.8s seit Start, 1976 Zeilen
+[eval_matrix] [20/25] organic_10 fertig, 12956.1s seit Start, 2080 Zeilen
+[eval_matrix] [21/25] organic_20 fertig, 13602.4s seit Start, 2184 Zeilen
+[eval_matrix] [22/25] organic_30 fertig, 14248.5s seit Start, 2288 Zeilen
+[eval_matrix] [23/25] cjk_0 fertig, 14896.6s seit Start, 2392 Zeilen
+[eval_matrix] [24/25] cjk_10 fertig, 15544.9s seit Start, 2496 Zeilen
+[eval_matrix] [25/25] cjk_20 fertig, 16194.5s seit Start, 2600 Zeilen
+[eval_matrix] fertig: 2600 Zeilen, 16287.1s gesamt -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\full_run_20260911

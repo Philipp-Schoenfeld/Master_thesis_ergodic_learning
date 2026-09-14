@@ -270,16 +270,26 @@ class Mission:
         self.last_action = (modell, float(param), int(svgd_iters))
         return self.last_action
 
-    def _project_bspline(self, curve):
-        if self.nxi_ui == 25:
-            return curve
-        from obstacles import bspline_basis_matrix
-        T = curve.shape[0]
-        B = torch.from_numpy(bspline_basis_matrix(self.nxi_ui, T, 5)).float().to(curve.device)
-        result = torch.linalg.lstsq(B, curve)
-        P = result.solution
-        curve_proj = B @ P
-        return curve_proj
+    def _project_bspline(self, curve, start=None):
+        """Least-Squares-Projektion auf `nxi_ui` Kontrollpunkte.
+
+        Ein Fit ueber die ganze Bahn beruehrt den Startpunkt nicht exakt --
+        `curve_proj[0] != curve[0]` im Allgemeinen. Fuer Runde > 0 der
+        Replanning-Varianten (B/C/D) muss die Bahn aber am zuletzt gefahrenen
+        Punkt anschliessen, deshalb wird `start`, falls gesetzt, danach hart
+        gesetzt (derselbe harte Snap wie in `SvgdRefiner.refine`).
+        """
+        if self.nxi_ui != 25:
+            from obstacles import bspline_basis_matrix
+            T = curve.shape[0]
+            B = torch.from_numpy(bspline_basis_matrix(self.nxi_ui, T, 5)).float().to(curve.device)
+            result = torch.linalg.lstsq(B, curve)
+            P = result.solution
+            curve = B @ P
+        if start is not None:
+            curve = curve.clone()
+            curve[0] = start.to(device=curve.device, dtype=curve.dtype)
+        return curve
 
     def path_so_far(self):
         return torch.cat(self.driven, dim=0) if self.driven else None
@@ -289,19 +299,31 @@ class Mission:
                             sensor_radius=self.args.sensor_radius)
         self.belief.observe(*thin(pts, vals, max_points=self.args.max_obs))
 
-    def _refine(self, curve, phi):
+    def _refine(self, curve, phi, start=None):
         """SVGD-Nachverfeinerung des Netz-Vorschlags gegen dieselbe Runden-
-        Zieldichte Phi -- ein reiner Durchreicher, solange `svgd_iters<=0`."""
+        Zieldichte Phi -- ein reiner Durchreicher, solange `svgd_iters<=0`.
+
+        `start`, falls gesetzt: Startpunkt-Constraint fuer die Replanning-
+        Varianten B/C/D -- die neu geplante Bahn muss an der zuletzt
+        gefahrenen Position anschliessen. Weder die SVGD-Verfeinerung noch
+        die B-Spline-Projektion respektieren das von sich aus (beide passen
+        die ganze Bahn an, ohne einen Ankerpunkt), deshalb wird der Pin an
+        beide durchgereicht -- siehe `SvgdRefiner.refine`
+        (`common/svgd_refine.py`, nutzt dieselbe `WaypointPins`-Strafe wie
+        `constraints/02_waypoint_anchor/waypoints.py`) und
+        `_project_bspline` oben."""
         self.current_step = 'svgd'
         if self.args.svgd_iters <= 0:
-            return self._project_bspline(curve)
+            return self._project_bspline(curve, start=start)
         device, dtype = curve.device, curve.dtype
+        start_np = (start.detach().cpu().numpy() if start is not None else None)
         refined = self.svgd.refine(curve.detach().cpu().numpy(),
                                    phi.detach().cpu().numpy(),
                                    self.args.svgd_iters,
                                    nxi=self.nxi_ui,
                                    obstacle=self.args.obstacle,
-                                   obstacle_weight=50000.0)
+                                   obstacle_weight=50000.0,
+                                   start=start_np)
         return torch.from_numpy(refined).to(device=device, dtype=dtype)
 
     def rounds(self):
@@ -503,7 +525,7 @@ class Mission:
 
                 cps = self.planner.plan(parts, n_candidates=self.args.n_candidates, **init_kw)
                 curve = acb.best_candidate(self.planner.render(cps), phi)
-                curve = self._refine(curve, phi)
+                curve = self._refine(curve, phi, start=pos)
 
                 # SVGD kann den ersten Punkt verschieben -- den Versatz als
                 # kurzes Anschlussstueck mitfahren, statt ihn zu ueberspringen
@@ -553,7 +575,7 @@ class Mission:
                     
                 cps = self.planner.plan(parts, n_candidates=self.args.n_candidates, **init_kw)
                 curve = acb.best_candidate(self.planner.render(cps), phi)
-                curve = self._refine(curve, phi)
+                curve = self._refine(curve, phi, start=pos)
                 if self.driven:
                     prev_end = self.driven[-1][-1].to(curve.device)
                     al = torch.linspace(0, 1, self.args.transit_pts,
@@ -595,7 +617,7 @@ class Mission:
                     
                 cps = self.planner.plan(parts, n_candidates=self.args.n_candidates, **init_kw)
                 curve = acb.best_candidate(self.planner.render(cps), phi)
-                curve = self._refine(curve, phi)
+                curve = self._refine(curve, phi, start=pos)
                 T = curve.shape[0]
                 k = max(2, int(round(self.args.d_execute_frac * T)))
                 seg = curve[:k]
@@ -619,6 +641,10 @@ def build_args(device, phi_model='ucb', kappa0=3.0, svgd_iters=0, phi_tau=0.25, 
     a.gp_noise = 0.05
     a.visit_sat = 0.25
     a.debt_weight = 1.0
+    #: Eigenes, kleineres Gewicht fuer --phi_model lse (siehe debt_density in
+    #: apply_cfm_belief.py) -- verhindert, dass besuchte Form-Zellen nach dem
+    #: Besuch faelschlich unter die Schwelle tau gedrueckt werden.
+    a.debt_weight_lse = 0.15
     a.visit_halflife = 3.0  # nur von Solver B genutzt, dort auf Studienwert ueberschrieben
     a.device = device
     a.phi_mode = 'uniform'
@@ -696,6 +722,10 @@ class App:
         #: Gelernter Regler aus `exploration_optimierung/policy/`, per Knopf
         #: zugeschaltet. None = die Regler-Widgets gelten (bisheriges Verhalten).
         self.learned_policy = None
+        #: True, solange die zuletzt per "Optimal Policy"-Knopf uebernommene
+        #: Einstellung noch unveraendert steht (kein manueller Regler seitdem
+        #: angefasst). Steuert nur die "ON"/"OFF"-Anzeige im Knopf-Label.
+        self.optimal_policy_active = False
 
         self.gx = np.linspace(0, 1, self.TRUTH_RES)
         self.gy = np.linspace(0, 1, self.TRUTH_RES)
@@ -1055,7 +1085,7 @@ class App:
         # und Ziellaenge aus der vollen Holdout-Optimierung (siehe
         # OPTIMAL_POLICY oben).
         ax_optimal = self.fig.add_axes([slider_x, 0.322, slider_w, 0.022])
-        self.b_optimal = Button(ax_optimal, '★ Optimal Policy',
+        self.b_optimal = Button(ax_optimal, '★ Optimal Policy: OFF',
                                 color='#FFD54F', hovercolor='#FFCA28')
         self.b_optimal.on_clicked(self._on_optimal_policy)
 
@@ -1340,12 +1370,14 @@ class App:
         self.reset(replan=True)
 
     def _on_phi(self, label):
+        self._deactivate_optimal_policy()
         self.phi_ui = label
         self._rebuild_tuning_slider()
         self._update_phi_title()
         self.reset(replan=True)
 
     def _on_tuning(self, val):
+        self._deactivate_optimal_policy()
         if self.phi_ui == 'mass':
             self.mass_w = float(val)
         elif self.phi_ui == 'niveau':
@@ -1359,6 +1391,7 @@ class App:
         self.reset(replan=True)
 
     def _on_svgd(self, val):
+        self._deactivate_optimal_policy()
         self.svgd_iters = int(val)
         self.reset(replan=True)
         
@@ -1372,8 +1405,19 @@ class App:
         self.reset(replan=True)
 
     def _on_target_length(self, val):
+        self._deactivate_optimal_policy()
         self.target_length_ui = float(val)
         self.reset(replan=True)
+
+    def _deactivate_optimal_policy(self):
+        """Meldet, dass ein Regler von Hand angefasst wurde -- die zuletzt per
+        Optimal-Policy-Knopf uebernommene Einstellung gilt damit nicht mehr
+        unveraendert. Nur fuer die ON/OFF-Anzeige im Knopf-Label, kein
+        Eingriff in die eigentlichen Werte."""
+        if not self.optimal_policy_active:
+            return
+        self.optimal_policy_active = False
+        self.b_optimal.label.set_text('★ Optimal Policy: OFF')
 
     def _on_optimal_policy(self, event):
         """Wendet die per Missions-Optimierung ermittelte beste Einstellung an
@@ -1381,7 +1425,19 @@ class App:
         Menge von 25 Formen, 768 Auswertungen, siehe OPTIMAL_POLICY oben und
         `exploration_optimierung/results/bestwerte_beide.json`). Setzt alle
         betroffenen Widgets programmatisch, ohne deren Callback-Kette mehrfach
-        zu feuern -- `reset()` laeuft am Ende genau einmal."""
+        zu feuern -- `reset()` laeuft am Ende genau einmal.
+
+        Ein erneuter Klick, waehrend die Einstellung noch aktiv ist, schaltet
+        sie nur ab (Anzeige OFF) -- die Regler behalten dabei ihre aktuellen
+        Werte, es wird nichts zurueckgesetzt."""
+        if self.optimal_policy_active:
+            self.optimal_policy_active = False
+            self.b_optimal.label.set_text('★ Optimal Policy: OFF')
+            self.status_txt.set_text('Optimal Policy aus — die Regler '
+                                     'behalten ihre aktuellen Werte.')
+            self.fig.canvas.draw_idle()
+            return
+
         pol = OPTIMAL_POLICY['mit_svgd']
         self.phi_ui = pol['phi_ui']
         self.niveau_tau = pol['tau']
@@ -1403,6 +1459,8 @@ class App:
         self.s_length.eventson = True
 
         self._update_phi_title()
+        self.optimal_policy_active = True
+        self.b_optimal.label.set_text('★ Optimal Policy: ON')
         self.status_txt.set_text(
             f"Optimal Policy: Φ=niveau, τ={self.niveau_tau:.2f}, "
             f"SVGD={self.svgd_iters}, Ziellänge={self.target_length_ui:.1f} "
@@ -1455,6 +1513,7 @@ class App:
                 self.status_txt.set_text(f"{datei} liess sich nicht laden: {exc}")
                 self.fig.canvas.draw_idle()
                 return
+            self._deactivate_optimal_policy()
             self.b_learned.label.set_text(f'◆ Learned Policy: {titel}')
             hinweis = ('' if self.solver.startswith('B') else
                        "  —  nur Solver B benutzt ihn, bitte dort umschalten")

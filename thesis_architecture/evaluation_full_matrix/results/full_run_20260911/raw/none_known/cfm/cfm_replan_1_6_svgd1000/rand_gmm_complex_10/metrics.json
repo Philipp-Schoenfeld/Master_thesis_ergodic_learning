@@ -1,0 +1,18 @@
+{
+  "shape": "rand_gmm_complex_10",
+  "knowledge_condition": "none_known",
+  "method": "cfm",
+  "subvariant": "replan_1_6",
+  "svgd_iters": 1000,
+  "variant_id": "cfm_replan_1_6_svgd1000",
+  "coverage": 0.04017271846532822,
+  "path_len": 8.453360557556152,
+  "E_ergodic_total": 18.531548380851746,
+  "E_ergodic_explore": 18.47933578491211,
+  "E_ergodic_exploit": 0.05221259593963623,
+  "explore_exploit_ratio": 0.0028254584768282872,
+  "coverage_per_length": 0.004752277888989282,
+  "E_ergodic_total_per_length": 2.1922108083142233,
+  "E_ergodic_explore_per_length": 2.1860342592856874,
+  "E_ergodic_exploit_per_length": 0.006176549028535792
+}

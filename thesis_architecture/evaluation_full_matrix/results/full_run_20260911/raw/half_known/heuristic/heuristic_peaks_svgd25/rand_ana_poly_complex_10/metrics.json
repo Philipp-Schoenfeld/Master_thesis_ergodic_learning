@@ -1,0 +1,18 @@
+{
+  "shape": "rand_ana_poly_complex_10",
+  "knowledge_condition": "half_known",
+  "method": "heuristic",
+  "subvariant": "peaks",
+  "svgd_iters": 25,
+  "variant_id": "heuristic_peaks_svgd25",
+  "coverage": 0.33782681822776794,
+  "path_len": 1.1062730550765991,
+  "E_ergodic_total": 169.30627316236496,
+  "E_ergodic_explore": 168.96688842773438,
+  "E_ergodic_exploit": 0.3393847346305847,
+  "explore_exploit_ratio": 0.0020085872314310653,
+  "coverage_per_length": 0.30537381045078116,
+  "E_ergodic_total_per_length": 153.04202916760192,
+  "E_ergodic_explore_per_length": 152.73524710048642,
+  "E_ergodic_exploit_per_length": 0.30678206711550565
+}

@@ -1,0 +1,18 @@
+{
+  "shape": "korean_5",
+  "knowledge_condition": "ground_truth",
+  "method": "cfm",
+  "subvariant": "one_replan",
+  "svgd_iters": 25,
+  "variant_id": "cfm_one_replan_svgd25",
+  "coverage": 0.03720743581652641,
+  "path_len": 5.573700428009033,
+  "E_ergodic_total": 2.8949811458587646,
+  "E_ergodic_explore": 2.740124225616455,
+  "E_ergodic_exploit": 0.15485692024230957,
+  "explore_exploit_ratio": 0.056514561929202636,
+  "coverage_per_length": 0.00667553563330227,
+  "E_ergodic_total_per_length": 0.5194002051690592,
+  "E_ergodic_explore_per_length": 0.491616702585368,
+  "E_ergodic_exploit_per_length": 0.027783502583691173
+}

@@ -1,0 +1,18 @@
+{
+  "shape": "cjk_10",
+  "knowledge_condition": "none_known",
+  "method": "particles",
+  "subvariant": "eid_tuned_svgd0__no_replan",
+  "svgd_iters": -1,
+  "variant_id": "particles_eid_tuned_svgd0__no_replan",
+  "coverage": 0.0835549533367157,
+  "path_len": 5.721463203430176,
+  "E_ergodic_total": 22.741839066147804,
+  "E_ergodic_explore": 22.60604476928711,
+  "E_ergodic_exploit": 0.13579429686069489,
+  "explore_exploit_ratio": 0.006006990530479128,
+  "coverage_per_length": 0.01460377360927921,
+  "E_ergodic_total_per_length": 3.9748292102120732,
+  "E_ergodic_explore_per_length": 3.951095019842854,
+  "E_ergodic_exploit_per_length": 0.023734190369219265
+}

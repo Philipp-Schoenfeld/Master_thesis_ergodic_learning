@@ -1,0 +1,18 @@
+{
+  "shape": "rand_ana_poly_complex_10",
+  "knowledge_condition": "ten_samples",
+  "method": "cfm",
+  "subvariant": "one_replan",
+  "svgd_iters": 500,
+  "variant_id": "cfm_one_replan_svgd500",
+  "coverage": 0.04904891923069954,
+  "path_len": 8.147867202758789,
+  "E_ergodic_total": 8.695469617843628,
+  "E_ergodic_explore": 8.56727123260498,
+  "E_ergodic_exploit": 0.12819838523864746,
+  "explore_exploit_ratio": 0.01496373603192988,
+  "coverage_per_length": 0.0060198476497128044,
+  "E_ergodic_total_per_length": 1.0672080682536684,
+  "E_ergodic_explore_per_length": 1.051474087562962,
+  "E_ergodic_exploit_per_length": 0.015733980690706487
+}

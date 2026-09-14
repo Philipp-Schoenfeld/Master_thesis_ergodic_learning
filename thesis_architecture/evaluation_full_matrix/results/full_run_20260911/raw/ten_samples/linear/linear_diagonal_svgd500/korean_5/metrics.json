@@ -1,0 +1,18 @@
+{
+  "shape": "korean_5",
+  "knowledge_condition": "ten_samples",
+  "method": "linear",
+  "subvariant": "diagonal",
+  "svgd_iters": 500,
+  "variant_id": "linear_diagonal_svgd500",
+  "coverage": 0.056120529770851135,
+  "path_len": 5.423791885375977,
+  "E_ergodic_total": 15.811612024903297,
+  "E_ergodic_explore": 15.635186195373535,
+  "E_ergodic_exploit": 0.17642582952976227,
+  "explore_exploit_ratio": 0.011283896931266916,
+  "coverage_per_length": 0.01034710235143192,
+  "E_ergodic_total_per_length": 2.915232066247918,
+  "E_ergodic_explore_per_length": 2.8827039321936865,
+  "E_ergodic_exploit_per_length": 0.032528134054231404
+}

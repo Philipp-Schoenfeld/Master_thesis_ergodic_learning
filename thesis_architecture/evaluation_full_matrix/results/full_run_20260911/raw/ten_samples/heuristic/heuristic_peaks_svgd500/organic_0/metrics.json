@@ -1,0 +1,18 @@
+{
+  "shape": "organic_0",
+  "knowledge_condition": "ten_samples",
+  "method": "heuristic",
+  "subvariant": "peaks",
+  "svgd_iters": 500,
+  "variant_id": "heuristic_peaks_svgd500",
+  "coverage": 0.057877689599990845,
+  "path_len": 4.437850475311279,
+  "E_ergodic_total": 3.297781467437744,
+  "E_ergodic_explore": 3.1784281730651855,
+  "E_ergodic_exploit": 0.1193532943725586,
+  "explore_exploit_ratio": 0.03755104343209294,
+  "coverage_per_length": 0.013041829579878126,
+  "E_ergodic_total_per_length": 0.7431033302685647,
+  "E_ergodic_explore_per_length": 0.7162089373554761,
+  "E_ergodic_exploit_per_length": 0.02689439291308861
+}

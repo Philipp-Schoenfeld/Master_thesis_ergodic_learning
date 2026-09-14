@@ -1,0 +1,25 @@
+{
+  "representations": [
+    "particles"
+  ],
+  "strategies": {
+    "niveau_svgd0": {
+      "phi_model": "niveau",
+      "param": 0.4307,
+      "svgd_iters": 0
+    }
+  },
+  "replan_schemes": [
+    "replan_1_6"
+  ],
+  "shapes_resolved": [
+    "A"
+  ],
+  "knowledge_conditions": [
+    "ground_truth",
+    "none_known",
+    "half_known",
+    "ten_samples"
+  ],
+  "spectral_checkpoint_caveat": "trained on a different, smaller shape set than shape_library.VALIDATION_SHAPES (sigma, rand_poly_7, G, spiral_2cw, star_5, W, lissajous_1_3, heart, 5, phi) -- spectral-arm results test out-of-distribution generalisation too, not representation alone."
+}

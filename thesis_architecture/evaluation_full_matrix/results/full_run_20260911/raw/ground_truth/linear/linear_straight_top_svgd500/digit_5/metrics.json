@@ -1,0 +1,18 @@
+{
+  "shape": "digit_5",
+  "knowledge_condition": "ground_truth",
+  "method": "linear",
+  "subvariant": "straight_top",
+  "svgd_iters": 500,
+  "variant_id": "linear_straight_top_svgd500",
+  "coverage": 0.09448983520269394,
+  "path_len": 2.3336381912231445,
+  "E_ergodic_total": 9.331009805202484,
+  "E_ergodic_explore": 8.922530174255371,
+  "E_ergodic_exploit": 0.40847963094711304,
+  "explore_exploit_ratio": 0.0457806948219374,
+  "coverage_per_length": 0.040490353456706325,
+  "E_ergodic_total_per_length": 3.9984817870638993,
+  "E_ergodic_explore_per_length": 3.823441957632151,
+  "E_ergodic_exploit_per_length": 0.1750398294317484
+}

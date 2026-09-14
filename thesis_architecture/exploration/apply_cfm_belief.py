@@ -685,6 +685,22 @@ def debt_density(mu, sd, visit, kappa, args, floor=1e-6):
     Aufenthaltsdichte: ab einem Viertel des Maximums gilt ein Gebiet als
     vollstaendig bedient. Ohne diese Saettigung wuerde eine einzige lange
     Verweildauer alle anderen Besuche kleinrechnen.
+
+    **Sonderfall `lse`.** Dort ist `mu` keine Anziehungsgroesse, sondern die
+    Schaetzung der Dichte selbst, gegen `phi_tau` getestet (Traeger-Frage
+    "gehoert dieser Ort zur Form?"). Der volle `debt_weight` (Default 1.0)
+    wuerde `mu_eff` in jeder gut besuchten Zelle gegen 0 druecken und damit
+    echte Form-Zellen nach dem Besuch faelschlich als "nicht Teil der Form"
+    einstufen — beobachtet in der interaktiven Simulation: besuchte Gebiete
+    fielen unabhaengig von der Wahrheit auf Phi=0. Deshalb nutzt `lse` ein
+    eigenes, deutlich kleineres Gewicht `debt_weight_lse` (Default 0.15): eine
+    Zelle mit `mu` nur knapp ueber `tau` (z. B. 0,30 gegen tau=0,25) bleibt
+    damit auch nach vollstaendigem Besuch (`v*know=1`) noch oberhalb der
+    Schwelle (0,30 * 0,85 = 0,255 > 0,25), waehrend eine sicher besuchte,
+    tatsaechlich leere Zelle weiterhin auf 0 faellt. Der `sigma`-Abbau oben
+    bleibt unveraendert — er sorgt bereits dafuer, dass eine besuchte Zelle
+    scharf auf ihren wahren Wert einrastet, ohne dass `mu` dafuer gedaempft
+    werden muesste.
     """
     if visit is None:
         v = torch.zeros_like(mu)
@@ -694,7 +710,9 @@ def debt_density(mu, sd, visit, kappa, args, floor=1e-6):
 
     sd_eff = sd * (1.0 - v)
     know = (1.0 - sd.clamp(0.0, 1.0))
-    mu_eff = mu.clamp(min=0.0) * (1.0 - (args.debt_weight * v * know).clamp(0.0, 1.0))
+    w_debt = (getattr(args, 'debt_weight_lse', 0.15) if args.phi_model == 'lse'
+             else args.debt_weight)
+    mu_eff = mu.clamp(min=0.0) * (1.0 - (w_debt * v * know).clamp(0.0, 1.0))
 
     phi = zieldichte(mu_eff, sd_eff.clamp(min=1e-6), kappa, args)
     return phi, v
@@ -1237,6 +1255,15 @@ def main():
                    help='Wie stark besuchte Gebiete ihre Anziehung verlieren. '
                         '0 schaltet die Abdeckungsschuld ab und laesst nur das '
                         'Loeschen der Unsicherheit uebrig.')
+    p.add_argument('--debt_weight_lse', type=float, default=0.15,
+                   help='Eigenes, kleineres debt_weight fuer --phi_model lse: '
+                        'dort ist mu die Dichteschaetzung selbst (Test gegen '
+                        'phi_tau), kein additiver Sog. Der volle debt_weight '
+                        'wuerde besuchte Form-Zellen faelschlich unter die '
+                        'Schwelle druecken; 0.15 daempft die Anziehung nur '
+                        'leicht und laesst eine Zelle mit mu knapp ueber tau '
+                        'auch nach vollstaendigem Besuch oberhalb der '
+                        'Schwelle stehen.')
     p.add_argument('--transit_pts', type=int, default=16,
                    help='Stuetzpunkte der Verbindungsfahrt zwischen den beiden '
                         'Phasen von Variante E. Das Netz hat keinen '

@@ -1,0 +1,18 @@
+{
+  "shape": "rand_gmm_complex_30",
+  "knowledge_condition": "half_known",
+  "method": "linear",
+  "subvariant": "straight_top",
+  "svgd_iters": 25,
+  "variant_id": "linear_straight_top_svgd25",
+  "coverage": 0.41428688168525696,
+  "path_len": 1.0097264051437378,
+  "E_ergodic_total": 142.7592561841011,
+  "E_ergodic_explore": 142.1700439453125,
+  "E_ergodic_exploit": 0.5892122387886047,
+  "explore_exploit_ratio": 0.0041444190522671055,
+  "coverage_per_length": 0.41029617485964615,
+  "E_ergodic_total_per_length": 141.38409717410417,
+  "E_ergodic_explore_per_length": 140.80056064798478,
+  "E_ergodic_exploit_per_length": 0.5835365261193981
+}

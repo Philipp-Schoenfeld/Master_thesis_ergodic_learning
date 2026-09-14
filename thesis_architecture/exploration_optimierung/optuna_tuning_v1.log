@@ -1,0 +1,231 @@
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\exploration_optimierung\optuna_search.py:280: ExperimentalWarning: Argument ``group`` is an experimental feature. The interface can change in the future.
+  sampler=optuna.samplers.TPESampler(seed=a.seed, multivariate=True,
+[I 2026-09-12 11:32:10,175] A new study created in RDB with name: tuning_v1
+[I 2026-09-12 11:36:29,118] Trial 0 finished with value: 0.31381291312249343 and parameters: {'phi_model': 'eid', 'kappa': 0.8887895725019269, 'svgd_iters': 250, 'debt_weight': 0.4375872112626925, 'visit_sat': 0.9025957007038717, 'visit_halflife': 7.72747070375772, 'phi_mode': 'density', 'n_particles': 256}. Best is trial 0 with value: 0.31381291312249343.
+[I 2026-09-12 11:41:29,411] Trial 1 finished with value: 0.28815554108958275 and parameters: {'phi_model': 'mass', 'w': 0.8330109334221372, 'svgd_iters': 400, 'debt_weight': 0.7991585642167236, 'visit_sat': 0.5153314260276387, 'visit_halflife': 6.353968822148416, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 1 with value: 0.28815554108958275.
+[I 2026-09-12 11:45:05,642] Trial 2 finished with value: 0.30711230959540187 and parameters: {'phi_model': 'eid', 'kappa': 0.16231630221130722, 'svgd_iters': 250, 'debt_weight': 0.6120957227224214, 'visit_sat': 0.6552405971872812, 'visit_halflife': 7.578110588859682, 'phi_mode': 'uniform', 'n_particles': 128}. Best is trial 1 with value: 0.28815554108958275.
+[I 2026-09-12 11:48:50,556] Trial 3 finished with value: 0.29251608707186727 and parameters: {'phi_model': 'ucb', 'kappa': 0.6909816486214249, 'svgd_iters': 225, 'debt_weight': 0.43860151346232035, 'visit_sat': 0.9895364542533036, 'visit_halflife': 1.2653360806102105, 'phi_mode': 'quantile', 'n_particles': 256, 'phi_quantile': 0.22717566691641577}. Best is trial 1 with value: 0.28815554108958275.
+[I 2026-09-12 11:53:35,309] Trial 4 finished with value: 0.32034057797396537 and parameters: {'phi_model': 'eid', 'kappa': 0.7056873311448854, 'svgd_iters': 325, 'debt_weight': 0.09710127579306127, 'visit_sat': 0.8541504167489236, 'visit_halflife': 1.220738059204723, 'phi_mode': 'quantile', 'n_particles': 256, 'phi_quantile': 0.32624557006112764}. Best is trial 1 with value: 0.28815554108958275.
+[I 2026-09-12 11:54:59,674] Trial 5 finished with value: 0.27470878113333064 and parameters: {'phi_model': 'niveau', 'tau': 0.3845514351729096, 'svgd_iters': 25, 'debt_weight': 0.6924721193700198, 'visit_sat': 0.6099413087859177, 'visit_halflife': 2.4904211820458406, 'phi_mode': 'quantile', 'n_particles': 128, 'phi_quantile': 0.20543828992351376}. Best is trial 5 with value: 0.27470878113333064.
+[I 2026-09-12 11:59:57,193] Trial 6 finished with value: 0.3067943350332454 and parameters: {'phi_model': 'ucb', 'kappa': 0.1632170741253234, 'svgd_iters': 350, 'debt_weight': 0.004695476192547066, 'visit_sat': 0.7100348831166071, 'visit_halflife': 2.5250597989412364, 'phi_mode': 'density', 'n_particles': 256}. Best is trial 5 with value: 0.27470878113333064.
+[I 2026-09-12 12:03:32,506] Trial 7 finished with value: 0.29286741819893714 and parameters: {'phi_model': 'eid', 'kappa': 2.830594271491897, 'svgd_iters': 125, 'debt_weight': 0.8137978197024772, 'visit_sat': 0.4568551667622862, 'visit_halflife': 7.108273978333711, 'phi_mode': 'density', 'n_particles': 512}. Best is trial 5 with value: 0.27470878113333064.
+[I 2026-09-12 12:08:35,120] Trial 8 finished with value: 0.29128385978479576 and parameters: {'phi_model': 'ucb', 'kappa': 0.5322751649871316, 'svgd_iters': 275, 'debt_weight': 0.29007760721044407, 'visit_sat': 0.6562138860989574, 'visit_halflife': 3.715765257093246, 'phi_mode': 'quantile', 'n_particles': 512, 'phi_quantile': 0.6216826160013511}. Best is trial 5 with value: 0.27470878113333064.
+[I 2026-09-12 12:10:02,695] Trial 9 pruned. 
+[I 2026-09-12 12:10:55,579] Trial 10 pruned. 
+[I 2026-09-12 12:15:40,387] Trial 11 finished with value: 0.2851544664796853 and parameters: {'phi_model': 'mass', 'w': 0.9304899436186198, 'svgd_iters': 375, 'debt_weight': 0.8576419202183756, 'visit_sat': 0.40887637153521605, 'visit_halflife': 1.8759392664671513, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 5 with value: 0.27470878113333064.
+[I 2026-09-12 12:17:34,973] Trial 12 pruned. 
+[I 2026-09-12 12:19:45,364] Trial 13 finished with value: 0.2911872602553551 and parameters: {'phi_model': 'niveau', 'tau': 0.36288156061125526, 'svgd_iters': 100, 'debt_weight': 0.8753636603265345, 'visit_sat': 0.44855150675427047, 'visit_halflife': 4.403690257356511, 'phi_mode': 'quantile', 'n_particles': 128, 'phi_quantile': 0.47899857408171626}. Best is trial 5 with value: 0.27470878113333064.
+[I 2026-09-12 12:24:32,440] Trial 14 finished with value: 0.28617672283184437 and parameters: {'phi_model': 'niveau', 'tau': 0.6158939597610968, 'svgd_iters': 375, 'debt_weight': 0.49286803162343074, 'visit_sat': 0.34683134609019267, 'visit_halflife': 2.505241663666165, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 5 with value: 0.27470878113333064.
+[I 2026-09-12 12:25:14,216] Trial 15 pruned. 
+[I 2026-09-12 12:28:49,583] Trial 16 finished with value: 0.2783424297959062 and parameters: {'phi_model': 'mass', 'w': 0.4139233864597057, 'svgd_iters': 250, 'debt_weight': 0.9471124498594852, 'visit_sat': 0.41705308567514265, 'visit_halflife': 2.2796155819898885, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 5 with value: 0.27470878113333064.
+[I 2026-09-12 12:30:30,109] Trial 17 finished with value: 0.25338444922501435 and parameters: {'phi_model': 'mass', 'w': 0.3555997475607703, 'svgd_iters': 50, 'debt_weight': 0.9500746326229913, 'visit_sat': 0.36822856145039046, 'visit_halflife': 2.5154632070654994, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:30:52,807] Trial 18 pruned. 
+[I 2026-09-12 12:32:02,012] Trial 19 finished with value: 0.2721892888419405 and parameters: {'phi_model': 'niveau', 'tau': 0.8354578158660827, 'svgd_iters': 0, 'debt_weight': 0.9016564556731148, 'visit_sat': 0.7062788388309176, 'visit_halflife': 1.5911332923089376, 'phi_mode': 'quantile', 'n_particles': 128, 'phi_quantile': 0.48169120541639077}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:33:42,647] Trial 20 finished with value: 0.2619312404197811 and parameters: {'phi_model': 'niveau', 'tau': 0.8801647754900823, 'svgd_iters': 50, 'debt_weight': 0.5808958117453087, 'visit_sat': 0.7903938874485998, 'visit_halflife': 1.8409595611443996, 'phi_mode': 'uniform', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:35:39,415] Trial 21 finished with value: 0.26173465375673244 and parameters: {'phi_model': 'mass', 'w': 0.4810888824141261, 'svgd_iters': 75, 'debt_weight': 0.8601307143040046, 'visit_sat': 0.5788760471067274, 'visit_halflife': 2.4189654342571743, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:37:35,170] Trial 22 finished with value: 0.25788630230948856 and parameters: {'phi_model': 'mass', 'w': 0.44091149720356393, 'svgd_iters': 75, 'debt_weight': 0.883241534211873, 'visit_sat': 0.16582879718577556, 'visit_halflife': 4.202778611212754, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:39:45,803] Trial 23 finished with value: 0.26845030017362753 and parameters: {'phi_model': 'mass', 'w': 0.43026038402671385, 'svgd_iters': 100, 'debt_weight': 0.9187081138279981, 'visit_sat': 0.32600053086174063, 'visit_halflife': 2.696203783208235, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:40:08,458] Trial 24 pruned. 
+[I 2026-09-12 12:42:18,334] Trial 25 finished with value: 0.2677823642007414 and parameters: {'phi_model': 'mass', 'w': 0.5427374017284285, 'svgd_iters': 100, 'debt_weight': 0.8733897926713095, 'visit_sat': 0.10270385840155928, 'visit_halflife': 2.960362375676948, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:43:01,399] Trial 26 pruned. 
+[I 2026-09-12 12:45:25,116] Trial 27 finished with value: 0.2713620197787874 and parameters: {'phi_model': 'mass', 'w': 0.6417867514733684, 'svgd_iters': 125, 'debt_weight': 0.7725627286265249, 'visit_sat': 0.7316013847486544, 'visit_halflife': 3.8141542026550956, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:45:47,759] Trial 28 pruned. 
+[I 2026-09-12 12:46:56,785] Trial 29 finished with value: 0.26623309046887056 and parameters: {'phi_model': 'mass', 'w': 0.6147470377683817, 'svgd_iters': 0, 'debt_weight': 0.9545078143049823, 'visit_sat': 0.6429333697261818, 'visit_halflife': 2.9379518108050235, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:47:19,559] Trial 30 pruned. 
+[I 2026-09-12 12:49:00,702] Trial 31 finished with value: 0.2627249504759791 and parameters: {'phi_model': 'mass', 'w': 0.3725901023520067, 'svgd_iters': 50, 'debt_weight': 0.9999940488486739, 'visit_sat': 0.28135448367934424, 'visit_halflife': 3.8509026969128106, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:49:48,836] Trial 32 pruned. 
+[I 2026-09-12 12:51:29,973] Trial 33 finished with value: 0.26236718273225434 and parameters: {'phi_model': 'mass', 'w': 0.7127042069598573, 'svgd_iters': 50, 'debt_weight': 0.9988952095013561, 'visit_sat': 0.3887760179292615, 'visit_halflife': 1.184797049501384, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:51:57,881] Trial 34 pruned. 
+[I 2026-09-12 12:53:22,458] Trial 35 finished with value: 0.2619152974911108 and parameters: {'phi_model': 'mass', 'w': 0.5158252594119705, 'svgd_iters': 25, 'debt_weight': 0.6485179359022768, 'visit_sat': 0.4143206250721681, 'visit_halflife': 4.148188733517624, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:55:47,818] Trial 36 finished with value: 0.26840232458279073 and parameters: {'phi_model': 'mass', 'w': 0.5377756836811637, 'svgd_iters': 125, 'debt_weight': 0.7649713268882363, 'visit_sat': 0.5535011704610466, 'visit_halflife': 1.7849704072815038, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:57:28,703] Trial 37 finished with value: 0.2588353381416165 and parameters: {'phi_model': 'mass', 'w': 0.4890788460558972, 'svgd_iters': 50, 'debt_weight': 0.8496305934190143, 'visit_sat': 0.4796304095482802, 'visit_halflife': 2.798438438020477, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 12:58:16,701] Trial 38 pruned. 
+[I 2026-09-12 13:00:41,369] Trial 39 finished with value: 0.2588172260707962 and parameters: {'phi_model': 'mass', 'w': 0.3282247758443032, 'svgd_iters': 125, 'debt_weight': 0.9871978387036874, 'visit_sat': 0.17502159695628258, 'visit_halflife': 3.222235314336186, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 13:01:04,016] Trial 40 pruned. 
+[I 2026-09-12 13:02:09,768] Trial 41 pruned. 
+[I 2026-09-12 13:03:18,732] Trial 42 finished with value: 0.26060254566488006 and parameters: {'phi_model': 'mass', 'w': 0.3545568549349827, 'svgd_iters': 0, 'debt_weight': 0.8601908900274737, 'visit_sat': 0.4155038739572163, 'visit_halflife': 3.1448414779396923, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 13:04:11,732] Trial 43 pruned. 
+[I 2026-09-12 13:04:45,254] Trial 44 pruned. 
+[I 2026-09-12 13:05:23,548] Trial 45 pruned. 
+[I 2026-09-12 13:05:57,187] Trial 46 pruned. 
+[I 2026-09-12 13:08:50,332] Trial 47 finished with value: 0.26442034728483843 and parameters: {'phi_model': 'mass', 'w': 0.36062004872980974, 'svgd_iters': 175, 'debt_weight': 0.9654540714165186, 'visit_sat': 0.2399411892178539, 'visit_halflife': 3.206045335888589, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 13:11:00,577] Trial 48 finished with value: 0.2638683298720627 and parameters: {'phi_model': 'mass', 'w': 0.48242369716384415, 'svgd_iters': 100, 'debt_weight': 0.7598005131112493, 'visit_sat': 0.37846074880857034, 'visit_halflife': 3.6143676431898264, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 13:11:28,471] Trial 49 pruned. 
+[I 2026-09-12 13:13:08,589] Trial 50 finished with value: 0.26203566231988895 and parameters: {'phi_model': 'mass', 'w': 0.6083968797336878, 'svgd_iters': 50, 'debt_weight': 0.9947947259209269, 'visit_sat': 0.17213254759773533, 'visit_halflife': 4.410024109160689, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 13:13:31,271] Trial 51 pruned. 
+[I 2026-09-12 13:14:24,694] Trial 52 pruned. 
+[I 2026-09-12 13:15:12,829] Trial 53 pruned. 
+[I 2026-09-12 13:16:54,231] Trial 54 finished with value: 0.2542781078386874 and parameters: {'phi_model': 'mass', 'w': 0.4761938793313019, 'svgd_iters': 50, 'debt_weight': 0.8226055426706352, 'visit_sat': 0.6203483798377262, 'visit_halflife': 2.3820439875718704, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 17 with value: 0.25338444922501435.
+[I 2026-09-12 13:17:38,136] Trial 55 pruned. 
+[I 2026-09-12 13:19:19,724] Trial 56 finished with value: 0.25059641055286747 and parameters: {'phi_model': 'mass', 'w': 0.326034843041937, 'svgd_iters': 50, 'debt_weight': 0.9277978294650603, 'visit_sat': 0.26409311056003887, 'visit_halflife': 5.324208353994486, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:20:44,654] Trial 57 finished with value: 0.2582874920047277 and parameters: {'phi_model': 'mass', 'w': 0.417848554115195, 'svgd_iters': 25, 'debt_weight': 0.9261829308235209, 'visit_sat': 0.4522545161774315, 'visit_halflife': 1.807785913529719, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:21:07,431] Trial 58 pruned. 
+[I 2026-09-12 13:21:41,117] Trial 59 pruned. 
+[I 2026-09-12 13:22:19,732] Trial 60 pruned. 
+[I 2026-09-12 13:24:30,772] Trial 61 finished with value: 0.2624722984216485 and parameters: {'phi_model': 'mass', 'w': 0.43963580999026086, 'svgd_iters': 100, 'debt_weight': 0.8516992255964075, 'visit_sat': 0.2329943147805218, 'visit_halflife': 5.76253630821576, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:26:26,443] Trial 62 finished with value: 0.2656817614673247 and parameters: {'phi_model': 'mass', 'w': 0.41494962948109215, 'svgd_iters': 75, 'debt_weight': 0.9873987781153852, 'visit_sat': 0.27709697078587325, 'visit_halflife': 5.231732736852492, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:27:00,204] Trial 63 pruned. 
+[I 2026-09-12 13:27:48,354] Trial 64 pruned. 
+[I 2026-09-12 13:28:26,566] Trial 65 pruned. 
+[I 2026-09-12 13:30:36,592] Trial 66 finished with value: 0.26368067812777446 and parameters: {'phi_model': 'mass', 'w': 0.45896331954104214, 'svgd_iters': 100, 'debt_weight': 0.9666335151070997, 'visit_sat': 0.15830787562615042, 'visit_halflife': 3.5005736237040384, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:32:17,590] Trial 67 finished with value: 0.25491029015195316 and parameters: {'phi_model': 'mass', 'w': 0.22911334918238813, 'svgd_iters': 50, 'debt_weight': 0.9265208155857401, 'visit_sat': 0.17161410657106274, 'visit_halflife': 3.1418170545835618, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:32:56,325] Trial 68 pruned. 
+[I 2026-09-12 13:34:21,004] Trial 69 finished with value: 0.25421377039421195 and parameters: {'phi_model': 'mass', 'w': 0.2750686015684053, 'svgd_iters': 25, 'debt_weight': 0.9970279176767857, 'visit_sat': 0.24825480626674606, 'visit_halflife': 2.15548763056957, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:35:45,505] Trial 70 finished with value: 0.25583478384775804 and parameters: {'phi_model': 'mass', 'w': 0.28180353111961703, 'svgd_iters': 25, 'debt_weight': 0.9402078237080705, 'visit_sat': 0.14326924082592796, 'visit_halflife': 1.5581747799924268, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:36:08,300] Trial 71 pruned. 
+[I 2026-09-12 13:36:36,320] Trial 72 pruned. 
+[I 2026-09-12 13:37:14,773] Trial 73 pruned. 
+[I 2026-09-12 13:37:53,386] Trial 74 pruned. 
+[I 2026-09-12 13:38:21,413] Trial 75 pruned. 
+[I 2026-09-12 13:38:55,004] Trial 76 pruned. 
+[I 2026-09-12 13:39:22,948] Trial 77 pruned. 
+[I 2026-09-12 13:40:47,821] Trial 78 finished with value: 0.25915319221756866 and parameters: {'phi_model': 'mass', 'w': 0.2978664870187282, 'svgd_iters': 25, 'debt_weight': 0.985392831366592, 'visit_sat': 0.11747616746400594, 'visit_halflife': 2.092813883543067, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:41:10,611] Trial 79 pruned. 
+[I 2026-09-12 13:42:52,063] Trial 80 finished with value: 0.2553759716579249 and parameters: {'phi_model': 'mass', 'w': 0.26181178238740127, 'svgd_iters': 50, 'debt_weight': 0.9877783307693982, 'visit_sat': 0.22061490988400806, 'visit_halflife': 0.7401890018135522, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:43:14,832] Trial 81 pruned. 
+[I 2026-09-12 13:43:48,695] Trial 82 pruned. 
+[I 2026-09-12 13:45:13,549] Trial 83 finished with value: 0.25445013843515635 and parameters: {'phi_model': 'mass', 'w': 0.29306997757976505, 'svgd_iters': 25, 'debt_weight': 0.8593962881379797, 'visit_sat': 0.3652902272793944, 'visit_halflife': 2.785822212112831, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:45:41,538] Trial 84 pruned. 
+[I 2026-09-12 13:47:06,381] Trial 85 finished with value: 0.25888033775444097 and parameters: {'phi_model': 'mass', 'w': 0.289106090117046, 'svgd_iters': 25, 'debt_weight': 0.9612048951123927, 'visit_sat': 0.342974671184536, 'visit_halflife': 1.7925827108725392, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:49:02,039] Trial 86 finished with value: 0.2560995348740503 and parameters: {'phi_model': 'mass', 'w': 0.33054819636113336, 'svgd_iters': 75, 'debt_weight': 0.9993218246627102, 'visit_sat': 0.21182051753203113, 'visit_halflife': 1.561557524222661, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:49:24,805] Trial 87 pruned. 
+[I 2026-09-12 13:51:20,488] Trial 88 finished with value: 0.26154049338170104 and parameters: {'phi_model': 'mass', 'w': 0.699649968160139, 'svgd_iters': 75, 'debt_weight': 0.9943345158170486, 'visit_sat': 0.2054557250625065, 'visit_halflife': 0.7309233000760134, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:51:48,549] Trial 89 pruned. 
+[I 2026-09-12 13:52:16,531] Trial 90 pruned. 
+[I 2026-09-12 13:53:58,039] Trial 91 finished with value: 0.2526353289897275 and parameters: {'phi_model': 'mass', 'w': 0.3749067032949927, 'svgd_iters': 50, 'debt_weight': 0.9845788377551035, 'visit_sat': 0.2153693771994448, 'visit_halflife': 1.8557836794489435, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 13:54:26,182] Trial 92 pruned. 
+[I 2026-09-12 13:54:59,719] Trial 93 pruned. 
+[I 2026-09-12 13:56:02,605] Trial 94 pruned. 
+[I 2026-09-12 13:56:41,073] Trial 95 pruned. 
+[I 2026-09-12 13:57:14,796] Trial 96 pruned. 
+[I 2026-09-12 13:58:12,424] Trial 97 pruned. 
+[I 2026-09-12 14:00:23,037] Trial 98 finished with value: 0.2581131195213917 and parameters: {'phi_model': 'mass', 'w': 0.3876455118704941, 'svgd_iters': 100, 'debt_weight': 0.9061659703165319, 'visit_sat': 0.1758474653712089, 'visit_halflife': 1.3362371001393847, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 14:01:47,779] Trial 99 finished with value: 0.2548464407420769 and parameters: {'phi_model': 'mass', 'w': 0.3471670339792877, 'svgd_iters': 25, 'debt_weight': 0.9331687609109636, 'visit_sat': 0.25493240254657756, 'visit_halflife': 1.4450530855858221, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 14:03:12,601] Trial 100 finished with value: 0.2565114005869134 and parameters: {'phi_model': 'mass', 'w': 0.35532090620493173, 'svgd_iters': 25, 'debt_weight': 0.9766264364618076, 'visit_sat': 0.1176246404206929, 'visit_halflife': 1.078402194629046, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 14:03:35,444] Trial 101 pruned. 
+[I 2026-09-12 14:03:58,275] Trial 102 pruned. 
+[I 2026-09-12 14:04:26,268] Trial 103 pruned. 
+[I 2026-09-12 14:06:07,996] Trial 104 finished with value: 0.26030788029605706 and parameters: {'phi_model': 'mass', 'w': 0.3900416915691653, 'svgd_iters': 50, 'debt_weight': 0.907250073516781, 'visit_sat': 0.29443256188288175, 'visit_halflife': 1.6498854287274507, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 56 with value: 0.25059641055286747.
+[I 2026-09-12 14:07:32,665] Trial 105 finished with value: 0.24845028238113126 and parameters: {'phi_model': 'mass', 'w': 0.34750166769168933, 'svgd_iters': 25, 'debt_weight': 0.9324481892892202, 'visit_sat': 0.21554298387807416, 'visit_halflife': 1.9395236538709895, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:08:22,915] Trial 106 pruned. 
+[I 2026-09-12 14:09:47,952] Trial 107 finished with value: 0.2558279538323173 and parameters: {'phi_model': 'mass', 'w': 0.425326766372471, 'svgd_iters': 25, 'debt_weight': 0.8879692819388628, 'visit_sat': 0.2810718221128018, 'visit_halflife': 2.4662257115716333, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:10:10,757] Trial 108 pruned. 
+[I 2026-09-12 14:11:35,483] Trial 109 finished with value: 0.25233374540290404 and parameters: {'phi_model': 'mass', 'w': 0.43854684678277006, 'svgd_iters': 25, 'debt_weight': 0.9239881165405515, 'visit_sat': 0.2415740968138316, 'visit_halflife': 1.7216651358286787, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:11:58,281] Trial 110 pruned. 
+[I 2026-09-12 14:13:40,094] Trial 111 finished with value: 0.254263669339985 and parameters: {'phi_model': 'mass', 'w': 0.4487119877725151, 'svgd_iters': 50, 'debt_weight': 0.9661061057854452, 'visit_sat': 0.3387669046508146, 'visit_halflife': 2.242047239930493, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:15:21,556] Trial 112 finished with value: 0.256147895906356 and parameters: {'phi_model': 'mass', 'w': 0.47390721103364514, 'svgd_iters': 50, 'debt_weight': 0.9683608492065625, 'visit_sat': 0.3591446684517506, 'visit_halflife': 2.22293133735206, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:17:02,638] Trial 113 finished with value: 0.2498340557753278 and parameters: {'phi_model': 'mass', 'w': 0.5302859576458723, 'svgd_iters': 50, 'debt_weight': 0.9632422313993914, 'visit_sat': 0.3038810970503529, 'visit_halflife': 1.257430049091453, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:18:27,201] Trial 114 finished with value: 0.2544662333093533 and parameters: {'phi_model': 'mass', 'w': 0.5364997406346391, 'svgd_iters': 25, 'debt_weight': 0.9104058892343068, 'visit_sat': 0.22186298841766997, 'visit_halflife': 1.6815009603751154, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:20:08,286] Trial 115 finished with value: 0.25927923409144527 and parameters: {'phi_model': 'mass', 'w': 0.5256237418478368, 'svgd_iters': 50, 'debt_weight': 0.9949543322327438, 'visit_sat': 0.17627597491363428, 'visit_halflife': 2.2226329217031693, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:22:04,277] Trial 116 finished with value: 0.2551732270962125 and parameters: {'phi_model': 'mass', 'w': 0.4583068955488619, 'svgd_iters': 75, 'debt_weight': 0.9209768799015797, 'visit_sat': 0.19335121836460994, 'visit_halflife': 2.5996061653560383, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:23:28,733] Trial 117 finished with value: 0.256957351453562 and parameters: {'phi_model': 'mass', 'w': 0.5651558074627439, 'svgd_iters': 25, 'debt_weight': 0.9776446934551872, 'visit_sat': 0.2537457620791685, 'visit_halflife': 1.8480747013272185, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:25:09,780] Trial 118 finished with value: 0.24872692383089579 and parameters: {'phi_model': 'mass', 'w': 0.5953634134653036, 'svgd_iters': 50, 'debt_weight': 0.909195956641671, 'visit_sat': 0.19137700243962424, 'visit_halflife': 1.9385883238499666, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:26:00,095] Trial 119 pruned. 
+[I 2026-09-12 14:27:56,340] Trial 120 finished with value: 0.2569730872349122 and parameters: {'phi_model': 'mass', 'w': 0.5344173788293767, 'svgd_iters': 75, 'debt_weight': 0.9305412978406042, 'visit_sat': 0.3240149035652916, 'visit_halflife': 1.4018469981477817, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:28:24,796] Trial 121 pruned. 
+[I 2026-09-12 14:30:06,123] Trial 122 finished with value: 0.2566842424082872 and parameters: {'phi_model': 'mass', 'w': 0.5111600401234161, 'svgd_iters': 50, 'debt_weight': 0.9109006003297461, 'visit_sat': 0.19124228646378283, 'visit_halflife': 1.89133149037065, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:31:46,986] Trial 123 finished with value: 0.25635979533123227 and parameters: {'phi_model': 'mass', 'w': 0.6854239762261392, 'svgd_iters': 50, 'debt_weight': 0.9976502220331653, 'visit_sat': 0.13754764979154038, 'visit_halflife': 1.7570539041472089, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:33:11,672] Trial 124 finished with value: 0.25709291844007776 and parameters: {'phi_model': 'mass', 'w': 0.6376254065379053, 'svgd_iters': 25, 'debt_weight': 0.9685375632588076, 'visit_sat': 0.17676512241971393, 'visit_halflife': 1.2206839613802682, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:33:45,351] Trial 125 pruned. 
+[I 2026-09-12 14:35:10,046] Trial 126 finished with value: 0.25467637626526995 and parameters: {'phi_model': 'mass', 'w': 0.549779776710198, 'svgd_iters': 25, 'debt_weight': 0.9276460872132706, 'visit_sat': 0.3983885767086424, 'visit_halflife': 1.6380038127050622, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:36:51,969] Trial 127 finished with value: 0.25486027754908125 and parameters: {'phi_model': 'mass', 'w': 0.43883782380256287, 'svgd_iters': 50, 'debt_weight': 0.8099198249223454, 'visit_sat': 0.2715634219428185, 'visit_halflife': 2.0729040548773345, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:37:15,193] Trial 128 pruned. 
+[I 2026-09-12 14:37:38,058] Trial 129 pruned. 
+[I 2026-09-12 14:38:43,201] Trial 130 pruned. 
+[I 2026-09-12 14:40:07,897] Trial 131 finished with value: 0.2564158934170165 and parameters: {'phi_model': 'mass', 'w': 0.41154871908078094, 'svgd_iters': 25, 'debt_weight': 0.9215886998481061, 'visit_sat': 0.1706027717138226, 'visit_halflife': 2.575175092602071, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:40:56,370] Trial 132 pruned. 
+[I 2026-09-12 14:41:48,630] Trial 133 pruned. 
+[I 2026-09-12 14:42:16,758] Trial 134 pruned. 
+[I 2026-09-12 14:42:50,331] Trial 135 pruned. 
+[I 2026-09-12 14:43:48,294] Trial 136 pruned. 
+[I 2026-09-12 14:44:22,234] Trial 137 pruned. 
+[I 2026-09-12 14:46:03,467] Trial 138 finished with value: 0.2552412696591125 and parameters: {'phi_model': 'mass', 'w': 0.4898871911938608, 'svgd_iters': 50, 'debt_weight': 0.9260476910234436, 'visit_sat': 0.33212689622683067, 'visit_halflife': 2.6428571125825506, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:46:36,884] Trial 139 pruned. 
+[I 2026-09-12 14:47:04,989] Trial 140 pruned. 
+[I 2026-09-12 14:47:43,903] Trial 141 pruned. 
+[I 2026-09-12 14:48:06,695] Trial 142 pruned. 
+[I 2026-09-12 14:48:40,346] Trial 143 pruned. 
+[I 2026-09-12 14:49:08,454] Trial 144 pruned. 
+[I 2026-09-12 14:49:31,264] Trial 145 pruned. 
+[I 2026-09-12 14:50:05,010] Trial 146 pruned. 
+[I 2026-09-12 14:51:29,752] Trial 147 finished with value: 0.25175672030692425 and parameters: {'phi_model': 'mass', 'w': 0.4775678514197908, 'svgd_iters': 25, 'debt_weight': 0.8122710570916097, 'visit_sat': 0.2776176980137298, 'visit_halflife': 2.1574564977987594, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:52:03,251] Trial 148 pruned. 
+[I 2026-09-12 14:53:27,984] Trial 149 finished with value: 0.2548951552492037 and parameters: {'phi_model': 'mass', 'w': 0.5479724815361903, 'svgd_iters': 25, 'debt_weight': 0.9606140140850771, 'visit_sat': 0.44254857184971697, 'visit_halflife': 1.2685255376874058, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:53:56,087] Trial 150 pruned. 
+[I 2026-09-12 14:54:18,937] Trial 151 pruned. 
+[I 2026-09-12 14:55:01,013] Trial 152 pruned. 
+[I 2026-09-12 14:55:39,712] Trial 153 pruned. 
+[I 2026-09-12 14:56:13,320] Trial 154 pruned. 
+[I 2026-09-12 14:56:47,102] Trial 155 pruned. 
+[I 2026-09-12 14:57:15,147] Trial 156 pruned. 
+[I 2026-09-12 14:57:48,821] Trial 157 pruned. 
+[I 2026-09-12 14:59:14,133] Trial 158 finished with value: 0.2525753656680369 and parameters: {'phi_model': 'mass', 'w': 0.5206026472099587, 'svgd_iters': 25, 'debt_weight': 0.966607233510602, 'visit_sat': 0.19402265060120774, 'visit_halflife': 1.7736900357443584, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 14:59:48,450] Trial 159 pruned. 
+[I 2026-09-12 15:00:16,415] Trial 160 pruned. 
+[I 2026-09-12 15:00:44,681] Trial 161 pruned. 
+[I 2026-09-12 15:01:07,720] Trial 162 pruned. 
+[I 2026-09-12 15:01:41,623] Trial 163 pruned. 
+[I 2026-09-12 15:03:06,557] Trial 164 finished with value: 0.2554555172517399 and parameters: {'phi_model': 'mass', 'w': 0.47294670914456893, 'svgd_iters': 25, 'debt_weight': 0.9941030714992848, 'visit_sat': 0.1810777329177784, 'visit_halflife': 1.6903089071939643, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:03:57,242] Trial 165 pruned. 
+[I 2026-09-12 15:04:32,581] Trial 166 pruned. 
+[I 2026-09-12 15:05:11,609] Trial 167 pruned. 
+[I 2026-09-12 15:07:08,987] Trial 168 finished with value: 0.2581378758110097 and parameters: {'phi_model': 'mass', 'w': 0.6251568526432398, 'svgd_iters': 75, 'debt_weight': 0.9496569092827376, 'visit_sat': 0.18133333571048635, 'visit_halflife': 1.8407221905016533, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:07:44,511] Trial 169 pruned. 
+[I 2026-09-12 15:08:24,011] Trial 170 pruned. 
+[I 2026-09-12 15:08:56,702] Trial 171 pruned. 
+[I 2026-09-12 15:10:24,689] Trial 172 finished with value: 0.25666338638761077 and parameters: {'phi_model': 'mass', 'w': 0.5116188838723817, 'svgd_iters': 25, 'debt_weight': 0.847504810027883, 'visit_sat': 0.22570236511615363, 'visit_halflife': 1.5857231067667543, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:12:06,565] Trial 173 finished with value: 0.25413754456110016 and parameters: {'phi_model': 'mass', 'w': 0.5377171773709709, 'svgd_iters': 50, 'debt_weight': 0.9837785646592022, 'visit_sat': 0.32565125426473496, 'visit_halflife': 2.5866042117643397, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:14:03,122] Trial 174 finished with value: 0.2569291323458248 and parameters: {'phi_model': 'mass', 'w': 0.5268079653481929, 'svgd_iters': 75, 'debt_weight': 0.9943792226304224, 'visit_sat': 0.3411059826069604, 'visit_halflife': 1.7043052268042211, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:14:31,137] Trial 175 pruned. 
+[I 2026-09-12 15:15:56,106] Trial 176 finished with value: 0.25144429853124317 and parameters: {'phi_model': 'mass', 'w': 0.4967196053801718, 'svgd_iters': 25, 'debt_weight': 0.7942320763335714, 'visit_sat': 0.2543373894047975, 'visit_halflife': 2.3916853618990577, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:16:19,256] Trial 177 pruned. 
+[I 2026-09-12 15:18:04,223] Trial 178 finished with value: 0.2536882146163989 and parameters: {'phi_model': 'mass', 'w': 0.49481317559143995, 'svgd_iters': 50, 'debt_weight': 0.8853911405220021, 'visit_sat': 0.4130627156275035, 'visit_halflife': 3.2794594160060053, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:19:52,702] Trial 179 finished with value: 0.25456229731778496 and parameters: {'phi_model': 'mass', 'w': 0.4830887553412865, 'svgd_iters': 50, 'debt_weight': 0.997499181796747, 'visit_sat': 0.3503315222584806, 'visit_halflife': 2.7249631962224385, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:20:24,246] Trial 180 pruned. 
+[I 2026-09-12 15:21:54,653] Trial 181 finished with value: 0.2514516174765477 and parameters: {'phi_model': 'mass', 'w': 0.5123680388091699, 'svgd_iters': 25, 'debt_weight': 0.7964565827931166, 'visit_sat': 0.24205825676122414, 'visit_halflife': 2.4783335605819836, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:22:37,292] Trial 182 pruned. 
+[I 2026-09-12 15:23:00,416] Trial 183 pruned. 
+[I 2026-09-12 15:23:34,271] Trial 184 pruned. 
+[I 2026-09-12 15:24:02,572] Trial 185 pruned. 
+[I 2026-09-12 15:24:41,066] Trial 186 pruned. 
+[I 2026-09-12 15:25:03,876] Trial 187 pruned. 
+[I 2026-09-12 15:26:28,790] Trial 188 finished with value: 0.24900441738495468 and parameters: {'phi_model': 'mass', 'w': 0.5315753513755451, 'svgd_iters': 25, 'debt_weight': 0.8747417365433355, 'visit_sat': 0.33762667219425796, 'visit_halflife': 2.6413056505972716, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:27:02,519] Trial 189 pruned. 
+[I 2026-09-12 15:27:30,717] Trial 190 pruned. 
+[I 2026-09-12 15:28:22,582] Trial 191 pruned. 
+[I 2026-09-12 15:28:45,513] Trial 192 pruned. 
+[I 2026-09-12 15:29:20,525] Trial 193 pruned. 
+[I 2026-09-12 15:30:02,720] Trial 194 pruned. 
+[I 2026-09-12 15:31:44,339] Trial 195 finished with value: 0.2568699175359678 and parameters: {'phi_model': 'mass', 'w': 0.5196790587081719, 'svgd_iters': 50, 'debt_weight': 0.9882602129788088, 'visit_sat': 0.321263290518444, 'visit_halflife': 2.584351147329759, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+[I 2026-09-12 15:32:19,407] Trial 196 pruned. 
+[I 2026-09-12 15:32:42,222] Trial 197 pruned. 
+[I 2026-09-12 15:33:05,016] Trial 198 pruned. 
+[I 2026-09-12 15:34:30,174] Trial 199 finished with value: 0.2567585192180871 and parameters: {'phi_model': 'mass', 'w': 0.4209703881748187, 'svgd_iters': 25, 'debt_weight': 0.9665704330816864, 'visit_sat': 0.3466714984163336, 'visit_halflife': 0.7891983701793792, 'phi_mode': 'density', 'n_particles': 128}. Best is trial 105 with value: 0.24845028238113126.
+
+======================================================================
+  Optuna-Suche  study=tuning_v1  trials=200  timeout=8.0h
+  n_max=12  n_shapes=25  quality=cov  seed=0
+  fest: {'sensor_radius': 0.06, 'gp_noise': 0.05, 'meas_noise': 0.02, 'max_obs': 64}
+======================================================================
+
+  25 Formen geladen, Planer bereit
+
+  SVGD-Pool mit 10 Prozessen
+
+
+  fertig nach 14530s
+
+  Bester Versuch #105:  J=0.2485
+    debt_weight      0.9324481892892202
+    n_particles      128
+    phi_mode         density
+    phi_model        mass
+    svgd_iters       25
+    visit_halflife   1.9395236538709895
+    visit_sat        0.21554298387807416
+    w                0.34750166769168933
+    n_exec           6.0000
+    q                0.1220
+    cov_norm         0.1220
+    erg_truth        0.0398
+    time_s           1.6194

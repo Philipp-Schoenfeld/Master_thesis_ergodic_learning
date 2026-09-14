@@ -1,0 +1,18 @@
+{
+  "shape": "greek_upper_0",
+  "knowledge_condition": "none_known",
+  "method": "cfm",
+  "subvariant": "replan_1_6",
+  "svgd_iters": 1000,
+  "variant_id": "cfm_replan_1_6_svgd1000",
+  "coverage": 0.041722316294908524,
+  "path_len": 8.4487886428833,
+  "E_ergodic_total": 19.03556650876999,
+  "E_ergodic_explore": 18.96627426147461,
+  "E_ergodic_exploit": 0.06929224729537964,
+  "explore_exploit_ratio": 0.0036534453915458794,
+  "coverage_per_length": 0.004938260152838909,
+  "E_ergodic_total_per_length": 2.2530527526930486,
+  "E_ergodic_explore_per_length": 2.2448513110161112,
+  "E_ergodic_exploit_per_length": 0.008201441676937538
+}

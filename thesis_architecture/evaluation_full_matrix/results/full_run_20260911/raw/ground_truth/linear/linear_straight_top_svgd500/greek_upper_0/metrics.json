@@ -1,0 +1,18 @@
+{
+  "shape": "greek_upper_0",
+  "knowledge_condition": "ground_truth",
+  "method": "linear",
+  "subvariant": "straight_top",
+  "svgd_iters": 500,
+  "variant_id": "linear_straight_top_svgd500",
+  "coverage": 0.06513876467943192,
+  "path_len": 2.284653663635254,
+  "E_ergodic_total": 4.030602216720581,
+  "E_ergodic_explore": 3.544473648071289,
+  "E_ergodic_exploit": 0.486128568649292,
+  "explore_exploit_ratio": 0.1371511307225593,
+  "coverage_per_length": 0.028511439486974842,
+  "E_ergodic_total_per_length": 1.7642071010042022,
+  "E_ergodic_explore_per_length": 1.5514271175927197,
+  "E_ergodic_exploit_per_length": 0.21277998341148247
+}

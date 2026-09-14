@@ -20,17 +20,20 @@ import os
 import sys
 
 import numpy as np
+import torch
 
 _here = os.path.dirname(os.path.abspath(__file__))
 _expl = os.path.dirname(_here)
 _arch = os.path.dirname(_expl)
 _root = os.path.dirname(_arch)
-for _p in (_arch, os.path.join(_root, 'SE3_SVGD')):
+for _p in (_arch, os.path.join(_root, 'SE3_SVGD'),
+          os.path.join(_arch, 'constraints', '02_waypoint_anchor')):
     if os.path.isdir(_p) and _p not in sys.path:
         sys.path.insert(0, _p)
 
 import ergodic_core as ergo          # noqa: E402
 import svgd_engine as svgde          # noqa: E402
+from waypoints import WaypointPins   # noqa: E402
 
 
 class SvgdRefiner:
@@ -56,6 +59,15 @@ class SvgdRefiner:
     N_PARTICLES = 8
     JITTER = 0.01
     W_ERGODIC, W_SMOOTH, W_BOUNDARY = 600.0, 15.0, 30.0
+    #: Gewicht des Startpunkt-Pins (siehe `WaypointPins`,
+    #: `constraints/02_waypoint_anchor/waypoints.py`). Dieselbe Groessenordnung
+    #: wie W_ERGODIC, damit der Pin waehrend der SVGD-Iterationen spuerbar
+    #: zieht und der Rest der Bahn sich glatt daran ausrichtet -- die exakte
+    #: Erfuellung uebernimmt danach ohnehin der harte Snap am Ende von
+    #: `refine()` (dieselbe Konvention wie in
+    #: `flow_matching_cond_particles_start.py`: die Bedingung *erfuellen*,
+    #: nicht nur weich lernen).
+    W_START = 500.0
 
     def __init__(self, seed=0):
         self.k_idx = ergo.build_fourier_indices(self.K, self.DIM)
@@ -70,9 +82,12 @@ class SvgdRefiner:
         grid_w = np.clip(phi_grid.ravel(), 0.0, None)
         return ergo.compute_target_fourier_coeffs(grid_pts, grid_w, self.k_idx)
 
-    def _energy_and_grad(self, phi_k, obstacle=None, obstacle_weight=20.0):
+    def _energy_and_grad(self, phi_k, obstacle=None, obstacle_weight=20.0,
+                         start=None):
         k_idx, Lambda_k = self.k_idx, self.Lambda_k
-        W_E, W_S, W_B = self.W_ERGODIC, self.W_SMOOTH, self.W_BOUNDARY
+        W_E, W_S, W_B, W_ST = (self.W_ERGODIC, self.W_SMOOTH,
+                               self.W_BOUNDARY, self.W_START)
+        pin = WaypointPins([(0.0, tuple(start))]) if start is not None else None
 
         def fn(X_flat, T):
             X = X_flat.reshape(T, 2)
@@ -90,22 +105,45 @@ class SvgdRefiner:
 
             energy = W_E * erg_cost + W_S * sm_cost + W_B * bd_cost
             grad = W_E * erg_grad + W_S * sm_grad + W_B * bd_grad
-            
+
             if obstacle is not None:
                 energy += obstacle_weight * obstacle.penalty(X)
                 grad += obstacle_weight * obstacle.grad_penalty(X)
 
+            if pin is not None:
+                # Dieselbe quadratische Pin-Strafe wie Constraint 2
+                # (waypoints.py) -- hier per Autograd ausgewertet, damit die
+                # Formel nicht zweimal gepflegt werden muss. `refine()` laeuft
+                # unter `torch.no_grad()` (siehe Mission._rounds_*), das
+                # Autograd hier muss deshalb explizit reaktiviert werden.
+                with torch.enable_grad():
+                    Xt = torch.from_numpy(X).unsqueeze(0).requires_grad_(True)
+                    e_pin = pin.energy(Xt)
+                    (g_pin,) = torch.autograd.grad(e_pin, Xt)
+                energy += W_ST * float(e_pin.detach())
+                grad += W_ST * g_pin[0].numpy()
+
             return energy, grad.ravel()
         return fn
 
-    def refine(self, curve_np, phi_np, n_iters, nxi=None, obstacle=None, obstacle_weight=20.0):
+    def refine(self, curve_np, phi_np, n_iters, nxi=None, obstacle=None,
+              obstacle_weight=20.0, start=None):
         """curve_np: (T,2) Startbahn (vom Netz). phi_np: (R,R) Zieldichte,
-        Werte in [0,1]. -> (T,2) verfeinerte Bahn."""
+        Werte in [0,1]. `start`, falls gesetzt: (2,) Punkt, an den der erste
+        Bahnpunkt gepinnt wird (Anschluss an die zuletzt gefahrene Position
+        in den Replanning-Varianten B/C/D) -- waehrend der SVGD-Iterationen
+        weich per `WaypointPins`-Strafe, danach hart auf den exakten Wert
+        gesetzt. -> (T,2) verfeinerte Bahn."""
         if n_iters <= 0:
+            if start is not None:
+                curve_np = curve_np.copy()
+                curve_np[0] = np.asarray(start, dtype=curve_np.dtype)
             return curve_np
         T = curve_np.shape[0]
         phi_k = self._phi_k(phi_np)
-        energy_fn_orig = self._energy_and_grad(phi_k, obstacle=obstacle, obstacle_weight=obstacle_weight)
+        energy_fn_orig = self._energy_and_grad(phi_k, obstacle=obstacle,
+                                               obstacle_weight=obstacle_weight,
+                                               start=start)
 
         if nxi is not None and nxi != T:
             from obstacles import bspline_basis_matrix
@@ -133,7 +171,7 @@ class SvgdRefiner:
             particles = particles.reshape(self.N_PARTICLES, nxi, 2)
             scores = [energy_fn(p.ravel(), nxi)[0] for p in particles]
             best_P = particles[int(np.argmin(scores))]
-            return B @ best_P
+            curve_out = B @ best_P
         else:
             jitter = self.rng.normal(scale=self.JITTER, size=(self.N_PARTICLES, T, 2))
             init = np.clip(curve_np[None] + jitter, 0.02, 0.98)
@@ -147,4 +185,13 @@ class SvgdRefiner:
 
             particles = particles.reshape(self.N_PARTICLES, T, 2)
             scores = [energy_fn_orig(p.ravel(), T)[0] for p in particles]
-            return particles[int(np.argmin(scores))]
+            curve_out = particles[int(np.argmin(scores))]
+
+        if start is not None:
+            # Weich gezogen war die SVGD-Schleife oben schon; hier die
+            # Bedingung *erfuellen* statt nur annaehern -- dieselbe Konvention
+            # wie der harte Startpunkt-Snap in
+            # `flow_matching_cond_particles_start.py`.
+            curve_out = curve_out.copy()
+            curve_out[0] = np.asarray(start, dtype=curve_out.dtype)
+        return curve_out

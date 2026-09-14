@@ -1,0 +1,85 @@
+{
+  "representations": [
+    "particles"
+  ],
+  "strategies": {
+    "niveau_svgd0": {
+      "phi_model": "niveau",
+      "param": 0.4307,
+      "svgd_iters": 0
+    },
+    "niveau_svgd25": {
+      "phi_model": "niveau",
+      "param": 0.6067,
+      "svgd_iters": 25
+    },
+    "ucb_tuned_svgd0": {
+      "phi_model": "ucb",
+      "param": 0.4597,
+      "svgd_iters": 0
+    },
+    "ucb_tuned_svgd25": {
+      "phi_model": "ucb",
+      "param": 0.4597,
+      "svgd_iters": 25
+    },
+    "mass_tuned_svgd0": {
+      "phi_model": "mass",
+      "param": 0.53,
+      "svgd_iters": 0
+    },
+    "mass_tuned_svgd25": {
+      "phi_model": "mass",
+      "param": 0.53,
+      "svgd_iters": 25
+    },
+    "eid_tuned_svgd0": {
+      "phi_model": "eid",
+      "param": 2.4662,
+      "svgd_iters": 0
+    },
+    "eid_tuned_svgd25": {
+      "phi_model": "eid",
+      "param": 2.4662,
+      "svgd_iters": 25
+    }
+  },
+  "replan_schemes": [
+    "no_replan",
+    "replan_1_6"
+  ],
+  "shapes_resolved": [
+    "A",
+    "greek_upper_0",
+    "korean_5",
+    "digit_5",
+    "a_lc",
+    "rand_gmm_10",
+    "rand_gmm_20",
+    "rand_ana_poly_10",
+    "rand_ana_poly_20",
+    "rand_ana_poly_30",
+    "rand_gmm_complex_0",
+    "rand_gmm_complex_10",
+    "rand_gmm_complex_20",
+    "rand_gmm_complex_30",
+    "rand_ana_poly_complex_0",
+    "rand_ana_poly_complex_10",
+    "rand_ana_poly_complex_20",
+    "rand_ana_poly_complex_30",
+    "organic_0",
+    "organic_10",
+    "organic_20",
+    "organic_30",
+    "cjk_0",
+    "cjk_10",
+    "cjk_20"
+  ],
+  "knowledge_conditions": [
+    "ground_truth",
+    "none_known",
+    "half_known",
+    "ten_samples"
+  ],
+  "spectral_checkpoint_caveat": "trained on a different, smaller shape set than shape_library.VALIDATION_SHAPES (sigma, rand_poly_7, G, spiral_2cw, star_5, W, lissajous_1_3, heart, 5, phi) -- spectral-arm results test out-of-distribution generalisation too, not representation alone."
+}

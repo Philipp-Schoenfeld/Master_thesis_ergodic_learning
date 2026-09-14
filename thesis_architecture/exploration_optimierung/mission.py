@@ -400,7 +400,7 @@ class LaengenMission:
 
     def __init__(self, planner, truths, names, args, svgd_iters=0,
                  gp_res=64, n_prior=0, seed=0, nxi_refine=25, pool=None,
-                 policy=None):
+                 policy=None, gp_lengthscale=0.08, gp_variance=1.0):
         self.planner = planner
         self.truths = truths
         self.names = names
@@ -419,7 +419,14 @@ class LaengenMission:
 
         self.beliefs, self.beliefs0 = [], []
         for i in range(self.S):
-            b = GPBelief(grid_res=gp_res, lengthscale=0.08,
+            # `gp_lengthscale`/`gp_variance` sind nachtraeglich oeffenbar
+            # gemacht worden (Voreinstellungen 0.08/1.0 = bisheriges
+            # Verhalten, bereits gefahrene Studien bleiben also gueltig).
+            # Die Korrelationslaenge war die letzte grosse ungetunte
+            # Groesse des Glaubens; `optuna_search.py --space gross` sucht
+            # darueber.
+            b = GPBelief(grid_res=gp_res, lengthscale=gp_lengthscale,
+                         variance=gp_variance,
                          noise=args.gp_noise, device=str(self.device))
             if n_prior > 0:
                 g = torch.Generator().manual_seed(seed * 977 + i)

@@ -1,0 +1,23 @@
+{
+  "pilot": false,
+  "shapes": "A",
+  "ckpt": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\transfer\\netz2d_startpunkt.pt",
+  "device": "cuda",
+  "out_tag": "smoke2",
+  "svgd_iters": "0,25",
+  "n_peaks": 12,
+  "seed": 0,
+  "truth_res": 48,
+  "no_viz": true,
+  "shapes_resolved": [
+    "A"
+  ],
+  "knowledge_conditions": [
+    "ground_truth",
+    "none_known",
+    "half_known",
+    "ten_samples"
+  ],
+  "kappa": 2.0,
+  "length_unit": 1.4142135623730951
+}
