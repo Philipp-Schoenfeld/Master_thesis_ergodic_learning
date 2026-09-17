@@ -174,8 +174,20 @@ def main():
             planner = planners[rep]
             gen = vr.REPRESENTATIONS[rep]
             for cond in vr.KNOWLEDGE_CONDITIONS:
-                belief = vr.build_belief(cond, truth, seed=args.seed, device=device)
                 for strat in strategies:
+                    # Belief jetzt je (Wissensstufe, Strategie) statt nur je
+                    # Wissensstufe gebaut, damit eine Strategie mit eigener
+                    # `gp_lengthscale`/`gp_noise` (siehe `vr.STRATEGIES`) auch
+                    # tatsaechlich damit glaubt, statt den einen global fest
+                    # verdrahteten Wert zu teilen. Fuer Strategien ohne diese
+                    # Felder identisch zum bisherigen Verhalten (0.08/0.05),
+                    # und `ten_samples` zieht wegen desselben `seed` weiterhin
+                    # dieselben zehn Punkte je Form/Bedingung.
+                    s = vr.STRATEGIES[strat]
+                    belief = vr.build_belief(
+                        cond, truth, seed=args.seed, device=device,
+                        gp_noise=s.get('gp_noise', 0.05),
+                        gp_lengthscale=s.get('gp_lengthscale', 0.08))
                     for scheme in schemes:
                         b = belief.clone()
                         if scheme == 'no_replan':

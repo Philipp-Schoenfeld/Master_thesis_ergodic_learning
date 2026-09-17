@@ -16,12 +16,34 @@ import os
 
 import numpy as np
 import plotly.graph_objects as go
+import torch
 from tqdm import tqdm
+
+from obstacles import bspline_basis_matrix
+from orientation import rot6d_to_matrix, sensor_axis
 
 WHITE_INFERNO = [
     [0.0, '#ffffff'], [0.25, '#fee0b6'], [0.5, '#fc8d59'],
     [0.75, '#b30000'], [1.0, '#1A1A2E'],
 ]
+ORIENT_COLOR = '#7C4DFF'
+
+
+def orientation_along_curve(rot6, n_pts):
+    """(nxi,6) control-point rotations -> (n_pts,3) unit lookat directions on the curve.
+
+    Same B-spline basis as `curve_from_cps` in run_surface_eval.py, so the
+    arrows line up with the stored `bahn` samples exactly rather than only
+    approximately (interior control points do not sit on the curve, so a
+    naive index remap would misplace them).
+    """
+    rot6 = np.asarray(rot6, dtype=np.float32)
+    with torch.no_grad():
+        Rm = rot6d_to_matrix(torch.from_numpy(rot6))        # (nxi,3,3)
+        ax = sensor_axis(Rm, axis=2).numpy()                # (nxi,3)
+    B = bspline_basis_matrix(rot6.shape[0], n_pts, 5)        # (n_pts,nxi)
+    d = B @ ax
+    return d / np.linalg.norm(d, axis=-1, keepdims=True).clip(1e-9, None)
 
 
 def orthogonal_camera(v, f, flaeche, gewicht, dist=2.05):
@@ -138,6 +160,36 @@ def render_entry(entry, mesh, png_path=None, html_path=None,
     lo, hi = allpts.min(0), allpts.max(0)
     ctr = (lo + hi) / 2
     rng = max((hi - lo).max(), 1e-6) * 0.62
+
+    rot6 = entry.get('rot6')
+    if rot6:
+        direction = orientation_along_curve(rot6, bahn.shape[0])
+        n_arrows = min(24, bahn.shape[0])
+        idx = np.linspace(0, bahn.shape[0] - 1, n_arrows).astype(int)
+        # Scaled off the trajectory's own footprint, not the (often much
+        # larger) full mesh bounding box `rng` is built from — otherwise a
+        # small letter traced on a big plane gets arrows that overshoot far
+        # past the surface.
+        traj_diag = max((bahn.max(0) - bahn.min(0)).max(), 1e-6)
+        arrow_len = 0.10 * traj_diag
+        base, tip = bahn[idx], bahn[idx] + direction[idx] * arrow_len
+        fig.add_trace(go.Cone(
+            x=tip[:, 0], y=tip[:, 1], z=tip[:, 2],
+            u=direction[idx, 0], v=direction[idx, 1], w=direction[idx, 2],
+            anchor='tip', sizemode='absolute', sizeref=arrow_len * 0.4,
+            colorscale=[[0, ORIENT_COLOR], [1, ORIENT_COLOR]], showscale=False,
+            hoverinfo='skip', name='orientation',
+        ))
+        xs, ys, zs = [], [], []
+        for b, t in zip(base, tip):
+            xs += [b[0], t[0], None]
+            ys += [b[1], t[1], None]
+            zs += [b[2], t[2], None]
+        fig.add_trace(go.Scatter3d(
+            x=xs, y=ys, z=zs, mode='lines',
+            line=dict(color=ORIENT_COLOR, width=3),
+            hoverinfo='skip', name='orientation shaft',
+        ))
 
     eye, up = orthogonal_camera(v, f, flaeche, gewicht)
 

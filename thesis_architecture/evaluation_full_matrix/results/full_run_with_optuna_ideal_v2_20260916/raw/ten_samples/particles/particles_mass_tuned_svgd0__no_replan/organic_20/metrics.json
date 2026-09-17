@@ -1,0 +1,18 @@
+{
+  "shape": "organic_20",
+  "knowledge_condition": "ten_samples",
+  "method": "particles",
+  "subvariant": "mass_tuned_svgd0__no_replan",
+  "svgd_iters": -1,
+  "variant_id": "particles_mass_tuned_svgd0__no_replan",
+  "coverage": 0.07123595476150513,
+  "path_len": 5.793829917907715,
+  "E_ergodic_total": 17.58207969367504,
+  "E_ergodic_explore": 17.442108154296875,
+  "E_ergodic_exploit": 0.1399715393781662,
+  "explore_exploit_ratio": 0.008024920963678586,
+  "coverage_per_length": 0.01229514082581666,
+  "E_ergodic_total_per_length": 3.0346213027986737,
+  "E_ergodic_explore_per_length": 3.010462578541764,
+  "E_ergodic_exploit_per_length": 0.02415872425690969
+}

@@ -1,0 +1,59 @@
+{
+  "representations": [
+    "particles"
+  ],
+  "strategies": {
+    "eid_optuna_ideal_v2": {
+      "phi_model": "eid",
+      "param": 0.6080837837539514,
+      "svgd_iters": 0,
+      "debt_weight": 0.9002740182042122,
+      "visit_sat": 0.4696706948278474,
+      "visit_halflife": 2.2153603772076282,
+      "phi_mode": "quantile",
+      "phi_quantile": 0.14978348922195622,
+      "gp_noise": 0.1249491528099695,
+      "gp_lengthscale": 0.12192310997439061,
+      "n_particles": 128,
+      "cfg_weight": 1.5987308781507361
+    }
+  },
+  "replan_schemes": [
+    "no_replan",
+    "replan_1_6"
+  ],
+  "shapes_resolved": [
+    "A",
+    "greek_upper_0",
+    "korean_5",
+    "digit_5",
+    "a_lc",
+    "rand_gmm_10",
+    "rand_gmm_20",
+    "rand_ana_poly_10",
+    "rand_ana_poly_20",
+    "rand_ana_poly_30",
+    "rand_gmm_complex_0",
+    "rand_gmm_complex_10",
+    "rand_gmm_complex_20",
+    "rand_gmm_complex_30",
+    "rand_ana_poly_complex_0",
+    "rand_ana_poly_complex_10",
+    "rand_ana_poly_complex_20",
+    "rand_ana_poly_complex_30",
+    "organic_0",
+    "organic_10",
+    "organic_20",
+    "organic_30",
+    "cjk_0",
+    "cjk_10",
+    "cjk_20"
+  ],
+  "knowledge_conditions": [
+    "ground_truth",
+    "none_known",
+    "half_known",
+    "ten_samples"
+  ],
+  "spectral_checkpoint_caveat": "trained on a different, smaller shape set than shape_library.VALIDATION_SHAPES (sigma, rand_poly_7, G, spiral_2cw, star_5, W, lissajous_1_3, heart, 5, phi) -- spectral-arm results test out-of-distribution generalisation too, not representation alone."
+}

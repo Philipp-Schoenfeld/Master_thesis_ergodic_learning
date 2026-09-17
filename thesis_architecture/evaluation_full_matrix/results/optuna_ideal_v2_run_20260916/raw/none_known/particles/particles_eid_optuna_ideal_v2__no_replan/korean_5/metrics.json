@@ -1,0 +1,18 @@
+{
+  "shape": "korean_5",
+  "knowledge_condition": "none_known",
+  "method": "particles",
+  "subvariant": "eid_optuna_ideal_v2__no_replan",
+  "svgd_iters": -1,
+  "variant_id": "particles_eid_optuna_ideal_v2__no_replan",
+  "coverage": 0.0739489197731018,
+  "path_len": 6.316190719604492,
+  "E_ergodic_total": 24.865080952644348,
+  "E_ergodic_explore": 24.787811279296875,
+  "E_ergodic_exploit": 0.07726967334747314,
+  "explore_exploit_ratio": 0.0031172447005036645,
+  "coverage_per_length": 0.011707835158234795,
+  "E_ergodic_total_per_length": 3.9367210485691846,
+  "E_ergodic_explore_per_length": 3.9244874608297198,
+  "E_ergodic_exploit_per_length": 0.012233587739464527
+}

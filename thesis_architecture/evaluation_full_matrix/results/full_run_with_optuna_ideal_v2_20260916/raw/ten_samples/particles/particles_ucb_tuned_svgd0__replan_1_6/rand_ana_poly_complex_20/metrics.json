@@ -1,0 +1,18 @@
+{
+  "shape": "rand_ana_poly_complex_20",
+  "knowledge_condition": "ten_samples",
+  "method": "particles",
+  "subvariant": "ucb_tuned_svgd0__replan_1_6",
+  "svgd_iters": -1,
+  "variant_id": "particles_ucb_tuned_svgd0__replan_1_6",
+  "coverage": 0.02913406305015087,
+  "path_len": 8.442420959472656,
+  "E_ergodic_total": 25.066484801471233,
+  "E_ergodic_explore": 24.94729995727539,
+  "E_ergodic_exploit": 0.11918484419584274,
+  "explore_exploit_ratio": 0.004777464671525899,
+  "coverage_per_length": 0.003450913332799587,
+  "E_ergodic_total_per_length": 2.9691109838992173,
+  "E_ergodic_explore_per_length": 2.9549936063403415,
+  "E_ergodic_exploit_per_length": 0.01411737755887589
+}

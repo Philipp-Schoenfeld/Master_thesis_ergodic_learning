@@ -1,0 +1,28 @@
+[ideal_matrix] 25 Formen: ['A', 'greek_upper_0', 'korean_5', 'digit_5', 'a_lc', 'rand_gmm_10', 'rand_gmm_20', 'rand_ana_poly_10', 'rand_ana_poly_20', 'rand_ana_poly_30', 'rand_gmm_complex_0', 'rand_gmm_complex_10', 'rand_gmm_complex_20', 'rand_gmm_complex_30', 'rand_ana_poly_complex_0', 'rand_ana_poly_complex_10', 'rand_ana_poly_complex_20', 'rand_ana_poly_complex_30', 'organic_0', 'organic_10', 'organic_20', 'organic_30', 'cjk_0', 'cjk_10', 'cjk_20']
+[ideal_matrix] Repraesentationen: ['particles']  Strategien: ['niveau_svgd0', 'niveau_svgd25', 'ucb_tuned_svgd0', 'ucb_tuned_svgd25', 'mass_tuned_svgd0', 'mass_tuned_svgd25', 'eid_tuned_svgd0', 'eid_tuned_svgd25', 'eid_optuna_ideal_v2']  Replan-Schemata: ['no_replan', 'replan_1_6']
+[ideal_matrix] [1/25] A fertig, 203.5s seit Start, 80 Zeilen
+[ideal_matrix] [2/25] greek_upper_0 fertig, 408.6s seit Start, 160 Zeilen
+[ideal_matrix] [3/25] korean_5 fertig, 612.0s seit Start, 240 Zeilen
+[ideal_matrix] [4/25] digit_5 fertig, 815.4s seit Start, 320 Zeilen
+[ideal_matrix] [5/25] a_lc fertig, 1018.7s seit Start, 400 Zeilen
+[ideal_matrix] [6/25] rand_gmm_10 fertig, 1222.5s seit Start, 480 Zeilen
+[ideal_matrix] [7/25] rand_gmm_20 fertig, 1426.2s seit Start, 560 Zeilen
+[ideal_matrix] [8/25] rand_ana_poly_10 fertig, 1630.1s seit Start, 640 Zeilen
+[ideal_matrix] [9/25] rand_ana_poly_20 fertig, 1833.9s seit Start, 720 Zeilen
+[ideal_matrix] [10/25] rand_ana_poly_30 fertig, 2039.4s seit Start, 800 Zeilen
+[ideal_matrix] [11/25] rand_gmm_complex_0 fertig, 2243.0s seit Start, 880 Zeilen
+[ideal_matrix] [12/25] rand_gmm_complex_10 fertig, 2446.6s seit Start, 960 Zeilen
+[ideal_matrix] [13/25] rand_gmm_complex_20 fertig, 2650.5s seit Start, 1040 Zeilen
+[ideal_matrix] [14/25] rand_gmm_complex_30 fertig, 2854.2s seit Start, 1120 Zeilen
+[ideal_matrix] [15/25] rand_ana_poly_complex_0 fertig, 3057.8s seit Start, 1200 Zeilen
+[ideal_matrix] [16/25] rand_ana_poly_complex_10 fertig, 3261.2s seit Start, 1280 Zeilen
+[ideal_matrix] [17/25] rand_ana_poly_complex_20 fertig, 3465.0s seit Start, 1360 Zeilen
+[ideal_matrix] [18/25] rand_ana_poly_complex_30 fertig, 3669.7s seit Start, 1440 Zeilen
+[ideal_matrix] [19/25] organic_0 fertig, 3873.9s seit Start, 1520 Zeilen
+[ideal_matrix] [20/25] organic_10 fertig, 4078.1s seit Start, 1600 Zeilen
+[ideal_matrix] [21/25] organic_20 fertig, 4282.2s seit Start, 1680 Zeilen
+[ideal_matrix] [22/25] organic_30 fertig, 4486.1s seit Start, 1760 Zeilen
+[ideal_matrix] [23/25] cjk_0 fertig, 4690.2s seit Start, 1840 Zeilen
+[ideal_matrix] [24/25] cjk_10 fertig, 4894.0s seit Start, 1920 Zeilen
+[ideal_matrix] [25/25] cjk_20 fertig, 5097.7s seit Start, 2000 Zeilen
+[ideal_matrix] fertig: 2000 Zeilen, 5172.6s gesamt -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\full_run_with_optuna_ideal_v2_20260916

@@ -1,0 +1,18 @@
+{
+  "shape": "rand_ana_poly_complex_20",
+  "knowledge_condition": "shared",
+  "method": "lawnmower",
+  "subvariant": "fixed",
+  "svgd_iters": -1,
+  "variant_id": "lawnmower_fixed",
+  "coverage": 0.03455965593457222,
+  "path_len": 8.799999237060547,
+  "E_ergodic_total": 20.658719450235367,
+  "E_ergodic_explore": 20.566579818725586,
+  "E_ergodic_exploit": 0.09213963150978088,
+  "explore_exploit_ratio": 0.004480065831164063,
+  "coverage_per_length": 0.003927233969410677,
+  "E_ergodic_total_per_length": 2.347581959238439,
+  "E_ergodic_explore_per_length": 2.3371115456591127,
+  "E_ergodic_exploit_per_length": 0.01047041357932642
+}

@@ -1,0 +1,18 @@
+{
+  "shape": "cjk_20",
+  "knowledge_condition": "ground_truth",
+  "method": "particles",
+  "subvariant": "eid_optuna_ideal_v2__no_replan",
+  "svgd_iters": -1,
+  "variant_id": "particles_eid_optuna_ideal_v2__no_replan",
+  "coverage": 0.04258642718195915,
+  "path_len": 4.73513126373291,
+  "E_ergodic_total": 4.300944536924362,
+  "E_ergodic_explore": 4.1223320960998535,
+  "E_ergodic_exploit": 0.17861244082450867,
+  "explore_exploit_ratio": 0.04332800867584013,
+  "coverage_per_length": 0.008993716290007643,
+  "E_ergodic_total_per_length": 0.9083052395750779,
+  "E_ergodic_explore_per_length": 0.8705845448622347,
+  "E_ergodic_exploit_per_length": 0.03772069471284323
+}

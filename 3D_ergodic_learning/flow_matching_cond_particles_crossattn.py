@@ -503,7 +503,6 @@ def generate_particle_trajectories(
     polish_steps: int = 250,
     start: torch.Tensor = None,
     generator: torch.Generator = None,
-    start: torch.Tensor = None,
     drop_start: bool = False,
 ) -> tuple:
     """Integrate the flow ODE, optionally repelling the curve from an obstacle.

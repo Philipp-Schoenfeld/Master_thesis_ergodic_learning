@@ -1,0 +1,18 @@
+{
+  "shape": "greek_upper_0",
+  "knowledge_condition": "ground_truth",
+  "method": "particles",
+  "subvariant": "niveau_svgd0__replan_1_6",
+  "svgd_iters": -1,
+  "variant_id": "particles_niveau_svgd0__replan_1_6",
+  "coverage": 0.03844292089343071,
+  "path_len": 8.41704273223877,
+  "E_ergodic_total": 10.260636106133461,
+  "E_ergodic_explore": 10.158858299255371,
+  "E_ergodic_exploit": 0.1017778068780899,
+  "explore_exploit_ratio": 0.01001862649128102,
+  "coverage_per_length": 0.004567271679183413,
+  "E_ergodic_total_per_length": 1.2190310103610857,
+  "E_ergodic_explore_per_length": 1.2069391379403527,
+  "E_ergodic_exploit_per_length": 0.012091872420733094
+}

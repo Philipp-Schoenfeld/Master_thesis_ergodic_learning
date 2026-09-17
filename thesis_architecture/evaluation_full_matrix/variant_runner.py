@@ -53,25 +53,35 @@ TARGET_LENGTH = N_REPLAN_ROUNDS * LENGTH_UNIT   # Bezugslaenge fuer Maeander
 
 # ── Wissensstufen ───────────────────────────────────────────────────────────
 
-def build_belief(condition, truth, seed=0, device='cpu', gp_noise=0.05):
+def build_belief(condition, truth, seed=0, device='cpu', gp_noise=0.05,
+                 gp_lengthscale=0.08):
     """GPBelief/MaskiertesWissen fuer eine der vier Wissensstufen.
 
     `noise=0.05`, nicht der `GPBelief`-Default 0.01 — siehe die Messung im
     Docstring von `belief.py`: 0.01 laesst den Posterior auf kurzen Bahnen
     weit ueber [0,1] hinausschiessen.
+
+    `gp_lengthscale=0.08` ist derselbe Default wie `GPBelief`/`mission.py`
+    selbst ("altes Verhalten") — bestehende Aufrufer ohne dieses Argument
+    bleiben also unveraendert. Strategien mit einer eigenen, getunten
+    Korrelationslaenge (siehe `STRATEGIES`) geben sie explizit mit.
     """
     if condition == 'ground_truth':
         maske = muster_maske('alles', GP_RES, device=device)
         return MaskiertesWissen(maske, truth, sigma_bekannt=0.0,
-                                grid_res=GP_RES, noise=gp_noise, device=device)
+                                grid_res=GP_RES, noise=gp_noise,
+                                lengthscale=gp_lengthscale, device=device)
     if condition == 'none_known':
-        return GPBelief(grid_res=GP_RES, noise=gp_noise, device=device)
+        return GPBelief(grid_res=GP_RES, noise=gp_noise,
+                        lengthscale=gp_lengthscale, device=device)
     if condition == 'half_known':
         maske = muster_maske('haelfte', GP_RES, device=device)
         return MaskiertesWissen(maske, truth, sigma_bekannt=0.0,
-                                grid_res=GP_RES, noise=gp_noise, device=device)
+                                grid_res=GP_RES, noise=gp_noise,
+                                lengthscale=gp_lengthscale, device=device)
     if condition == 'ten_samples':
-        b = GPBelief(grid_res=GP_RES, noise=gp_noise, device=device)
+        b = GPBelief(grid_res=GP_RES, noise=gp_noise,
+                     lengthscale=gp_lengthscale, device=device)
         g = torch.Generator(device='cpu').manual_seed(seed * 1013 + 7)
         pts = torch.rand(10, 2, generator=g).to(device)
         p, v = measure(pts, truth, noise_std=gp_noise)
@@ -224,6 +234,27 @@ STRATEGIES = {
     'mass_tuned_svgd25': dict(phi_model='mass',   param=0.53,   svgd_iters=25),
     'eid_tuned_svgd0':   dict(phi_model='eid',    param=2.4662, svgd_iters=0),
     'eid_tuned_svgd25':  dict(phi_model='eid',    param=2.4662, svgd_iters=25),
+
+    # ==========================================================================
+    # Follow-up (2026-09-16): Optuna-Studie `ideal_v2` (`exploration_optimierung/
+    # optuna_search.py --space ideal`, 950 Versuche, TPE+Hyperband). Bester
+    # Versuch #883, J=0.2513 (vs. J=0.2581 fuer den obigen `eid_tuned`-Punkt,
+    # siehe `exploration_optimierung/results/optuna/best.json`). Anders als die
+    # Punkte oben deckt dieser Fund neun statt drei Groessen ab — die uebrigen
+    # sechs waren in `build_strategy_args`/`build_belief` bislang projektweit
+    # fest verdrahtet (debt_weight=0.6, visit_sat=1.0, visit_halflife=3.0,
+    # phi_mode='uniform', gp_noise=0.05, gp_lengthscale=0.08, n_particles=256,
+    # cfg_weight=2.0) und werden fuer diesen Eintrag durch die getunten Werte
+    # ersetzt; die acht Eintraege oben lesen dieselben Felder weiterhin ueber
+    # `.get(key, alter_wert)` und bleiben dadurch unveraendert.
+    # ==========================================================================
+    'eid_optuna_ideal_v2': dict(
+        phi_model='eid', param=0.6080837837539514, svgd_iters=0,
+        debt_weight=0.9002740182042122, visit_sat=0.4696706948278474,
+        visit_halflife=2.2153603772076282, phi_mode='quantile',
+        phi_quantile=0.14978348922195622, gp_noise=0.1249491528099695,
+        gp_lengthscale=0.12192310997439061, n_particles=128,
+        cfg_weight=1.5987308781507361),
 }
 
 
@@ -232,19 +263,29 @@ def build_strategy_args(strategy_name, device):
 
     Reused verbatim rather than hand-built: it already translates each
     model's public parameter (kappa/w/tau) into what `zieldichte`/
-    `debt_density` expect, and carries the project's own debt/visitation
-    defaults (`debt_weight=0.6, visit_sat=1.0, visit_halflife=3.0`, matching
-    `LaengenMission`'s actual operating point, not the GUI's differing
-    defaults).
+    `debt_density` expect. Every field beyond `phi_model`/`param`/`svgd_iters`
+    is read from the strategy dict with `.get(key, alter_wert)`, where
+    `alter_wert` is the value every strategy used before per-strategy tuning
+    existed (`debt_weight=0.6, visit_sat=1.0, visit_halflife=3.0,
+    phi_mode='uniform', gp_noise=0.05, n_particles=N_PARTICLES, cfg_weight=2.0`)
+    — strategies that don't set these keys behave exactly as before.
+
+    Returns `(args, svgd_iters, cfg_weight)`; `cfg_weight` is the planner's
+    guidance strength and isn't part of `build_mission_args` (that's a
+    `LaengenMission`/`CfmPlanner` setting), so it's threaded back separately
+    for the caller to assign to `planner.cfg_weight`.
     """
     from exploration_optimierung.mission import build_mission_args
     s = STRATEGIES[strategy_name]
     args = build_mission_args(
         str(device), phi_model=s['phi_model'], param=s['param'],
-        debt_weight=0.6, visit_sat=1.0, sensor_radius=0.06, gp_noise=0.05,
-        n_particles=N_PARTICLES, meas_noise=0.05, max_obs=64,
-        visit_halflife=3.0, phi_mode='uniform')
-    return args, s['svgd_iters']
+        debt_weight=s.get('debt_weight', 0.6), visit_sat=s.get('visit_sat', 1.0),
+        sensor_radius=0.06, gp_noise=s.get('gp_noise', 0.05),
+        n_particles=s.get('n_particles', N_PARTICLES), meas_noise=0.05, max_obs=64,
+        visit_halflife=s.get('visit_halflife', 3.0),
+        phi_mode=s.get('phi_mode', 'uniform'))
+    args.phi_quantile = s.get('phi_quantile', 0.5)
+    return args, s['svgd_iters'], s.get('cfg_weight', 2.0)
 
 
 def _visit_field(driven, args, device):
@@ -261,10 +302,11 @@ def cfm_ideal_no_replan(planner, belief, strategy_name, refiner):
     """Wie `cfm_no_replan`, aber Phi kommt aus der abgestimmten Strategie
     statt aus festem `ucb`/kappa=2.0. Kein Debt-Term noetig — eine einzelne
     Planung hat nichts zu vergessen."""
-    args, svgd_iters = build_strategy_args(strategy_name, belief.device)
+    args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
+    planner.cfg_weight = cfg_weight
     mu, sd = belief.posterior_grid()
     phi = acb.zieldichte(mu, sd, args.kappa, args)
-    parts = acb.phi_particles(phi, N_PARTICLES, mode=args.phi_mode,
+    parts = acb.phi_particles(phi, args.n_particles, mode=args.phi_mode,
                               quantile=args.phi_quantile, device=belief.device)
     cps = planner.plan(parts, n_candidates=1)
     curve = planner.render(cps)[0]
@@ -275,13 +317,14 @@ def cfm_ideal_replan_1_6(planner, belief, truth, condition, strategy_name, refin
     """Wie `cfm_replan_1_6`, aber mit `debt_density` statt blossem `ucb_density`
     — Fix fuer Ursache #2 der Lawnmower-Auswertung: die Zieldichte vergisst
     jetzt, was gerade abgefahren wurde, statt jede Runde bei Null anzufangen."""
-    args, svgd_iters = build_strategy_args(strategy_name, belief.device)
+    args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
+    planner.cfg_weight = cfg_weight
     driven = None
     for _ in range(N_REPLAN_ROUNDS):
         mu, sd = belief.posterior_grid()
         visit = _visit_field(driven, args, belief.device)
         phi, _v = acb.debt_density(mu, sd, visit, args.kappa, args)
-        parts = acb.phi_particles(phi, N_PARTICLES, mode=args.phi_mode,
+        parts = acb.phi_particles(phi, args.n_particles, mode=args.phi_mode,
                                   quantile=args.phi_quantile, device=belief.device)
         start = None if driven is None else driven[-1]
         cps = planner.plan(parts, n_candidates=1, start=start)
@@ -307,7 +350,8 @@ def cfm_ideal_replan_1_6(planner, belief, truth, condition, strategy_name, refin
 #: sich — bei der Auswertung offen mitfuehren, nicht verschweigen.
 
 def spectral_ideal_no_replan(planner, belief, strategy_name, refiner):
-    args, svgd_iters = build_strategy_args(strategy_name, belief.device)
+    args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
+    planner.cfg_weight = cfg_weight
     mu, sd = belief.posterior_grid()
     phi = acb.zieldichte(mu, sd, args.kappa, args)
     cps = planner.plan(phi, n_candidates=1)
@@ -316,7 +360,8 @@ def spectral_ideal_no_replan(planner, belief, strategy_name, refiner):
 
 
 def spectral_ideal_replan_1_6(planner, belief, truth, condition, strategy_name, refiner):
-    args, svgd_iters = build_strategy_args(strategy_name, belief.device)
+    args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
+    planner.cfg_weight = cfg_weight
     driven = None
     for _ in range(N_REPLAN_ROUNDS):
         mu, sd = belief.posterior_grid()
