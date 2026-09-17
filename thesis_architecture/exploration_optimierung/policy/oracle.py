@@ -157,7 +157,7 @@ def bewerte_kandidaten(mission, zustaende, kandidaten, plan_batch=128):
 
 def orakel_rollout(planner, truths, names, args, kandidaten, n_max, seed=0,
                    pool=None, plan_batch=128, sammler=None, on_round=None,
-                   budget=None):
+                   budget=None, driver=None, unbekannt_bereich=None):
     """Eine volle Mission, in der jede Runde der beste Kandidat committet wird.
 
     `sammler` bekommt je Entscheidung die Datensatzzeilen; ohne ihn laeuft nur
@@ -165,10 +165,22 @@ def orakel_rollout(planner, truths, names, args, kandidaten, n_max, seed=0,
     `budget.Zeitbudget`: laeuft es ab, endet die Mission nach der laufenden
     Runde statt mittendrin — die Spur ist dann kuerzer, aber vollstaendig
     auswertbar.
+
+    `driver`: optional callable `driver(zustand) -> candidate index into
+    `kandidaten``. When given, ITS choice is the one actually driven (i.e.
+    what ends up in `mission.driven` and in the belief update) instead of the
+    oracle's own argmin -- but `sammler` still records the oracle's true,
+    dense per-candidate labels for every row. This is what `dagger.py` uses:
+    it lets a policy's own rollout states get labeled with real oracle
+    supervision, instead of only ever collecting states the oracle's greedy
+    choice would visit. Without `driver`, behaviour is unchanged.
+
+    `unbekannt_bereich`: passed straight through to `mission.LaengenMission`
+    -- see its docstring. `None` (default) keeps the fully-blind start.
     -> (zeilen, gewaehlt, mission).
     """
     m = M.LaengenMission(planner, truths, names, args, svgd_iters=0, seed=seed,
-                         pool=pool)
+                         pool=pool, unbekannt_bereich=unbekannt_bereich)
     torch.manual_seed(seed)
 
     gewaehlt = {n: [] for n in names}
@@ -209,8 +221,9 @@ def orakel_rollout(planner, truths, names, args, kandidaten, n_max, seed=0,
                         ist_bester=int(k == bester))
                     sammler.append(zeile)
 
-            aktion = kandidaten[bester]
-            seg = segmente[i][bester]
+            gefahren = bester if driver is None else int(driver(z))
+            aktion = kandidaten[gefahren]
+            seg = segmente[i][gefahren]
             a = m._args_fuer(aktion)
             pts, vals = measure(seg, truths[i], noise_std=a.noise,
                                 sensor_radius=a.sensor_radius)
@@ -263,6 +276,13 @@ def main(argv=None):
     p.add_argument('--ckpt', default=DEFAULT_CKPT)
     p.add_argument('--device', default=None)
     p.add_argument('--out', default=DATASET_CSV)
+    p.add_argument('--bericht', default=os.path.join(RESULTS_DIR,
+                                                      'policy_orakel.json'),
+                   help="summary JSON (upper bound + wallclock). Give this "
+                        "its own path (like --out) when running multiple "
+                        "configurations side by side, e.g. under "
+                        "--zufallsmaske, so one run's summary doesn't "
+                        "overwrite another's.")
     p.add_argument('--workers', type=int, default=None,
                    help="Prozesse fuer SVGD; 0 = seriell")
     p.add_argument('--max_minuten', type=float, default=None,
@@ -273,6 +293,16 @@ def main(argv=None):
     p.add_argument('--schnell', action='store_true',
                    help="kleiner Kandidatenraum und weniger Flow-Schritte — "
                         "nur zum Durchtesten der Kette, nicht fuer Zahlen")
+    p.add_argument('--zufallsmaske', action='store_true',
+                   help="each shape starts with a random, spatially-coherent "
+                        "region already fully known (ground truth revealed) "
+                        "and the rest fully unknown (GP prior), instead of "
+                        "the default fully-blind start. The unknown fraction "
+                        "is drawn per shape from Uniform(--unbekannt_min, "
+                        "--unbekannt_max). Off by default -- old behaviour "
+                        "unchanged unless passed explicitly.")
+    p.add_argument('--unbekannt_min', type=float, default=0.5)
+    p.add_argument('--unbekannt_max', type=float, default=0.9)
     a = p.parse_args(argv)
 
     if a.schnell:
@@ -294,6 +324,8 @@ def main(argv=None):
 
     args = M.build_mission_args(device, phi_model=FESTE_POLICY['phi_model'],
                                 param=FESTE_POLICY['param'])
+    unbekannt_bereich = ((a.unbekannt_min, a.unbekannt_max)
+                        if a.zufallsmaske else None)
 
     n_workers = a.workers
     if n_workers is None:
@@ -307,9 +339,19 @@ def main(argv=None):
     budget = Zeitbudget(a.max_minuten, name='Orakel')
     alle_zeilen, spuren, zusammen = [], [], []
     t_start = time.perf_counter()
+    seed_sek = 0.0
     try:
         for seed in range(a.seeds):
-            if budget.abgelaufen() and seed > 0:
+            # `seed_sek` (Dauer des *vorigen* Seeds) ist die Vorschau, wie
+            # `abgelaufen()` sie auch der Runden-Schleife gibt (siehe
+            # `orakel_rollout`) -- ohne sie meldete `abgelaufen()` erst nach
+            # dem Start eines neuen Seeds "abgelaufen", selbst wenn fuer den
+            # gerade erst eine kleine Bruchteil des noetigen Budgets uebrig
+            # war. Bei 25 Formen war eine Runde kurz genug, dass der
+            # Unterschied kaum auffiel; bei 150 Formen (eine Runde ~5h) hat
+            # genau das einen Job ueber Nacht in einen zweiten, von vornherein
+            # unvollendbaren Seed laufen lassen.
+            if budget.abgelaufen(seed_sek) and seed > 0:
                 print(f"  Seed {seed} nicht mehr begonnen ({budget.grund()}).")
                 break
             t0 = time.perf_counter()
@@ -324,7 +366,9 @@ def main(argv=None):
             zeilen, gewaehlt, _m = orakel_rollout(
                 planner, truths, names, args, kandidaten, a.n_max, seed=seed,
                 pool=pool, plan_batch=a.plan_batch, sammler=alle_zeilen,
-                on_round=fortschritt, budget=budget)
+                on_round=fortschritt, budget=budget,
+                unbekannt_bereich=unbekannt_bereich)
+            seed_sek = time.perf_counter() - t0
             if not zeilen:
                 break
             for row in zeilen:
@@ -353,12 +397,13 @@ def main(argv=None):
           f"{len(kandidaten)} Kandidaten je Entscheidung)")
 
     best_alle, tabelle_alle = O.score_trace(spuren)
-    js = os.path.join(RESULTS_DIR, 'policy_orakel.json')
+    js = a.bericht
     with open(js, 'w', encoding='utf-8') as f:
         json.dump(dict(
             kandidaten=[list(k) for k in kandidaten],
             n_shapes=len(names), n_max=a.n_max, seeds=a.seeds,
             shapes=names, flow_steps=a.flow_steps, split=a.split,
+            unbekannt_bereich=unbekannt_bereich,
             J=best_alle['J'], q=best_alle['q'], n_exec=best_alle['n_exec'],
             tabelle=tabelle_alle, je_seed=zusammen,
             wallclock_s=time.perf_counter() - t_start), f, indent=2,

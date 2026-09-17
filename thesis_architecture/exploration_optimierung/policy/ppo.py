@@ -373,7 +373,7 @@ def gae(rew, wert, fertig, gamma=1.0, lam=0.95):
 
 
 def ppo_schritt(politik, opt, puffer, vorteil, ziel, device, epochen=4,
-                clip=0.2, c_wert=0.5, c_entropie=0.01, batch=256):
+                clip=0.2, c_wert=0.5, c_entropie=0.01, batch=32):
     x = torch.as_tensor(puffer['x'].reshape(-1, puffer['x'].shape[-1]), device=device)
     d = torch.as_tensor(puffer['d'].reshape(-1), device=device)
     z = torch.as_tensor(puffer['z'].reshape(-1), device=device)
@@ -422,6 +422,30 @@ def main(argv=None):
     p.add_argument('--nur_bc', action='store_true')
     p.add_argument('--datensatz', default=DATASET_CSV)
     p.add_argument('--lr', type=float, default=3e-4)
+    p.add_argument('--batch', type=int, default=32,
+                   help="PPO minibatch size. NOTE: with the defaults "
+                        "(episoden_pro_iter=2 * n_envs=8 * n_max=8 = 128 "
+                        "transitions/iteration) the old default of 256 was "
+                        "larger than the whole buffer, so every epoch took "
+                        "exactly one gradient step on all 128 (correlated) "
+                        "transitions -- ~4 updates/iteration, ~600 total over "
+                        "156 iterations. 32 gives 4 minibatch steps/epoch "
+                        "(16/iteration) on the same collected data, at no "
+                        "extra simulation cost.")
+    p.add_argument('--zufallsmaske', action='store_true',
+                   help="each shape starts with a random, spatially-coherent "
+                        "region already fully known and the rest fully "
+                        "unknown, instead of the fully-blind default -- see "
+                        "oracle.py --zufallsmaske. Off by default.")
+    p.add_argument('--unbekannt_min', type=float, default=0.5)
+    p.add_argument('--unbekannt_max', type=float, default=0.9)
+    p.add_argument('--glaettung', type=int, default=10,
+                   help="Window for smoothing `ertrag` before it decides "
+                        "which checkpoint is 'best'. The raw per-iteration "
+                        "return is noisy (it swung +-0.04 around a flat mean "
+                        "in the run that motivated this flag) and picking "
+                        "the single best-ever raw value tends to save a "
+                        "noise peak rather than a genuinely better policy.")
     p.add_argument('--flow_steps', type=int, default=100)
     p.add_argument('--ckpt', default=DEFAULT_CKPT)
     p.add_argument('--device', default=None)
@@ -473,15 +497,19 @@ def main(argv=None):
                                    limit=a.n_shapes, split=a.split)
     args = M.build_mission_args(device, phi_model=FESTE_POLICY['phi_model'],
                                 param=FESTE_POLICY['param'])
+    unbekannt_bereich = ((a.unbekannt_min, a.unbekannt_max)
+                        if a.zufallsmaske else None)
     env = MissionUmgebung(planner, truths, names, args, n_max=a.n_max,
-                          n_envs=a.n_envs, pool=pool, seed=a.seed)
+                          n_envs=a.n_envs, pool=pool, seed=a.seed,
+                          unbekannt_bereich=unbekannt_bereich)
     print(f"PPO: {a.iterationen} Iterationen x {a.episoden_pro_iter} Episoden "
           f"x {a.n_max} Runden x {a.n_envs} Formen "
           f"= {a.iterationen * a.episoden_pro_iter * a.n_max * a.n_envs} "
           f"Uebergaenge  [{device}, Split '{a.split}', {len(names)} Formen]")
 
     opt = torch.optim.AdamW(politik.parameters(), lr=a.lr, weight_decay=0.0)
-    verlauf, bestes, bester_ertrag = [], None, -float('inf')
+    verlauf, bestes = [], None
+    ertrag_verlauf, bester_geglaettet, bester_ertrag = [], -float('inf'), -float('inf')
     budget = Zeitbudget(a.max_minuten, name='PPO')
     t0 = time.perf_counter()
     iter_sek = 0.0
@@ -496,7 +524,8 @@ def main(argv=None):
             puffer, ergebnisse = sammle(env, politik, normierer, device,
                                         episoden=a.episoden_pro_iter)
             vorteil, ziel = gae(puffer['rew'], puffer['wert'], puffer['fertig'])
-            stat = ppo_schritt(politik, opt, puffer, vorteil, ziel, device)
+            stat = ppo_schritt(politik, opt, puffer, vorteil, ziel, device,
+                               batch=a.batch)
             ertrag = float(puffer['rew'].sum(axis=0).mean())
             q_ende = float(np.mean([e['q_ende'] for e in ergebnisse]))
             # J der Episode aus der Rueckkehr: J = q_0 - Rueckkehr mit q_0 = 1.
@@ -507,8 +536,16 @@ def main(argv=None):
             print(f"  Iter {it:3d}  Rueckkehr {ertrag:+.4f}  J~{j:.4f}  "
                   f"q(n) {q_ende:.4f}  Entropie {stat['entropie']:.3f}  "
                   f"[{(time.perf_counter() - t0) / 60:.1f} min]", flush=True)
-            if ertrag > bester_ertrag:
-                bester_ertrag = ertrag
+            # Checkpoint on a smoothed return, not the raw per-iteration value:
+            # `ertrag` swings noisily iteration to iteration, so comparing it
+            # directly against a running best tends to save whichever
+            # iteration happened to catch a noise peak instead of a policy
+            # that actually improved (see --glaettung above).
+            ertrag_verlauf.append(ertrag)
+            bester_ertrag = max(bester_ertrag, ertrag)
+            geglaettet = float(np.mean(ertrag_verlauf[-a.glaettung:]))
+            if geglaettet > bester_geglaettet:
+                bester_geglaettet = geglaettet
                 bestes = {k: v.detach().clone()
                           for k, v in politik.state_dict().items()}
             iter_sek = time.perf_counter() - t_iter
@@ -523,13 +560,15 @@ def main(argv=None):
         a.out, meta=dict(iterationen=a.iterationen, n_max=a.n_max,
                          n_envs=a.n_envs, split=a.split, seed=a.seed,
                          bc_epochen=a.bc_epochen,
-                         bester_ertrag=bester_ertrag))
+                         bester_ertrag_roh=bester_ertrag,
+                         bester_ertrag_geglaettet=bester_geglaettet))
     print(f"Politik gespeichert -> {a.out}")
 
     os.makedirs(os.path.dirname(a.bericht), exist_ok=True)
     with open(a.bericht, 'w', encoding='utf-8') as f:
         json.dump(dict(konfiguration=vars(a), bc_verlauf=bc_verlauf[-5:],
-                       ppo_verlauf=verlauf, bester_ertrag=bester_ertrag,
+                       ppo_verlauf=verlauf, bester_ertrag_roh=bester_ertrag,
+                       bester_ertrag_geglaettet=bester_geglaettet,
                        formen=names), f, indent=2, ensure_ascii=False,
                   default=str)
     print(f"Bericht gespeichert -> {a.bericht}")

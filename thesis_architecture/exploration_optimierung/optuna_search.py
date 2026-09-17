@@ -582,6 +582,14 @@ def main():
                            n_trials=a.trials,
                            timeout=(a.timeout_h * 3600 if a.timeout_h else None),
                            gc_after_trial=True,
+                           # Ein einzelner entarteter Versuch (z.B. NaN in der
+                           # Weglaenge bei einer extremen Parameterkombination)
+                           # darf die ganze 23h-Studie nicht mitreissen — mit
+                           # `catch` markiert Optuna nur diesen Versuch als
+                           # FAILED und macht mit dem naechsten weiter. Vorfall:
+                           # Job 154704 (ideal_v2_gross_cluster) starb an
+                           # genau so einem unbehandelten ValueError in Trial 36.
+                           catch=(Exception,),
                            callbacks=[_pause_callback])
         except KeyboardInterrupt:
             print("\n  hart abgebrochen.")

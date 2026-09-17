@@ -83,11 +83,16 @@ class MissionUmgebung:
         n_envs:  wie viele Formen eine Episode gleichzeitig faehrt. None =
                  alle. Weniger Formen heisst schnellere, aber verrauschtere
                  Gradientenschritte.
+        unbekannt_bereich: siehe `mission.LaengenMission` -- optionales
+                 `(min, max)` fuer eine zufaellige, je Episode neu gezogene
+                 Unbekannt-Region statt des komplett blinden Standardstarts.
+                 `None` laesst das bisherige Verhalten unveraendert.
     """
 
     def __init__(self, planner, truths, names, args, n_max=8, n_envs=None,
                  pool=None, lambda_len=DEFAULT_LAMBDA_LEN,
-                 lambda_time=DEFAULT_LAMBDA_TIME, seed=0):
+                 lambda_time=DEFAULT_LAMBDA_TIME, seed=0,
+                 unbekannt_bereich=None):
         self.planner = planner
         self.truths_pool = truths
         self.names_pool = list(names)
@@ -98,6 +103,7 @@ class MissionUmgebung:
         self.lambda_len = float(lambda_len)
         self.lambda_time = float(lambda_time)
         self.rng = np.random.default_rng(seed)
+        self.unbekannt_bereich = unbekannt_bereich
         self.mission = None
         self.r = 0
 
@@ -116,7 +122,8 @@ class MissionUmgebung:
         self._aktionen = None
         self.mission = M.LaengenMission(
             self.planner, truths, names, self.args, svgd_iters=0, seed=seed,
-            pool=self.pool, policy=lambda r, z: self._aktionen)
+            pool=self.pool, policy=lambda r, z: self._aktionen,
+            unbekannt_bereich=self.unbekannt_bereich)
         self.r = 0
         # q_0: der Zustand ohne jede Bahn. `cov_norm` ist genau darauf bezogen
         # (`mission.blind_coverage`), also ist der Startwert 1,0 je Form.

@@ -66,7 +66,7 @@ import torch
 from . import DEFAULT_CKPT  # noqa: F401  (Pfad-Bootstrap)
 
 import apply_cfm_belief as acb                                   # noqa: E402
-from common.belief import GPBelief                               # noqa: E402
+from common.belief import GPBelief, MaskiertesWissen, zufalls_maske  # noqa: E402
 from common.data import load_truth                               # noqa: E402
 from common.metrics import (coverage_vs_truth, belief_rmse,      # noqa: E402
                             path_length, trim_to_length)
@@ -396,11 +396,22 @@ class LaengenMission:
                    bisherigen Weg — dieselbe Reihenfolge der Zufallszahlen,
                    damit die bereits gerechneten Studien reproduzierbar
                    bleiben.
+        unbekannt_bereich: optional `(min, max)`. Wenn gesetzt, bekommt jede
+                   Form statt eines komplett blinden Starts (`GPBelief`) ein
+                   `MaskiertesWissen`: eine zufaellige, zusammenhaengende
+                   Region ist von Anfang an exakt bekannt (Wahrheit sichtbar,
+                   sd=0), der Rest bleibt beim vollen GP-Prior (sd=1) und wird
+                   erst durch tatsaechliches Befahren aufgedeckt. Der
+                   unbekannte Flaechenanteil wird je Form frisch aus
+                   `Uniform(min, max)` gezogen (`common.belief.zufalls_maske`).
+                   `None` (Voreinstellung) laesst das bisherige Verhalten
+                   unveraendert.
     """
 
     def __init__(self, planner, truths, names, args, svgd_iters=0,
                  gp_res=64, n_prior=0, seed=0, nxi_refine=25, pool=None,
-                 policy=None, gp_lengthscale=0.08, gp_variance=1.0):
+                 policy=None, gp_lengthscale=0.08, gp_variance=1.0,
+                 unbekannt_bereich=None):
         self.planner = planner
         self.truths = truths
         self.names = names
@@ -425,9 +436,22 @@ class LaengenMission:
             # Die Korrelationslaenge war die letzte grosse ungetunte
             # Groesse des Glaubens; `optuna_search.py --space gross` sucht
             # darueber.
-            b = GPBelief(grid_res=gp_res, lengthscale=gp_lengthscale,
-                         variance=gp_variance,
-                         noise=args.gp_noise, device=str(self.device))
+            if unbekannt_bereich is not None:
+                lo, hi = unbekannt_bereich
+                g = torch.Generator().manual_seed(seed * 991 + i)
+                anteil = float(lo) + (float(hi) - float(lo)) * float(
+                    torch.rand(1, generator=g))
+                maske = zufalls_maske(truths.shape[-1], anteil, generator=g)
+                b = MaskiertesWissen(maske, truths[i], sigma_bekannt=0.0,
+                                     grid_res=gp_res,
+                                     lengthscale=gp_lengthscale,
+                                     variance=gp_variance,
+                                     noise=args.gp_noise,
+                                     device=str(self.device))
+            else:
+                b = GPBelief(grid_res=gp_res, lengthscale=gp_lengthscale,
+                             variance=gp_variance,
+                             noise=args.gp_noise, device=str(self.device))
             if n_prior > 0:
                 g = torch.Generator().manual_seed(seed * 977 + i)
                 pts = acb.prior_points('zufall', n_prior, generator=g,

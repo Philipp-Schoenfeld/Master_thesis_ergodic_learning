@@ -26,6 +26,7 @@ unbesuchte Gebiete optimistisch fuer voll zu halten.
 """
 
 import torch
+import torch.nn.functional as F
 
 
 def rbf_kernel(a, b, lengthscale, variance=1.0):
@@ -257,3 +258,23 @@ def muster_maske(pattern, res, device='cpu'):
     if pattern == 'loch':
         return ((X - 0.5) ** 2 + (Y - 0.5) ** 2) > 0.28 ** 2
     raise KeyError(pattern)
+
+
+def zufalls_maske(res, unbekannt_anteil, generator=None, glaettung=5):
+    """Random 'known' mask, (res, res) bool, True = bekannt/aufgedeckt.
+
+    For use with `MaskiertesWissen`, as a randomized alternative to the fixed
+    `muster_maske` patterns: `unbekannt_anteil` (in [0, 1]) fixes the EXACT
+    fraction of the grid marked unknown, via a quantile threshold on a smooth
+    random field rather than an approximate area. `glaettung` is the
+    resolution of the underlying coarse noise field before bilinear
+    upsampling -- small values (the default 5) give a few large, organic
+    unknown regions instead of pixel-level salt-and-pepper noise, which would
+    not correspond to any physically sensible "unexplored area".
+    """
+    feld = torch.rand(1, 1, glaettung, glaettung, generator=generator)
+    feld = F.interpolate(feld, size=(res, res), mode='bilinear',
+                         align_corners=True)[0, 0]
+    schwelle = torch.quantile(feld.reshape(-1), float(unbekannt_anteil))
+    unbekannt = feld <= schwelle
+    return ~unbekannt

@@ -79,10 +79,11 @@ ZEILEN_COLS = ['regler', 'seed', 'shape', 'n_exec', 'cov', 'cov_norm',
 
 
 def fahre(planner, truths, names, args, policy, n_max, seed=0, pool=None,
-          svgd_iters=0, on_round=None):
+          svgd_iters=0, on_round=None, unbekannt_bereich=None):
     """Eine Mission mit einem Regler. -> (zeilen, mission, rundengrenzen)."""
     m = M.LaengenMission(planner, truths, names, args, svgd_iters=svgd_iters,
-                         seed=seed, pool=pool, policy=policy)
+                         seed=seed, pool=pool, policy=policy,
+                         unbekannt_bereich=unbekannt_bereich)
     if hasattr(policy, 'mission'):
         policy.mission = m          # die Orakel-Richtlinie braucht den Planer
     torch.manual_seed(seed)
@@ -222,6 +223,22 @@ def main(argv=None):
     p.add_argument('--flow_steps', type=int, default=100)
     p.add_argument('--ckpt', default=DEFAULT_CKPT)
     p.add_argument('--device', default=None)
+    p.add_argument('--zufallsmaske', action='store_true',
+                   help="each shape starts with a random, spatially-coherent "
+                        "region already fully known and the rest fully "
+                        "unknown, instead of the fully-blind default -- see "
+                        "oracle.py --zufallsmaske. Applied identically "
+                        "(same seed) to every regler for a fair comparison. "
+                        "Off by default.")
+    p.add_argument('--unbekannt_min', type=float, default=0.5)
+    p.add_argument('--unbekannt_max', type=float, default=0.9)
+    p.add_argument('--orakel_bericht', default=os.path.join(
+        RESULTS_DIR, 'policy_orakel.json'),
+                   help="oracle.py's summary JSON (the sharper 'orakel_"
+                        "rollout' upper bound) -- match this to whatever "
+                        "--bericht oracle.py was given, e.g. under "
+                        "--zufallsmaske, or this comparison column is "
+                        "silently skipped.")
     p.add_argument('--tag', default='policy')
     p.add_argument('--workers', type=int, default=None)
     p.add_argument('--max_minuten', type=float, default=None,
@@ -237,6 +254,8 @@ def main(argv=None):
                                    limit=a.n_shapes, split=a.split)
     args = M.build_mission_args(device, phi_model=FESTE_POLICY['phi_model'],
                                 param=FESTE_POLICY['param'])
+    unbekannt_bereich = ((a.unbekannt_min, a.unbekannt_max)
+                        if a.zufallsmaske else None)
     print(f"Auswertung auf {len(names)} Formen ({a.split}), "
           f"n_max = {a.n_max}, {a.seeds} Seed(s)  [{device}]")
 
@@ -291,7 +310,8 @@ def main(argv=None):
             t0 = time.perf_counter()
             for seed in range(a.seeds):
                 zeilen, m, grenzen = fahre(planner, truths, names, args, pol,
-                                           a.n_max, seed=seed, pool=pool)
+                                           a.n_max, seed=seed, pool=pool,
+                                           unbekannt_bereich=unbekannt_bereich)
                 for z in zeilen:
                     z['regler'], z['seed'] = name, seed
                 spuren += zeilen
@@ -353,7 +373,7 @@ def main(argv=None):
     # dagegen genau die Bahn, die er ausprobiert hat — das ist die schaerfere
     # Obergrenze. Beide Zahlen gehoeren nebeneinander, sonst ist die eine
     # geschoent und die andere unlesbar.
-    orakel_js = os.path.join(RESULTS_DIR, 'policy_orakel.json')
+    orakel_js = a.orakel_bericht
     if os.path.exists(orakel_js):
         try:
             with open(orakel_js, 'r', encoding='utf-8') as f:
