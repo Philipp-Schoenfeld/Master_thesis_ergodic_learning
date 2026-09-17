@@ -13,6 +13,7 @@ unveraendert in `SvgdRefiner.refine` (das eine (T,2)-Startbahn erwartet)
 weiterverwendet werden koennen.
 """
 
+import numpy as np
 import torch
 
 from exploration_optimierung.mission import resample_arclength  # noqa: E402
@@ -138,3 +139,93 @@ def heuristic_peak_path(phi, n_points=128, n_peaks=12, min_dist=0.10,
     if curve.shape[0] < 2:
         curve = torch.cat([curve, curve], dim=0)
     return resample_arclength(curve, n_points)
+
+
+# ─────────────────────────────────────────────────────────────────────────
+# GUI heuristic, extracted for reuse ("nimm unsere Heuristik, wie sie auch
+# fuer die GUI berechnet wird" -- Philipp, 2026-09-17). This is a *different*
+# algorithm from `heuristic_peak_path` above (which pre-dates this and was
+# an intentionally simpler reimplementation, see the module docstring): here
+# it is `exploration/interactive_sim.py::_heuristic_init_from_phi`, moved
+# out of the `Mission` class so eval matrix and GUI run the exact same code
+# instead of two implementations that could silently drift apart -- the same
+# reasoning `svgd_refine.py`'s module docstring gives for why `SvgdRefiner`
+# itself lives outside the GUI. `interactive_sim.py` is left untouched; it
+# still has its own method, unrelated to this copy.
+# ─────────────────────────────────────────────────────────────────────────
+
+def gui_heuristic_path(phi, start_pos=(0.5, 0.5), n_points=128, nxi=25, deg=5):
+    """TSP + local serpentine heuristic, identical in every numeric step to
+    the GUI's own initializer.
+
+    1. Top-weighted cells of `phi` (R,R) -> k-means cluster centers (peaks).
+    2. Greedy nearest-neighbour tour through the centers, starting at
+       `start_pos` (the domain center by default -- there is no "current
+       agent position" for a from-scratch single-shot baseline, matching
+       `_get_init`'s own fallback `sp_np = np.array([0.5, 0.5])` when no
+       position is given).
+    3. A local serpentine swing around each center, connected by straight
+       transit segments.
+    4. Interpolated to `nxi` B-spline control points (25, the project-wide
+       default `NXI`) and rendered to a dense `n_points`-point curve via the
+       B-spline basis -- the GUI itself skips this last rendering step
+       because it hands the control points straight to `planner.plan(init=)`
+       as a network warm-start, but every other baseline in this module
+       (`heuristic_peak_path`, `diagonal_path`, ...) returns a dense curve,
+       so this does too for a fair, uniform interface into `SvgdRefiner`.
+
+    Falls back to a plain diagonal when `phi` has too little structure for
+    k-means to find at least 2 centers -- same fallback the GUI uses.
+    """
+    phi_np = phi.detach().cpu().numpy().copy()
+    R = phi_np.shape[-1]
+    start_pos_np = np.asarray(start_pos, dtype=np.float64)
+
+    flat = phi_np.ravel()
+    n_peaks = min(8, max(3, int((flat > 0.3 * flat.max()).sum() / (R * 0.5))))
+    top_idx = np.argsort(flat)[-n_peaks * R:]
+    top_y, top_x = np.unravel_index(top_idx, phi_np.shape)
+    top_pts = np.stack([top_x / (R - 1), top_y / (R - 1)], axis=-1)
+
+    from scipy.cluster.vq import kmeans2
+    n_centers = min(n_peaks, len(top_pts))
+    if n_centers < 2:
+        t = np.linspace(0, 1, nxi)[:, None]
+        cps = 0.05 + 0.9 * np.tile(t, (1, 2))
+    else:
+        centers, _ = kmeans2(top_pts, n_centers, minit='points')
+
+        curr = start_pos_np
+        remaining = list(range(len(centers)))
+        order = []
+        while remaining:
+            dists = [np.linalg.norm(curr - centers[i]) for i in remaining]
+            best = remaining.pop(int(np.argmin(dists)))
+            order.append(best)
+            curr = centers[best]
+        ordered = centers[order]
+
+        all_pts = [np.array([start_pos_np])]
+        for c in ordered:
+            prev = all_pts[-1][-1]
+            n_transit = max(3, int(np.linalg.norm(c - prev) * 40))
+            transit = np.linspace(prev, c, n_transit)
+            spread = 0.08
+            n_swing = 12
+            tau = np.linspace(-1, 1, n_swing)
+            dx = np.array([spread, 0])
+            dy = np.array([0, spread * 0.4])
+            serpentine = c[None, :] + np.outer(tau, dx) + \
+                np.outer(np.sin(2 * np.pi * tau), dy)
+            serpentine = np.clip(serpentine, 0.02, 0.98)
+            all_pts.extend([transit, serpentine])
+
+        combined = np.vstack(all_pts)
+        idx = np.linspace(0, len(combined) - 1, nxi).astype(int)
+        cps = combined[idx]
+        cps = np.clip(cps, 0.02, 0.98)
+
+    from obstacles import bspline_basis_matrix
+    B = bspline_basis_matrix(nxi, n_points, deg)
+    dense = B @ cps
+    return torch.from_numpy(dense).float()

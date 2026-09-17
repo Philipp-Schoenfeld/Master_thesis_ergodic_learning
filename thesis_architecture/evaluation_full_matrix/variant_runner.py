@@ -32,13 +32,14 @@ import apply_cfm_belief as acb
 from common.acquisition import ucb_density, particles_from_density
 from common.baselines import lawnmower_path, lanes_for_length
 from common.belief import GPBelief, MaskiertesWissen, muster_maske
-from common.metrics import trim_to_length, path_length as _pl
+from common.metrics import trim_to_length, path_length as _pl, coverage_vs_truth
 from common.observation import measure, thin
 from common.svgd_refine import SvgdRefiner
 from exploration_optimierung.mission import resample_arclength, LENGTH_UNIT
 
 from init_baselines import (diagonal_path, straight_top_path,
-                            random_walk_path, heuristic_peak_path)
+                            random_walk_path, heuristic_peak_path,
+                            gui_heuristic_path)
 
 KNOWLEDGE_CONDITIONS = ['ground_truth', 'none_known', 'half_known', 'ten_samples']
 SVGD_ITERS = (0, 25, 500, 1000)
@@ -255,6 +256,31 @@ STRATEGIES = {
         phi_quantile=0.14978348922195622, gp_noise=0.1249491528099695,
         gp_lengthscale=0.12192310997439061, n_particles=128,
         cfg_weight=1.5987308781507361),
+
+    # ==========================================================================
+    # Follow-up (2026-09-17): bester *bewerteter* Versuch der Cluster-Studie
+    # `ideal_v2_gross_cluster` (16-dim `gross`-Raum), Versuch #104, J=0.2686 —
+    # siehe `exploration_optimierung/results/optuna_ideal_v2_gross_cluster/
+    # best.json`. Wichtige Einordnung, nicht nur eine weitere Zeile: von 5037
+    # Versuchen sind 4933 (98%) sofort abgestuerzt (kein Zusammenhang mit dem
+    # jeweils getesteten Modell — 96,6-99,0% Fehlerquote bei allen sieben
+    # gleichermassen), nur 104 lieferten ueberhaupt einen Wert. Dieser Punkt
+    # kommt also aus einer stark verkleinerten, wahrscheinlich nicht
+    # repraesentativen Stichprobe, nicht aus einer fair durchsuchten
+    # 16-dimensionalen Studie. `phi_model='mi'` gehoert zu `EXTRA_MODELS` in
+    # `optuna_search.py` und ist `mission.PHI_MODELS` unbekannt — `real_model`/
+    # `phi_gamma` unten werden von `build_strategy_args` gesondert behandelt,
+    # exakt wie in `optuna_search.build_args`. `gp_variance`, `gp_res`,
+    # `max_obs`, `flow_steps` sind gross-Raum-Groessen, die `variant_runner.py`
+    # nicht durchreicht (Planer/Belief-Aufbau sind hier fix) — diese Auswertung
+    # ist also nur in den ueberlappenden 12 Dimensionen exakt, nicht in allen 16.
+    'mi_optuna_gross': dict(
+        phi_model='ucb', real_model='mi', param=3.098907651406204, svgd_iters=50,
+        debt_weight=0.7092337639507906, visit_sat=0.7587372499133823,
+        visit_halflife=3.066697484382204, phi_mode='quantile',
+        phi_quantile=0.12212252520427401, gp_noise=0.10702396447967923,
+        gp_lengthscale=0.10601370522804981, n_particles=128,
+        cfg_weight=2.5694679699762273, phi_gamma=0.37528242569355946),
 }
 
 
@@ -285,6 +311,15 @@ def build_strategy_args(strategy_name, device):
         visit_halflife=s.get('visit_halflife', 3.0),
         phi_mode=s.get('phi_mode', 'uniform'))
     args.phi_quantile = s.get('phi_quantile', 0.5)
+    if 'real_model' in s:
+        # EXTRA_MODELS aus optuna_search.py (stretch/ei/mi) — mission.PHI_MODELS
+        # kennt sie nicht, `build_mission_args` wurde oben nur mit einem
+        # gueltigen Platzhaltermodell gebaut, damit `param` ueberhaupt
+        # ankommt. Dieselbe Nachbehandlung wie in `optuna_search.build_args`.
+        args.phi_model = s['real_model']
+        args.kappa = s['param']
+        if s['real_model'] == 'mi':
+            args.phi_gamma = s.get('phi_gamma', 1.0)
     return args, s['svgd_iters'], s.get('cfg_weight', 2.0)
 
 
@@ -294,6 +329,69 @@ def _visit_field(driven, args, device):
     from exploration_optimierung.mission import visitation_recent, LENGTH_UNIT as _LU
     return visitation_recent(driven, GP_RES, args.visit_bandwidth, str(device),
                              half_life=args.visit_halflife * _LU)
+
+
+# ── GUI-Heuristik / lineare Waypoint-Version, unter den abgestimmten
+#    Strategien (Follow-up 2026-09-17, siehe Philipps Auftrag) ─────────────
+#: Ein kanonischer (phi_model, param) Punkt je Akquisitionsfamilie -- nicht
+#: jeder `STRATEGIES`-Eintrag, der Param *und* svgd_iters gemeinsam variiert
+#: (z. B. niveau_svgd0 vs. niveau_svgd25): Heuristik/Linear fahren unten
+#: ihren eigenen expliziten SVGD-Sweep, gebraucht wird hier nur je Familie
+#: der Zieldichte-Betriebspunkt bei svgd_iters=0 (die "reine" Phi-Definition
+#: vor jeder Solver-Nachverfeinerung), nicht ein Wert, der zusammen mit einem
+#: bestimmten kleinen SVGD-Budget mitgetuned wurde. Bei `eid` wird statt
+#: `eid_tuned_svgd0` `eid_optuna_ideal_v2` verwendet -- die tatsaechlich
+#: beste gefundene EID-Konfiguration (J=0.2513 vs. J=0.2581, siehe Kommentar
+#: bei `STRATEGIES` oben), ohnehin schon als "der" Optuna-Fund in jedem Plot
+#: hervorgehoben (`run_eval_matrix.OPTUNA_IDEAL_COLOR`).
+HEURISTIC_LINEAR_STRATEGIES = {
+    'lse':  'niveau_svgd0',
+    'ucb':  'ucb_tuned_svgd0',
+    'mass': 'mass_tuned_svgd0',
+    'eid':  'eid_optuna_ideal_v2',
+}
+
+#: SVGD-Iterationsstufen je Version, wie von Philipp verlangt: Heuristik pur
+#: (0) und verfeinert (500/1000); lineare Version nur verfeinert (500/1000)
+#: -- eine 0-Iterationen-"lineare" Version waere nur die rohe
+#: TSP+Serpentinen-Rohbahn ohne jede Waypoint-Verfeinerung, nicht verlangt.
+HEURISTIC_SVGD_ITERS = (0, 500, 1000)
+LINEAR_WAYPOINTS_SVGD_ITERS = (500, 1000)
+
+
+def gui_heuristic_variant_tuned(belief, strategy_name, svgd_iters, refiner,
+                                start_pos=(0.5, 0.5)):
+    """Die GUI-eigene Heuristik-Initialisierung (siehe
+    `init_baselines.gui_heuristic_path`), angetrieben von einer der
+    abgestimmten Akquisitionsstrategien, danach mit `svgd_iters`
+    SVGD-Schritten auf B-Spline-Kontrollpunkten verfeinert -- dieselbe
+    Repraesentation wie jede andere `*_variant`/`cfm_ideal_*`-Funktion.
+    `start_pos`: es gibt keinen "aktuellen Agenten" fuer eine
+    Einzelschuss-Baseline aus dem Stand, deshalb die Quadratmitte, wie auch
+    `interactive_sim.py::_get_init`s eigener Fallback `sp_np=[0.5,0.5]`."""
+    args, _svgd_iters_unused, _cfg_weight = build_strategy_args(strategy_name, belief.device)
+    mu, sd = belief.posterior_grid()
+    phi = acb.zieldichte(mu, sd, args.kappa, args)
+    raw = gui_heuristic_path(phi, start_pos=start_pos, n_points=PTS_RENDER)
+    return svgd(refiner, raw, phi, svgd_iters)
+
+
+def linear_waypoints_variant_tuned(belief, strategy_name, svgd_iters, refiner,
+                                   start_pos=(0.5, 0.5)):
+    """Dieselbe Ausgangsbahn wie `gui_heuristic_variant_tuned`, aber direkt
+    auf den dichten Waypoints (`nxi=PTS_RENDER`) statt auf B-Spline-
+    Kontrollpunkten verfeinert -- laut Philipp: "bei der linearen Version
+    arbeite nicht mit B-Spline-Kontrollpunkten wie sonst ueberall, sondern
+    einfach mit normalen Waypoints." Nutzt den in `SvgdRefiner.refine` schon
+    vorhandenen Codepfad dafuer (`nxi == T` -> die T dichten Punkte direkt
+    verfeinern statt eine B-Spline-Basis zu fitten, siehe
+    `common/svgd_refine.py`), bislang nur noch nicht als eigene
+    Eval-Matrix-Variante verdrahtet."""
+    args, _svgd_iters_unused, _cfg_weight = build_strategy_args(strategy_name, belief.device)
+    mu, sd = belief.posterior_grid()
+    phi = acb.zieldichte(mu, sd, args.kappa, args)
+    raw = gui_heuristic_path(phi, start_pos=start_pos, n_points=PTS_RENDER)
+    return svgd(refiner, raw, phi, svgd_iters, nxi=raw.shape[0])
 
 
 # ── CFM unter der abgestimmten Strategie ────────────────────────────────────
@@ -388,4 +486,151 @@ def spectral_ideal_replan_1_6(planner, belief, truth, condition, strategy_name, 
 REPRESENTATIONS = {
     'particles': dict(no_replan=cfm_ideal_no_replan, replan_1_6=cfm_ideal_replan_1_6),
     'spectral': dict(no_replan=spectral_ideal_no_replan, replan_1_6=spectral_ideal_replan_1_6),
+}
+
+
+# =============================================================================
+# Follow-up (2026-09-18): "best of N" variants that select *before* SVGD
+# instead of running the whole generation N independent times and scoring
+# the N finished trajectories (`run_best_of_n_matrix.py`'s original design).
+# Measured ~2.25x faster (both no_replan and replan_1_6, see session notes):
+# the network's forward pass batches N candidates far more cheaply than N
+# separate calls, and SVGD -- the part that does NOT batch across candidates
+# -- now runs once per decision point instead of N times.
+#
+# Trade-off, by construction: selection ranks candidates by their *raw*,
+# unrefined quality (`coverage_vs_truth` against the true density -- offline
+# benchmark evaluation against a known ground truth, not a live mission that
+# must not "peek" at the answer, unlike `apply_cfm_belief.best_candidate`'s
+# phi-only scoring) and only refines the winner, so it can pick a different
+# -- and in principle slightly worse post-refinement -- candidate than
+# scoring after refinement would. This approximation is only as good as the
+# extent to which SVGD doesn't reorder candidates, which should hold at the
+# small `svgd_iters` (0/25/50) every tuned `STRATEGIES` entry uses, but
+# hasn't been separately verified against the fully-independent variant.
+#
+# A second, structural consequence: these variants only ever materialise
+# ONE final (post-SVGD) trajectory per test case, never N -- so there is no
+# pool of N finished candidates left to report a post-refinement mean/std
+# over. They return `(curve, raw_scores)` instead, where `raw_scores` are
+# the pre-SVGD `coverage_vs_truth` values of the N raw candidates considered
+# at each decision point -- a related but different spread statistic
+# ("how much do the *raw* network samples vary" rather than "how much do N
+# *finished* trajectories vary"), which `run_best_of_n_matrix.py` reports
+# and labels accordingly rather than conflating the two.
+# =============================================================================
+
+def _best_pre_svgd(curves, truth):
+    """Index of the candidate (pre-SVGD, i.e. raw network output) closest to
+    the true density by `coverage_vs_truth`, plus every candidate's score."""
+    scores = [float(coverage_vs_truth(c, truth)) for c in curves]
+    return int(np.argmin(scores)), scores
+
+
+def cfm_ideal_no_replan_best_of_n(planner, belief, strategy_name, refiner,
+                                  truth, n_candidates):
+    """Like `cfm_ideal_no_replan`, but samples `n_candidates` network
+    outputs in one batched forward pass, picks the best by pre-SVGD score
+    against `truth`, and refines only that one. See the module-level
+    comment above for the speed/selection-fidelity trade-off."""
+    args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
+    planner.cfg_weight = cfg_weight
+    mu, sd = belief.posterior_grid()
+    phi = acb.zieldichte(mu, sd, args.kappa, args)
+    parts = acb.phi_particles(phi, args.n_particles, mode=args.phi_mode,
+                              quantile=args.phi_quantile, device=belief.device)
+    cps = planner.plan(parts, n_candidates=n_candidates)
+    curves = planner.render(cps)
+    idx, raw_scores = _best_pre_svgd(curves, truth)
+    curve = svgd(refiner, curves[idx], phi, svgd_iters)
+    return curve, raw_scores
+
+
+def cfm_ideal_replan_1_6_best_of_n(planner, belief, truth, condition, strategy_name,
+                                   refiner, n_candidates):
+    """Like `cfm_ideal_replan_1_6`, but each of the six rounds does its own
+    `n_candidates`-wide pre-SVGD selection instead of the whole six-round
+    mission being repeated `n_candidates` independent times. `raw_scores`
+    has 6 entries (one per round's chosen candidate), not `n_candidates` --
+    see the module-level comment above."""
+    args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
+    planner.cfg_weight = cfg_weight
+    driven = None
+    raw_scores = []
+    for _ in range(N_REPLAN_ROUNDS):
+        mu, sd = belief.posterior_grid()
+        visit = _visit_field(driven, args, belief.device)
+        phi, _v = acb.debt_density(mu, sd, visit, args.kappa, args)
+        parts = acb.phi_particles(phi, args.n_particles, mode=args.phi_mode,
+                                  quantile=args.phi_quantile, device=belief.device)
+        start = None if driven is None else driven[-1]
+        cps = planner.plan(parts, n_candidates=n_candidates, start=start)
+        curves = planner.render(cps)
+        idx, scores = _best_pre_svgd(curves, truth)
+        raw_scores.append(scores[idx])
+        curve = svgd(refiner, curves[idx], phi, svgd_iters, start=start)
+
+        seg = trim_to_length(curve, LENGTH_UNIT)
+        n_pts = max(8, int(round(72 * _pl(seg) / LENGTH_UNIT)))
+        seg = resample_arclength(seg, n_pts)
+
+        _observe_segment(belief, seg, truth, condition, noise=args.noise,
+                         sensor_radius=args.sensor_radius, max_obs=args.max_obs)
+        driven = seg if driven is None else torch.cat([driven, seg], dim=0)
+    return driven, raw_scores
+
+
+def spectral_ideal_no_replan_best_of_n(planner, belief, strategy_name, refiner,
+                                       truth, n_candidates):
+    """Spectral-representation counterpart of `cfm_ideal_no_replan_best_of_n`
+    -- same pre-SVGD selection, `plan()` takes a density grid instead of a
+    particle cloud (see `spectral_ideal_no_replan`)."""
+    args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
+    planner.cfg_weight = cfg_weight
+    mu, sd = belief.posterior_grid()
+    phi = acb.zieldichte(mu, sd, args.kappa, args)
+    cps = planner.plan(phi, n_candidates=n_candidates)
+    curves = planner.render(cps)
+    idx, raw_scores = _best_pre_svgd(curves, truth)
+    curve = svgd(refiner, curves[idx], phi, svgd_iters, nxi=planner.nxi)
+    return curve, raw_scores
+
+
+def spectral_ideal_replan_1_6_best_of_n(planner, belief, truth, condition, strategy_name,
+                                        refiner, n_candidates):
+    """Spectral-representation counterpart of `cfm_ideal_replan_1_6_best_of_n`."""
+    args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
+    planner.cfg_weight = cfg_weight
+    driven = None
+    raw_scores = []
+    for _ in range(N_REPLAN_ROUNDS):
+        mu, sd = belief.posterior_grid()
+        visit = _visit_field(driven, args, belief.device)
+        phi, _v = acb.debt_density(mu, sd, visit, args.kappa, args)
+        start = None if driven is None else driven[-1]
+        cps = planner.plan(phi, n_candidates=n_candidates, start=start)
+        curves = planner.render(cps)
+        idx, scores = _best_pre_svgd(curves, truth)
+        raw_scores.append(scores[idx])
+        curve = svgd(refiner, curves[idx], phi, svgd_iters, start=start, nxi=planner.nxi)
+
+        seg = trim_to_length(curve, LENGTH_UNIT)
+        n_pts = max(8, int(round(72 * _pl(seg) / LENGTH_UNIT)))
+        seg = resample_arclength(seg, n_pts)
+
+        _observe_segment(belief, seg, truth, condition, noise=args.noise,
+                         sensor_radius=args.sensor_radius, max_obs=args.max_obs)
+        driven = seg if driven is None else torch.cat([driven, seg], dim=0)
+    return driven, raw_scores
+
+
+#: Pre-SVGD-selection counterpart of `REPRESENTATIONS` (see the module
+#: comment above): same shape (representation -> dict(no_replan,
+#: replan_1_6)), but each generator returns `(curve, raw_scores)` and takes
+#: two extra arguments (`truth`, `n_candidates`).
+REPRESENTATIONS_BEST_OF_N = {
+    'particles': dict(no_replan=cfm_ideal_no_replan_best_of_n,
+                      replan_1_6=cfm_ideal_replan_1_6_best_of_n),
+    'spectral': dict(no_replan=spectral_ideal_no_replan_best_of_n,
+                     replan_1_6=spectral_ideal_replan_1_6_best_of_n),
 }
