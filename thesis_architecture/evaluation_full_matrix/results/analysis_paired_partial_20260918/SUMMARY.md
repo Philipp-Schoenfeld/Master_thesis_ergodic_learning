@@ -69,7 +69,6 @@ none_known                 25.351238  0.059083
 ## 7. Methodenvergleich (Kernergebnis)
 Fairness-Hinweis: heuristic_tuned/linear_waypoints_tuned sind deterministisch/Einmal-Planung (kein Replan-Konzept) -- CFM wird hier deshalb auf `no_replan` beschraenkt, fuer einen Einmal-Planung-gegen-Einmal-Planung-Vergleich. CFMs replan_1_6-Option ist separat in Abschnitt 5 zu sehen (deutlich schlechter: 23.5 vs. 15.0) -- in dieser Tabelle NICHT mitgemittelt, sonst wuerde CFM unfair schlechter aussehen.
                                              method  E_ergodic_total
-           random_walk (svgd500) *see caveat above*         0.472540
             linear_waypoints_tuned (best: mass@500)        10.001251
  CFM (spectral, no_replan, best: mass_tuned_svgd25)        10.550103
 CFM (particles, no_replan, best: mass_tuned_svgd25)        10.868026
@@ -140,7 +139,6 @@ coverage_mean/_std are themselves averages over the 8 shapes within each (knowle
 ## 11. Path length and smoothness/energy per method
                                                      path_len  smoothness_energy
 method                                                                          
-random_walk (svgd500) *see caveat above*             4.408305           0.367250
 linear_waypoints_tuned (best: mass@500)              5.410750           0.589565
 CFM (spectral, no_replan, best: mass_tuned_svgd25)   3.844642           0.166365
 CFM (particles, no_replan, best: mass_tuned_svgd25)  5.213950           0.248646
@@ -158,10 +156,6 @@ CFM (particles, no_replan, best: mass_tuned_svgd25)          none_known         
                   heuristic_tuned (best: mass@1000)          half_known                     1.0      0.0  8
                   heuristic_tuned (best: mass@1000)         ten_samples                     1.0      0.0  8
                   heuristic_tuned (best: mass@1000)          none_known                     1.0      0.0  8
-           random_walk (svgd500) *see caveat above*        ground_truth                     1.0      0.0  8
-           random_walk (svgd500) *see caveat above*          half_known                     1.0      0.0  8
-           random_walk (svgd500) *see caveat above*         ten_samples                     1.0      0.0  8
-           random_walk (svgd500) *see caveat above*          none_known                     1.0      0.0  8
                                           lawnmower        ground_truth                     1.0      0.0  8
                                           lawnmower          half_known                     1.0      0.0  8
                                           lawnmower         ten_samples                     1.0      0.0  8
@@ -172,7 +166,6 @@ This metric is essentially BINARY at the 99% threshold in this data: ~0 only for
 ## 14. Explore vs. exploit balance per method
                                                      E_ergodic_explore  E_ergodic_exploit
 method                                                                                   
-random_walk (svgd500) *see caveat above*                      0.333149           0.139391
 linear_waypoints_tuned (best: mass@500)                       9.853261           0.147990
 CFM (spectral, no_replan, best: mass_tuned_svgd25)           10.383818           0.166285
 CFM (particles, no_replan, best: mass_tuned_svgd25)          10.754409           0.113617
@@ -197,10 +190,6 @@ CFM (particles, no_replan, best: mass_tuned_svgd25)          none_known        2
             linear_waypoints_tuned (best: mass@500)          half_known        12.813870
             linear_waypoints_tuned (best: mass@500)         ten_samples        10.743119
             linear_waypoints_tuned (best: mass@500)          none_known        16.222247
-           random_walk (svgd500) *see caveat above*        ground_truth         0.472540
-           random_walk (svgd500) *see caveat above*          half_known         0.472540
-           random_walk (svgd500) *see caveat above*         ten_samples         0.472540
-           random_walk (svgd500) *see caveat above*          none_known         0.472540
                                           lawnmower        ground_truth        18.780876
                                           lawnmower          half_known        18.780876
                                           lawnmower         ten_samples        18.780876

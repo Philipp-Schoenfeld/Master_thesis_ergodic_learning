@@ -344,9 +344,11 @@ for method in ['heuristic_tuned', 'linear_waypoints_tuned']:
     _lbl = '%s (best: %s@%d)' % (method, best_fam, best_iters)
     _sub = m[(m['family'] == best_fam) & (m['svgd_iters'] == best_iters)]
     method_rows.append((_lbl, grp.loc[(best_fam, best_iters)])); method_subsets[_lbl] = _sub
-_lbl = 'random_walk (svgd500) *see caveat above*'
-_sub = rw[rw['subvariant'] == 'svgd500']
-method_rows.append((_lbl, _sub['E_ergodic_total'].mean())); method_subsets[_lbl] = _sub
+# random_walk (svgd500) deliberately left out of this core comparison -- per
+# the caveat in section 2, it refines against the exact ground truth with
+# 20x the SVGD budget of every other entry here, so it isn't a fair point of
+# comparison against the knowledge-limited CFM/heuristic numbers. It still
+# gets its own dedicated analysis in section 2.
 _lbl = 'lawnmower'
 _sub = df[df['method'] == 'lawnmower']
 method_rows.append((_lbl, _sub['E_ergodic_total'].mean())); method_subsets[_lbl] = _sub
@@ -384,7 +386,8 @@ def _short_method_label(label):
 
 fig, ax = plt.subplots(figsize=(10, 5.5))
 bar_colors = [_method_color(m) for m in method_df['method']]
-bars = ax.barh(method_df['method'], method_df['E_ergodic_total'], color=bar_colors, zorder=2)
+short_labels7 = [_short_method_label(m) for m in method_df['method']]
+bars = ax.barh(short_labels7, method_df['E_ergodic_total'], color=bar_colors, zorder=2)
 for b in bars:
     w_ = b.get_width()
     ax.annotate(f'{w_:.2f}', (w_, b.get_y() + b.get_height() / 2), ha='left', va='center',
@@ -560,8 +563,7 @@ plt.close(fig)
 log("## 12. Steps (normalized arclength) to first reach 99% coverage, all 4 conditions")
 cond_order_12 = ['ground_truth', 'half_known', 'ten_samples', 'none_known']
 steps_methods = ['CFM (particles, no_replan, best: %s)' % best_cfm_particles,
-                 'heuristic_tuned (best: mass@1000)', 'random_walk (svgd500) *see caveat above*',
-                 'lawnmower']
+                 'heuristic_tuned (best: mass@1000)', 'lawnmower']
 steps_rows = []
 for label in steps_methods:
     sub = method_subsets[label]

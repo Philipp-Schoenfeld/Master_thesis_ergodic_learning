@@ -15,10 +15,6 @@ linear_waypoints_tuned (best: mass@500),ground_truth,0.22576844319701195
 linear_waypoints_tuned (best: mass@500),half_known,12.813870431855321
 linear_waypoints_tuned (best: mass@500),ten_samples,10.74311850219965
 linear_waypoints_tuned (best: mass@500),none_known,16.22224731463939
-random_walk (svgd500) *see caveat above*,ground_truth,0.47254033107310534
-random_walk (svgd500) *see caveat above*,half_known,0.47254033107310534
-random_walk (svgd500) *see caveat above*,ten_samples,0.47254033107310534
-random_walk (svgd500) *see caveat above*,none_known,0.47254033107310534
 lawnmower,ground_truth,18.780876157194143
 lawnmower,half_known,18.780876157194143
 lawnmower,ten_samples,18.780876157194143

@@ -1,5 +1,4 @@
 method,E_ergodic_total
-random_walk (svgd500) *see caveat above*,0.47254033107310534
 linear_waypoints_tuned (best: mass@500),10.001251172972843
 "CFM (spectral, no_replan, best: mass_tuned_svgd25)",10.550102611072361
 "CFM (particles, no_replan, best: mass_tuned_svgd25)",10.868026012089103

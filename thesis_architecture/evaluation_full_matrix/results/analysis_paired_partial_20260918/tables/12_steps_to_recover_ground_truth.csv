@@ -7,10 +7,6 @@ heuristic_tuned (best: mass@1000),ground_truth,0.0,1.0,8
 heuristic_tuned (best: mass@1000),half_known,1.0,0.0,8
 heuristic_tuned (best: mass@1000),ten_samples,1.0,0.0,8
 heuristic_tuned (best: mass@1000),none_known,1.0,0.0,8
-random_walk (svgd500) *see caveat above*,ground_truth,1.0,0.0,8
-random_walk (svgd500) *see caveat above*,half_known,1.0,0.0,8
-random_walk (svgd500) *see caveat above*,ten_samples,1.0,0.0,8
-random_walk (svgd500) *see caveat above*,none_known,1.0,0.0,8
 lawnmower,ground_truth,1.0,0.0,8
 lawnmower,half_known,1.0,0.0,8
 lawnmower,ten_samples,1.0,0.0,8
