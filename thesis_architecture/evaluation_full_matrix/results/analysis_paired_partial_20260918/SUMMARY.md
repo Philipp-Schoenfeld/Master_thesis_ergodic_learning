@@ -70,7 +70,6 @@ none_known                 25.351238  0.059083
 Fairness-Hinweis: heuristic_tuned/linear_waypoints_tuned sind deterministisch/Einmal-Planung (kein Replan-Konzept) -- CFM wird hier deshalb auf `no_replan` beschraenkt, fuer einen Einmal-Planung-gegen-Einmal-Planung-Vergleich. CFMs replan_1_6-Option ist separat in Abschnitt 5 zu sehen (deutlich schlechter: 23.5 vs. 15.0) -- in dieser Tabelle NICHT mitgemittelt, sonst wuerde CFM unfair schlechter aussehen.
                                              method  E_ergodic_total
             linear_waypoints_tuned (best: mass@500)        10.001251
- CFM (spectral, no_replan, best: mass_tuned_svgd25)        10.550103
 CFM (particles, no_replan, best: mass_tuned_svgd25)        10.868026
                   heuristic_tuned (best: mass@1000)        11.108362
                                           lawnmower        18.780876
@@ -140,7 +139,6 @@ coverage_mean/_std are themselves averages over the 8 shapes within each (knowle
                                                      path_len  smoothness_energy
 method                                                                          
 linear_waypoints_tuned (best: mass@500)              5.410750           0.589565
-CFM (spectral, no_replan, best: mass_tuned_svgd25)   3.844642           0.166365
 CFM (particles, no_replan, best: mass_tuned_svgd25)  5.213950           0.248646
 heuristic_tuned (best: mass@1000)                    4.450089           0.197129
 lawnmower                                            8.799999           1.519248
@@ -167,7 +165,6 @@ This metric is essentially BINARY at the 99% threshold in this data: ~0 only for
                                                      E_ergodic_explore  E_ergodic_exploit
 method                                                                                   
 linear_waypoints_tuned (best: mass@500)                       9.853261           0.147990
-CFM (spectral, no_replan, best: mass_tuned_svgd25)           10.383818           0.166285
 CFM (particles, no_replan, best: mass_tuned_svgd25)          10.754409           0.113617
 heuristic_tuned (best: mass@1000)                            10.957908           0.150454
 lawnmower                                                    18.743589           0.037287
@@ -178,10 +175,6 @@ CFM (particles, no_replan, best: mass_tuned_svgd25)        ground_truth         
 CFM (particles, no_replan, best: mass_tuned_svgd25)          half_known        12.077864
 CFM (particles, no_replan, best: mass_tuned_svgd25)         ten_samples         9.265489
 CFM (particles, no_replan, best: mass_tuned_svgd25)          none_known        21.200627
- CFM (spectral, no_replan, best: mass_tuned_svgd25)        ground_truth         1.219544
- CFM (spectral, no_replan, best: mass_tuned_svgd25)          half_known        12.410256
- CFM (spectral, no_replan, best: mass_tuned_svgd25)         ten_samples        10.515613
- CFM (spectral, no_replan, best: mass_tuned_svgd25)          none_known        18.054997
                   heuristic_tuned (best: mass@1000)        ground_truth         0.191969
                   heuristic_tuned (best: mass@1000)          half_known        13.207155
                   heuristic_tuned (best: mass@1000)         ten_samples        11.182062
@@ -211,14 +204,6 @@ spectral                12.990766   18.525854    28.520191   29.881215
             linear_waypoints_tuned (best: mass@500) rand_ana_poly_10        28.856352
             linear_waypoints_tuned (best: mass@500)      rand_gmm_10         3.407484
             linear_waypoints_tuned (best: mass@500)      rand_gmm_20         8.794724
- CFM (spectral, no_replan, best: mass_tuned_svgd25)                A         7.010389
- CFM (spectral, no_replan, best: mass_tuned_svgd25)             a_lc         9.105075
- CFM (spectral, no_replan, best: mass_tuned_svgd25)          digit_5         7.986795
- CFM (spectral, no_replan, best: mass_tuned_svgd25)    greek_upper_0         6.907504
- CFM (spectral, no_replan, best: mass_tuned_svgd25)         korean_5        13.486910
- CFM (spectral, no_replan, best: mass_tuned_svgd25) rand_ana_poly_10        29.008377
- CFM (spectral, no_replan, best: mass_tuned_svgd25)      rand_gmm_10         3.584139
- CFM (spectral, no_replan, best: mass_tuned_svgd25)      rand_gmm_20         7.311631
 CFM (particles, no_replan, best: mass_tuned_svgd25)                A         9.190910
 CFM (particles, no_replan, best: mass_tuned_svgd25)             a_lc        11.169997
 CFM (particles, no_replan, best: mass_tuned_svgd25)          digit_5         8.306963

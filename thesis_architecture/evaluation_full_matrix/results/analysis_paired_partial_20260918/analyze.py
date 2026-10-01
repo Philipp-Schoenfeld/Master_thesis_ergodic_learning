@@ -327,12 +327,8 @@ method_subsets = {}  # label -> the exact filtered sub-dataframe behind it,
                      # reused by charts 11/12 below so "best per method" is
                      # defined identically everywhere on this page.
 best_cfm_particles = cfm_nr[(cfm_nr['representation'] == 'particles')].groupby('strategy')['E_ergodic_total'].mean().idxmin()
-best_cfm_spectral = cfm_nr[(cfm_nr['representation'] == 'spectral')].groupby('strategy')['E_ergodic_total'].mean().idxmin()
 _lbl = 'CFM (particles, no_replan, best: %s)' % best_cfm_particles
 _sub = cfm_nr[(cfm_nr['representation'] == 'particles') & (cfm_nr['strategy'] == best_cfm_particles)]
-method_rows.append((_lbl, _sub['E_ergodic_total'].mean())); method_subsets[_lbl] = _sub
-_lbl = 'CFM (spectral, no_replan, best: %s)' % best_cfm_spectral
-_sub = cfm_nr[(cfm_nr['representation'] == 'spectral') & (cfm_nr['strategy'] == best_cfm_spectral)]
 method_rows.append((_lbl, _sub['E_ergodic_total'].mean())); method_subsets[_lbl] = _sub
 for method in ['heuristic_tuned', 'linear_waypoints_tuned']:
     m = df[df['method'] == method]

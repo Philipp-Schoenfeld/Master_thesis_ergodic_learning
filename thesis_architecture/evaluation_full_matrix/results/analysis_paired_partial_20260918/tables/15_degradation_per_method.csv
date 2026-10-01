@@ -3,10 +3,6 @@ method,knowledge_condition,E_ergodic_total
 "CFM (particles, no_replan, best: mass_tuned_svgd25)",half_known,12.077864330261946
 "CFM (particles, no_replan, best: mass_tuned_svgd25)",ten_samples,9.265488562174141
 "CFM (particles, no_replan, best: mass_tuned_svgd25)",none_known,21.200626912526786
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",ground_truth,1.2195444349199533
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",half_known,12.410256125032902
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",ten_samples,10.515613331459463
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",none_known,18.054996552877128
 heuristic_tuned (best: mass@1000),ground_truth,0.19196922751143572
 heuristic_tuned (best: mass@1000),half_known,13.207154864445329
 heuristic_tuned (best: mass@1000),ten_samples,11.182062108069658

@@ -7,14 +7,6 @@ linear_waypoints_tuned (best: mass@500),korean_5,8.387215197086334
 linear_waypoints_tuned (best: mass@500),rand_ana_poly_10,28.85635174252093
 linear_waypoints_tuned (best: mass@500),rand_gmm_10,3.4074842520058155
 linear_waypoints_tuned (best: mass@500),rand_gmm_20,8.794724430888891
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",A,7.010389054194093
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",a_lc,9.105075422674417
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",digit_5,7.986794788390398
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",greek_upper_0,6.9075042977929115
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",korean_5,13.486909911036491
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",rand_ana_poly_10,29.008376613259315
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",rand_gmm_10,3.584139358252287
-"CFM (spectral, no_replan, best: mass_tuned_svgd25)",rand_gmm_20,7.311631442978978
 "CFM (particles, no_replan, best: mass_tuned_svgd25)",A,9.190909555181861
 "CFM (particles, no_replan, best: mass_tuned_svgd25)",a_lc,11.169996682554483
 "CFM (particles, no_replan, best: mass_tuned_svgd25)",digit_5,8.306963320821524
