@@ -29,6 +29,7 @@ import numpy as np
 import torch
 
 import apply_cfm_belief as acb
+import candidate_db
 from common.acquisition import ucb_density, particles_from_density
 from common.baselines import lawnmower_path, lanes_for_length
 from common.belief import GPBelief, MaskiertesWissen, muster_maske
@@ -528,11 +529,15 @@ def _best_pre_svgd(curves, truth):
 
 
 def cfm_ideal_no_replan_best_of_n(planner, belief, strategy_name, refiner,
-                                  truth, n_candidates):
+                                  truth, n_candidates, candidates_ctx=None):
     """Like `cfm_ideal_no_replan`, but samples `n_candidates` network
     outputs in one batched forward pass, picks the best by pre-SVGD score
     against `truth`, and refines only that one. See the module-level
-    comment above for the speed/selection-fidelity trade-off."""
+    comment above for the speed/selection-fidelity trade-off.
+
+    `candidates_ctx`: optional dict (conn, shape, knowledge_condition) --
+    when given, ALL `n_candidates` raw B-spline control points are persisted
+    to the candidates DB (not just the winner), see candidate_db.py."""
     args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
     planner.cfg_weight = cfg_weight
     mu, sd = belief.posterior_grid()
@@ -542,22 +547,28 @@ def cfm_ideal_no_replan_best_of_n(planner, belief, strategy_name, refiner,
     cps = planner.plan(parts, n_candidates=n_candidates)
     curves = planner.render(cps)
     idx, raw_scores = _best_pre_svgd(curves, truth)
+    if candidates_ctx is not None:
+        candidate_db.save_candidates(
+            candidates_ctx['conn'], candidates_ctx['shape'],
+            candidates_ctx['knowledge_condition'], candidates_ctx['representation'],
+            strategy_name, 'no_replan', 0, cps, idx, raw_scores)
     curve = svgd(refiner, curves[idx], phi, svgd_iters)
     return curve, raw_scores
 
 
 def cfm_ideal_replan_1_6_best_of_n(planner, belief, truth, condition, strategy_name,
-                                   refiner, n_candidates):
+                                   refiner, n_candidates, candidates_ctx=None):
     """Like `cfm_ideal_replan_1_6`, but each of the six rounds does its own
     `n_candidates`-wide pre-SVGD selection instead of the whole six-round
     mission being repeated `n_candidates` independent times. `raw_scores`
     has 6 entries (one per round's chosen candidate), not `n_candidates` --
-    see the module-level comment above."""
+    see the module-level comment above. `candidates_ctx`: see
+    `cfm_ideal_no_replan_best_of_n` -- saved per round (replan_round 0-5)."""
     args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
     planner.cfg_weight = cfg_weight
     driven = None
     raw_scores = []
-    for _ in range(N_REPLAN_ROUNDS):
+    for round_idx in range(N_REPLAN_ROUNDS):
         mu, sd = belief.posterior_grid()
         visit = _visit_field(driven, args, belief.device)
         phi, _v = acb.debt_density(mu, sd, visit, args.kappa, args)
@@ -568,6 +579,11 @@ def cfm_ideal_replan_1_6_best_of_n(planner, belief, truth, condition, strategy_n
         curves = planner.render(cps)
         idx, scores = _best_pre_svgd(curves, truth)
         raw_scores.append(scores[idx])
+        if candidates_ctx is not None:
+            candidate_db.save_candidates(
+                candidates_ctx['conn'], candidates_ctx['shape'], condition,
+                candidates_ctx['representation'], strategy_name, 'replan_1_6',
+                round_idx, cps, idx, scores)
         curve = svgd(refiner, curves[idx], phi, svgd_iters, start=start)
 
         seg = trim_to_length(curve, LENGTH_UNIT)
@@ -581,10 +597,11 @@ def cfm_ideal_replan_1_6_best_of_n(planner, belief, truth, condition, strategy_n
 
 
 def spectral_ideal_no_replan_best_of_n(planner, belief, strategy_name, refiner,
-                                       truth, n_candidates):
+                                       truth, n_candidates, candidates_ctx=None):
     """Spectral-representation counterpart of `cfm_ideal_no_replan_best_of_n`
     -- same pre-SVGD selection, `plan()` takes a density grid instead of a
-    particle cloud (see `spectral_ideal_no_replan`)."""
+    particle cloud (see `spectral_ideal_no_replan`). `candidates_ctx`: see
+    `cfm_ideal_no_replan_best_of_n`."""
     args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
     planner.cfg_weight = cfg_weight
     mu, sd = belief.posterior_grid()
@@ -592,18 +609,24 @@ def spectral_ideal_no_replan_best_of_n(planner, belief, strategy_name, refiner,
     cps = planner.plan(phi, n_candidates=n_candidates)
     curves = planner.render(cps)
     idx, raw_scores = _best_pre_svgd(curves, truth)
+    if candidates_ctx is not None:
+        candidate_db.save_candidates(
+            candidates_ctx['conn'], candidates_ctx['shape'],
+            candidates_ctx['knowledge_condition'], candidates_ctx['representation'],
+            strategy_name, 'no_replan', 0, cps, idx, raw_scores)
     curve = svgd(refiner, curves[idx], phi, svgd_iters, nxi=planner.nxi)
     return curve, raw_scores
 
 
 def spectral_ideal_replan_1_6_best_of_n(planner, belief, truth, condition, strategy_name,
-                                        refiner, n_candidates):
-    """Spectral-representation counterpart of `cfm_ideal_replan_1_6_best_of_n`."""
+                                        refiner, n_candidates, candidates_ctx=None):
+    """Spectral-representation counterpart of `cfm_ideal_replan_1_6_best_of_n`.
+    `candidates_ctx`: see `cfm_ideal_no_replan_best_of_n`."""
     args, svgd_iters, cfg_weight = build_strategy_args(strategy_name, belief.device)
     planner.cfg_weight = cfg_weight
     driven = None
     raw_scores = []
-    for _ in range(N_REPLAN_ROUNDS):
+    for round_idx in range(N_REPLAN_ROUNDS):
         mu, sd = belief.posterior_grid()
         visit = _visit_field(driven, args, belief.device)
         phi, _v = acb.debt_density(mu, sd, visit, args.kappa, args)
@@ -612,6 +635,11 @@ def spectral_ideal_replan_1_6_best_of_n(planner, belief, truth, condition, strat
         curves = planner.render(cps)
         idx, scores = _best_pre_svgd(curves, truth)
         raw_scores.append(scores[idx])
+        if candidates_ctx is not None:
+            candidate_db.save_candidates(
+                candidates_ctx['conn'], candidates_ctx['shape'], condition,
+                candidates_ctx['representation'], strategy_name, 'replan_1_6',
+                round_idx, cps, idx, scores)
         curve = svgd(refiner, curves[idx], phi, svgd_iters, start=start, nxi=planner.nxi)
 
         seg = trim_to_length(curve, LENGTH_UNIT)
@@ -634,3 +662,110 @@ REPRESENTATIONS_BEST_OF_N = {
     'spectral': dict(no_replan=spectral_ideal_no_replan_best_of_n,
                      replan_1_6=spectral_ideal_replan_1_6_best_of_n),
 }
+
+
+# =============================================================================
+# Paired-SVGD (Philipp's request, 2026-09-18): for a (*_svgd0, *_svgd25)
+# strategy pair, draw the `n_candidates`-wide pool ONCE (using the *_svgd0
+# entry's tuned `param`), score pre-SVGD, and return BOTH the raw winner and
+# its SVGD-refined version -- instead of drawing two independent pools, one
+# per strategy. Only wired up for `no_replan`: for `replan_1_6`, the raw and
+# refined trajectories would actually get *driven* differently after round 1
+# (different belief updates from what was observed), so sharing candidates
+# there would silently change what's being measured, not just save compute
+# -- replan_1_6 keeps two fully independent 6-round rollouts for each half
+# of a pair.
+#
+# niveau's tuned tau genuinely differs between its svgd0 (0.4307) and svgd25
+# (0.6067) entries -- not just a refine/don't-refine toggle of the same
+# density like the other three families (ucb/mass/eid_tuned use the
+# identical param either way). Philipp's explicit choice: use the svgd0
+# value for the shared draw.
+# =============================================================================
+
+PAIRED_SVGD_FAMILIES = {
+    'niveau_svgd0':      'niveau_svgd25',
+    'ucb_tuned_svgd0':   'ucb_tuned_svgd25',
+    'mass_tuned_svgd0':  'mass_tuned_svgd25',
+    'eid_tuned_svgd0':   'eid_tuned_svgd25',
+}
+
+
+def cfm_ideal_no_replan_paired_svgd(planner, belief, svgd0_strategy, refiner,
+                                    truth, n_candidates, candidates_ctx=None):
+    """Shared-pool version of `cfm_ideal_no_replan_best_of_n` for a
+    (*_svgd0, *_svgd25) pair -- see `PAIRED_SVGD_FAMILIES`. Draws
+    `n_candidates` once using `svgd0_strategy`'s tuned param, scores
+    pre-SVGD, and returns the raw winner plus its SVGD-refined version
+    (refined with the paired *_svgd25 entry's `svgd_iters`). `candidates_ctx`:
+    see `cfm_ideal_no_replan_best_of_n` -- saved under `svgd0_strategy`'s
+    name, since that's the shared draw both halves of the pair come from."""
+    svgd25_strategy = PAIRED_SVGD_FAMILIES[svgd0_strategy]
+    args, _unused, cfg_weight = build_strategy_args(svgd0_strategy, belief.device)
+    svgd_iters_25 = STRATEGIES[svgd25_strategy]['svgd_iters']
+    planner.cfg_weight = cfg_weight
+    mu, sd = belief.posterior_grid()
+    phi = acb.zieldichte(mu, sd, args.kappa, args)
+    parts = acb.phi_particles(phi, args.n_particles, mode=args.phi_mode,
+                              quantile=args.phi_quantile, device=belief.device)
+    cps = planner.plan(parts, n_candidates=n_candidates)
+    curves = planner.render(cps)
+    idx, raw_scores = _best_pre_svgd(curves, truth)
+    if candidates_ctx is not None:
+        candidate_db.save_candidates(
+            candidates_ctx['conn'], candidates_ctx['shape'],
+            candidates_ctx['knowledge_condition'], candidates_ctx['representation'],
+            svgd0_strategy, 'no_replan', 0, cps, idx, raw_scores)
+    raw_curve = curves[idx]
+    refined_curve = svgd(refiner, raw_curve, phi, svgd_iters_25)
+    return raw_curve, refined_curve, raw_scores
+
+
+def spectral_ideal_no_replan_paired_svgd(planner, belief, svgd0_strategy, refiner,
+                                         truth, n_candidates, candidates_ctx=None):
+    """Spectral-representation counterpart of `cfm_ideal_no_replan_paired_svgd`.
+    `candidates_ctx`: see `cfm_ideal_no_replan_paired_svgd`."""
+    svgd25_strategy = PAIRED_SVGD_FAMILIES[svgd0_strategy]
+    args, _unused, cfg_weight = build_strategy_args(svgd0_strategy, belief.device)
+    svgd_iters_25 = STRATEGIES[svgd25_strategy]['svgd_iters']
+    planner.cfg_weight = cfg_weight
+    mu, sd = belief.posterior_grid()
+    phi = acb.zieldichte(mu, sd, args.kappa, args)
+    cps = planner.plan(phi, n_candidates=n_candidates)
+    curves = planner.render(cps)
+    idx, raw_scores = _best_pre_svgd(curves, truth)
+    if candidates_ctx is not None:
+        candidate_db.save_candidates(
+            candidates_ctx['conn'], candidates_ctx['shape'],
+            candidates_ctx['knowledge_condition'], candidates_ctx['representation'],
+            svgd0_strategy, 'no_replan', 0, cps, idx, raw_scores)
+    raw_curve = curves[idx]
+    refined_curve = svgd(refiner, raw_curve, phi, svgd_iters_25, nxi=planner.nxi)
+    return raw_curve, refined_curve, raw_scores
+
+
+REPRESENTATIONS_PAIRED_SVGD = {
+    'particles': cfm_ideal_no_replan_paired_svgd,
+    'spectral':  spectral_ideal_no_replan_paired_svgd,
+}
+
+
+#: Random-walk counterpart (Philipp's request, 2026-09-18): 30 independent
+#: random walks, keep the best against the full ground-truth density (random
+#: walk has no knowledge-condition-specific belief -- it's computed once per
+#: shape and reused across all 4 conditions, same as the existing 'fixed'
+#: baseline), then evaluate that SAME winner twice: once with 0 SVGD
+#: iterations (pure pass-through) and once with `RANDOM_WALK_SVGD_ITERS_HIGH`
+#: (500) -- a much deeper budget than any CFM strategy uses, since a random
+#: walk's raw candidates start far worse and have more room for SVGD to
+#: improve them.
+RANDOM_WALK_SVGD_ITERS_HIGH = 500
+
+
+def random_walk_paired_svgd(candidate_fn, n_candidates, refiner, truth):
+    curves = [candidate_fn() for _ in range(n_candidates)]
+    idx, raw_scores = _best_pre_svgd(curves, truth)
+    raw_curve = curves[idx]
+    unrefined = svgd(refiner, raw_curve, truth, 0)
+    refined = svgd(refiner, raw_curve, truth, RANDOM_WALK_SVGD_ITERS_HIGH)
+    return unrefined, refined, raw_scores

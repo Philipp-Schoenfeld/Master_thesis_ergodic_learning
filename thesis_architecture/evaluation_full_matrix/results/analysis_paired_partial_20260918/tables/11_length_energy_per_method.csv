@@ -1,0 +1,7 @@
+method,path_len,smoothness_energy
+random_walk (svgd500) *see caveat above*,4.408305376768112,0.3672497794032097
+linear_waypoints_tuned (best: mass@500),5.410750150680542,0.5895652142353356
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",3.844641759991646,0.16636467259377236
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",5.213950298726559,0.24864577734842896
+heuristic_tuned (best: mass@1000),4.450088955461979,0.1971287734340876
+lawnmower,8.799999237060547,1.5192476511001587

@@ -1,0 +1,6 @@
+method,reached_80,reached_90,reached_99
+CFM particles,0.08333333333333333,0.0,0.0
+CFM spectral,0.0,0.0,0.0
+heuristic_tuned,0.0,0.0,0.0
+linear_waypoints_tuned,0.125,0.0,0.0
+lawnmower,1.0,1.0,0.0

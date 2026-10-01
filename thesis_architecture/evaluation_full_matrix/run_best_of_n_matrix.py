@@ -202,6 +202,19 @@ def main():
                          'best finished trajectory. See module docstring.')
     ap.add_argument('--representations', type=str, default='particles,spectral')
     ap.add_argument('--strategies', type=str, default=','.join(vr.STRATEGIES.keys()))
+    ap.add_argument('--paired_svgd', action='store_true',
+                    help='Fuer no_replan: wenn ein (*_svgd0, *_svgd25)-Paar '
+                         'einer Familie (siehe vr.PAIRED_SVGD_FAMILIES) '
+                         'gemeinsam in --strategies steht, wird der '
+                         '30-Kandidaten-Pool nur EINMAL gezogen (mit dem '
+                         '*_svgd0-Parameter), pre-SVGD bewertet, und der '
+                         'Sieger sowohl roh als auch mit dem *_svgd25-Budget '
+                         'verfeinert gespeichert -- statt zwei unabhaengiger '
+                         'Pools. Betrifft auch random_walk: 30 Kandidaten, '
+                         'bester wird roh (0 SVGD) UND mit '
+                         'vr.RANDOM_WALK_SVGD_ITERS_HIGH (500) verfeinert '
+                         'gespeichert. Opt-in, alte Ergebnisse/Laeufe ohne '
+                         'dieses Flag bleiben unveraendert.')
     ap.add_argument('--replan_schemes', type=str, default='no_replan,replan_1_6')
     ap.add_argument('--particle_ckpt', type=str, default=DEFAULT_CKPT)
     ap.add_argument('--spectral_ckpt', type=str, default=SPECTRAL_CKPT)
@@ -220,6 +233,15 @@ def main():
     ap.add_argument('--seed', type=int, default=0)
     ap.add_argument('--truth_res', type=int, default=96)
     ap.add_argument('--no_viz', action='store_true')
+    ap.add_argument('--save_candidates_db', action='store_true',
+                    help='Persist ALL n_candidates raw B-spline control points '
+                         '(not just the selected winner) to results/<out_tag>/'
+                         'candidates.db, so any metric at any threshold/SVGD '
+                         'budget can be recomputed later without re-running the '
+                         'network. Opt-in, old runs/behaviour unaffected. Only '
+                         'wired up for --selection pre_svgd (post_svgd generates '
+                         'one candidate at a time via the non-batched '
+                         'single-candidate generators, not through this path).')
     args = ap.parse_args()
 
     reps = [r for r in args.representations.split(',') if r]
@@ -261,6 +283,14 @@ def main():
     plots_dir = os.path.join(out_dir, 'plots')
     for d in (raw_dir, tables_dir, plots_dir):
         os.makedirs(d, exist_ok=True)
+
+    candidates_conn = None
+    if args.save_candidates_db:
+        import candidate_db
+        candidates_conn = candidate_db.open_db(out_dir)
+        print(f"[best_of_n_matrix] --save_candidates_db: writing to "
+             f"{os.path.join(out_dir, 'candidates.db')}")
+
     with open(os.path.join(out_dir, 'config.json'), 'w') as f:
         json.dump({
             'n_candidates': args.n_candidates, 'selection': args.selection,
@@ -310,8 +340,36 @@ def main():
                     rows.append(row)
                     _collect(cond, row, lawn, truth_np, name)
 
-            if not args.no_viz and row_done(raw_dir, 'random_walk', 'fixed', None,
-                                            'shared', name):
+            if args.paired_svgd:
+                rw_subs = ['svgd0', 'svgd500']
+                if not args.no_viz and all(
+                        row_done(raw_dir, 'random_walk', s, None, 'shared', name)
+                        for s in rw_subs):
+                    n_skipped[0] += len(rw_subs)
+                else:
+                    _rw_counter = itertools.count(1)
+
+                    def _rw_candidate():
+                        seed = args.seed * 131 + i * 1000 + next(_rw_counter)
+                        return vr.random_walk_variant(seed=seed).to(device)
+
+                    unrefined, refined, raw_scores = vr.random_walk_paired_svgd(
+                        _rw_candidate, args.n_candidates, refiner, truth)
+                    for sub, curve in (('svgd0', unrefined), ('svgd500', refined)):
+                        base_row = compute_row(curve, truth, phi_k_truth, ee, name,
+                                               'random_walk', sub, None, 'shared')
+                        base_row['coverage_mean'] = float(np.mean(raw_scores))
+                        base_row['coverage_std'] = float(np.std(raw_scores))
+                        base_row['n_candidates'] = args.n_candidates
+                        base_row['selection'] = 'pre_svgd'
+                        if not args.no_viz:
+                            save_trajectory_files(curve, base_row, truth, raw_dir)
+                        for cond in vr.KNOWLEDGE_CONDITIONS:
+                            row = dict(base_row, knowledge_condition=cond)
+                            rows.append(row)
+                            _collect(cond, row, curve, truth_np, name)
+            elif not args.no_viz and row_done(raw_dir, 'random_walk', 'fixed', None,
+                                              'shared', name):
                 n_skipped[0] += 1
             else:
                 _rw_counter = itertools.count(1)
@@ -337,6 +395,15 @@ def main():
                 gen = vr.REPRESENTATIONS[rep]
                 gen_bon = vr.REPRESENTATIONS_BEST_OF_N[rep]
                 for cond in vr.KNOWLEDGE_CONDITIONS:
+                    #: Strategies whose no_replan row was already produced
+                    #: together with their *_svgd0 partner this (rep, cond)
+                    #: pass (see the --paired_svgd branch below) -- explicit
+                    #: in-memory guard rather than relying solely on
+                    #: row_done()/disk, since row_done is a no-op under
+                    #: --no_viz (nothing gets written to check against) and
+                    #: would otherwise let the partner's iteration recompute
+                    #: independently and append a duplicate row.
+                    paired_no_replan_done = set()
                     for strat in strategies:
                         s = vr.STRATEGIES[strat]
                         belief0 = vr.build_belief(
@@ -349,16 +416,50 @@ def main():
                                                             cond, name):
                                 n_skipped[0] += 1
                                 continue
+                            if scheme == 'no_replan' and strat in paired_no_replan_done:
+                                continue
+
+                            candidates_ctx = None
+                            if candidates_conn is not None:
+                                candidates_ctx = dict(conn=candidates_conn, shape=name,
+                                                      knowledge_condition=cond, representation=rep)
+
+                            if (args.selection == 'pre_svgd' and scheme == 'no_replan'
+                                    and args.paired_svgd
+                                    and strat in vr.PAIRED_SVGD_FAMILIES
+                                    and vr.PAIRED_SVGD_FAMILIES[strat] in strategies):
+                                partner = vr.PAIRED_SVGD_FAMILIES[strat]
+                                raw_curve, refined_curve, raw_scores = \
+                                    vr.REPRESENTATIONS_PAIRED_SVGD[rep](
+                                        planner, belief0.clone(), strat, refiner,
+                                        truth, args.n_candidates, candidates_ctx=candidates_ctx)
+                                for cur_strat, cur_curve in ((strat, raw_curve),
+                                                             (partner, refined_curve)):
+                                    cur_sub = f"{cur_strat}__{scheme}"
+                                    r = compute_row(cur_curve, truth, phi_k_truth, ee,
+                                                    name, rep, cur_sub, None, cond)
+                                    r['coverage_mean'] = float(np.mean(raw_scores))
+                                    r['coverage_std'] = float(np.std(raw_scores))
+                                    r['n_candidates'] = args.n_candidates
+                                    r['selection'] = 'pre_svgd'
+                                    r.update(representation=rep, strategy=cur_strat,
+                                            replan_scheme=scheme)
+                                    if not args.no_viz:
+                                        save_trajectory_files(cur_curve, r, truth, raw_dir)
+                                    rows.append(r)
+                                    _collect(cond, r, cur_curve, truth_np, name)
+                                paired_no_replan_done.add(partner)
+                                continue
 
                             if args.selection == 'pre_svgd':
                                 if scheme == 'no_replan':
                                     best_curve, raw_scores = gen_bon['no_replan'](
                                         planner, belief0.clone(), strat, refiner,
-                                        truth, args.n_candidates)
+                                        truth, args.n_candidates, candidates_ctx=candidates_ctx)
                                 elif scheme == 'replan_1_6':
                                     best_curve, raw_scores = gen_bon['replan_1_6'](
                                         planner, belief0.clone(), truth, cond, strat,
-                                        refiner, args.n_candidates)
+                                        refiner, args.n_candidates, candidates_ctx=candidates_ctx)
                                 else:
                                     raise KeyError(f"unbekanntes Replan-Schema {scheme!r}")
                                 row = compute_row(best_curve, truth, phi_k_truth, ee,
@@ -491,6 +592,9 @@ def main():
         d = os.path.join(panel_dir, cond)
         os.makedirs(d, exist_ok=True)
         viz.plot_holdout_panel(items, os.path.join(d, f'{vid}.png'), title=f'{vid} | {cond}')
+
+    if candidates_conn is not None:
+        candidates_conn.close()
 
     status = 'unterbrochen (SIGTERM/Ctrl-C)' if interrupted else 'fertig'
     print(f"[best_of_n_matrix] {status}: {len(rows)} Zeilen neu in diesem Lauf, "

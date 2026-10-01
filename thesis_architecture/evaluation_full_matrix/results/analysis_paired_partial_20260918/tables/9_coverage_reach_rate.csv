@@ -1,0 +1,7 @@
+method,reach_rate
+particles,0.2517361111111111
+heuristic_tuned,0.25
+linear_waypoints_tuned,0.25
+spectral,0.25
+lawnmower,0.0
+random_walk,0.0

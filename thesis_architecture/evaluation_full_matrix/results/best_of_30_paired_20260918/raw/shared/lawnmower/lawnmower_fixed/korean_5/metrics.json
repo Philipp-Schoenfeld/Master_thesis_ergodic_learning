@@ -1,0 +1,22 @@
+{
+  "shape": "korean_5",
+  "knowledge_condition": "shared",
+  "method": "lawnmower",
+  "subvariant": "fixed",
+  "svgd_iters": -1,
+  "variant_id": "lawnmower_fixed",
+  "coverage": 0.03429419547319412,
+  "path_len": 8.799999237060547,
+  "smoothness_energy": 1.5192476511001587,
+  "steps_to_full_coverage": 1.0,
+  "steps_to_full_coverage_reached": 0.0,
+  "E_ergodic_total": 15.577491126954556,
+  "E_ergodic_explore": 15.509161949157715,
+  "E_ergodic_exploit": 0.06832917779684067,
+  "explore_exploit_ratio": 0.00440572985315635,
+  "coverage_per_length": 0.00389706800527512,
+  "E_ergodic_total_per_length": 1.7701695997144071,
+  "E_ergodic_explore_per_length": 1.7624049197461318,
+  "E_ergodic_exploit_per_length": 0.0077646799682751545,
+  "J": 15.753491111695766
+}

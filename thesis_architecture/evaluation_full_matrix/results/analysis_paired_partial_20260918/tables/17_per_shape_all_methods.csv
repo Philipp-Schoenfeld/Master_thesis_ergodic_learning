@@ -1,0 +1,41 @@
+method,shape,E_ergodic_total
+linear_waypoints_tuned (best: mass@500),A,7.130559710785747
+linear_waypoints_tuned (best: mass@500),a_lc,9.58312013745308
+linear_waypoints_tuned (best: mass@500),digit_5,6.946669116616249
+linear_waypoints_tuned (best: mass@500),greek_upper_0,6.9038847964257
+linear_waypoints_tuned (best: mass@500),korean_5,8.387215197086334
+linear_waypoints_tuned (best: mass@500),rand_ana_poly_10,28.85635174252093
+linear_waypoints_tuned (best: mass@500),rand_gmm_10,3.4074842520058155
+linear_waypoints_tuned (best: mass@500),rand_gmm_20,8.794724430888891
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",A,7.010389054194093
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",a_lc,9.105075422674417
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",digit_5,7.986794788390398
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",greek_upper_0,6.9075042977929115
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",korean_5,13.486909911036491
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",rand_ana_poly_10,29.008376613259315
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",rand_gmm_10,3.584139358252287
+"CFM (spectral, no_replan, best: mass_tuned_svgd25)",rand_gmm_20,7.311631442978978
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",A,9.190909555181861
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",a_lc,11.169996682554483
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",digit_5,8.306963320821524
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",greek_upper_0,10.077203443273902
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",korean_5,11.575869962573051
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",rand_ana_poly_10,25.50230135768652
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",rand_gmm_10,4.01390128210187
+"CFM (particles, no_replan, best: mass_tuned_svgd25)",rand_gmm_20,7.107062492519617
+heuristic_tuned (best: mass@1000),A,8.652280961163342
+heuristic_tuned (best: mass@1000),a_lc,10.586518721655011
+heuristic_tuned (best: mass@1000),digit_5,7.749237392097712
+heuristic_tuned (best: mass@1000),greek_upper_0,9.15231085009873
+heuristic_tuned (best: mass@1000),korean_5,10.811586511321366
+heuristic_tuned (best: mass@1000),rand_ana_poly_10,30.745271108113233
+heuristic_tuned (best: mass@1000),rand_gmm_10,3.976598711684346
+heuristic_tuned (best: mass@1000),rand_gmm_20,7.193092020228505
+lawnmower,A,16.421095179393888
+lawnmower,a_lc,16.6425755135715
+lawnmower,digit_5,17.018490869551897
+lawnmower,greek_upper_0,16.421095179393888
+lawnmower,korean_5,15.577491126954556
+lawnmower,rand_ana_poly_10,49.64577676355839
+lawnmower,rand_gmm_10,5.458813262404874
+lawnmower,rand_gmm_20,13.061671362724155

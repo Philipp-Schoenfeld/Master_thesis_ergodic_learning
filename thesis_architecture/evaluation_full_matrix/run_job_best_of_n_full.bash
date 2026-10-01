@@ -38,4 +38,5 @@ srun --unbuffered python run_best_of_n_matrix.py \
     --n_candidates 30 \
     --selection post_svgd \
     --heuristic_families lse,ucb,mass,eid \
+    --spectral_ckpt ~/Master_thesis/thesis_architecture/checkpoints/cond_spectral_crossattn_ergodic_S256_nxi25_D384_flip0.0_final.pt \
     --out_tag best_of_30_full_20260918

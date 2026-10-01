@@ -1,0 +1,71 @@
+{
+  "n_candidates": 30,
+  "selection": "pre_svgd",
+  "representations": [
+    "particles",
+    "spectral"
+  ],
+  "strategies": [
+    "niveau_svgd0",
+    "niveau_svgd25",
+    "ucb_tuned_svgd0",
+    "ucb_tuned_svgd25",
+    "mass_tuned_svgd0",
+    "mass_tuned_svgd25",
+    "eid_tuned_svgd0",
+    "eid_tuned_svgd25",
+    "eid_optuna_ideal_v2"
+  ],
+  "replan_schemes": [
+    "no_replan",
+    "replan_1_6"
+  ],
+  "heuristic_families": [
+    "lse",
+    "ucb",
+    "mass",
+    "eid"
+  ],
+  "heuristic_svgd_iters": [
+    0,
+    500,
+    1000
+  ],
+  "linear_svgd_iters": [
+    500,
+    1000
+  ],
+  "shapes_resolved": [
+    "A",
+    "greek_upper_0",
+    "korean_5",
+    "digit_5",
+    "a_lc",
+    "rand_gmm_10",
+    "rand_gmm_20",
+    "rand_ana_poly_10",
+    "rand_ana_poly_20",
+    "rand_ana_poly_30",
+    "rand_gmm_complex_0",
+    "rand_gmm_complex_10",
+    "rand_gmm_complex_20",
+    "rand_gmm_complex_30",
+    "rand_ana_poly_complex_0",
+    "rand_ana_poly_complex_10",
+    "rand_ana_poly_complex_20",
+    "rand_ana_poly_complex_30",
+    "organic_0",
+    "organic_10",
+    "organic_20",
+    "organic_30",
+    "cjk_0",
+    "cjk_10",
+    "cjk_20"
+  ],
+  "knowledge_conditions": [
+    "ground_truth",
+    "none_known",
+    "half_known",
+    "ten_samples"
+  ]
+}
