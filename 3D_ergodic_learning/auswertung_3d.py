@@ -370,6 +370,17 @@ def main():
     p.add_argument('--ohne_png', action='store_true',
                    help='Nur die drehbaren HTML-Szenen rendern, keine PNGs '
                         '(schneller, aber der Index hat dann keine Vorschaubilder)')
+    p.add_argument('--no_align', action='store_true',
+                   help='SE(3)-Tangentenausrichtung (mesh_alignment.py) in '
+                        'run_surface_eval.py abschalten -- an run_surface_eval.py '
+                        'durchgereicht.')
+    p.add_argument('--w_surface', type=float, default=None,
+                   help='an run_surface_eval.py durchgereicht (Standard dort: 50.0)')
+    p.add_argument('--w_align', type=float, default=None,
+                   help='an run_surface_eval.py durchgereicht (Standard dort: 1.0)')
+    p.add_argument('--align_iters', type=int, default=None)
+    p.add_argument('--align_lr', type=float, default=None)
+    p.add_argument('--align_max_force', type=float, default=None)
     a = p.parse_args()
 
     ckpt = os.path.abspath(a.ckpt)
@@ -400,6 +411,18 @@ def main():
             cmd += ['--surfaces'] + a.surfaces
         if a.device:
             cmd += ['--device', a.device]
+        if a.no_align:
+            cmd += ['--no_align']
+        if a.w_surface is not None:
+            cmd += ['--w_surface', a.w_surface]
+        if a.w_align is not None:
+            cmd += ['--w_align', a.w_align]
+        if a.align_iters is not None:
+            cmd += ['--align_iters', a.align_iters]
+        if a.align_lr is not None:
+            cmd += ['--align_lr', a.align_lr]
+        if a.align_max_force is not None:
+            cmd += ['--align_max_force', a.align_max_force]
         dauer['1 eval'] = lauf(cmd, tee)
 
     if a.ab <= 2 <= a.bis:

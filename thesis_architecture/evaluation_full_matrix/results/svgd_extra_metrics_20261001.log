@@ -1,0 +1,30 @@
+[target x1.5] ground_truth eid  cfm          reached 1.00, median iterations 248
+[target x1.5] ground_truth eid  linear       reached 0.97, median iterations 1215
+[target x1.5] ground_truth eid  random_walk  reached 0.82, median iterations 1780
+[target x1.5] ground_truth lse  linear       reached 0.97, median iterations 1215
+[target x1.5] ground_truth lse  random_walk  reached 0.82, median iterations 1780
+[target x1.5] ground_truth ucb  linear       reached 0.97, median iterations 1215
+[target x1.5] ground_truth ucb  random_walk  reached 0.82, median iterations 1780
+[target x1.5] half_known   eid  cfm          reached 0.99, median iterations 1035
+[target x1.5] half_known   eid  linear       reached 0.97, median iterations 1215
+[target x1.5] half_known   eid  random_walk  reached 0.82, median iterations 1780
+[target x1.5] half_known   lse  linear       reached 0.97, median iterations 1215
+[target x1.5] half_known   lse  random_walk  reached 0.82, median iterations 1780
+[target x1.5] half_known   ucb  linear       reached 0.97, median iterations 1215
+[target x1.5] half_known   ucb  random_walk  reached 0.82, median iterations 1780
+[target x1.5] ten_samples  eid  cfm          reached 1.00, median iterations 562
+[target x1.5] ten_samples  eid  linear       reached 0.97, median iterations 1215
+[target x1.5] ten_samples  eid  random_walk  reached 0.82, median iterations 1780
+[target x1.5] ten_samples  lse  linear       reached 0.97, median iterations 1215
+[target x1.5] ten_samples  lse  random_walk  reached 0.82, median iterations 1780
+[target x1.5] ten_samples  ucb  linear       reached 0.97, median iterations 1215
+[target x1.5] ten_samples  ucb  random_walk  reached 0.82, median iterations 1780
+[extra] 500 runs processed, 5s
+[extra] 1000 runs processed, 9s
+[extra] 1500 runs processed, 14s
+[extra] 2000 runs processed, 18s
+[extra] 2500 runs processed, 22s
+[extra] 3000 runs processed, 26s
+[extra] 3500 runs processed, 31s
+[extra] derived metrics for 3960 runs, 132 groups, 49s
+[extra] wrote figures to C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\svgd_convergence_20261001\plots

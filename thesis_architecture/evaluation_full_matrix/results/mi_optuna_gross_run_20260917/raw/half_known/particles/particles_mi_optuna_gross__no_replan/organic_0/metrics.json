@@ -1,0 +1,18 @@
+{
+  "shape": "organic_0",
+  "knowledge_condition": "half_known",
+  "method": "particles",
+  "subvariant": "mi_optuna_gross__no_replan",
+  "svgd_iters": -1,
+  "variant_id": "particles_mi_optuna_gross__no_replan",
+  "coverage": 0.0619635209441185,
+  "path_len": 4.652225494384766,
+  "E_ergodic_total": 34.936595648527145,
+  "E_ergodic_explore": 34.83053970336914,
+  "E_ergodic_exploit": 0.10605594515800476,
+  "explore_exploit_ratio": 0.00304491248373467,
+  "coverage_per_length": 0.013319113834638593,
+  "E_ergodic_total_per_length": 7.509652249379486,
+  "E_ergodic_explore_per_length": 7.486855429817318,
+  "E_ergodic_exploit_per_length": 0.02279681956216745
+}

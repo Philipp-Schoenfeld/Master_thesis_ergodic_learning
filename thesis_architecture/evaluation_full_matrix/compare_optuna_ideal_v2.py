@@ -31,6 +31,7 @@ if _here not in sys.path:
     sys.path.insert(0, _here)
 
 from run_eval_matrix import summarise, plot_metric_bars, plot_tradeoff, NUMERIC_METRIC_KEYS  # noqa: E402
+from metrics_explore_exploit import add_J  # noqa: E402
 
 OLD_RUN = os.path.join(_here, 'results', 'ideal_run_20260912', 'tables', 'all_runs.csv')
 NEW_RUN = os.path.join(_here, 'results', 'optuna_ideal_v2_run_20260916', 'tables', 'all_runs.csv')
@@ -48,6 +49,8 @@ def load_rows(path):
                 r[k] = float(r[k])
         if r.get('svgd_iters') not in (None, ''):
             r['svgd_iters'] = int(float(r['svgd_iters']))
+        if r.get('J') in (None, ''):
+            add_J(r)
     return rows
 
 

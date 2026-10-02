@@ -35,3 +35,6 @@ thesis_architecture/exploration/modelle_und_Datenbank/ergodic_dataset_3d.db
 # 1,4 GB / 92 MB — ebenfalls ueber dem 100-MB-Limit, per Drive uebertragen.
 3D_ergodic_learning/ergodic_dataset_3d_no_offset_200.db
 3D_ergodic_learning/ergodic_dataset_3d_probe.db
+
+# SQLite log of every SVGD state of the 2026-10-01 convergence run (2.6 GB, above the GitHub file limit; regenerate with run_svgd_convergence.py)
+thesis_architecture/evaluation_full_matrix/results/svgd_convergence_20261001/svgd_convergence.db

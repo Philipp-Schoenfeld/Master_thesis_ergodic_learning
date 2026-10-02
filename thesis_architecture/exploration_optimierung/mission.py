@@ -406,12 +406,29 @@ class LaengenMission:
                    `Uniform(min, max)` gezogen (`common.belief.zufalls_maske`).
                    `None` (Voreinstellung) laesst das bisherige Verhalten
                    unveraendert.
+        unbekannt_beta: optional `(a, b)`, Alternative zu `unbekannt_bereich`
+                   fuer denselben unbekannten Flaechenanteil. Statt aus einem
+                   festen Intervall wird er aus `Beta(a, b)` gezogen — Traeger
+                   immer das volle `[0, 1]` (also von "alles bekannt" bis
+                   "nichts bekannt" moeglich), aber mit frei waehlbarem
+                   Erwartungswert `a / (a + b)` statt dem Uniform-Mittel
+                   `(min+max)/2`. Hat Vorrang vor `unbekannt_bereich`, wenn
+                   beide gesetzt sind.
+        unbekannt_seed: optional. Bestimmt den Zufallsstrom fuer die
+                   Bekannt/Unbekannt-Maske getrennt vom Rollout-`seed` (der
+                   sonst SVGD und `torch.manual_seed` steuert). `None`
+                   (Voreinstellung) benutzt `seed` wie bisher; wer denselben
+                   `seed` ueber mehrere Aufrufe hinweg mit *unterschiedlichen*
+                   Masken sehen will (z. B. eine Optuna-Studie, in der jeder
+                   Versuch eine frische Maske ziehen soll statt immer
+                   dieselbe fuer Seed 0), setzt hier einen eigenen Wert.
     """
 
     def __init__(self, planner, truths, names, args, svgd_iters=0,
                  gp_res=64, n_prior=0, seed=0, nxi_refine=25, pool=None,
                  policy=None, gp_lengthscale=0.08, gp_variance=1.0,
-                 unbekannt_bereich=None):
+                 unbekannt_bereich=None, unbekannt_beta=None,
+                 unbekannt_seed=None):
         self.planner = planner
         self.truths = truths
         self.names = names
@@ -436,11 +453,22 @@ class LaengenMission:
             # Die Korrelationslaenge war die letzte grosse ungetunte
             # Groesse des Glaubens; `optuna_search.py --space gross` sucht
             # darueber.
-            if unbekannt_bereich is not None:
-                lo, hi = unbekannt_bereich
-                g = torch.Generator().manual_seed(seed * 991 + i)
-                anteil = float(lo) + (float(hi) - float(lo)) * float(
-                    torch.rand(1, generator=g))
+            if unbekannt_beta is not None or unbekannt_bereich is not None:
+                mseed = seed if unbekannt_seed is None else unbekannt_seed
+                g = torch.Generator().manual_seed(mseed * 991 + i)
+                if unbekannt_beta is not None:
+                    # `torch.distributions.Beta` takes no `generator` arg (it
+                    # draws from torch's global RNG), so the scalar `anteil`
+                    # is drawn from a separately seeded numpy stream; `g`
+                    # still drives the mask's own noise field below, exactly
+                    # as in the `unbekannt_bereich` branch.
+                    beta_a, beta_b = unbekannt_beta
+                    rng = np.random.default_rng(mseed * 991 + i)
+                    anteil = float(rng.beta(float(beta_a), float(beta_b)))
+                else:
+                    lo, hi = unbekannt_bereich
+                    anteil = float(lo) + (float(hi) - float(lo)) * float(
+                        torch.rand(1, generator=g))
                 maske = zufalls_maske(truths.shape[-1], anteil, generator=g)
                 b = MaskiertesWissen(maske, truths[i], sigma_bekannt=0.0,
                                      grid_res=gp_res,

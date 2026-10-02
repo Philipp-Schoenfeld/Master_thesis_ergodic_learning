@@ -440,7 +440,7 @@ def svgd_step_numpy(particles, compute_energy_and_grad_fn, T, dim):
 
 def run_svgd_numpy(particles, T, n_iters, compute_energy_and_grad_fn, dim,
                    adam_lr=2e-3, adam_beta1=0.9, adam_beta2=0.999, adam_eps=1e-8,
-                   n_particles=None, label="SVGD"):
+                   n_particles=None, label="SVGD", iter_callback=None):
     """
     Full SVGD optimization loop with Adam optimizer (NumPy).
 
@@ -453,6 +453,9 @@ def run_svgd_numpy(particles, T, n_iters, compute_energy_and_grad_fn, dim,
         adam_lr, adam_beta1, adam_beta2, adam_eps: Adam hyperparameters
         n_particles: number of particles (inferred from particles if None)
         label: description for tqdm progress bar
+        iter_callback: optional function(it, particles) called after every
+            iteration (0-based `it`, particles (N, T*dim) after the Adam
+            update and clipping). Read-only hook; default None = unchanged.
 
     Returns:
         particles: (N, T*dim) optimized trajectories
@@ -486,5 +489,7 @@ def run_svgd_numpy(particles, T, n_iters, compute_energy_and_grad_fn, dim,
         mean_e = np.mean(energies)
         energy_log.append(mean_e)
         pbar.set_postfix(energy=f"{mean_e:.3f}")
+        if iter_callback is not None:
+            iter_callback(it, particles)
 
     return particles, energy_log

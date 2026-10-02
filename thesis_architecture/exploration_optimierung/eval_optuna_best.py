@@ -48,6 +48,16 @@ from visualize_checkpoint import WHITE_INFERNO                # noqa: E402
 
 OUT_DIR = os.path.join(RESULTS_DIR, 'optuna')
 
+# `plots.formen_streuung`/`abdeckungs_kurven` look up `M.PHI_MODELS[phi_model][0]`
+# just for the axis label; that dict only knows the four `basis`-space models.
+# The `gross`/`ideal` spaces can also produce `stretch`/`ei`/`mi` as the winner
+# (see `optuna_search.EXTRA_MODELS`) — extend the lookup so those don't crash
+# the shared plotting code with a KeyError. Internal model name (index 1) is
+# never read for these three, so any placeholder there is harmless.
+M.PHI_MODELS.setdefault('stretch', ('kappa', 'stretch'))
+M.PHI_MODELS.setdefault('mi', ('kappa', 'mi'))
+M.PHI_MODELS.setdefault('ei', ('xi', 'ei'))
+
 #: Welcher Optuna-Parametername der freie Regler eines Modells ist — dieselbe
 #: Zuordnung wie in `optuna_search.suggest_config`, hier rueckwaerts, um aus
 #: `best.json['params']` wieder ein `cfg`-dict wie zur Suchzeit zu bauen.

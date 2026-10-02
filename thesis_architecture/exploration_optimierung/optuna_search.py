@@ -96,12 +96,22 @@ EXTRA_MODELS = ('stretch', 'ei', 'mi')
 # Suchraum
 # ---------------------------------------------------------------------------
 
+#: Fixed values for the ``core`` space (everything not being searched there).
+#: Same defaults as `mission.build_mission_args`, so a ``core`` trial matches
+#: an un-tuned baseline run except for the four searched dimensions.
+CORE_FIXED = dict(visit_sat=1.0, visit_halflife=3.0, phi_mode='uniform',
+                  n_particles=256, phi_quantile=0.5)
+
+
 def suggest_config(trial, space='basis'):
     """Ein Punkt im Einstellungsraum. `param` haengt am Modell — Optuna
     behandelt das als bedingten Raum, TPE kommt damit um.
 
-    Drei Raeume:
+    Vier Raeume:
 
+    ``core``   4 Dimensionen: `phi_model`, `param`, `svgd_iters`,
+               `debt_weight` — the four knobs on the reference slide. Alles
+               andere liegt fest auf `CORE_FIXED`/`FIXED_BASIS`/`DEFAULTS_GROSS`.
     ``basis``  9 Dimensionen, die erste Studie.
     ``ideal``  12 Dimensionen. Gegenueber ``gross`` fehlen bewusst
                ``gp_variance`` (entartet mit kappa: sigma skaliert mit
@@ -129,15 +139,30 @@ def suggest_config(trial, space='basis'):
     else:
         param = trial.suggest_float('tau', 0.02, 0.90)
 
+    # Obergrenze 150 statt 400: `svgd_iters` ist der mit Abstand teuerste
+    # Regler (Kostenmodell: Runde = 8s + iters*5.7ms), und die besten 20
+    # aus Studie 1 lagen samt und sonders bei 25-50. Der Deckel kauft
+    # Versuche, ohne eine Region zu verlieren, die je gewonnen haette.
+    svgd_iters = trial.suggest_int('svgd_iters', 0, 150, step=25)
+    debt_weight = trial.suggest_float('debt_weight', 0.0, 1.0)
+
+    if space == 'core':
+        # Only the four knobs from the reference slide are searched; every
+        # other setting stays at `build_mission_args`'s own defaults
+        # (`CORE_FIXED`) plus the `basis`-space fixed values, so a `core`
+        # trial is directly comparable to an untuned baseline run.
+        cfg = dict(phi_model=phi_model, param=float(param),
+                  svgd_iters=svgd_iters, debt_weight=debt_weight,
+                  **CORE_FIXED)
+        cfg.update(DEFAULTS_GROSS, **FIXED_BASIS)
+        cfg['visit_bandwidth'] = FIXED_ALWAYS['sensor_radius']
+        return cfg
+
     cfg = dict(
         phi_model=phi_model,
         param=float(param),
-        # Obergrenze 150 statt 400: `svgd_iters` ist der mit Abstand teuerste
-        # Regler (Kostenmodell: Runde = 8s + iters*5.7ms), und die besten 20
-        # aus Studie 1 lagen samt und sonders bei 25-50. Der Deckel kauft
-        # Versuche, ohne eine Region zu verlieren, die je gewonnen haette.
-        svgd_iters=trial.suggest_int('svgd_iters', 0, 150, step=25),
-        debt_weight=trial.suggest_float('debt_weight', 0.0, 1.0),
+        svgd_iters=svgd_iters,
+        debt_weight=debt_weight,
         visit_sat=trial.suggest_float('visit_sat', 0.1, 1.0),
         visit_halflife=trial.suggest_float('visit_halflife', 0.5, 8.0),
         phi_mode=trial.suggest_categorical('phi_mode', ['uniform', 'density', 'quantile']),
@@ -259,15 +284,29 @@ def cache_store(key, payload, rows):
 # Ein Versuch = ein Rollout
 # ---------------------------------------------------------------------------
 
+#: Distribution for the unknown-area fraction drawn fresh for every trial
+#: (see `unbekannt_beta` on `LaengenMission`): full `[0, 1]` support — so a
+#: trial can land anywhere from an almost fully known map to a fully unknown
+#: one — but weighted so the fraction averages `a / (a + b) = 0.7`, i.e. 70%
+#: unknown on average, per the user's requirement that the setting an
+#: optuna trial is scored on must never be a fixed, always-blind map.
+UNKNOWN_AREA_BETA = (2.1, 0.9)
+
+
 def run_trial(cfg, planner, truths, names, n_max, seed, pool, trial=None,
               lambda_len=OBJ.DEFAULT_LAMBDA_LEN, lambda_time=OBJ.DEFAULT_LAMBDA_TIME,
-              quality='cov', step_base=0, js_done=None):
+              quality='cov', step_base=0, js_done=None, mask_seed=None):
     """Rollout + Bewertung. Gibt (J, best_record, rows) zurueck.
 
     Die Rundenschleife steht hier statt in `LaengenMission.run`, damit nach
     jeder Runde geprunt werden kann; `torch.manual_seed` wird dabei wie dort
     genau einmal vor der Schleife gesetzt, damit die Zufallsfolge dieselbe
     bleibt.
+
+    `mask_seed` steuert die Bekannt/Unbekannt-Maske unabhaengig vom
+    Rollout-`seed`: anders als `seed` (fest je Seed-Wiederholung, damit SVGD
+    reproduzierbar bleibt) soll die Maske *je Versuch* neu gezogen werden —
+    siehe `UNKNOWN_AREA_BETA` und den Aufrufer in `make_objective`.
     """
     import optuna
 
@@ -284,7 +323,9 @@ def run_trial(cfg, planner, truths, names, n_max, seed, pool, trial=None,
                          svgd_iters=cfg['svgd_iters'], seed=seed, pool=pool,
                          gp_res=int(cfg['gp_res']),
                          gp_lengthscale=cfg['gp_lengthscale'],
-                         gp_variance=cfg['gp_variance'])
+                         gp_variance=cfg['gp_variance'],
+                         unbekannt_beta=UNKNOWN_AREA_BETA,
+                         unbekannt_seed=mask_seed)
     torch.manual_seed(seed)
 
     rows, S = [], max(m.S, 1)
@@ -334,14 +375,21 @@ def make_objective(planner, truths, names, args_ns, pool):
     seeds = list(range(args_ns.seeds))
     ctx = dict(n_max=args_ns.n_max, n_shapes=len(names),
                truth_res=args_ns.truth_res, ckpt=os.path.basename(args_ns.ckpt),
-               quality=args_ns.quality, space=args_ns.space, **FIXED_ALWAYS)
+               quality=args_ns.quality, space=args_ns.space,
+               unknown_beta=list(UNKNOWN_AREA_BETA), **FIXED_ALWAYS)
 
     def _objective(trial):
         cfg = suggest_config(trial, space=args_ns.space)
         js, bests, n_cached = [], [], 0
 
         for i, seed in enumerate(seeds):
-            key, payload = cache_key(cfg, ctx, seed)
+            # Fresh known/unknown mask per trial (and per seed within it) —
+            # decoupled from `seed` itself, which stays fixed per repeat so
+            # SVGD/torch RNG remain reproducible. `mask_seed` also enters the
+            # cache key below, so a cached rollout is only ever reused for
+            # the exact trial+seed it was computed under.
+            mask_seed = trial.number * 1000 + seed
+            key, payload = cache_key(cfg, {**ctx, 'mask_seed': mask_seed}, seed)
             rows = cache_load(key)
             if rows is not None:
                 best, _ = OBJ.score_trace(rows, quality=args_ns.quality)
@@ -360,7 +408,7 @@ def make_objective(planner, truths, names, args_ns, pool):
                     # Sprossenabstand ueberall demselben Rechenaufwand — sonst
                     # verteilt Hyperband sein Budget nach einer Leiter, deren
                     # Stufen unterschiedlich teuer sind.
-                    step_base=i * args_ns.n_max, js_done=js)
+                    step_base=i * args_ns.n_max, js_done=js, mask_seed=mask_seed)
                 cache_store(key, payload, rows)
 
             if best is None:
@@ -477,10 +525,12 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--study', type=str, default='tuning_v1')
     p.add_argument('--space', type=str, default='ideal',
-                   choices=['basis', 'ideal', 'gross'],
-                   help="'basis' = 9 Dim. (erste Studie); 'ideal' = 12 Dim. "
-                        "ohne die entarteten/schwachen Groessen; 'gross' = "
-                        "16 Dim., alles Erreichbare.")
+                   choices=['core', 'basis', 'ideal', 'gross'],
+                   help="'core' = 4 Dim. (phi_model, param, svgd_iters, "
+                        "debt_weight), Rest fest auf CORE_FIXED; 'basis' = "
+                        "9 Dim. (erste Studie); 'ideal' = 12 Dim. ohne die "
+                        "entarteten/schwachen Groessen; 'gross' = 16 Dim., "
+                        "alles Erreichbare.")
     p.add_argument('--seeds', type=int, default=3,
                    help='Rollout-Seeds je Versuch; gewertet wird das Mittel. '
                         '1 = schnell aber nicht seed-robust.')
@@ -590,7 +640,12 @@ def main():
                            # Job 154704 (ideal_v2_gross_cluster) starb an
                            # genau so einem unbehandelten ValueError in Trial 36.
                            catch=(Exception,),
-                           callbacks=[_pause_callback])
+                           callbacks=[_pause_callback],
+                           # Zeigt einen tqdm-Balken mit ETA; die Schaetzung
+                           # bezieht sich nur auf `n_trials`, nicht auf
+                           # `--timeout_h` — bei reinem Zeitbudget zeigt
+                           # Optuna dann nur die verstrichene Zeit an.
+                           show_progress_bar=True)
         except KeyboardInterrupt:
             print("\n  hart abgebrochen.")
         dt = time.time() - t0

@@ -1,0 +1,229 @@
+{
+  "policy_ckpt": "thesis_architecture\\exploration_optimierung\\policy\\ablage\\policy_a_maske.pt",
+  "n_max": 10,
+  "shapes": [
+    "A",
+    "greek_upper_0",
+    "korean_5",
+    "digit_5",
+    "a_lc",
+    "rand_gmm_10",
+    "rand_gmm_20",
+    "rand_ana_poly_10",
+    "rand_ana_poly_20",
+    "rand_ana_poly_30",
+    "rand_gmm_complex_0",
+    "rand_gmm_complex_10",
+    "rand_gmm_complex_20",
+    "rand_gmm_complex_30",
+    "rand_ana_poly_complex_0",
+    "rand_ana_poly_complex_10",
+    "rand_ana_poly_complex_20",
+    "rand_ana_poly_complex_30",
+    "organic_0",
+    "organic_10",
+    "organic_20",
+    "organic_30",
+    "cjk_0",
+    "cjk_10",
+    "cjk_20"
+  ],
+  "per_condition": {
+    "ground_truth": {
+      "phi_model": "niveau",
+      "param": 0.9,
+      "svgd_iters": 100,
+      "mean_predicted_value": -0.24573862433433533,
+      "n_shapes": 25,
+      "top5": [
+        {
+          "kandidat": [
+            "niveau",
+            0.9,
+            100
+          ],
+          "mean_predicted_value": -0.24573862433433533
+        },
+        {
+          "kandidat": [
+            "niveau",
+            0.9,
+            25
+          ],
+          "mean_predicted_value": -0.21382366746664047
+        },
+        {
+          "kandidat": [
+            "niveau",
+            0.6067,
+            100
+          ],
+          "mean_predicted_value": -0.1781386336684227
+        },
+        {
+          "kandidat": [
+            "ucb",
+            0.15,
+            100
+          ],
+          "mean_predicted_value": -0.1527741429209709
+        },
+        {
+          "kandidat": [
+            "niveau",
+            0.6067,
+            25
+          ],
+          "mean_predicted_value": -0.1499441620707512
+        }
+      ]
+    },
+    "none_known": {
+      "phi_model": "ucb",
+      "param": 10.0,
+      "svgd_iters": 25,
+      "mean_predicted_value": -0.12031794339418411,
+      "n_shapes": 25,
+      "top5": [
+        {
+          "kandidat": [
+            "ucb",
+            10.0,
+            25
+          ],
+          "mean_predicted_value": -0.12031794339418411
+        },
+        {
+          "kandidat": [
+            "ucb",
+            10.0,
+            0
+          ],
+          "mean_predicted_value": -0.12007815390825272
+        },
+        {
+          "kandidat": [
+            "ucb",
+            10.0,
+            100
+          ],
+          "mean_predicted_value": -0.10435966402292252
+        },
+        {
+          "kandidat": [
+            "ucb",
+            2.4662,
+            0
+          ],
+          "mean_predicted_value": -0.03626149147748947
+        },
+        {
+          "kandidat": [
+            "ucb",
+            2.4662,
+            25
+          ],
+          "mean_predicted_value": -0.030915752053260803
+        }
+      ]
+    },
+    "half_known": {
+      "phi_model": "mass",
+      "param": 0.05,
+      "svgd_iters": 100,
+      "mean_predicted_value": 0.12363083779811859,
+      "n_shapes": 25,
+      "top5": [
+        {
+          "kandidat": [
+            "mass",
+            0.05,
+            100
+          ],
+          "mean_predicted_value": 0.12363083779811859
+        },
+        {
+          "kandidat": [
+            "mass",
+            0.05,
+            25
+          ],
+          "mean_predicted_value": 0.12665318727493285
+        },
+        {
+          "kandidat": [
+            "eid",
+            0.15,
+            25
+          ],
+          "mean_predicted_value": 0.15473607897758485
+        },
+        {
+          "kandidat": [
+            "eid",
+            0.15,
+            100
+          ],
+          "mean_predicted_value": 0.16136311173439025
+        },
+        {
+          "kandidat": [
+            "mass",
+            0.35,
+            25
+          ],
+          "mean_predicted_value": 0.1809828460216522
+        }
+      ]
+    },
+    "ten_samples": {
+      "phi_model": "eid",
+      "param": 0.15,
+      "svgd_iters": 100,
+      "mean_predicted_value": 0.2287130057811737,
+      "n_shapes": 25,
+      "top5": [
+        {
+          "kandidat": [
+            "eid",
+            0.15,
+            100
+          ],
+          "mean_predicted_value": 0.2287130057811737
+        },
+        {
+          "kandidat": [
+            "eid",
+            0.15,
+            25
+          ],
+          "mean_predicted_value": 0.22982008934020995
+        },
+        {
+          "kandidat": [
+            "eid",
+            0.6082,
+            25
+          ],
+          "mean_predicted_value": 0.2345170024037361
+        },
+        {
+          "kandidat": [
+            "eid",
+            0.6082,
+            100
+          ],
+          "mean_predicted_value": 0.24240700840950014
+        },
+        {
+          "kandidat": [
+            "eid",
+            10.0,
+            25
+          ],
+          "mean_predicted_value": 0.2448044028878212
+        }
+      ]
+    }
+  }
+}

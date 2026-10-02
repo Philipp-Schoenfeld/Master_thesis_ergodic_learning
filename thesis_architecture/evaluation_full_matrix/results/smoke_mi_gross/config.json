@@ -1,0 +1,39 @@
+{
+  "representations": [
+    "particles"
+  ],
+  "strategies": {
+    "mi_optuna_gross": {
+      "phi_model": "ucb",
+      "real_model": "mi",
+      "param": 3.098907651406204,
+      "svgd_iters": 50,
+      "debt_weight": 0.7092337639507906,
+      "visit_sat": 0.7587372499133823,
+      "visit_halflife": 3.066697484382204,
+      "phi_mode": "quantile",
+      "phi_quantile": 0.12212252520427401,
+      "gp_noise": 0.10702396447967923,
+      "gp_lengthscale": 0.10601370522804981,
+      "n_particles": 128,
+      "cfg_weight": 2.5694679699762273,
+      "phi_gamma": 0.37528242569355946
+    }
+  },
+  "replan_schemes": [
+    "no_replan",
+    "replan_1_6"
+  ],
+  "shapes_resolved": [
+    "A",
+    "rand_gmm_20",
+    "organic_20"
+  ],
+  "knowledge_conditions": [
+    "ground_truth",
+    "none_known",
+    "half_known",
+    "ten_samples"
+  ],
+  "spectral_checkpoint_caveat": "trained on a different, smaller shape set than shape_library.VALIDATION_SHAPES (sigma, rand_poly_7, G, spiral_2cw, star_5, W, lissajous_1_3, heart, 5, phi) -- spectral-arm results test out-of-distribution generalisation too, not representation alone."
+}

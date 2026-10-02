@@ -1,0 +1,18 @@
+{
+  "shape": "rand_ana_poly_20",
+  "knowledge_condition": "ten_samples",
+  "method": "particles",
+  "subvariant": "mi_optuna_gross__no_replan",
+  "svgd_iters": -1,
+  "variant_id": "particles_mi_optuna_gross__no_replan",
+  "coverage": 0.060310907661914825,
+  "path_len": 5.2439656257629395,
+  "E_ergodic_total": 28.910637855529785,
+  "E_ergodic_explore": 28.749095916748047,
+  "E_ergodic_exploit": 0.16154193878173828,
+  "explore_exploit_ratio": 0.005619026742598558,
+  "coverage_per_length": 0.011501011251030131,
+  "E_ergodic_total_per_length": 5.513124974255262,
+  "E_ergodic_explore_per_length": 5.482319673398959,
+  "E_ergodic_exploit_per_length": 0.030805300856302942
+}

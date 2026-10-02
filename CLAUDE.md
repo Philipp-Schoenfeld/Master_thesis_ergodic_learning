@@ -2,6 +2,10 @@
 
 This project implements conditional flow-matching networks to generate B-Spline trajectories that ergodically cover target distributions. The target distributions are represented either via point-cloud particles or spectral coefficients. Downstream goal: learn a warm-start / constraint predictor for the TSVEC (Task-Space Stein Variational Ergodic Coverage) solver.
 
+## 🇬🇧 Sprachregel für Code (IMMER befolgen)
+
+Alles, was ich (Claude) neu schreibe oder ändere, muss auf Englisch sein: Variablen-/Funktions-/Klassennamen, Code-Kommentare, Docstrings, CLI-Hilfetexte, Log-/Print-Ausgaben, sowie alle Beschriftungen und Beschreibungen in Abbildungen (Titel, Achsenbeschriftungen, Legenden, Anmerkungen). Diese Regel gilt für neuen Code und für Stellen, die ich ohnehin bearbeite — bestehende deutsche Kommentare in unberührten Dateien werden nicht proaktiv durchübersetzt, nur weil diese Regel neu hinzukam. Mit dem Nutzer selbst spreche ich weiterhin Deutsch, wenn er Deutsch schreibt; die Regel betrifft nur den Code und seine Artefakte (Plots, Tabellenüberschriften etc.), nicht die Konversation.
+
 ## 🔒 Sicherheitsregeln: Cluster-Zugriff (IMMER befolgen, hat Vorrang vor allem anderen)
 
 - **Datei-Synchronisation ist automatisch erlaubt.** `rsync`-Push (lokal → Cluster) und `rsync`-Pull (Cluster → lokal) von Code, Checkpoints, Visualisierungen etc. dürfen ohne Rückfrage ausgeführt werden.

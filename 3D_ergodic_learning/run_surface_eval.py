@@ -39,6 +39,7 @@ from ergodic_metric import (make_k_grid, trajectory_coeffs,
 from orientation import rot6d_to_matrix, sensor_axis
 from orientation_energy import ParticleSurface
 from obstacles import bspline_basis_matrix
+from mesh_alignment import TrimeshSDF, SurfaceTangentAlignment, refine_with_alignment
 
 
 def curve_from_cps(cps, pts=256, deg=5, device='cpu'):
@@ -77,7 +78,19 @@ def main():
     p.add_argument('--seed', type=int, default=0)
     p.add_argument('--device', default=None)
     p.add_argument('--out_dir', default=os.path.join(_here, 'results', 'surfaces'))
+    p.add_argument('--no_align', action='store_true',
+                   help='SE(3)-Tangentenausrichtung (Constraint 5, siehe '
+                        'mesh_alignment.py) abschalten -- liefert die reine '
+                        'Netz-Bahn wie vor der Ausrichtungs-Nachbearbeitung.')
+    p.add_argument('--w_surface', type=float, default=50.0,
+                   help='Gewicht des Oberflaechen-Terms in der Ausrichtungs-Energie.')
+    p.add_argument('--w_align', type=float, default=1.0,
+                   help='Gewicht des Tangenten-Ausrichtungs-Terms.')
+    p.add_argument('--align_iters', type=int, default=300)
+    p.add_argument('--align_lr', type=float, default=0.2)
+    p.add_argument('--align_max_force', type=float, default=0.5)
     a = p.parse_args()
+    a.align = not a.no_align
 
     a.device = a.device or ('cuda' if torch.cuda.is_available() else 'cpu')
     os.makedirs(a.out_dir, exist_ok=True)
@@ -130,6 +143,51 @@ def main():
     for k, s in surf.items():
         print(f"  {s.label:22s} {len(s.mesh.faces):6d} triangles \u2014 {s.note}")
 
+    # -- SE(3)-Tangentenausrichtung (Constraint 5, mesh_alignment.py) --
+    # Politur der vom Netz erzeugten Kontrollpunkte auf jede der Zielflaechen,
+    # damit die Bahn nicht nur naeherungsweise, sondern bis auf numerische
+    # Toleranz auf der Oberflaeche liegt und die Tangente in deren lokaler
+    # Ebene bleibt (siehe mesh_alignment.py fuer die Herleitung).
+    B_align = torch.from_numpy(
+        bspline_basis_matrix(nxi, a.pts, 5)).float().to(a.device)
+    con_by_surf = {}
+    if a.align:
+        con_by_surf = {k: SurfaceTangentAlignment(
+            TrimeshSDF(s.mesh), w_surface=a.w_surface, w_align=a.w_align)
+            for k, s in surf.items()}
+        print(f"Ausrichtung an: w_surface={a.w_surface:g} w_align={a.w_align:g} "
+              f"iters={a.align_iters} lr={a.align_lr:g}")
+    else:
+        print("Ausrichtung aus (--no_align): reine Netz-Bahn ohne Nachbearbeitung.")
+
+    def score_curve(curve, rot6):
+        """erg/coverage/standoff/pointing/path_len fuer eine dichte Bahn."""
+        c = trajectory_coeffs(curve, k_idx)
+        phi = target_coeffs_from_particles(parts.unsqueeze(0), k_idx, True)
+        erg_ = float((Lam * (c - phi) ** 2).sum())
+        m_ = w_s > 1e-3
+        if m_.sum() > 4:
+            tgt_ = torch.from_numpy(pts_s[m_]).float().to(a.device)
+            ww_ = torch.from_numpy(w_s[m_]).float().to(a.device)
+            dmin_ = torch.cdist(tgt_, curve[0]).min(dim=1).values
+            cov_ = float((dmin_ * ww_).sum() / ww_.sum().clamp(min=1e-9))
+        else:
+            cov_ = float('nan')
+        dist_ = ps.distance(curve)[0]
+        so_m_, so_s_ = float(dist_.mean()), float(dist_.std())
+        point_deg_ = float('nan')
+        if rot6 is not None and rot6.numel():
+            Rm_ = rot6d_to_matrix(rot6.reshape(-1, 6)).reshape(1, nxi, 3, 3)
+            ax_ = sensor_axis(Rm_, axis=2)
+            axc_ = torch.einsum('pi,kid->kpd', B_align, ax_)
+            axc_ = axc_ / axc_.norm(dim=-1, keepdim=True).clamp(min=1e-9)
+            tgt_dir_ = ps.direction(curve)
+            cosang_ = (axc_ * tgt_dir_).sum(-1).clamp(-1, 1)
+            point_deg_ = float(torch.rad2deg(torch.acos(cosang_)).mean())
+        plen_ = float((curve[0, 1:] - curve[0, :-1]).norm(dim=-1).sum())
+        return dict(erg=erg_, coverage=cov_, standoff=so_m_, standoff_sd=so_s_,
+                    pointing_deg=point_deg_, path_len=plen_)
+
     rows, dump = [], {'meta': {k: v for k, v in vars(a).items()
                               if isinstance(v, (int, float, str, bool))},
                       'eintraege': []}
@@ -154,47 +212,45 @@ def main():
             cps, rot6 = generate_particle_trajectories(
                 model, parts, num_samples=1, nxi=nxi, nd=3, steps=a.steps,
                 device=str(a.device), cfg_weight=a.cfg_weight, generator=g)
-            curve = curve_from_cps(cps, pts=a.pts, device=a.device)     # (1,T,3)
+            curve_base = curve_from_cps(cps, pts=a.pts, device=a.device)  # (1,T,3)
 
-            # ── Ergodischer Fehler gegen die projizierte Dichte ──────────
-            c = trajectory_coeffs(curve, k_idx)
-            phi = target_coeffs_from_particles(parts.unsqueeze(0), k_idx, True)
-            erg = float((Lam * (c - phi) ** 2).sum())
-
-            # ── Abdeckung: getroffene Oberflaeche -> naechste Bahnstelle ─
-            m = w_s > 1e-3
-            if m.sum() > 4:
-                tgt = torch.from_numpy(pts_s[m]).float().to(a.device)
-                ww = torch.from_numpy(w_s[m]).float().to(a.device)
-                dmin = torch.cdist(tgt, curve[0]).min(dim=1).values
-                cov = float((dmin * ww).sum() / ww.sum().clamp(min=1e-9))
-            else:
-                cov = float('nan')
-
-            # ── Standoff und Blickrichtung ──────────────────────────────
+            # ── Standoff/Blickrichtung brauchen `ps` schon in score_curve ───
             ps = ParticleSurface(parts.unsqueeze(0), mu_thresh=a.mu_thresh)
-            dist = ps.distance(curve)[0]                                # (T,)
-            so_m, so_s = float(dist.mean()), float(dist.std())
-            point_deg = float('nan')
-            if rot6 is not None and rot6.numel():
-                Rm = rot6d_to_matrix(rot6.reshape(-1, 6)).reshape(1, nxi, 3, 3)
-                Bc = torch.from_numpy(
-                    bspline_basis_matrix(nxi, a.pts, 5)).float().to(a.device)
-                ax = sensor_axis(Rm, axis=2)                            # (1,nxi,3)
-                axc = torch.einsum('pi,kid->kpd', Bc, ax)
-                axc = axc / axc.norm(dim=-1, keepdim=True).clamp(min=1e-9)
-                tgt_dir = ps.direction(curve)
-                cosang = (axc * tgt_dir).sum(-1).clamp(-1, 1)
-                point_deg = float(torch.rad2deg(torch.acos(cosang)).mean())
 
-            plen = float((curve[0, 1:] - curve[0, :-1]).norm(dim=-1).sum())
-            rows.append(dict(shape=name, surface=key, erg=erg, coverage=cov,
-                             standoff=so_m, standoff_sd=so_s,
-                             pointing_deg=point_deg, path_len=plen,
-                             hit_frac=hit))
-            balken.write(f"  [{name:14s}] {s.label:22s} erg={erg:.5f} cov={cov:.4f} "
-                        f"standoff={so_m:.3f}\u00b1{so_s:.3f} "
-                        f"point={point_deg:6.1f}\u00b0  L={plen:.2f}")
+            # ── SE(3)-Tangentenausrichtung: Politur auf die echte Oberflaeche ──
+            if a.align:
+                con = con_by_surf[key]
+                cps_al = refine_with_alignment(
+                    cps, con, B_align, iters=a.align_iters, lr=a.align_lr,
+                    max_force=a.align_max_force)
+                curve = curve_from_cps(cps_al, pts=a.pts, device=a.device)
+                sdf_b, cos_b = con.report(curve_base)
+                sdf_a, cos_a = con.report(curve)
+            else:
+                curve = curve_base
+                sdf_b = sdf_a = cos_b = cos_a = float('nan')
+
+            m_basis = score_curve(curve_base, rot6)
+            m_align = score_curve(curve, rot6)
+            so_m, so_s = m_align['standoff'], m_align['standoff_sd']
+            point_deg, plen = m_align['pointing_deg'], m_align['path_len']
+
+            rows.append(dict(
+                shape=name, surface=key, hit_frac=hit,
+                sdf_max_basis=sdf_b, sdf_max_align=sdf_a,
+                cos_tn_basis=cos_b, cos_tn_align=cos_a,
+                erg_basis=m_basis['erg'], erg=m_align['erg'],
+                coverage_basis=m_basis['coverage'], coverage=m_align['coverage'],
+                standoff_basis=m_basis['standoff'], standoff=so_m, standoff_sd=so_s,
+                pointing_deg_basis=m_basis['pointing_deg'], pointing_deg=point_deg,
+                path_len_basis=m_basis['path_len'], path_len=plen))
+            balken.write(f"  [{name:14s}] {s.label:22s} "
+                        f"|SDF| {sdf_b:.4f}->{sdf_a:.4f}  "
+                        f"|cos| {cos_b:.3f}->{cos_a:.3f}  "
+                        f"erg {m_basis['erg']:.5f}->{m_align['erg']:.5f}  "
+                        f"cov {m_basis['coverage']:.4f}->{m_align['coverage']:.4f}  "
+                        f"standoff={so_m:.3f}±{so_s:.3f} "
+                        f"point={point_deg:6.1f}°  L={plen:.2f}")
 
             # Eine Auswahl der Oberflaeche zum Zeichnen — mit Vorrang fuer die
             # beschrifteten Punkte, damit die Dichte nicht wegsubsampelt wird.
@@ -234,6 +290,17 @@ def main():
         print(f"{surf[key].label:22s} {f('erg'):10.5f} {f('coverage'):10.4f} "
               f"{f('standoff'):10.3f} {f('pointing_deg'):7.1f}\u00b0 {f('path_len'):8.2f}")
     print("=" * 78)
+    if a.align:
+        print(f"\n{'Surface':22s} {'|SDF| vorher':>13s} {'|SDF| nachher':>14s} "
+              f"{'|cos(t,n)| vorher':>18s} {'|cos(t,n)| nachher':>19s}")
+        print("-" * 78)
+        for key in a.surfaces:
+            sel = [r for r in rows if r['surface'] == key]
+            f = lambda k: float(np.nanmean([r[k] for r in sel]))
+            print(f"{surf[key].label:22s} {f('sdf_max_basis'):13.4f} "
+                  f"{f('sdf_max_align'):14.4f} {f('cos_tn_basis'):18.3f} "
+                  f"{f('cos_tn_align'):19.3f}")
+        print("=" * 78)
     print(f"Total time {time.perf_counter() - t0:.0f} s")
 
 

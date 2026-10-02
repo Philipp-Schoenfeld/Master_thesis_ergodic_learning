@@ -127,13 +127,22 @@ class SvgdRefiner:
         return fn
 
     def refine(self, curve_np, phi_np, n_iters, nxi=None, obstacle=None,
-              obstacle_weight=20.0, start=None):
+              obstacle_weight=20.0, start=None, trajectory_log=None):
         """curve_np: (T,2) Startbahn (vom Netz). phi_np: (R,R) Zieldichte,
         Werte in [0,1]. `start`, falls gesetzt: (2,) Punkt, an den der erste
         Bahnpunkt gepinnt wird (Anschluss an die zuletzt gefahrene Position
         in den Replanning-Varianten B/C/D) -- waehrend der SVGD-Iterationen
         weich per `WaypointPins`-Strafe, danach hart auf den exakten Wert
-        gesetzt. -> (T,2) verfeinerte Bahn."""
+        gesetzt. -> (T,2) verfeinerte Bahn.
+
+        `trajectory_log`: optionale leere Liste (nur B-Spline-Zweig,
+        `nxi != T`). Wird mit den Kontrollpunkten (nxi,2) jedes Zwischenstands
+        gefuellt: Eintrag 0 = B-Spline-Fit der Startbahn (vor jedem Schritt),
+        Eintrag i = bester Partikel (niedrigste Energie, dieselbe Auswahl wie
+        beim Rueckgabewert) nach Iteration i. Rein lesend -- das Ergebnis ist
+        mit und ohne Log identisch."""
+        if trajectory_log is not None and (nxi is None or nxi == curve_np.shape[0]):
+            raise ValueError("trajectory_log braucht den B-Spline-Zweig (nxi != T)")
         if n_iters <= 0:
             if start is not None:
                 curve_np = curve_np.copy()
@@ -162,11 +171,20 @@ class SvgdRefiner:
             init = P[None] + jitter
             particles = init.reshape(self.N_PARTICLES, nxi * 2)
             
+            iter_cb = None
+            if trajectory_log is not None:
+                trajectory_log.append(P.copy())
+
+                def iter_cb(_it, parts):
+                    parts = parts.reshape(self.N_PARTICLES, nxi, 2)
+                    e = [energy_fn(p.ravel(), nxi)[0] for p in parts]
+                    trajectory_log.append(parts[int(np.argmin(e))].copy())
+
             with open(os.devnull, 'w') as devnull, \
                     contextlib.redirect_stderr(devnull):
                 particles, _ = svgde.run_svgd_numpy(
                     particles, nxi, int(n_iters), energy_fn, dim=self.DIM,
-                    label='SVGD-Verfeinerung')
+                    label='SVGD-Verfeinerung', iter_callback=iter_cb)
                     
             particles = particles.reshape(self.N_PARTICLES, nxi, 2)
             scores = [energy_fn(p.ravel(), nxi)[0] for p in particles]

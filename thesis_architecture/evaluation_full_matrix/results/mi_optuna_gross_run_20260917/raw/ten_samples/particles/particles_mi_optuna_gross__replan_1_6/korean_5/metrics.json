@@ -1,0 +1,18 @@
+{
+  "shape": "korean_5",
+  "knowledge_condition": "ten_samples",
+  "method": "particles",
+  "subvariant": "mi_optuna_gross__replan_1_6",
+  "svgd_iters": -1,
+  "variant_id": "particles_mi_optuna_gross__replan_1_6",
+  "coverage": 0.038655415177345276,
+  "path_len": 8.444732666015625,
+  "E_ergodic_total": 13.030241593718529,
+  "E_ergodic_explore": 12.873910903930664,
+  "E_ergodic_exploit": 0.15633068978786469,
+  "explore_exploit_ratio": 0.012143216692616211,
+  "coverage_per_length": 0.004577458719671181,
+  "E_ergodic_total_per_length": 1.5430022605874187,
+  "E_ergodic_explore_per_length": 1.524490047593751,
+  "E_ergodic_exploit_per_length": 0.018512212993667718
+}

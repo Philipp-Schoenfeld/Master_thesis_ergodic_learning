@@ -1,0 +1,18 @@
+{
+  "shape": "digit_5",
+  "knowledge_condition": "shared",
+  "method": "lawnmower",
+  "subvariant": "fixed",
+  "svgd_iters": -1,
+  "variant_id": "lawnmower_fixed",
+  "coverage": 0.03386127948760986,
+  "path_len": 8.799999237060547,
+  "E_ergodic_total": 17.018494684249163,
+  "E_ergodic_explore": 16.97248077392578,
+  "E_ergodic_exploit": 0.046013910323381424,
+  "explore_exploit_ratio": 0.0027110892589179395,
+  "coverage_per_length": 0.00384787300264818,
+  "E_ergodic_total_per_length": 1.9339200181492096,
+  "E_ergodic_explore_per_length": 1.9286911642500413,
+  "E_ergodic_exploit_per_length": 0.005228853899168223
+}

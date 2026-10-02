@@ -1,0 +1,51 @@
+{
+ "ckpt": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\transfer\\nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0300.pt",
+ "name": "nooffset200_ep0300_se3aligned",
+ "zeit": "2026-09-17 10:36",
+ "argumente": {
+  "ckpt": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\transfer\\nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0300.pt",
+  "name": "nooffset200_ep0300_se3aligned",
+  "out_root": "C:\\Users\\Philipp\\Documents\\Uni\\Master_Thesis\\Master_thesis_ergodic_learning\\3D_ergodic_learning\\auswertungen",
+  "shapes": 25,
+  "shape_names": null,
+  "surfaces": null,
+  "steps": 100,
+  "cfg_weight": 2.0,
+  "n_particles": 512,
+  "standoff_target": 0.12,
+  "seed": 0,
+  "device": null,
+  "html_offline": false,
+  "ab": 1,
+  "bis": 6,
+  "ohne_png": false,
+  "no_align": false,
+  "w_surface": null,
+  "w_align": null,
+  "align_iters": null,
+  "align_lr": null,
+  "align_max_force": null
+ },
+ "nxi": 25,
+ "D": 384,
+ "orientation": true,
+ "epoch": 299,
+ "loss": 0.8279557253155753,
+ "params_mio": 87.66,
+ "meta": {
+  "epoch": 299,
+  "loss": 0.8279557253155753,
+  "nxi": 25,
+  "D": 384,
+  "orientation": true,
+  "start_cond": true
+ },
+ "dauer_s": {
+  "1 eval": 1740.2,
+  "2 meshes": 5.7,
+  "3 viewer": 2.9,
+  "4 bilder": 753.5,
+  "5 diagramme": 5.8,
+  "6 index": 2.3
+ }
+}
