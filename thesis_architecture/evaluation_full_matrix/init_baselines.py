@@ -38,6 +38,70 @@ def straight_top_path(n_points=128, margin=0.04, y=None):
     return torch.stack([x, torch.full_like(x, y)], dim=-1)
 
 
+def linear_angle_path(angle_deg, n_points=128, margin=0.04):
+    """Straight line through the workspace centre at `angle_deg` (measured
+    from the +x axis), running from one edge of the margin-inset square to
+    the opposite one -- i.e. the full chord of [margin, 1-margin]^2 in that
+    direction. `diagonal_path` is the special case 45 deg, `straight_top_path`
+    is *not* one (it does not pass through the centre). Angles in [0, 180)
+    cover every distinct line; 180..360 would only reverse the direction.
+    """
+    theta = np.deg2rad(angle_deg)
+    d = np.array([np.cos(theta), np.sin(theta)])
+    half = 0.5 - margin
+    t_max = min(half / abs(d[i]) for i in range(2) if abs(d[i]) > 1e-9)
+    t = torch.linspace(-t_max, t_max, n_points)
+    dir_t = torch.tensor(d, dtype=torch.float32)
+    return 0.5 + t[:, None] * dir_t[None, :]
+
+
+def linear_ray_path(start, angle_deg, length, n_points=128, margin=0.04):
+    """Straight line leaving `start` at `angle_deg` (from the +x axis),
+    `length` long in total, reflected specularly at the walls of the
+    margin-inset square [margin, 1-margin]^2 (billiard path).
+
+    Replanning counterpart of `linear_angle_path`: that one is a full chord
+    through the workspace centre and therefore cannot begin at an arbitrary
+    agent position. Here every candidate starts exactly at `start` (the point
+    where the previous length unit ended) and the 30 candidates differ only in
+    their heading, `angle_deg` in [0, 360). The first point is `start`
+    itself even if it lies slightly outside the margin box; the line proper
+    begins at the nearest point inside the box.
+    """
+    lo, hi = margin, 1.0 - margin
+    start = np.asarray(start, dtype=np.float64).reshape(2)
+    p = np.clip(start, lo, hi)
+    th = np.deg2rad(angle_deg)
+    d = np.array([np.cos(th), np.sin(th)])
+    pts = [start.copy()]
+    if np.abs(p - start).max() > 1e-12:
+        pts.append(p.copy())
+    remaining = float(length)
+    for _ in range(1000):
+        if remaining <= 1e-9:
+            break
+        for k in range(2):                      # turn away from a wall we sit on
+            if (p[k] <= lo + 1e-9 and d[k] < 0) or (p[k] >= hi - 1e-9 and d[k] > 0):
+                d[k] = -d[k]
+        t_wall = [np.inf, np.inf]
+        for k in range(2):
+            if d[k] > 1e-12:
+                t_wall[k] = (hi - p[k]) / d[k]
+            elif d[k] < -1e-12:
+                t_wall[k] = (lo - p[k]) / d[k]
+        t = min(t_wall[0], t_wall[1], remaining)
+        p = p + t * d
+        pts.append(p.copy())
+        remaining -= t
+        for k in range(2):
+            if t_wall[k] <= t + 1e-12:
+                d[k] = -d[k]
+    curve = torch.tensor(np.stack(pts), dtype=torch.float32)
+    if curve.shape[0] < 2:
+        curve = torch.cat([curve, curve], dim=0)
+    return resample_arclength(curve, n_points)
+
+
 def random_walk_path(n_points=128, seed=0, step_std=0.035, start=None):
     """Echte Irrfahrt (nicht die glatte Spline-Bahn aus `common.baselines`).
 

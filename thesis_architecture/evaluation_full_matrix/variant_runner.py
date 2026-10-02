@@ -56,7 +56,7 @@ TARGET_LENGTH = N_REPLAN_ROUNDS * LENGTH_UNIT   # Bezugslaenge fuer Maeander
 # ── Wissensstufen ───────────────────────────────────────────────────────────
 
 def build_belief(condition, truth, seed=0, device='cpu', gp_noise=0.05,
-                 gp_lengthscale=0.08):
+                 gp_lengthscale=0.08, dtype=torch.float32):
     """GPBelief/MaskiertesWissen fuer eine der vier Wissensstufen.
 
     `noise=0.05`, nicht der `GPBelief`-Default 0.01 — siehe die Messung im
@@ -67,23 +67,28 @@ def build_belief(condition, truth, seed=0, device='cpu', gp_noise=0.05,
     selbst ("altes Verhalten") — bestehende Aufrufer ohne dieses Argument
     bleiben also unveraendert. Strategien mit einer eigenen, getunten
     Korrelationslaenge (siehe `STRATEGIES`) geben sie explizit mit.
+
+    `dtype` (default float32 = bisheriges Verhalten): long missions
+    (`run_mission_eval.py`, dozens of replanning rounds, thousands of
+    measurements) need float64, otherwise the Cholesky of the Gram matrix can
+    fail on densely sampled revisits.
     """
     if condition == 'ground_truth':
         maske = muster_maske('alles', GP_RES, device=device)
         return MaskiertesWissen(maske, truth, sigma_bekannt=0.0,
                                 grid_res=GP_RES, noise=gp_noise,
-                                lengthscale=gp_lengthscale, device=device)
+                                lengthscale=gp_lengthscale, device=device, dtype=dtype)
     if condition == 'none_known':
         return GPBelief(grid_res=GP_RES, noise=gp_noise,
-                        lengthscale=gp_lengthscale, device=device)
+                        lengthscale=gp_lengthscale, device=device, dtype=dtype)
     if condition == 'half_known':
         maske = muster_maske('haelfte', GP_RES, device=device)
         return MaskiertesWissen(maske, truth, sigma_bekannt=0.0,
                                 grid_res=GP_RES, noise=gp_noise,
-                                lengthscale=gp_lengthscale, device=device)
+                                lengthscale=gp_lengthscale, device=device, dtype=dtype)
     if condition == 'ten_samples':
         b = GPBelief(grid_res=GP_RES, noise=gp_noise,
-                     lengthscale=gp_lengthscale, device=device)
+                     lengthscale=gp_lengthscale, device=device, dtype=dtype)
         g = torch.Generator(device='cpu').manual_seed(seed * 1013 + 7)
         pts = torch.rand(10, 2, generator=g).to(device)
         p, v = measure(pts, truth, noise_std=gp_noise)
