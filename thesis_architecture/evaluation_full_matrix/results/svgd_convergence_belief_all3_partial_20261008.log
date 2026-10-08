@@ -1,0 +1,25 @@
+[chain] 08.10.2026  8:49:42,30 starting self-test 
+ok  trajectory_log: result unchanged, n+1 states, last == returned curve
+ok  score_states == ExploreExploitErgodic.score
+ok  DB round trip (states re-render to the same curves)
+ok  linear_angle_path stays inside the margin box, centred
+ok  runs_ext round trip: stored + extension states concatenate to n_iters_total+1
+ok  extra metrics: swept mass == reference, Chamfer/diversity sanity, first passage, grid
+ALL OK
+[chain] 08.10.2026  8:49:47,12 self-test passed - starting full run 
+[svgd_conv] 12 shapes: ['A', 'greek_upper_0', 'korean_5', 'digit_5', 'a_lc', 'rand_gmm_10', 'rand_gmm_20', 'rand_ana_poly_10', 'rand_ana_poly_20', 'rand_ana_poly_30', 'rand_gmm_complex_0', 'rand_gmm_complex_10']
+[svgd_conv] block 1/108 (A/ground_truth/lse) submitted; 50 runs stored, 40 pending, 0 failed, 5.2 min
+[chain] 08.10.2026  8:59:33,29 starting self-test 
+ok  trajectory_log: result unchanged, n+1 states, last == returned curve
+ok  score_states == ExploreExploitErgodic.score
+ok  DB round trip (states re-render to the same curves)
+ok  linear_angle_path stays inside the margin box, centred
+ok  runs_ext round trip: stored + extension states concatenate to n_iters_total+1
+ok  extra metrics: swept mass == reference, Chamfer/diversity sanity, first passage, grid
+ALL OK
+[chain] 08.10.2026  8:59:38,06 self-test passed - starting full run 
+[svgd_conv] 12 shapes: ['A', 'greek_upper_0', 'korean_5', 'digit_5', 'a_lc', 'rand_gmm_10', 'rand_gmm_20', 'rand_ana_poly_10', 'rand_ana_poly_20', 'rand_ana_poly_30', 'rand_gmm_complex_0', 'rand_gmm_complex_10']
+[svgd_conv] block 1/108 (A/ground_truth/lse) submitted; 0 runs stored, 15 pending, 0 failed, 0.0 min
+[svgd_conv] block 2/108 (A/ground_truth/ucb) submitted; 65 runs stored, 40 pending, 0 failed, 2.4 min
+[svgd_conv] block 3/108 (A/ground_truth/eid) submitted; 156 runs stored, 39 pending, 0 failed, 5.4 min
+[svgd_conv] block 4/108 (A/half_known/lse) submitted; 245 runs stored, 40 pending, 0 failed, 8.4 min

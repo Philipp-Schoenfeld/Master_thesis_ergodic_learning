@@ -22,6 +22,7 @@ der Erweiterung ohnehin angefasst wurden.
 | RQ3 GP-Ziele | `rq3_gp_targets.py` | **fertig** | ja, 2 Trials, `half_known` |
 | RQ4 Samples/Sinkhorn | `sinkhorn_jax.py` + `rq4_sinkhorn_samples.py` | **fertig** | ja, 2 Icons × 2 Starts |
 | RQ5 Dynamiken | `dynamics_zoo.py` + `rq5_dynamics.py` | **fertig** | ja, echte CFM-Kurve, 3 Trials |
+| Q2.B Fig. 6 (RQ7) | `rq7_q2b_life_signals.py` | **fertig (Smoke), Replikat mit eigenen Annahmen** | ja, 4 Trials, CPU |
 | RQ6 λ₀/ALM | `alm_solver.py` + `rq6_alm_lambda0.py` | **fertig, kleinerer Scope als urspruenglich geplant — siehe unten** | ja, 10 Trials |
 
 Alle sechs Forschungsfragen haben jetzt ein lauffähiges Experiment. "Fertig"
@@ -158,6 +159,25 @@ Session.
   Hindernis) und erreicht `n_outer=80` nie — ein genuin aktiver Constraint
   nahe dem Optimum, keine fehlerhafte Abbruchbedingung.
 
+### RQ7 / Q2.B Fig. 6 (new, replica with own assumptions)
+
+- Neither the paper nor MurpheyLab/lqr-flow-matching contains Q2.B code. Only
+  three methods are run: FM-Stein (Sun), CFM (raw), CFM + FM-Stein (same
+  iteration budget). Fourier/kernel baselines are intentionally not included.
+- Taken from the paper's vector graphics (`sns_trajs.svg`, arXiv 2504.17872v1):
+  2 positive + 18 negative prior samples, 300 trajectory points, grayscale
+  likelihood contours (colorbar 0..~0.9), violin plot of collected positive
+  signals, and for the example panels the EXACT prior-sample positions and
+  start of the paper's FM-Stein panel (`PAPER_POS/PAPER_NEG/PAPER_X0`).
+- Free choices (marked `ASSUMPTION` in the script): world generator of the 100
+  trials (2 disc emitters, r=0.10), GP link `sigmoid(4.25*mu-1.7)` of a
+  `GPBelief` (ls 0.17, noise 0.3; tuned by eye to the paper's contours),
+  counting rule (trajectory points inside an emitter region), 300 FM-Stein
+  iterations, Sun-style cold start (velocity towards the centre).
+- Absolute counts are therefore not comparable to the paper's (its FM-Stein
+  median is ~58); only the ordering/shape of the comparison is meaningful.
+- `oob_frac` (share of points outside the unit square) is stored per method.
+
 ## Usage
 
 ```bash
@@ -178,6 +198,10 @@ python rq5_dynamics.py --n_trials 30 --out_tag rq5_full --device cuda
 
 # RQ6 (Augmented-Lagrangian-Löser, Multiplikator-Warmstart)
 python rq6_alm_lambda0.py --n_trials 50 --out_tag rq6_full   # kein GPU/CFM noetig
+
+# Q2.B Fig. 6 (100 Trials, GPU empfohlen fuer CFM)
+python rq7_q2b_life_signals.py --n_trials 100 --out_tag rq7_q2b_full_20261008 --device cuda
+python rq7_q2b_life_signals.py --plot_only --out_tag rq7_q2b_full_20261008
 
 # Schnelle lokale Smoke-Tests (Sekunden bis wenige Minuten)
 python rq1_rq2_runtime.py --n_trials 3 --checkpoints 0,10,25,50 --no_cfm --out_tag smoke

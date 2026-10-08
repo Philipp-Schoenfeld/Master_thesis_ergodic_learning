@@ -55,7 +55,7 @@ import matplotlib.pyplot as plt                                      # noqa: E40
 import svgd_convergence_db as sdb                                    # noqa: E402
 from plot_svgd_convergence import (                                  # noqa: E402
     COND_ORDER, COND_TITLE, FIRST_RUN_ITERS, INK, METHOD_STYLE, MUTED, STRAT_ORDER,
-    STRATEGY_TITLE, band, broadcast_shared, mark_first_run_end, style_axes)
+    STRATEGY_TITLE, band, broadcast_shared, mark_first_run_end, style_axes, target_note)
 
 EPS_TABLE_FACTORS = (1.1, 1.25, 1.5, 2.0, 3.0)
 DEFAULT_RADIUS = 0.06           # sensor footprint of the mission (variant_runner)
@@ -355,6 +355,7 @@ def main():
     sfx = f'_{n_iters}iters' if n_iters > FIRST_RUN_ITERS else ''
     cfg = sdb.get_meta(conn, 'config', {})
     n_init = cfg.get('n_init', '?')
+    tn = f"\n{target_note(cfg)}"
     n_shapes = conn.execute("SELECT COUNT(DISTINCT shape) FROM runs").fetchone()[0]
 
     if 'target' in only:
@@ -366,7 +367,7 @@ def main():
         grid_figure(series, x, 'Fraction of runs at target',
                     f"Iterations to target: fraction of runs with E <= {args.eps_factor:g} x E_ref(shape) "
                     f"by iteration k ({n_shapes} shapes x {n_init} inits pooled; "
-                    f"E_ref = median final E of the shape)",
+                    f"E_ref = median final E of the shape){tn}",
                     os.path.join(plots, f'iterations_to_target_x{tag}{sfx}.png'),
                     ylim=(0, 1.02), band_on=False, last_iter=n_iters)
         write_target_csv(rows, ref, os.path.join(out_dir, f'iterations_to_target{sfx}.csv'), n_iters)
@@ -388,20 +389,20 @@ def main():
             grid_figure(per_run_series(d['run_keys'], d['swept']), x,
                         'Swept target mass (fraction)',
                         f"Swept target mass vs. SVGD iterations ({r_note}) -- mean over {n_shapes} "
-                        f"shapes; band: +-1 std across initialisations (n={n_init})",
+                        f"shapes; band: +-1 std across initialisations (n={n_init}){tn}",
                         os.path.join(plots, f'swept_mass{sfx}.png'), ylim=(0, 1.02),
                         last_iter=n_iters)
         if 'diversity' in only:
             grid_figure(diversity_series(d['div_keys'], d['div']), x,
                         'Mean pairwise Chamfer distance',
                         f"Diversity of the {n_init} paths per group vs. SVGD iterations -- mean over "
-                        f"{n_shapes} shapes; band: +-1 std across shapes",
+                        f"{n_shapes} shapes; band: +-1 std across shapes{tn}",
                         os.path.join(plots, f'diversity{sfx}.png'), logy=True, last_iter=n_iters)
         if 'displacement' in only:
             grid_figure(per_run_series(d['run_keys'], d['disp']), x,
                         'Chamfer distance to iteration-0 path',
                         f"Displacement from the initial path vs. SVGD iterations -- mean over "
-                        f"{n_shapes} shapes; band: +-1 std across initialisations (n={n_init})",
+                        f"{n_shapes} shapes; band: +-1 std across initialisations (n={n_init}){tn}",
                         os.path.join(plots, f'displacement{sfx}.png'), last_iter=n_iters)
         write_derived_csv(d, os.path.join(out_dir, f'extra_metrics_summary{sfx}.csv'), x)
     print(f"[extra] wrote figures to {plots}")
