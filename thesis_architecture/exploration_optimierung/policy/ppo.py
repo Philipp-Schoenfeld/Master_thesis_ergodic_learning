@@ -414,10 +414,14 @@ def main(argv=None):
     p.add_argument('--n_envs', type=int, default=8,
                    help="Formen je Episode; weniger = schneller, verrauschter")
     p.add_argument('--n_shapes', type=int, default=25)
-    p.add_argument('--split', default='val', choices=['val', 'train'],
-                   help="'train': Richtlinie auf den Trainingsformen des "
-                        "Planernetzes lernen und die 25 Validierungsformen "
-                        "ausschliesslich zum Testen behalten")
+    p.add_argument('--split', default='train', choices=['val', 'train'],
+                   help="'train' (Voreinstellung): Richtlinie auf den "
+                        "Trainingsformen des Planernetzes lernen und die 25 "
+                        "Validierungsformen ausschliesslich evaluate.py "
+                        "ueberlassen. 'val' trainiert PPO auf genau den "
+                        "Formen, die evaluate.py danach testet -- das war "
+                        "der Leck, der die ersten policy_vergleich.json-"
+                        "Zahlen fuer rl_b verzerrt hat.")
     p.add_argument('--bc_epochen', type=int, default=200)
     p.add_argument('--nur_bc', action='store_true')
     p.add_argument('--datensatz', default=DATASET_CSV)
@@ -457,14 +461,45 @@ def main(argv=None):
                    help="Zeitbudget. Laeuft es ab (oder kommt SIGTERM), endet "
                         "PPO nach der laufenden Iteration und speichert die "
                         "bis dahin beste Politik.")
+    p.add_argument('--init', default=None,
+                   help="Bestehende Politik (z.B. ablage/policy_b.pt) laden "
+                        "und von dort fortsetzen, statt neu zu initialisieren "
+                        "-- Verhaltensklonen wird dabei normalerweise "
+                        "uebersprungen (--bc_epochen 0 setzen), weil die "
+                        "geladene Politik dessen Wissen schon enthaelt. "
+                        "--seed sollte sich vom Ausgangslauf unterscheiden, "
+                        "sonst sammeln die ersten Iterationen dieselben "
+                        "Rollouts wie am Ende des alten Laufs.")
+    p.add_argument('--log_std_boost', type=float, default=0.0,
+                   help="Nur mit --init: additiv auf die geladene log_std "
+                        "aufgeschlagen (z.B. 1.0 -> Streuung x e^1 ~ x2.7), "
+                        "um einer vorzeitig kollabierten Exploration frischen "
+                        "Spielraum zu geben, statt sie nur ueber eine hoehere "
+                        "--c_entropie langsam wieder hochzuziehen.")
+    p.add_argument('--c_entropie', type=float, default=0.01,
+                   help="Gewicht des Entropie-Bonus im PPO-Verlust (war bisher "
+                        "fest 0.01, hier als Hebel gegen zu frueh kollabierte "
+                        "Exploration freigelegt).")
     a = p.parse_args(argv)
 
     device = a.device or ('cuda' if torch.cuda.is_available() else 'cpu')
     torch.manual_seed(a.seed)
     np.random.seed(a.seed)
 
-    politik = HybridPolitik().to(device)
-    normierer = Normierer(len(ZUSTANDS_MERKMALE))
+    if a.init:
+        print(f"Setze PPO von bestehender Politik fort: {a.init}")
+        geladen = RLRichtlinie.laden(a.init, device=device)
+        politik, normierer = geladen.politik.train(), geladen.normierer
+        if a.log_std_boost:
+            with torch.no_grad():
+                politik.log_std.add_(a.log_std_boost)
+            print(f"  log_std um {a.log_std_boost:+.3f} angehoben "
+                  f"(Streuung x{np.exp(a.log_std_boost):.2f}) -- "
+                  "frische Exploration statt der geladenen, schon "
+                  "eingeschnuerten Verteilung.")
+    else:
+        politik = HybridPolitik().to(device)
+        normierer = Normierer(len(ZUSTANDS_MERKMALE))
 
     bc_verlauf = []
     if a.bc_epochen > 0 and os.path.exists(a.datensatz):
@@ -525,8 +560,19 @@ def main(argv=None):
                                         episoden=a.episoden_pro_iter)
             vorteil, ziel = gae(puffer['rew'], puffer['wert'], puffer['fertig'])
             stat = ppo_schritt(politik, opt, puffer, vorteil, ziel, device,
-                               batch=a.batch)
-            ertrag = float(puffer['rew'].sum(axis=0).mean())
+                               batch=a.batch, c_entropie=a.c_entropie)
+            # /a.episoden_pro_iter: `puffer['rew']` stapelt alle Episoden
+            # eines Iterationsschritts auf derselben Zeitachse (siehe
+            # `sammle()`), `.sum(axis=0)` summiert also ueber ALLE Episoden
+            # zusammen statt nur eine -- ohne die Division zeigte `ertrag`
+            # (und damit `J~` unten) bei episoden_pro_iter>1 einen um genau
+            # diesen Faktor zu hohen, fuer J sogar negativen Wert (z.B.
+            # "J~-3.05" im Job-161997-Log statt der eigentlich ~0.28, die
+            # die unabhaengig berechnete `evaluate.py`-Auswertung zeigte).
+            # Reine Anzeige-/Report-Korrektur: die PPO-Optimierung selbst
+            # (GAE/Vorteil/Update) war davon nie betroffen, die war schon
+            # immer pro Zeitschritt korrekt.
+            ertrag = float(puffer['rew'].sum(axis=0).mean()) / a.episoden_pro_iter
             q_ende = float(np.mean([e['q_ende'] for e in ergebnisse]))
             # J der Episode aus der Rueckkehr: J = q_0 - Rueckkehr mit q_0 = 1.
             j = 1.0 - ertrag

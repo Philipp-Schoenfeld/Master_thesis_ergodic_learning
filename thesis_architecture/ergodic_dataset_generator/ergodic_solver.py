@@ -102,6 +102,10 @@ def run_ergodic_coverage(
     verbose   = False,
     checkpoints=None,
     konvergenz_tol=None,
+    konvergenz_metric='length',
+    phi_k=None,
+    k_idx=None,
+    Lambda=None,
 ):
     """
     Run Stein variational flow matching ergodic coverage optimisation.
@@ -173,6 +177,16 @@ def run_ergodic_coverage(
     def _pfadlaenge(tr):
         return float(np.linalg.norm(np.diff(tr, axis=0), axis=1).sum())
 
+    # Zweite Konvergenzgroesse neben der Pfadlaenge: der ergodische Fehler
+    # selbst (0.5 * sum Lambda_k * (c_k-phi_k)^2, dieselbe Formel wie im
+    # Solver/`ergodic_energy_torch.py`). `konvergenz_metric='length'` ist der
+    # unveraenderte Standardfall; 'ergodic' braucht `phi_k`/`k_idx`/`Lambda`
+    # (numpy-Arrays, s. `unknown_region.py`).
+    def _ergodischer_fehler(tr):
+        F = np.cos(np.pi * tr[:, None, :] * k_idx[None, :, :]).prod(axis=-1)
+        c = F.mean(axis=0)
+        return float(0.5 * np.sum(Lambda * (c - phi_k) ** 2))
+
     for i in itr:
         x_traj, A_traj, B_traj = linearize_dyn(x0j, u_traj)
         stein_dx               = stein_grad_jit(x_traj, h=h)
@@ -181,12 +195,13 @@ def run_ergodic_coverage(
 
         if ziel and (i + 1) in ziel:
             tr = np.array(pm.traj_sim(x0j, u_traj))[:, :2]
-            L = _pfadlaenge(tr)
+            L = (_ergodischer_fehler(tr) if konvergenz_metric == 'ergodic'
+                else _pfadlaenge(tr))
             zwischen[i + 1] = tr
             laengen.append((i + 1, L))
-            # Konvergenz: waechst die Laenge ueber die letzten *zwei*
-            # Abstaende jeweils um weniger als `konvergenz_tol`, ist der
-            # Rest redundant. Zwei statt einem Abstand, weil die Laenge
+            # Konvergenz: aendert sich der ueberwachte Wert ueber die letzten
+            # *zwei* Abstaende jeweils um weniger als `konvergenz_tol`, ist
+            # der Rest redundant. Zwei statt einem Abstand, weil der Wert
             # zwischen zwei benachbarten Checkpoints auch mal zufaellig
             # stagniert, ohne dass der Loeser fertig waere.
             if konvergenz_tol is not None and len(laengen) >= 5:
@@ -228,65 +243,84 @@ def _generate_initial_trajectory(x0, shape_def, tsteps, dt):
     Supports standard GMMs or 'analytical' segment-based shapes.
     """
     if shape_def.get('type') == 'analytical':
-        segments = shape_def['segments']
-        unvisited = list(segments)
-        curr_pt = np.array(x0)
-        all_points = [np.array([x0])]
-        
-        while unvisited:
-            best_dist = float('inf')
-            best_idx = -1
-            best_reverse = False
-            
-            for i, (p1, p2) in enumerate(unvisited):
-                d1 = np.linalg.norm(curr_pt - np.array(p1))
-                d2 = np.linalg.norm(curr_pt - np.array(p2))
-                if d1 < best_dist:
-                    best_dist = d1
-                    best_idx = i
-                    best_reverse = False
-                if d2 < best_dist:
-                    best_dist = d2
-                    best_idx = i
-                    best_reverse = True
-                    
-            seg = unvisited.pop(best_idx)
-            p_start = np.array(seg[1] if best_reverse else seg[0])
-            p_end = np.array(seg[0] if best_reverse else seg[1])
-            
-            dx, dy = p_end[0] - p_start[0], p_end[1] - p_start[1]
-            L = np.hypot(dx, dy)
-            if L < 1e-4:
-                continue
-                
-            mu = (p_start + p_end) / 2
-            E1 = np.array([dx, dy]) / L * (L/2)
-            E2 = np.array([-dy, dx]) / L * 0.025
-            
-            num_swings = float(max(1, int(np.round(1.0 + 2.0 * (L / 0.7)))))
-            n_pts = max(10, int(L * 200))
-            tau = np.linspace(-1, 1, n_pts)
-            
-            curve = mu[None, :] + np.outer(tau, E1) + 0.3 * np.outer(np.sin(num_swings * np.pi * (tau + 1)), E2)
-            
-            dist_to_start = np.linalg.norm(p_start - curr_pt)
-            if dist_to_start > 1e-3:
-                transit_pts = max(5, int(dist_to_start * 100))
-                transit = np.linspace(curr_pt, p_start, transit_pts)
-                all_points.append(transit)
-                
-            all_points.append(curve)
-            curr_pt = curve[-1]
-            
-        combined = np.vstack(all_points)
+        combined = _analytical_waypoints(x0, shape_def)
         return _downsample_or_pad(combined, tsteps)
 
-    else:
-        means = np.array(shape_def['means'])
-        covs = np.array(shape_def['covs'])
-        weights = np.array(shape_def['weights'])
+    points = _gmm_waypoints(x0, shape_def)
+    return _finish_gmm_trajectory(points, x0, tsteps, dt)
+
+
+def _analytical_waypoints(x0, shape_def):
+    """Raw (un-downsampled) waypoint polyline covering an 'analytical' shape.
+
+    Extracted out of `_generate_initial_trajectory` so the unknown-region
+    pipeline (`unknown_region.py`) can append an extra sweep to this polyline
+    *before* the shared downsample/smooth/PID step in `_downsample_or_pad`,
+    instead of downsampling twice.
+    """
+    segments = shape_def['segments']
+    unvisited = list(segments)
+    curr_pt = np.array(x0)
+    all_points = [np.array([x0])]
     
-    from scipy.ndimage import gaussian_filter1d
+    while unvisited:
+        best_dist = float('inf')
+        best_idx = -1
+        best_reverse = False
+        
+        for i, (p1, p2) in enumerate(unvisited):
+            d1 = np.linalg.norm(curr_pt - np.array(p1))
+            d2 = np.linalg.norm(curr_pt - np.array(p2))
+            if d1 < best_dist:
+                best_dist = d1
+                best_idx = i
+                best_reverse = False
+            if d2 < best_dist:
+                best_dist = d2
+                best_idx = i
+                best_reverse = True
+                
+        seg = unvisited.pop(best_idx)
+        p_start = np.array(seg[1] if best_reverse else seg[0])
+        p_end = np.array(seg[0] if best_reverse else seg[1])
+        
+        dx, dy = p_end[0] - p_start[0], p_end[1] - p_start[1]
+        L = np.hypot(dx, dy)
+        if L < 1e-4:
+            continue
+            
+        mu = (p_start + p_end) / 2
+        E1 = np.array([dx, dy]) / L * (L/2)
+        E2 = np.array([-dy, dx]) / L * 0.025
+        
+        num_swings = float(max(1, int(np.round(1.0 + 2.0 * (L / 0.7)))))
+        n_pts = max(10, int(L * 200))
+        tau = np.linspace(-1, 1, n_pts)
+        
+        curve = mu[None, :] + np.outer(tau, E1) + 0.3 * np.outer(np.sin(num_swings * np.pi * (tau + 1)), E2)
+        
+        dist_to_start = np.linalg.norm(p_start - curr_pt)
+        if dist_to_start > 1e-3:
+            transit_pts = max(5, int(dist_to_start * 100))
+            transit = np.linspace(curr_pt, p_start, transit_pts)
+            all_points.append(transit)
+            
+        all_points.append(curve)
+        curr_pt = curve[-1]
+        
+    return np.vstack(all_points)
+
+
+def _gmm_waypoints(x0, shape_def):
+    """Raw (un-downsampled) waypoint polyline covering a GMM shape.
+
+    Counterpart to `_analytical_waypoints` for the GMM branch; see its
+    docstring for why this is split out of `_generate_initial_trajectory`.
+    """
+    means = np.array(shape_def['means'])
+    covs = np.array(shape_def['covs'])
+    weights = np.array(shape_def['weights'])
+
     weights = weights / np.sum(weights)
     max_w = np.max(weights) if len(weights) > 0 else 1.0
     
@@ -345,8 +379,19 @@ def _generate_initial_trajectory(x0, shape_def, tsteps, dt):
         points.append(transit)
         points.append(curve)
 
-    points = np.vstack(points)
-    
+    return np.vstack(points)
+
+
+def _finish_gmm_trajectory(points, x0, tsteps, dt):
+    """Interpolate/smooth/PID-track a raw GMM waypoint polyline.
+
+    Second half of the original inline GMM branch of
+    `_generate_initial_trajectory`, split out so `unknown_region.py` can run
+    it once on a polyline that already includes the exploration sweep,
+    instead of running `_gmm_waypoints`'s downstream steps twice.
+    """
+    from scipy.ndimage import gaussian_filter1d
+
     # 3. Interpolate to exact tsteps + 1
     idx_eval = np.linspace(0, len(points)-1, tsteps + 1)
     p_traj = np.column_stack([

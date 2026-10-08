@@ -1,0 +1,9 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+WARNING:2026-10-07 00:52:55,071:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+WARNING:2026-10-07 00:57:25,464:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_mission_eval.py:245: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:203.)
+  st.belief.observe(torch.as_tensor(row['obs_pts'], device=ctx.device),
+/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/plot_mission_eval.py:187: RuntimeWarning: Mean of empty slice
+  mean, std = np.nanmean(M, axis=0), np.nanstd(M, axis=0)
+/home/stud_schonfeld/miniconda3/envs/thesis/lib/python3.13/site-packages/numpy/lib/_nanfunctions_impl.py:1997: RuntimeWarning: Degrees of freedom <= 0 for slice.
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,

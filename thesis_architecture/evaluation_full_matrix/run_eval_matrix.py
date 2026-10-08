@@ -38,7 +38,8 @@ import torch
 import apply_cfm_belief as acb                                   # noqa: E402
 from common.data import load_truth                               # noqa: E402
 from common.metrics import coverage_vs_truth, path_length as pl  # noqa: E402
-from common.svgd_refine import SvgdRefiner                        # noqa: E402
+from common.svgd_refine import (SvgdRefiner, add_refiner_arg,  # noqa: E402
+                               run_suffix)
 
 import variant_runner as vr                                       # noqa: E402
 from metrics_explore_exploit import (ExploreExploitErgodic, add_length_ratios,  # noqa: E402
@@ -479,6 +480,7 @@ def main():
     ap.add_argument('--device', type=str,
                     default='cuda' if torch.cuda.is_available() else 'cpu')
     ap.add_argument('--out_tag', type=str, required=True)
+    add_refiner_arg(ap)
     ap.add_argument('--svgd_iters', type=str, default='0,25,500,1000')
     ap.add_argument('--n_peaks', type=int, default=12)
     ap.add_argument('--seed', type=int, default=0)
@@ -501,10 +503,10 @@ def main():
     print(f"[eval_matrix] {len(names)} Formen: {names}")
 
     planner = build_planner(args.ckpt, device)
-    refiner = SvgdRefiner(seed=args.seed)
+    refiner = SvgdRefiner(seed=args.seed, backend=args.refiner)
     ee = ExploreExploitErgodic(device=device)
 
-    out_dir = os.path.join(_here, 'results', args.out_tag)
+    out_dir = os.path.join(_here, 'results', args.out_tag + run_suffix(args.refiner))
     raw_dir = os.path.join(out_dir, 'raw')
     tables_dir = os.path.join(out_dir, 'tables')
     plots_dir = os.path.join(out_dir, 'plots')

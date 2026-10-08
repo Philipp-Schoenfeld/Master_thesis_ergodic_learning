@@ -609,16 +609,24 @@ def visualise_set(model, shapes_dict, particles_dict, densities_dict, title_pref
         # particles_dict[lbl] is (N, 3) — generate_particle_trajectories
         # handles the batch expansion internally
         cond_t = particles_dict[lbl]  # (N, 3)
+        # Ohne `start=` wuerde diese Visualisierung nie die FiLM-Konditionierung
+        # oder das harte Setzen des ersten Kontrollpunkts durchlaufen und immer
+        # so aussehen wie das unkonditionierte Basismodell.
+        start_t = torch.tensor(base[0], dtype=torch.float32, device=device)
 
         gen, lam = generate_particle_trajectories(
             model, cond_t,
             num_samples=args.n_gen, nxi=args.nxi, nd=args.nd,
             steps=args.steps, device=str(device),
             cfg_weight=args.cfg_weight,
+            start=start_t,
         )
         gen = gen.cpu().numpy()
         _draw_traj(ax, base, gen, parts, d_map, f"'{lbl}'",
                    args.bspline_pts, args.bspline_deg)
+        ax.scatter([start_t[0].item()], [start_t[1].item()], color='#1565C0',
+                   marker='*', s=140, edgecolors='white', linewidths=0.6,
+                   zorder=4, label='Start' if idx == 0 else '')
 
         if lam is not None:
             lam_str = ", ".join(f"{v:.2f}" for v in lam[0].cpu().numpy())
@@ -809,6 +817,15 @@ def run(args):
             'nxi': args.nxi, 'nd': args.nd, 'D': args.D, 'n_particles': args.n_particles,
             'epochs': args.epochs, 'lr': args.lr, 'sample_mode': args.sample_mode,
             'epoch': args.epochs - 1,
+            # Diese Architektur ist Start+Laenge-konditioniert (nested: die
+            # Laengen-Architektur erbt `start_emb` und trainiert `start`
+            # immer mit, siehe compute_particle_cfm_loss). Ohne dieses Flag
+            # liest jeder Konsument, der auf `ckpt.get('start_cond', False)`
+            # prueft (model_zoo.generate, CfmPlanner.plan, ModelPlanner.plan),
+            # False und uebergibt `start` nie ans Netz — kein Absturz, aber
+            # die Startpunkt-Konditionierung wirkt dann bei Inferenz still gar
+            # nicht, obwohl das Netz genau darauf trainiert wurde.
+            'start_cond': True,
             'length_cond': True,
             'log_ref': args.log_ref, 'log_scale': args.log_scale,
             'length_freqs': args.length_freqs,

@@ -62,19 +62,53 @@ def main():
     shapes = [s.strip() for s in args.shapes.split(',') if s.strip()]
     device = args.device
 
+    out_csv = os.path.join(_here, 'results', 'raw_pool_metrics.csv')
+    fieldnames = ['shape', 'knowledge_condition', 'representation', 'family', 'n',
+                 'E_ergodic_total_mean', 'E_ergodic_total_std', 'J_mean', 'J_std',
+                 'coverage_mean', 'coverage_std']
+    # Resumability: a shape is "done" once it has one row per (knowledge
+    # condition x representation x family) cell. A timed-out SLURM job used
+    # to lose ALL progress because rows were only ever written at the very
+    # end (see 2026-10-01 incident: job 160917 computed 4/8 shapes, ~88min,
+    # then the 90min time limit killed it mid-5th-shape with nothing saved).
+    # Now every finished shape is appended immediately, and already-done
+    # shapes are skipped on restart, so a `sbatch --dependency=afterany:...`
+    # follow-up job (per CLAUDE.md's chaining convention) just continues.
+    expected_per_shape = len(vr.KNOWLEDGE_CONDITIONS) * 2 * len(FAMILIES_SVGD0)
+    done_shapes = set()
+    if os.path.exists(out_csv):
+        with open(out_csv, newline='') as f:
+            counts = {}
+            for r in csv.DictReader(f):
+                counts[r['shape']] = counts.get(r['shape'], 0) + 1
+            done_shapes = {s for s, c in counts.items() if c >= expected_per_shape}
+    shapes_todo = [s for s in shapes if s not in done_shapes]
+    if done_shapes:
+        print(f"[generate_raw_pool_metrics] resuming: {len(done_shapes)} shapes "
+             f"already done ({sorted(done_shapes)}), {len(shapes_todo)} left")
+
     planners = {
         'particles': PLANNER_BUILDERS['particles'](args.particle_ckpt, device),
         'spectral': PLANNER_BUILDERS['spectral'](args.spectral_ckpt, device),
     }
     ee = ExploreExploitErgodic(device=device)
 
-    names, truths = load_truth(labels=shapes, n=999, split='val',
+    if not shapes_todo:
+        print("[generate_raw_pool_metrics] nothing left to do")
+        return
+    names, truths = load_truth(labels=shapes_todo, n=999, split='val',
                                resolution=TRUTH_RES, device=device)
     print(f"[generate_raw_pool_metrics] {len(names)} shapes: {names}")
 
-    rows = []
+    write_header = not os.path.exists(out_csv)
+    csv_file = open(out_csv, 'a', newline='')
+    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+    if write_header:
+        writer.writeheader()
+    total_rows = len(done_shapes) * expected_per_shape
     for name, truth in zip(names, truths):
         phi_k_truth = ee.target_coeffs(truth)
+        shape_rows = []
         t_cell = time.perf_counter()
         for cond in vr.KNOWLEDGE_CONDITIONS:
             for rep in ['particles', 'spectral']:
@@ -111,7 +145,7 @@ def main():
                         js.append(row['J'])
                         covs.append(row['coverage'])
                     t_score = time.perf_counter()
-                    rows.append(dict(
+                    shape_rows.append(dict(
                         shape=name, knowledge_condition=cond, representation=rep,
                         family=family, n=len(curves),
                         E_ergodic_total_mean=float(np.mean(e_totals)),
@@ -122,14 +156,14 @@ def main():
                     print(f"[generate_raw_pool_metrics]   {cond}/{rep}/{family}: "
                          f"gen={t_gen - t_cell:.2f}s score={t_score - t_gen:.2f}s", flush=True)
                     t_cell = time.perf_counter()
-        print(f"[generate_raw_pool_metrics] {name} done, {len(rows)} rows so far")
+        writer.writerows(shape_rows)
+        csv_file.flush()
+        total_rows += len(shape_rows)
+        print(f"[generate_raw_pool_metrics] {name} done, {total_rows} rows so far "
+             f"(written to {out_csv})")
 
-    out_csv = os.path.join(_here, 'results', 'raw_pool_metrics.csv')
-    with open(out_csv, 'w', newline='') as f:
-        w = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
-        w.writeheader()
-        w.writerows(rows)
-    print(f"[generate_raw_pool_metrics] finished: {len(rows)} rows -> {out_csv}")
+    csv_file.close()
+    print(f"[generate_raw_pool_metrics] finished: {total_rows} rows -> {out_csv}")
 
 
 if __name__ == '__main__':

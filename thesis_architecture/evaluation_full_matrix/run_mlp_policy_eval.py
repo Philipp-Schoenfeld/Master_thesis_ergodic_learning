@@ -52,7 +52,8 @@ import torch
 
 import apply_cfm_belief as acb                                     # noqa: E402
 from common.data import load_truth                                  # noqa: E402
-from common.svgd_refine import SvgdRefiner                          # noqa: E402
+from common.svgd_refine import (SvgdRefiner, add_refiner_arg,  # noqa: E402
+                               run_suffix)
 
 import variant_runner as vr                                         # noqa: E402
 from metrics_explore_exploit import ExploreExploitErgodic           # noqa: E402
@@ -159,6 +160,7 @@ def main():
     ap.add_argument('--device', type=str,
                     default='cuda' if torch.cuda.is_available() else 'cpu')
     ap.add_argument('--out_tag', type=str, required=True)
+    add_refiner_arg(ap)
     ap.add_argument('--mlp_configs', type=str, default=MLP_CONFIGS_JSON)
     ap.add_argument('--seed', type=int, default=0)
     ap.add_argument('--truth_res', type=int, default=96)
@@ -192,10 +194,10 @@ def main():
         raise RuntimeError(
             f"{os.path.basename(args.ckpt)} ist nicht startpunkt-konditioniert; "
             "replan_1_6 braucht start=.")
-    refiner = SvgdRefiner(seed=args.seed)
+    refiner = SvgdRefiner(seed=args.seed, backend=args.refiner)
     ee = ExploreExploitErgodic(device=device)
 
-    out_dir = os.path.join(_here, 'results', args.out_tag)
+    out_dir = os.path.join(_here, 'results', args.out_tag + run_suffix(args.refiner))
     raw_dir = os.path.join(out_dir, 'raw')
     tables_dir = os.path.join(out_dir, 'tables')
     plots_dir = os.path.join(out_dir, 'plots')
@@ -204,6 +206,7 @@ def main():
 
     with open(os.path.join(out_dir, 'config.json'), 'w', encoding='utf-8') as f:
         json.dump(dict(
+            refiner=args.refiner,
             mlp_configs=args.mlp_configs,
             mlp_meta=mlp_meta,
             conditions=conditions, schemes=schemes,

@@ -1,0 +1,24 @@
+{
+  "pilot": true,
+  "shapes": "A",
+  "ckpt": "/media/philipp/storage/Dokumente/Uni/Master_thesis/transfer/netz2d_startpunkt.pt",
+  "device": "cpu",
+  "out_tag": "smoke_sunref",
+  "refiner": "sun",
+  "svgd_iters": "0,100",
+  "n_peaks": 12,
+  "seed": 0,
+  "truth_res": 96,
+  "no_viz": true,
+  "shapes_resolved": [
+    "A"
+  ],
+  "knowledge_conditions": [
+    "ground_truth",
+    "none_known",
+    "half_known",
+    "ten_samples"
+  ],
+  "kappa": 2.0,
+  "length_unit": 1.4142135623730951
+}

@@ -1,0 +1,374 @@
+[job] Wed Oct  7 12:52:06 CEST 2026 starting combined RQ1-RQ6 run, OUT_TAG=all_rq_20261007
+[job] Wed Oct  7 12:52:06 CEST 2026 RQ1+RQ2 (rq1_rq2_runtime.py)
+[rq1_rq2] CFM-Planer bereit (cuda), warmgelaufen
+[rq1_rq2] trial 1/100 done, 36s seit Start
+[rq1_rq2] trial 2/100 done, 70s seit Start
+[rq1_rq2] trial 3/100 done, 104s seit Start
+[rq1_rq2] trial 4/100 done, 138s seit Start
+[rq1_rq2] trial 5/100 done, 172s seit Start
+[rq1_rq2] trial 6/100 done, 206s seit Start
+[rq1_rq2] trial 7/100 done, 240s seit Start
+[rq1_rq2] trial 8/100 done, 274s seit Start
+[rq1_rq2] trial 9/100 done, 308s seit Start
+[rq1_rq2] trial 10/100 done, 342s seit Start
+[rq1_rq2] trial 11/100 done, 376s seit Start
+[rq1_rq2] trial 12/100 done, 410s seit Start
+[rq1_rq2] trial 13/100 done, 444s seit Start
+[rq1_rq2] trial 14/100 done, 478s seit Start
+[rq1_rq2] trial 15/100 done, 512s seit Start
+[rq1_rq2] trial 16/100 done, 546s seit Start
+[rq1_rq2] trial 17/100 done, 580s seit Start
+[rq1_rq2] trial 18/100 done, 614s seit Start
+[rq1_rq2] trial 19/100 done, 648s seit Start
+[rq1_rq2] trial 20/100 done, 682s seit Start
+[rq1_rq2] trial 21/100 done, 716s seit Start
+[rq1_rq2] trial 22/100 done, 751s seit Start
+[rq1_rq2] trial 23/100 done, 785s seit Start
+[rq1_rq2] trial 24/100 done, 820s seit Start
+[rq1_rq2] trial 25/100 done, 854s seit Start
+[rq1_rq2] trial 26/100 done, 888s seit Start
+[rq1_rq2] trial 27/100 done, 922s seit Start
+[rq1_rq2] trial 28/100 done, 956s seit Start
+[rq1_rq2] trial 29/100 done, 990s seit Start
+[rq1_rq2] trial 30/100 done, 1024s seit Start
+[rq1_rq2] trial 31/100 done, 1058s seit Start
+[rq1_rq2] trial 32/100 done, 1092s seit Start
+[rq1_rq2] trial 33/100 done, 1126s seit Start
+[rq1_rq2] trial 34/100 done, 1160s seit Start
+[rq1_rq2] trial 35/100 done, 1194s seit Start
+[rq1_rq2] trial 36/100 done, 1228s seit Start
+[rq1_rq2] trial 37/100 done, 1262s seit Start
+[rq1_rq2] trial 38/100 done, 1296s seit Start
+[rq1_rq2] trial 39/100 done, 1331s seit Start
+[rq1_rq2] trial 40/100 done, 1365s seit Start
+[rq1_rq2] trial 41/100 done, 1399s seit Start
+[rq1_rq2] trial 42/100 done, 1433s seit Start
+[rq1_rq2] trial 43/100 done, 1467s seit Start
+[rq1_rq2] trial 44/100 done, 1500s seit Start
+[rq1_rq2] trial 45/100 done, 1534s seit Start
+[rq1_rq2] trial 46/100 done, 1569s seit Start
+[rq1_rq2] trial 47/100 done, 1603s seit Start
+[rq1_rq2] trial 48/100 done, 1637s seit Start
+[rq1_rq2] trial 49/100 done, 1671s seit Start
+[rq1_rq2] trial 50/100 done, 1705s seit Start
+[rq1_rq2] trial 51/100 done, 1739s seit Start
+[rq1_rq2] trial 52/100 done, 1774s seit Start
+[rq1_rq2] trial 53/100 done, 1808s seit Start
+[rq1_rq2] trial 54/100 done, 1842s seit Start
+[rq1_rq2] trial 55/100 done, 1876s seit Start
+[rq1_rq2] trial 56/100 done, 1910s seit Start
+[rq1_rq2] trial 57/100 done, 1944s seit Start
+[rq1_rq2] trial 58/100 done, 1978s seit Start
+[rq1_rq2] trial 59/100 done, 2012s seit Start
+[rq1_rq2] trial 60/100 done, 2047s seit Start
+[rq1_rq2] trial 61/100 done, 2081s seit Start
+[rq1_rq2] trial 62/100 done, 2115s seit Start
+[rq1_rq2] trial 63/100 done, 2149s seit Start
+[rq1_rq2] trial 64/100 done, 2183s seit Start
+[rq1_rq2] trial 65/100 done, 2217s seit Start
+[rq1_rq2] trial 66/100 done, 2251s seit Start
+[rq1_rq2] trial 67/100 done, 2285s seit Start
+[rq1_rq2] trial 68/100 done, 2320s seit Start
+[rq1_rq2] trial 69/100 done, 2354s seit Start
+[rq1_rq2] trial 70/100 done, 2388s seit Start
+[rq1_rq2] trial 71/100 done, 2422s seit Start
+[rq1_rq2] trial 72/100 done, 2457s seit Start
+[rq1_rq2] trial 73/100 done, 2491s seit Start
+[rq1_rq2] trial 74/100 done, 2525s seit Start
+[rq1_rq2] trial 75/100 done, 2559s seit Start
+[rq1_rq2] trial 76/100 done, 2594s seit Start
+[rq1_rq2] trial 77/100 done, 2628s seit Start
+[rq1_rq2] trial 78/100 done, 2662s seit Start
+[rq1_rq2] trial 79/100 done, 2696s seit Start
+[rq1_rq2] trial 80/100 done, 2730s seit Start
+[rq1_rq2] trial 81/100 done, 2764s seit Start
+[rq1_rq2] trial 82/100 done, 2798s seit Start
+[rq1_rq2] trial 83/100 done, 2833s seit Start
+[rq1_rq2] trial 84/100 done, 2867s seit Start
+[rq1_rq2] trial 85/100 done, 2901s seit Start
+[rq1_rq2] trial 86/100 done, 2935s seit Start
+[rq1_rq2] trial 87/100 done, 2969s seit Start
+[rq1_rq2] trial 88/100 done, 3003s seit Start
+[rq1_rq2] trial 89/100 done, 3038s seit Start
+[rq1_rq2] trial 90/100 done, 3071s seit Start
+[rq1_rq2] trial 91/100 done, 3105s seit Start
+[rq1_rq2] trial 92/100 done, 3140s seit Start
+[rq1_rq2] trial 93/100 done, 3174s seit Start
+[rq1_rq2] trial 94/100 done, 3208s seit Start
+[rq1_rq2] trial 95/100 done, 3243s seit Start
+[rq1_rq2] trial 96/100 done, 3277s seit Start
+[rq1_rq2] trial 97/100 done, 3311s seit Start
+[rq1_rq2] trial 98/100 done, 3345s seit Start
+[rq1_rq2] trial 99/100 done, 3379s seit Start
+[rq1_rq2] trial 100/100 done, 3413s seit Start
+[rq1_rq2] fertig -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/all_rq_20261007/rq1_rq2_runtime.csv
+[job] RQ1 plot step failed (exit 1), continuing with the rest
+[job] RQ2 plot step failed (exit 1), continuing with the rest
+[job] Wed Oct  7 13:49:30 CEST 2026 RQ3 (rq3_gp_targets.py)
+[rq3] trial 1/15 done
+[rq3] trial 2/15 done
+[rq3] trial 3/15 done
+[rq3] trial 4/15 done
+[rq3] trial 5/15 done
+[rq3] trial 6/15 done
+[rq3] trial 7/15 done
+[rq3] trial 8/15 done
+[rq3] trial 9/15 done
+[rq3] trial 10/15 done
+[rq3] trial 11/15 done
+[rq3] trial 12/15 done
+[rq3] trial 13/15 done
+[rq3] trial 14/15 done
+[rq3] trial 15/15 done
+[rq3] -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/all_rq_20261007/rq3_gp_targets.csv
+[job] RQ3 step failed (exit 1), continuing with the rest
+[job] Wed Oct  7 14:35:23 CEST 2026 RQ4 (rq4_sinkhorn_samples.py)
+[rq4] star done
+[rq4] heart done
+[rq4] sword done
+[rq4] eifeltower done
+[rq4] trophy done
+[rq4] fire done
+[rq4] scissors done
+[rq4] lock done
+[rq4] thunder done
+[rq4] airplane done
+[rq4] -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/all_rq_20261007/rq4_sinkhorn_samples.csv
+[job] RQ4 step failed (exit 1), continuing with the rest
+[job] Wed Oct  7 15:37:26 CEST 2026 RQ5 (rq5_dynamics.py)
+[rq5] qualitative grid -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/all_rq_20261007/plots/rq5_qualitative_grid.png
+[rq5] trial 1/30 done
+[rq5] trial 2/30 done
+[rq5] trial 3/30 done
+[rq5] trial 4/30 done
+[rq5] trial 5/30 done
+[rq5] trial 6/30 done
+[rq5] trial 7/30 done
+[rq5] trial 8/30 done
+[rq5] trial 9/30 done
+[rq5] trial 10/30 done
+[rq5] trial 11/30 done
+[rq5] trial 12/30 done
+[rq5] trial 13/30 done
+[rq5] trial 14/30 done
+[rq5] trial 15/30 done
+[rq5] trial 16/30 done
+[rq5] trial 17/30 done
+[rq5] trial 18/30 done
+[rq5] trial 19/30 done
+[rq5] trial 20/30 done
+[rq5] trial 21/30 done
+[rq5] trial 22/30 done
+[rq5] trial 23/30 done
+[rq5] trial 24/30 done
+[rq5] trial 25/30 done
+[rq5] trial 26/30 done
+[rq5] trial 27/30 done
+[rq5] trial 28/30 done
+[rq5] trial 29/30 done
+[rq5] trial 30/30 done
+[job] RQ5 step failed (exit 1), continuing with the rest
+[job] Wed Oct  7 16:01:17 CEST 2026 RQ6 (rq6_alm_lambda0.py)
+[rq6] trial 0: round1=16 outer iters, cold=9 (ok), warm=9 (ok)
+[rq6] trial 1: round1=18 outer iters, cold=8 (ok), warm=7 (ok)
+[rq6] trial 2: round1=14 outer iters, cold=13 (ok), warm=10 (ok)
+[rq6] trial 3: round1=13 outer iters, cold=2 (ok), warm=4 (ok)
+[rq6] trial 4: round1=16 outer iters, cold=8 (ok), warm=10 (ok)
+[rq6] trial 5: round1=14 outer iters, cold=9 (ok), warm=11 (ok)
+[rq6] trial 6: round1=15 outer iters, cold=11 (ok), warm=13 (ok)
+[rq6] trial 7: round1=16 outer iters, cold=13 (ok), warm=14 (ok)
+[rq6] trial 8: round1=14 outer iters, cold=9 (ok), warm=9 (ok)
+[rq6] trial 9: round1=15 outer iters, cold=10 (ok), warm=9 (ok)
+[rq6] trial 10: round1=15 outer iters, cold=13 (ok), warm=13 (ok)
+[rq6] trial 11: round1=15 outer iters, cold=16 (ok), warm=10 (ok)
+[rq6] trial 12: round1=14 outer iters, cold=11 (ok), warm=10 (ok)
+[rq6] trial 13: round1=17 outer iters, cold=11 (ok), warm=7 (ok)
+[rq6] trial 14: round1=13 outer iters, cold=11 (ok), warm=10 (ok)
+[rq6] trial 15: round1=21 outer iters, cold=11 (ok), warm=13 (ok)
+[rq6] trial 16: round1=14 outer iters, cold=10 (ok), warm=10 (ok)
+[rq6] trial 17: round1=16 outer iters, cold=14 (ok), warm=14 (ok)
+[rq6] trial 18: round1=14 outer iters, cold=10 (ok), warm=11 (ok)
+[rq6] trial 19: round1=12 outer iters, cold=8 (ok), warm=7 (ok)
+[rq6] trial 20: round1=14 outer iters, cold=10 (ok), warm=11 (ok)
+[rq6] trial 21: round1=16 outer iters, cold=14 (ok), warm=12 (ok)
+[rq6] trial 22: round1=13 outer iters, cold=4 (ok), warm=7 (ok)
+[rq6] trial 23: round1=14 outer iters, cold=9 (ok), warm=4 (ok)
+[rq6] trial 24: round1=15 outer iters, cold=9 (ok), warm=9 (ok)
+[rq6] trial 25: round1=20 outer iters, cold=5 (ok), warm=5 (ok)
+[rq6] trial 26: round1=15 outer iters, cold=7 (ok), warm=5 (ok)
+[rq6] trial 27: round1=16 outer iters, cold=9 (ok), warm=10 (ok)
+[rq6] trial 28: round1=16 outer iters, cold=9 (ok), warm=9 (ok)
+[rq6] trial 29: round1=15 outer iters, cold=9 (ok), warm=8 (ok)
+[rq6] trial 30: round1=18 outer iters, cold=16 (ok), warm=17 (ok)
+[rq6] trial 31: round1=11 outer iters, cold=4 (ok), warm=3 (ok)
+[rq6] trial 32: round1=14 outer iters, cold=7 (ok), warm=5 (ok)
+[rq6] trial 33: round1=15 outer iters, cold=11 (ok), warm=10 (ok)
+[rq6] trial 34: round1=17 outer iters, cold=14 (ok), warm=11 (ok)
+[rq6] trial 35: round1=18 outer iters, cold=14 (ok), warm=11 (ok)
+[rq6] trial 36: round1=14 outer iters, cold=8 (ok), warm=11 (ok)
+[rq6] trial 37: round1=15 outer iters, cold=8 (ok), warm=5 (ok)
+[rq6] trial 38: round1=12 outer iters, cold=7 (ok), warm=6 (ok)
+[rq6] trial 39: round1=13 outer iters, cold=12 (ok), warm=11 (ok)
+[rq6] trial 40: round1=18 outer iters, cold=14 (ok), warm=13 (ok)
+[rq6] trial 41: round1=14 outer iters, cold=11 (ok), warm=10 (ok)
+[rq6] trial 42: round1=15 outer iters, cold=8 (ok), warm=6 (ok)
+[rq6] trial 43: round1=18 outer iters, cold=14 (ok), warm=13 (ok)
+[rq6] trial 44: round1=15 outer iters, cold=11 (ok), warm=12 (ok)
+[rq6] trial 45: round1=13 outer iters, cold=6 (ok), warm=7 (ok)
+[rq6] trial 46: round1=16 outer iters, cold=11 (ok), warm=14 (ok)
+[rq6] trial 47: round1=17 outer iters, cold=9 (ok), warm=5 (ok)
+[rq6] trial 48: round1=13 outer iters, cold=9 (ok), warm=12 (ok)
+[rq6] trial 49: round1=12 outer iters, cold=7 (ok), warm=10 (ok)
+[rq6] trial 50: round1=19 outer iters, cold=8 (ok), warm=9 (ok)
+[rq6] trial 51: round1=15 outer iters, cold=9 (ok), warm=10 (ok)
+[rq6] trial 52: round1=17 outer iters, cold=8 (ok), warm=9 (ok)
+[rq6] trial 53: round1=14 outer iters, cold=12 (ok), warm=13 (ok)
+[rq6] trial 54: round1=12 outer iters, cold=8 (ok), warm=7 (ok)
+[rq6] trial 55: round1=16 outer iters, cold=7 (ok), warm=8 (ok)
+[rq6] trial 56: round1=15 outer iters, cold=8 (ok), warm=8 (ok)
+[rq6] trial 57: round1=14 outer iters, cold=8 (ok), warm=7 (ok)
+[rq6] trial 58: round1=17 outer iters, cold=10 (ok), warm=10 (ok)
+[rq6] trial 59: round1=13 outer iters, cold=9 (ok), warm=9 (ok)
+[rq6] trial 60: round1=16 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 61: round1=8 outer iters, cold=2 (ok), warm=3 (ok)
+[rq6] trial 62: round1=13 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 63: round1=18 outer iters, cold=9 (ok), warm=3 (ok)
+[rq6] trial 64: round1=14 outer iters, cold=10 (ok), warm=10 (ok)
+[rq6] trial 65: round1=18 outer iters, cold=8 (ok), warm=9 (ok)
+[rq6] trial 66: round1=14 outer iters, cold=9 (ok), warm=7 (ok)
+[rq6] trial 67: round1=17 outer iters, cold=8 (ok), warm=9 (ok)
+[rq6] trial 68: round1=15 outer iters, cold=8 (ok), warm=9 (ok)
+[rq6] trial 69: round1=17 outer iters, cold=13 (ok), warm=7 (ok)
+[rq6] trial 70: round1=15 outer iters, cold=10 (ok), warm=9 (ok)
+[rq6] trial 71: round1=13 outer iters, cold=10 (ok), warm=9 (ok)
+[rq6] trial 72: round1=17 outer iters, cold=10 (ok), warm=11 (ok)
+[rq6] trial 73: round1=13 outer iters, cold=13 (ok), warm=12 (ok)
+[rq6] trial 74: round1=13 outer iters, cold=15 (ok), warm=12 (ok)
+[rq6] trial 75: round1=15 outer iters, cold=10 (ok), warm=12 (ok)
+[rq6] trial 76: round1=17 outer iters, cold=13 (ok), warm=11 (ok)
+[rq6] trial 77: round1=16 outer iters, cold=13 (ok), warm=12 (ok)
+[rq6] trial 78: round1=15 outer iters, cold=12 (ok), warm=2 (ok)
+[rq6] trial 79: round1=14 outer iters, cold=7 (ok), warm=2 (ok)
+[rq6] trial 80: round1=14 outer iters, cold=7 (ok), warm=8 (ok)
+[rq6] trial 81: round1=13 outer iters, cold=6 (ok), warm=9 (ok)
+[rq6] trial 82: round1=16 outer iters, cold=14 (ok), warm=13 (ok)
+[rq6] trial 83: round1=13 outer iters, cold=7 (ok), warm=6 (ok)
+[rq6] trial 84: round1=14 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 85: round1=17 outer iters, cold=12 (ok), warm=12 (ok)
+[rq6] trial 86: round1=14 outer iters, cold=9 (ok), warm=8 (ok)
+[rq6] trial 87: round1=16 outer iters, cold=14 (ok), warm=13 (ok)
+[rq6] trial 88: round1=18 outer iters, cold=15 (ok), warm=3 (ok)
+[rq6] trial 89: round1=14 outer iters, cold=8 (ok), warm=7 (ok)
+[rq6] trial 90: round1=13 outer iters, cold=7 (ok), warm=6 (ok)
+[rq6] trial 91: round1=13 outer iters, cold=13 (ok), warm=11 (ok)
+[rq6] trial 92: round1=15 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 93: round1=14 outer iters, cold=9 (ok), warm=7 (ok)
+[rq6] trial 94: round1=14 outer iters, cold=10 (ok), warm=10 (ok)
+[rq6] trial 95: round1=12 outer iters, cold=8 (ok), warm=7 (ok)
+[rq6] trial 96: round1=14 outer iters, cold=10 (ok), warm=9 (ok)
+[rq6] trial 97: round1=9 outer iters, cold=7 (ok), warm=5 (ok)
+[rq6] trial 98: round1=16 outer iters, cold=13 (ok), warm=12 (ok)
+[rq6] trial 99: round1=14 outer iters, cold=6 (ok), warm=6 (ok)
+[rq6] trial 100: round1=15 outer iters, cold=8 (ok), warm=9 (ok)
+[rq6] trial 101: round1=16 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 102: round1=14 outer iters, cold=9 (ok), warm=8 (ok)
+[rq6] trial 103: round1=19 outer iters, cold=10 (ok), warm=8 (ok)
+[rq6] trial 104: round1=12 outer iters, cold=7 (ok), warm=8 (ok)
+[rq6] trial 105: round1=17 outer iters, cold=7 (ok), warm=7 (ok)
+[rq6] trial 106: round1=14 outer iters, cold=9 (ok), warm=4 (ok)
+[rq6] trial 107: round1=15 outer iters, cold=9 (ok), warm=8 (ok)
+[rq6] trial 108: round1=15 outer iters, cold=8 (ok), warm=8 (ok)
+[rq6] trial 109: round1=14 outer iters, cold=8 (ok), warm=5 (ok)
+[rq6] trial 110: round1=18 outer iters, cold=12 (ok), warm=16 (ok)
+[rq6] trial 111: round1=15 outer iters, cold=7 (ok), warm=7 (ok)
+[rq6] trial 112: round1=19 outer iters, cold=14 (ok), warm=12 (ok)
+[rq6] trial 113: round1=14 outer iters, cold=10 (ok), warm=9 (ok)
+[rq6] trial 114: round1=15 outer iters, cold=6 (ok), warm=5 (ok)
+[rq6] trial 115: round1=14 outer iters, cold=8 (ok), warm=8 (ok)
+[rq6] trial 116: round1=15 outer iters, cold=10 (ok), warm=13 (ok)
+[rq6] trial 117: round1=16 outer iters, cold=13 (ok), warm=11 (ok)
+[rq6] trial 118: round1=14 outer iters, cold=6 (ok), warm=5 (ok)
+[rq6] trial 119: round1=17 outer iters, cold=8 (ok), warm=7 (ok)
+[rq6] trial 120: round1=15 outer iters, cold=9 (ok), warm=9 (ok)
+[rq6] trial 121: round1=14 outer iters, cold=6 (ok), warm=5 (ok)
+[rq6] trial 122: round1=11 outer iters, cold=6 (ok), warm=8 (ok)
+[rq6] trial 123: round1=16 outer iters, cold=8 (ok), warm=8 (ok)
+[rq6] trial 124: round1=14 outer iters, cold=10 (ok), warm=10 (ok)
+[rq6] trial 125: round1=13 outer iters, cold=8 (ok), warm=10 (ok)
+[rq6] trial 126: round1=15 outer iters, cold=9 (ok), warm=11 (ok)
+[rq6] trial 127: round1=19 outer iters, cold=13 (ok), warm=12 (ok)
+[rq6] trial 128: round1=13 outer iters, cold=14 (ok), warm=14 (ok)
+[rq6] trial 129: round1=15 outer iters, cold=7 (ok), warm=7 (ok)
+[rq6] trial 130: round1=15 outer iters, cold=6 (ok), warm=5 (ok)
+[rq6] trial 131: round1=19 outer iters, cold=9 (ok), warm=8 (ok)
+[rq6] trial 132: round1=17 outer iters, cold=16 (ok), warm=17 (ok)
+[rq6] trial 133: round1=14 outer iters, cold=9 (ok), warm=11 (ok)
+[rq6] trial 134: round1=18 outer iters, cold=11 (ok), warm=12 (ok)
+[rq6] trial 135: round1=16 outer iters, cold=19 (ok), warm=8 (ok)
+[rq6] trial 136: round1=14 outer iters, cold=7 (ok), warm=10 (ok)
+[rq6] trial 137: round1=15 outer iters, cold=14 (ok), warm=16 (ok)
+[rq6] trial 138: round1=17 outer iters, cold=9 (ok), warm=10 (ok)
+[rq6] trial 139: round1=18 outer iters, cold=12 (ok), warm=11 (ok)
+[rq6] trial 140: round1=15 outer iters, cold=6 (ok), warm=7 (ok)
+[rq6] trial 141: round1=14 outer iters, cold=9 (ok), warm=12 (ok)
+[rq6] trial 142: round1=17 outer iters, cold=9 (ok), warm=12 (ok)
+[rq6] trial 143: round1=12 outer iters, cold=5 (ok), warm=3 (ok)
+[rq6] trial 144: round1=10 outer iters, cold=6 (ok), warm=6 (ok)
+[rq6] trial 145: round1=17 outer iters, cold=17 (ok), warm=18 (ok)
+[rq6] trial 146: round1=16 outer iters, cold=12 (ok), warm=13 (ok)
+[rq6] trial 147: round1=16 outer iters, cold=10 (ok), warm=7 (ok)
+[rq6] trial 148: round1=14 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 149: round1=15 outer iters, cold=12 (ok), warm=12 (ok)
+[rq6] trial 150: round1=15 outer iters, cold=14 (ok), warm=15 (ok)
+[rq6] trial 151: round1=12 outer iters, cold=6 (ok), warm=6 (ok)
+[rq6] trial 152: round1=20 outer iters, cold=6 (ok), warm=9 (ok)
+[rq6] trial 153: round1=14 outer iters, cold=7 (ok), warm=7 (ok)
+[rq6] trial 154: round1=13 outer iters, cold=7 (ok), warm=5 (ok)
+[rq6] trial 155: round1=18 outer iters, cold=11 (ok), warm=8 (ok)
+[rq6] trial 156: round1=16 outer iters, cold=10 (ok), warm=10 (ok)
+[rq6] trial 157: round1=13 outer iters, cold=6 (ok), warm=6 (ok)
+[rq6] trial 158: round1=17 outer iters, cold=5 (ok), warm=14 (ok)
+[rq6] trial 159: round1=17 outer iters, cold=14 (ok), warm=14 (ok)
+[rq6] trial 160: round1=12 outer iters, cold=14 (ok), warm=13 (ok)
+[rq6] trial 161: round1=15 outer iters, cold=15 (ok), warm=12 (ok)
+[rq6] trial 162: round1=14 outer iters, cold=6 (ok), warm=5 (ok)
+[rq6] trial 163: round1=11 outer iters, cold=9 (ok), warm=7 (ok)
+[rq6] trial 164: round1=12 outer iters, cold=6 (ok), warm=6 (ok)
+[rq6] trial 165: round1=13 outer iters, cold=5 (ok), warm=6 (ok)
+[rq6] trial 166: round1=15 outer iters, cold=9 (ok), warm=10 (ok)
+[rq6] trial 167: round1=12 outer iters, cold=7 (ok), warm=8 (ok)
+[rq6] trial 168: round1=16 outer iters, cold=9 (ok), warm=8 (ok)
+[rq6] trial 169: round1=10 outer iters, cold=5 (ok), warm=5 (ok)
+[rq6] trial 170: round1=18 outer iters, cold=14 (ok), warm=14 (ok)
+[rq6] trial 171: round1=16 outer iters, cold=15 (ok), warm=10 (ok)
+[rq6] trial 172: round1=13 outer iters, cold=7 (ok), warm=4 (ok)
+[rq6] trial 173: round1=14 outer iters, cold=16 (ok), warm=14 (ok)
+[rq6] trial 174: round1=18 outer iters, cold=12 (ok), warm=11 (ok)
+[rq6] trial 175: round1=16 outer iters, cold=5 (ok), warm=5 (ok)
+[rq6] trial 176: round1=18 outer iters, cold=15 (ok), warm=11 (ok)
+[rq6] trial 177: round1=16 outer iters, cold=11 (ok), warm=14 (ok)
+[rq6] trial 178: round1=17 outer iters, cold=10 (ok), warm=8 (ok)
+[rq6] trial 179: round1=15 outer iters, cold=10 (ok), warm=10 (ok)
+[rq6] trial 180: round1=7 outer iters, cold=10 (ok), warm=9 (ok)
+[rq6] trial 181: round1=14 outer iters, cold=6 (ok), warm=6 (ok)
+[rq6] trial 182: round1=15 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 183: round1=15 outer iters, cold=7 (ok), warm=6 (ok)
+[rq6] trial 184: round1=15 outer iters, cold=9 (ok), warm=10 (ok)
+[rq6] trial 185: round1=14 outer iters, cold=10 (ok), warm=10 (ok)
+[rq6] trial 186: round1=13 outer iters, cold=6 (ok), warm=7 (ok)
+[rq6] trial 187: round1=15 outer iters, cold=8 (ok), warm=8 (ok)
+[rq6] trial 188: round1=14 outer iters, cold=9 (ok), warm=7 (ok)
+[rq6] trial 189: round1=14 outer iters, cold=12 (ok), warm=12 (ok)
+[rq6] trial 190: round1=16 outer iters, cold=13 (ok), warm=12 (ok)
+[rq6] trial 191: round1=16 outer iters, cold=8 (ok), warm=8 (ok)
+[rq6] trial 192: round1=15 outer iters, cold=10 (ok), warm=11 (ok)
+[rq6] trial 193: round1=12 outer iters, cold=10 (ok), warm=9 (ok)
+[rq6] trial 194: round1=11 outer iters, cold=5 (ok), warm=6 (ok)
+[rq6] trial 195: round1=16 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 196: round1=12 outer iters, cold=10 (ok), warm=13 (ok)
+[rq6] trial 197: round1=15 outer iters, cold=11 (ok), warm=11 (ok)
+[rq6] trial 198: round1=10 outer iters, cold=7 (ok), warm=6 (ok)
+[rq6] trial 199: round1=17 outer iters, cold=12 (ok), warm=14 (ok)
+[rq6] -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/all_rq_20261007/rq6_alm_lambda0.csv
+[job] RQ6 step failed (exit 1)
+[job] Wed Oct  7 16:06:49 CEST 2026 all steps attempted -> results/all_rq_20261007/ (one subfolder per rqN_*.py's own CSV/plots)

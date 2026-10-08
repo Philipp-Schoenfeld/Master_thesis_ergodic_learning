@@ -45,7 +45,7 @@ def make_pdf_and_score(shape_def):
     if shape_def.get('type') == 'analytical':
         base = _make_analytical_pdf_and_score(shape_def['segments'],
                                               shape_def.get('sigma', 0.025))
-        return _vielleicht_sockel(base, shape_def)
+        return _vielleicht_unknown(_vielleicht_sockel(base, shape_def), shape_def)
 
     w = np.array(shape_def['weights'], dtype=np.float32)
     w = w / w.sum()
@@ -68,7 +68,8 @@ def make_pdf_and_score(shape_def):
         return jnp.log(pdf_fn(x))
 
     score_fn = jax.grad(log_pdf)
-    return _vielleicht_sockel((pdf_fn, score_fn), shape_def)
+    return _vielleicht_unknown(_vielleicht_sockel((pdf_fn, score_fn), shape_def),
+                               shape_def)
 
 
 # ---------------------------------------------------------------------------
@@ -127,6 +128,70 @@ def _vielleicht_sockel(base, shape_def):
         return jnp.log(pdf_fn(x))
 
     return jax.jit(pdf_fn), jax.jit(jax.grad(log_pdf))
+
+
+# ---------------------------------------------------------------------------
+#  Unbekannter Bereich: ein gefuellter Flaechenausschnitt mit hoher Dichte
+# ---------------------------------------------------------------------------
+#  Strukturell dasselbe Mischungsprinzip wie der Sockel oben
+#  (p'(x) = (1-a)*p(x)/Z_p + a*g(x)/Z_g), nur dass der zugemischte Term `g`
+#  selbst ein kleines GMM ist -- ein gefuellter, zufaellig geformter und
+#  platzierter Flaechenausschnitt (siehe `unknown_region.py`) -- statt einer
+#  einzelnen Gauss-Glocke. Fuer das Explorations-Dataset: ein Teil des
+#  Arbeitsraums gilt als "unbekannt" und bekommt dieselbe hohe Dichte, egal
+#  was dort an eigentlicher Zieldichte vorliegt -- der Loeser muss ihn also
+#  genauso abdecken wie die bekannten Dichtespitzen.
+
+def _vielleicht_unknown(base, shape_def):
+    unk = shape_def.get('unknown_region')
+    if not unk:
+        return base
+    base_pdf, _ = base
+    a  = float(unk['a'])
+    means_j   = jnp.array(unk['means'],   dtype=jnp.float32)
+    covs_j    = jnp.array(unk['covs'],    dtype=jnp.float32)
+    weights_j = jnp.array(unk['weights'], dtype=jnp.float32)
+    weights_j = weights_j / weights_j.sum()
+    zb = float(unk['z_base'])
+    zr = float(unk['z_region'])
+
+    def region_pdf(x):
+        x2d  = x[:2]
+        vals = jax.vmap(lambda m, c, w: w * mvn.pdf(x2d, m, c),
+                        in_axes=(0, 0, 0))(means_j, covs_j, weights_j)
+        return jnp.sum(vals) + 1e-10
+
+    def pdf_fn(x):
+        return (1.0 - a) * base_pdf(x) / zb + a * region_pdf(x) / zr + 1e-10
+
+    def log_pdf(x):
+        return jnp.log(pdf_fn(x))
+
+    return jax.jit(pdf_fn), jax.jit(jax.grad(log_pdf))
+
+
+def mit_unknown_region(base_def, region_gmm, a):
+    """Kopie von `base_def` mit einem "unbekannten" gefuellten Flaechenbereich
+    obendrauf.
+
+    region_gmm : dict mit 'means'/'covs'/'weights' (z.B. aus
+                 `shape_rasterizer.points_to_gmm`) -- der gefuellte,
+                 zufaellig erzeugte Bereich.
+    a          : Dichte-Gewichtsanteil des unbekannten Bereichs, vgl. `a` in
+                 `_vielleicht_unknown`.
+    """
+    pdf_base, _ = make_pdf_and_score(base_def)
+    pdf_region, _ = make_pdf_and_score({
+        'means': region_gmm['means'], 'covs': region_gmm['covs'],
+        'weights': region_gmm['weights']})
+    d = dict(base_def)
+    d['unknown_region'] = {
+        'means': region_gmm['means'], 'covs': region_gmm['covs'],
+        'weights': [float(w) for w in region_gmm['weights']], 'a': float(a),
+        'z_base':   _gitter_mittel(pdf_base),
+        'z_region': _gitter_mittel(pdf_region),
+    }
+    return d
 
 
 def mit_sockel(base_def, weight, seed):

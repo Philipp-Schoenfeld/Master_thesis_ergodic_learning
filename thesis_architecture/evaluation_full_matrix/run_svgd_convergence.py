@@ -158,11 +158,12 @@ def run_task(task):
         _W['B'][key] = basis_matrix(nxi, n_points)
     B = _W['B'][key]
 
-    refiner = SvgdRefiner(seed=task['seed'])
+    # 'refiner' fehlt nur in Aufgaben aus Laeufen vor dem Flag -> bisheriger TSVEC-Refiner.
+    refiner = SvgdRefiner(seed=task['seed'], backend=task.get('refiner', 'tsvec'))
     log = []
     refiner.refine(task['init_curve'].astype(np.float64),
                    task['phi'].astype(np.float64), task['n_iters'],
-                   nxi=nxi, trajectory_log=log)
+                   nxi=nxi, trajectory_log=log, start=task.get('start'))
     cps = np.stack(log).astype(np.float32)                        # (n_iters+1, nxi, 2)
     if cps.shape[0] != task['n_iters'] + 1:
         raise RuntimeError(f"expected {task['n_iters'] + 1} states, got {cps.shape[0]}")
@@ -207,8 +208,11 @@ class DummyPlanner:
 
 
 def build_cfm_curves(planner, representation, belief, strategy_name, n_init,
-                     device, seed):
+                     device, seed, start=None):
     """n_init CFM samples for the belief's target density, as dense curves.
+    `start`: (2,) tensor or None, forwarded to `planner.plan` (only takes
+    effect with a start-conditioned checkpoint; one shared start for the
+    whole batch, same as every other start-conditioned caller in this repo).
     -> (curves (n,T,2) float32 np, phi (R,R) float32 np)."""
     import apply_cfm_belief as acb
     import variant_runner as vr
@@ -220,9 +224,9 @@ def build_cfm_curves(planner, representation, belief, strategy_name, n_init,
     if representation == 'particles':
         parts = acb.phi_particles(phi, args.n_particles, mode=args.phi_mode,
                                   quantile=args.phi_quantile, device=belief.device)
-        cps = planner.plan(parts, n_candidates=n_init)
+        cps = planner.plan(parts, n_candidates=n_init, start=start)
     else:
-        cps = planner.plan(phi, n_candidates=n_init)
+        cps = planner.plan(phi, n_candidates=n_init, start=start)
     curves = planner.render(cps).detach().cpu().numpy().astype(np.float32)
     return curves, phi.detach().cpu().numpy().astype(np.float32)
 
@@ -235,13 +239,27 @@ def target_density(belief, strategy_name, device):
     return acb.zieldichte(mu, sd, args.kappa, args).detach().cpu().numpy().astype(np.float32)
 
 
-def baseline_inits(method, n_init):
-    """-> list of (curve (T,2) float32 np, init_param)."""
-    from init_baselines import random_walk_path, linear_angle_path
+def baseline_inits(method, n_init, start=None, linear_length=None):
+    """-> list of (curve (T,2) float32 np, init_param).
+
+    `start` (x, y) tuple or None: if set, random_walk begins there
+    (`random_walk_path(start=...)`) and linear becomes a ray leaving `start`
+    (`linear_ray_path`, headings spread over the full circle, since a ray --
+    unlike the centred chord -- is not symmetric under a 180 deg flip);
+    otherwise unchanged (random_walk centred, linear a chord through the
+    workspace centre).
+    """
+    from init_baselines import random_walk_path, linear_angle_path, linear_ray_path
     out = []
     for i in range(n_init):
         if method == 'random_walk':
-            out.append((random_walk_path(N_POINTS, seed=i).numpy().astype(np.float32), float(i)))
+            start_t = None if start is None else torch.tensor(start, dtype=torch.float32)
+            out.append((random_walk_path(N_POINTS, seed=i, start=start_t)
+                        .numpy().astype(np.float32), float(i)))
+        elif start is not None:
+            ang = 360.0 * i / n_init
+            out.append((linear_ray_path(start, ang, linear_length, N_POINTS)
+                        .numpy().astype(np.float32), ang))
         else:
             ang = 180.0 * i / n_init
             out.append((linear_angle_path(ang, N_POINTS).numpy().astype(np.float32), ang))
@@ -251,7 +269,8 @@ def baseline_inits(method, n_init):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     ap.add_argument('--out_tag', type=str, required=True,
-                    help='results/<out_tag>/svgd_convergence.db is written.')
+                    help='results/<out_tag>/svgd_convergence.db is written '
+                         '(with --refiner sun: results/<out_tag>_sun/).')
     ap.add_argument('--shapes', type=str, default=None,
                     help='Comma-separated shape names (default: first 12 val shapes).')
     ap.add_argument('--n_shapes', type=int, default=DEFAULT_N_SHAPES)
@@ -269,6 +288,18 @@ def main():
     ap.add_argument('--ckpt', type=str, default=None,
                     help='CFM checkpoint (default: transfer/netz2d_startpunkt.pt for '
                          'particles, the spectral checkpoint otherwise).')
+    ap.add_argument('--start_pos', type=str, default=None,
+                    help='"x,y": fix every init (cfm/random_walk/linear) and the SVGD '
+                         'refinement itself to this start point (default: unset, the '
+                         'original unconstrained behaviour -- cfm untouched, random_walk '
+                         'centred, linear a chord through the workspace centre). Uses the '
+                         'same start-conditioning the CFM checkpoint already supports '
+                         '(`CfmPlanner.plan(start=...)`), `random_walk_path(start=...)` and '
+                         '`SvgdRefiner.refine(start=...)` (pins the first control point).')
+    ap.add_argument('--linear_length_units', type=float, default=2.0,
+                    help='Only with --start_pos: length of the linear baseline ray, in '
+                         'workspace diagonals (`init_baselines.linear_ray_path`); unused '
+                         'otherwise (the centred chord is a fixed length).')
     ap.add_argument('--workers', type=int, default=max(1, (os.cpu_count() or 2) - 2))
     ap.add_argument('--device', type=str,
                     default='cuda' if torch.cuda.is_available() else 'cpu')
@@ -278,6 +309,8 @@ def main():
     ap.add_argument('--dry_run', action='store_true',
                     help='Self-test: random control points instead of the CFM '
                          'network (no checkpoint, no GPU).')
+    from common.svgd_refine import add_refiner_arg, run_suffix
+    add_refiner_arg(ap)
     args = ap.parse_args()
 
     import variant_runner as vr
@@ -299,6 +332,12 @@ def main():
     for c in conditions:
         if c not in vr.KNOWLEDGE_CONDITIONS:
             raise KeyError(f"unknown knowledge condition {c!r}")
+    start_pos = None
+    if args.start_pos:
+        start_pos = tuple(float(v) for v in args.start_pos.split(','))
+        if len(start_pos) != 2:
+            raise ValueError('--start_pos needs "x,y"')
+    linear_length = args.linear_length_units * np.sqrt(2.0)
 
     device = args.device
     labels = [s.strip() for s in args.shapes.split(',')] if args.shapes else None
@@ -306,7 +345,7 @@ def main():
                                resolution=TRUTH_RES, device=device)
     print(f"[svgd_conv] {len(names)} shapes: {names}")
 
-    out_dir = os.path.join(_here, 'results', args.out_tag)
+    out_dir = os.path.join(_here, 'results', args.out_tag + run_suffix(args.refiner))
     db_path = os.path.join(out_dir, 'svgd_convergence.db')
     conn = sdb.open_db(db_path)
     sdb.save_basis(conn, basis_matrix(), NXI, N_POINTS, DEGREE)
@@ -315,6 +354,8 @@ def main():
         methods=methods, n_init=args.n_init, n_iters=args.n_iters,
         representation=args.representation, svgd_target=args.svgd_target, nxi=NXI, n_points=N_POINTS,
         degree=DEGREE, seed=SEED, truth_res=TRUTH_RES, dry_run=args.dry_run,
+        refiner=args.refiner, start_pos=start_pos,
+        linear_length=linear_length if start_pos else None,
         strategies={k: vr.STRATEGIES[v] for k, v in STRATEGY_MAP.items()},
         started=time.strftime('%Y-%m-%d %H:%M:%S')))
     conn.commit()
@@ -361,8 +402,8 @@ def main():
                     'method': m, 'init_idx': i, 'init_param': param,
                     'init_curve': curve, 'phi': svgd_phi,
                     'phi_k_truth': phi_k_truth,
-                    'n_iters': args.n_iters, 'nxi': NXI,
-                    'seed': task_seed(shape, cond, strat, m, i)},)))
+                    'n_iters': args.n_iters, 'nxi': NXI, 'refiner': args.refiner,
+                    'start': start_pos, 'seed': task_seed(shape, cond, strat, m, i)},)))
 
     try:
         for shape, truth in zip(names, truths):
@@ -374,7 +415,9 @@ def main():
                 have = sdb.existing_keys(conn, shape, SHARED, SHARED)
                 need = {m: [i for i in range(args.n_init) if (m, i) not in have]
                         for m in shared}
-                inits = {m: baseline_inits(m, args.n_init) for m in shared if need[m]}
+                inits = {m: baseline_inits(m, args.n_init, start=start_pos,
+                                           linear_length=linear_length)
+                         for m in shared if need[m]}
                 if any(need.values()):
                     submit_block(shape, SHARED, SHARED, need, inits, truth_np)
             for cond in conditions:
@@ -398,17 +441,21 @@ def main():
                         cond, truth, seed=SEED, device=device,
                         gp_noise=s.get('gp_noise', 0.05),
                         gp_lengthscale=s.get('gp_lengthscale', 0.08))
+                    start_t = (None if start_pos is None
+                              else torch.tensor(start_pos, dtype=torch.float32))
                     inits = {}
                     if 'cfm' in block_methods and need['cfm']:
                         curves, phi = build_cfm_curves(
                             planner, args.representation, belief, strat_name,
-                            args.n_init, device, task_seed(shape, cond, strat, 'cfm'))
+                            args.n_init, device, task_seed(shape, cond, strat, 'cfm'),
+                            start=start_t)
                         inits['cfm'] = [(c, None) for c in curves]
                     else:
                         phi = target_density(belief, strat_name, device)
                     for m in ('random_walk', 'linear'):
                         if m in block_methods and need[m]:
-                            inits[m] = baseline_inits(m, args.n_init)
+                            inits[m] = baseline_inits(m, args.n_init, start=start_pos,
+                                                      linear_length=linear_length)
                     sdb.save_target(conn, shape, cond, strat, phi)
                     svgd_phi = phi if belief_mode else truth_np
                     submit_block(shape, cond, strat, need, inits, svgd_phi)

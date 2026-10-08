@@ -267,11 +267,16 @@ def main(argv=None):
     p.add_argument('--svgd_buckets', nargs='*', type=int, default=[0, 25, 100],
                    help="SVGD-Budgets im Kandidatenraum")
     p.add_argument('--plan_batch', type=int, default=128)
-    p.add_argument('--split', default='val', choices=['val', 'train'],
-                   help="'train': Datensatz auf den Trainingsformen des "
-                        "Planernetzes erzeugen und die 25 Validierungsformen "
-                        "ausschliesslich zum Testen behalten (siehe README, "
-                        "Abschnitt zur Aufteilung der Formen)")
+    p.add_argument('--split', default='train', choices=['val', 'train'],
+                   help="'train' (Voreinstellung): Datensatz auf den "
+                        "Trainingsformen des Planernetzes erzeugen und die 25 "
+                        "Validierungsformen ausschliesslich evaluate.py "
+                        "ueberlassen (siehe README, Aufteilung der Formen). "
+                        "'val' erzeugt Trainingsdaten auf genau den Formen, "
+                        "die evaluate.py danach testet -- das war der Leck, "
+                        "der die ersten policy_vergleich.json-Zahlen verzerrt "
+                        "hat, und sollte nur fuer gezielte Debug-Laeufe "
+                        "explizit gesetzt werden.")
     p.add_argument('--flow_steps', type=int, default=100)
     p.add_argument('--ckpt', default=DEFAULT_CKPT)
     p.add_argument('--device', default=None)

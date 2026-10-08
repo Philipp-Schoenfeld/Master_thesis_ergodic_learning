@@ -329,10 +329,12 @@ def blind_coverage(truth):
 _WORKER_REFINER = None
 
 
-def _worker_init(seed):
+def _worker_init(seed, backend=None):
+    """`backend`: 'sun' (Suns FM-Stein wie in der Datengenerierung) oder
+    'tsvec' (bisheriger SVGD); None = `svgd_refine.DEFAULT_BACKEND`."""
     global _WORKER_REFINER
-    from common.svgd_refine import SvgdRefiner
-    _WORKER_REFINER = SvgdRefiner(seed=seed)
+    from common.svgd_refine import SvgdRefiner, DEFAULT_BACKEND
+    _WORKER_REFINER = SvgdRefiner(seed=seed, backend=backend or DEFAULT_BACKEND)
 
 
 def _worker_refine(job):
@@ -355,7 +357,7 @@ def refine_batch(curves, phis, n_iters, nxi=25, pool=None, refiner=None):
     if pool is None:
         if refiner is None:
             from common.svgd_refine import SvgdRefiner
-            refiner = SvgdRefiner(seed=0)
+            refiner = SvgdRefiner(seed=0)          # Standardverfahren (svgd_refine.DEFAULT_BACKEND)
         return [refiner.refine(*j[:3], nxi=j[3]) for j in jobs]
     return list(pool.map(_worker_refine, jobs))
 

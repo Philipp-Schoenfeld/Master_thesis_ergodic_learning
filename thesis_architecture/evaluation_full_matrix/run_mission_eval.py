@@ -20,7 +20,10 @@ and runs as follows (one "length unit" = the workspace diagonal, `mission.LENGTH
          random_walk  `init_baselines.random_walk_path(start=position)`,
          linear       `init_baselines.linear_ray_path`: straight rays from the
                       position, headings 360*i/n_init degrees,
-  3. SVGD (`svgd_batched.BatchedSvgdTorch`, a vectorised copy of `SvgdRefiner`,
+  3. refinement (`--refiner`): 'sun' (default) = Sun et al.'s FM-Stein solver,
+     the same core as the data generator (`svgd_batched.BatchedSunTorch`, target
+     = the density grid Phi, the start point is the initial state); 'tsvec' =
+     the previous SVGD (`svgd_batched.BatchedSvgdTorch`, a vectorised copy of `SvgdRefiner`,
      checked against it in `test_mission_eval.py`) refines EVERY candidate for
      `n_iters` (1500) iterations against Phi, with the start-point force
      (`SvgdRefiner.W_START`) pulling the first control point to the agent
@@ -305,15 +308,20 @@ class MissionSet:
         A, n_init = len(active), a.n_init
         r = active[0].n_done
         flat = inits.reshape(A * n_init, *inits.shape[2:]).astype(np.float64)
-        phi_k8 = np.repeat(np.stack([ctx.svgd_ref._phi_k(st.phi.detach().cpu().numpy().astype(np.float64))
-                                     for st in active]), n_init, axis=0)
+        if a.refiner == 'sun':
+            # Sun: the density grid itself is the target (score of log Phi).
+            target = np.repeat(np.stack([st.phi.detach().cpu().numpy().astype(np.float64)
+                                         for st in active]), n_init, axis=0)
+        else:
+            target = np.repeat(np.stack([ctx.svgd_ref._phi_k(st.phi.detach().cpu().numpy().astype(np.float64))
+                                         for st in active]), n_init, axis=0)
         phi_k10 = torch.repeat_interleave(torch.stack([ctx.ee.target_coeffs(st.phi) for st in active]),
                                           n_init, dim=0)
         starts_rep = np.repeat(starts, n_init, axis=0)
         seeds = [task_seed(st.name, self.cond, self.strat, self.method, r, i)
                  for st in active for i in range(n_init)]
         t0 = time.time()
-        out = ctx.bs.run(flat, phi_k8, starts_rep, seeds, a.n_iters, record=True)
+        out = ctx.bs.run(flat, target, starts_rep, seeds, a.n_iters, record=True)
         if ctx.device != 'cpu':
             torch.cuda.synchronize()
         self.svgd_s += time.time() - t0
@@ -539,13 +547,17 @@ def main():
                          'check the free space of the drive).')
     ap.add_argument('--shapes', type=str, default=None,
                     help='Comma-separated shape names (default: all validation shapes).')
+    from common.svgd_refine import add_refiner_arg
+    add_refiner_arg(ap)
     ap.add_argument('--n_shapes', type=int, default=999,
                     help='Take at most this many validation shapes (default: all 25).')
     ap.add_argument('--conditions', type=str, default=','.join(DEFAULT_CONDITIONS))
     ap.add_argument('--strategies', type=str, default=','.join(STRATEGY_MAP))
     ap.add_argument('--methods', type=str, default=','.join(METHODS))
     ap.add_argument('--n_init', type=int, default=30, help='Candidates per plan.')
-    ap.add_argument('--n_iters', type=int, default=1500, help='SVGD iterations per candidate.')
+    ap.add_argument('--n_iters', type=int, default=1500,
+                    help='Refinement iterations per candidate (SVGD steps for tsvec, FM-Stein '
+                         'iterations for sun).')
     ap.add_argument('--max_rounds', type=int, default=40,
                     help='Safety cap on the executed length units per mission.')
     ap.add_argument('--coverage_threshold', type=float, default=0.99,
@@ -591,10 +603,10 @@ def main():
 
     import variant_runner as vr
     from common.data import load_truth
-    from common.svgd_refine import SvgdRefiner
+    from common.svgd_refine import SvgdRefiner, run_suffix
     from metrics_explore_exploit import ExploreExploitErgodic
     from exploration_optimierung.mission import LENGTH_UNIT, blind_coverage
-    from svgd_batched import BatchedSvgdTorch
+    from svgd_batched import BatchedSvgdTorch, BatchedSunTorch
     import apply_cfm_belief as acb
 
     strategies = [s for s in a.strategies.split(',') if s]
@@ -619,7 +631,7 @@ def main():
                                resolution=TRUTH_RES, device=device)
     print(f"[mission] {len(names)} shapes: {names}", flush=True)
 
-    out_dir = os.path.join(a.out_root, a.out_tag)
+    out_dir = os.path.join(a.out_root, a.out_tag + run_suffix(a.refiner))
     os.makedirs(out_dir, exist_ok=True)
 
     planner = None
@@ -636,11 +648,14 @@ def main():
     ee = ExploreExploitErgodic(device=device)
     truths_t = list(truths)
     B_np = rsc.basis_matrix(NXI, N_POINTS, DEGREE)
-    bs = BatchedSvgdTorch(B_np, device, torch.float64,
-                          compute_dtype=torch.float32 if a.svgd_precision == 'mixed' else torch.float64)
+    if a.refiner == 'sun':
+        bs = BatchedSunTorch(B_np, device)
+    else:
+        bs = BatchedSvgdTorch(B_np, device, torch.float64,
+                              compute_dtype=torch.float32 if a.svgd_precision == 'mixed' else torch.float64)
     ctx = types.SimpleNamespace(
         args=a, device=device, names=list(names), truths=truths_t, planner=planner, ee=ee,
-        acb=acb, svgd_ref=SvgdRefiner(0), start_pos=start_pos, length_unit=LENGTH_UNIT, bs=bs,
+        acb=acb, svgd_ref=SvgdRefiner(0, backend=a.refiner), start_pos=start_pos, length_unit=LENGTH_UNIT, bs=bs,
         B64=B_np.astype(np.float64), B32=torch.as_tensor(B_np, dtype=torch.float32, device=device),
         cov_blind=[blind_coverage(t) for t in truths_t], n_uniform_fallback=0, n_short_plans=0,
         phi_k_truth_t=[ee.target_coeffs(t) for t in truths_t], out_dir=out_dir)
@@ -656,7 +671,8 @@ def main():
 
     sets = [MissionSet(ctx, c, s, m) for c in conditions for s in strategies for m in methods]
     print(f"[mission] {len(sets)} mission sets x {len(names)} shapes; {a.n_init} candidates x "
-          f"{a.n_iters} SVGD iterations per round; svgd={a.svgd_precision}, workers={a.workers}",
+          f"{a.n_iters} refinement iterations per round; refiner={a.refiner}, "
+          f"svgd={a.svgd_precision}, workers={a.workers}",
           flush=True)
     mp_ctx = mp.get_context('spawn')
     pool = mp_ctx.Pool(a.workers, initializer=_worker_init)

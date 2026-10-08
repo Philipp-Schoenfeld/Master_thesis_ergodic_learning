@@ -66,7 +66,7 @@ def test_solvers():
         -((X - 0.75) ** 2 + (Y - 0.3) ** 2) / 0.01)
     phi /= phi.max()
     B = rsc.basis_matrix()
-    phik = SvgdRefiner(0)._phi_k(phi)
+    phik = SvgdRefiner(0, backend='tsvec')._phi_k(phi)
     C, n = 4, 120
     inits = np.stack([random_walk_path(128, seed=s).numpy().astype(np.float64) for s in range(C)])
     seeds = [11, 12, 13, 14]
@@ -76,7 +76,8 @@ def test_solvers():
         worst = 0.0
         for c in range(C):
             log = []
-            SvgdRefiner(seed=seeds[c]).refine(inits[c], phi, n, nxi=25, start=st, trajectory_log=log)
+            SvgdRefiner(seed=seeds[c], backend='tsvec').refine(inits[c], phi, n, nxi=25, start=st,
+                                                               trajectory_log=log)
             worst = max(worst, float(np.abs(np.stack(log) - np_out['cps'][c]).max()))
         assert worst < 1e-6, f"numpy batched vs reference: {worst}"
         dev = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -91,6 +92,37 @@ def test_solvers():
     free = sb.BatchedSvgd(B).run(inits, phik, None, seeds, 400)['final_cps'][:, 0]
     assert np.abs(pinned - start).max() < 0.02 < np.abs(free - start).max(), (pinned, free)
     print("ok  start pin: first control point within 0.02 of the start (free run drifts away)")
+
+
+def test_sun_solver():
+    """Batched Sun refiner (`BatchedSunTorch`) == single `SvgdRefiner(backend='sun')`,
+    and the start point is the initial state of the dynamics."""
+    R = 64
+    xs = np.linspace(0, 1, R)
+    X, Y = np.meshgrid(xs, xs)
+    phi = np.exp(-((X - 0.3) ** 2 + (Y - 0.6) ** 2) / 0.02) + 0.5 * np.exp(
+        -((X - 0.75) ** 2 + (Y - 0.3) ** 2) / 0.01)
+    phi /= phi.max()
+    B = rsc.basis_matrix()
+    C, n = 3, 60
+    inits = np.stack([random_walk_path(128, seed=s).numpy().astype(np.float64) for s in range(C)])
+    start = np.array([0.5, 0.5])
+    dev = 'cuda' if torch.cuda.is_available() else 'cpu'
+    for st in (None, start):
+        out = sb.BatchedSunTorch(B, dev).run(inits, np.repeat(phi[None], C, axis=0), st,
+                                             [0] * C, n)
+        cps = out['cps'].cpu().numpy()
+        assert cps.shape == (C, n + 1, 25, 2), cps.shape
+        worst = 0.0
+        for c in range(C):
+            log = []
+            SvgdRefiner(seed=0, backend='sun').refine(inits[c], phi, n, nxi=25, start=st,
+                                                      trajectory_log=log)
+            worst = max(worst, float(np.abs(np.stack(log) - cps[c]).max()))
+        assert worst < 1e-5, f"batched Sun vs single Sun: {worst}"
+        assert not np.allclose(cps[:, 0], cps[:, -1]), "Sun refiner did not move anything"
+    assert np.abs(out['final_cps'][:, 0] - start).max() < 0.02, out['final_cps'][:, 0]
+    print(f"ok  Sun refiner: batched == single (max|d|={worst:.1e}), start = initial state")
 
 
 def test_codec():
@@ -166,7 +198,7 @@ def check_mission_db(root, cond, strat, method, shapes, n_rounds):
 
 
 def test_mission_dry(tmp):
-    common = ['--dry_run', '--shapes', 'A,digit_5', '--conditions', 'none_known,half_known',
+    common = ['--dry_run', '--refiner', 'tsvec', '--shapes', 'A,digit_5', '--conditions', 'none_known,half_known',
               '--strategies', 'ucb', '--n_init', '3', '--n_iters', '30', '--workers', '3',
               '--parallel_sets', '3', '--out_root', tmp]
     run_cli(RUNNER, *common, '--max_rounds', '4', '--out_tag', 'full')
@@ -185,6 +217,18 @@ def test_mission_dry(tmp):
           "one length unit each; resumed run == straight-through run (bit-identical)")
 
 
+def test_mission_dry_sun(tmp):
+    """The default refiner (Sun) end to end; results land in <out_tag>_sun."""
+    run_cli(RUNNER, '--dry_run', '--refiner', 'sun', '--shapes', 'A', '--conditions', 'half_known',
+            '--strategies', 'ucb', '--methods', 'random_walk', '--n_init', '3', '--n_iters', '30',
+            '--workers', '2', '--parallel_sets', '1', '--max_rounds', '2', '--out_root', tmp,
+            '--out_tag', 'sun')
+    assert not os.path.exists(os.path.join(tmp, 'sun'))
+    rows = check_mission_db(os.path.join(tmp, 'sun_sun'), 'half_known', 'ucb', 'random_walk', ['A'], 2)
+    assert max(r['start_gap'] for r in rows) < 0.05, [r['start_gap'] for r in rows]
+    print("ok  dry-run mission with the Sun refiner: 2 rounds stored under <out_tag>_sun")
+
+
 def test_plots(tmp):
     out, dt = run_cli(PLOTTER, '--out_root', tmp, '--out_tag', 'full', '--paths', '--svgd_rounds', '0,2')
     plots = os.path.join(tmp, 'full', 'plots')
@@ -199,7 +243,7 @@ def test_plots(tmp):
 
 
 def test_mission_real(tmp):
-    out, dt = run_cli(RUNNER, '--shapes', 'A,rand_gmm_10', '--conditions', 'half_known',
+    out, dt = run_cli(RUNNER, '--refiner', 'tsvec', '--shapes', 'A,rand_gmm_10', '--conditions', 'half_known',
                       '--strategies', 'eid', '--methods', 'cfm,random_walk', '--n_init', '6',
                       '--n_iters', '100', '--max_rounds', '3', '--workers', '3',
                       '--parallel_sets', '2', '--out_root', tmp, '--out_tag', 'real')
@@ -222,11 +266,13 @@ def main():
     torch.set_num_threads(1)
     t0 = time.time()
     test_solvers()
+    test_sun_solver()
     test_codec()
     test_linear_ray()
     test_db()
     with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         test_mission_dry(tmp)
+        test_mission_dry_sun(tmp)
         test_plots(tmp)
         if torch.cuda.is_available():
             test_mission_real(tmp)

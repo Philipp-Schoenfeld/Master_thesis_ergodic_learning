@@ -1,0 +1,59 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+WARNING:2026-10-07 12:52:12,418:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/exp_common.py:277: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:203.)
+  phi_t = torch.as_tensor(np.asarray(phi_grid), dtype=torch.float32, device=device)
+Traceback (most recent call last):
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq1_plot.py", line 22, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+srun: error: dgx-station: task 0: Exited with exit code 1
+Traceback (most recent call last):
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq2_plot.py", line 16, in <module>
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+srun: error: dgx-station: task 0: Exited with exit code 1
+WARNING:2026-10-07 13:49:44,623:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/exp_common.py:277: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:203.)
+  phi_t = torch.as_tensor(np.asarray(phi_grid), dtype=torch.float32, device=device)
+Traceback (most recent call last):
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq3_gp_targets.py", line 263, in <module>
+    main()
+    ~~~~^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq3_gp_targets.py", line 235, in main
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+srun: error: dgx-station: task 0: Exited with exit code 1
+WARNING:2026-10-07 14:35:38,436:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Traceback (most recent call last):
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq4_sinkhorn_samples.py", line 192, in <module>
+    main()
+    ~~~~^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq4_sinkhorn_samples.py", line 165, in main
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+srun: error: dgx-station: task 0: Exited with exit code 1
+WARNING:2026-10-07 15:37:32,204:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/exp_common.py:277: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:203.)
+  phi_t = torch.as_tensor(np.asarray(phi_grid), dtype=torch.float32, device=device)
+Traceback (most recent call last):
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq5_dynamics.py", line 200, in <module>
+    main()
+    ~~~~^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq5_dynamics.py", line 194, in main
+    csv_path, plot_path = quantitative_sweep(args.n_trials, args.seed0, planner, device, out_dir,
+                          ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                             time_budget_h=args.time_budget_h)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq5_dynamics.py", line 141, in quantitative_sweep
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+srun: error: dgx-station: task 0: Exited with exit code 1
+WARNING:2026-10-07 16:01:22,619:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Traceback (most recent call last):
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq6_alm_lambda0.py", line 172, in <module>
+    main()
+    ~~~~^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/rq_experiments/rq6_alm_lambda0.py", line 149, in main
+    import pandas as pd
+ModuleNotFoundError: No module named 'pandas'
+srun: error: dgx-station: task 0: Exited with exit code 1

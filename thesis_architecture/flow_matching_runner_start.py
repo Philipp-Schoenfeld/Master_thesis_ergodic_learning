@@ -497,16 +497,25 @@ def visualise_set(model, shapes_dict, particles_dict, densities_dict, title_pref
         # particles_dict[lbl] is (N, 3) — generate_particle_trajectories
         # handles the batch expansion internally
         cond_t = particles_dict[lbl]  # (N, 3)
+        # Ohne `start=` wuerde diese Visualisierung nie die FiLM-Konditionierung
+        # oder das harte Setzen des ersten Kontrollpunkts durchlaufen und immer
+        # so aussehen wie das unkonditionierte Basismodell — genau das Verhalten,
+        # das dieser Lauf eigentlich zeigen soll.
+        start_t = torch.tensor(base[0], dtype=torch.float32, device=device)
 
         gen, lam = generate_particle_trajectories(
             model, cond_t,
             num_samples=args.n_gen, nxi=args.nxi, nd=args.nd,
             steps=args.steps, device=str(device),
             cfg_weight=args.cfg_weight,
+            start=start_t,
         )
         gen = gen.cpu().numpy()
         _draw_traj(ax, base, gen, parts, d_map, f"'{lbl}'",
                    args.bspline_pts, args.bspline_deg)
+        ax.scatter([start_t[0].item()], [start_t[1].item()], color='#1565C0',
+                   marker='*', s=140, edgecolors='white', linewidths=0.6,
+                   zorder=4, label='Start' if idx == 0 else '')
 
         if lam is not None:
             lam_str = ", ".join(f"{v:.2f}" for v in lam[0].cpu().numpy())
@@ -598,6 +607,19 @@ def run(args):
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"  Model params: {params:,}\n")
 
+    # Finetuning auf einer neuen Datenbasis: nur die Gewichte uebernehmen,
+    # Optimierer/Scheduler/Epochenzaehler bleiben frisch und laufen ueber die
+    # volle neue `--epochs`-Spanne. Bewusst getrennt von `--resume`: dessen
+    # `optimizer_state_dict`/`scheduler_state_dict` existieren nur in den
+    # `_ep####.pt`-Zwischenstaenden, nicht im `_final.pt` eines abgeschlossenen
+    # Laufs (`nach_endstand` loescht genau diese) -- `--resume` auf einem
+    # `_final.pt` wuerde mit KeyError('optimizer_state_dict') abbrechen.
+    if args.finetune_from and os.path.isfile(args.finetune_from):
+        ft_ckpt = torch.load(args.finetune_from, map_location=device, weights_only=True)
+        model.load_state_dict(ft_ckpt['model_state_dict'])
+        print(f"  Finetuning: Gewichte aus {args.finetune_from} geladen "
+              f"(frischer Optimizer/Scheduler, {args.epochs} neue Epochen)")
+
     if args.load_model and os.path.isfile(args.load_model):
         ckpt = torch.load(args.load_model, map_location=device, weights_only=True)
         model.load_state_dict(ckpt['model_state_dict'])
@@ -637,6 +659,21 @@ def run(args):
             'model_state_dict': model.state_dict(),
             'nxi': args.nxi, 'nd': args.nd, 'D': args.D, 'n_particles': args.n_particles,
             'epochs': args.epochs, 'lr': args.lr, 'sample_mode': args.sample_mode,
+            'epoch': args.epochs - 1,
+            # Ohne dieses Flag laedt model_zoo.load_model (und jeder andere
+            # Konsument von `ckpt.get('start_cond', False)`) die Basis-
+            # Architektur ohne `start_emb` — das state_dict passt dann nicht
+            # ("Unexpected key(s): start_emb.*") und der Checkpoint ist nach
+            # `nach_endstand` (die alle `_ep####.pt` loescht) der einzige
+            # verbleibende, also unbrauchbare Stand des Laufs.
+            'start_cond': True,
+            'p_drop': args.p_drop, 'cfg_weight': args.cfg_weight,
+            'lambda_erg': getattr(args, 'lambda_erg', 0.0),
+            'erg_K': getattr(args, 'erg_K', 0),
+            'erg_pts': getattr(args, 'erg_pts', 0),
+            'erg_t_power': getattr(args, 'erg_t_power', 0.0),
+            'db': _DB_PATH,
+            'n_flat': getattr(args, 'n_flat', 0),
         }, final_save_path)
         print(f"  Checkpoint saved -> {final_save_path}")
         # Nach dem Endstand bleibt nur das `_final`: die Zwischenstaende
@@ -726,6 +763,12 @@ def parse_args():
                    default=os.path.join(_here, 'checkpoints', 'cond_particles_crossattn.pt'))
     p.add_argument('--load_model', type=str, default=None)
     p.add_argument('--resume', type=str, default=None)
+    p.add_argument('--finetune_from', type=str, default=None,
+                   help='Checkpoint, dessen Gewichte als Startpunkt fuer ein '
+                        'frisches Training (--epochs neue Epochen, neuer '
+                        'Optimizer/Scheduler) uebernommen werden. Anders als '
+                        '--resume: funktioniert auch mit einem `_final.pt`, '
+                        'das kein Optimizer-/Scheduler-State mehr hat.')
     p.add_argument('--save_every', type=int, default=100)
     p.add_argument('--viz_every', type=int, default=250)
     

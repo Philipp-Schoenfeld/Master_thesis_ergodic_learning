@@ -393,6 +393,40 @@ class BatchedSvgdTorch:
                     final_energy=e[ar, best].detach().cpu().numpy())
 
 
+class BatchedSunTorch:
+    """Batch counterpart of `SvgdRefiner(backend='sun')`: Sun et al.'s FM-Stein
+    solver (Stein variational flow + LQ flow matching, the core of the data
+    generator `ergodic_solver.py`), one vmapped JAX call for all candidates via
+    `common.sun_refine.run_batch` -- the single-trajectory refiner goes through
+    the same function, so candidate c is exactly a lone `refine` call.
+
+    Same `run` contract as `BatchedSvgdTorch`, except that the target is the
+    density GRID phi (C, R, R) (or (R, R)) instead of Fourier coefficients, and
+    `seeds` are accepted but unused (the solver is deterministic)."""
+
+    def __init__(self, B, device='cuda'):
+        import torch
+        self.torch = torch
+        self.dev = torch.device(device)
+        self.T, self.nxi = np.asarray(B).shape
+
+    def run(self, init_curves, phis, start, seeds, n_iters, record=True):
+        from common.sun_refine import run_batch
+        torch = self.torch
+        curves = np.asarray(init_curves, dtype=np.float64)
+        if curves.shape[1] != self.T:
+            raise ValueError(f"init curves have {curves.shape[1]} points, basis expects {self.T}")
+        out = run_batch(curves, phis, start, int(n_iters), self.nxi, record=record)
+        log = None
+        if record:
+            C = curves.shape[0]
+            log = torch.empty((C, n_iters + 1, self.nxi, 2), dtype=torch.float32, device=self.dev)
+            log[:, 0] = torch.as_tensor(out['init_cps'], dtype=torch.float32, device=self.dev)
+            if n_iters >= 1:
+                log[:, 1:] = torch.as_tensor(np.array(out['log']), dtype=torch.float32, device=self.dev)
+        return dict(cps=log, final_cps=out['final_cps'], final_energy=None)
+
+
 # -- compact storage of the logged states: see state_codec.py (numpy-only, so the
 #    worker processes do not have to import the solver stack) --------------------
 from state_codec import pack_states, unpack_states, Q_LO, Q_HI      # noqa: E402,F401

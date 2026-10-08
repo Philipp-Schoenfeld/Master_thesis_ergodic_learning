@@ -50,7 +50,8 @@ import torch
 
 import apply_cfm_belief as acb                                    # noqa: E402
 from common.data import load_truth                                # noqa: E402
-from common.svgd_refine import SvgdRefiner                         # noqa: E402
+from common.svgd_refine import (SvgdRefiner, add_refiner_arg,  # noqa: E402
+                               run_suffix)
 
 import variant_runner as vr                                        # noqa: E402
 from spectral_planner import SpectralPlanner                       # noqa: E402
@@ -90,6 +91,7 @@ def main():
     ap.add_argument('--device', type=str,
                     default='cuda' if torch.cuda.is_available() else 'cpu')
     ap.add_argument('--out_tag', type=str, required=True)
+    add_refiner_arg(ap)
     ap.add_argument('--seed', type=int, default=0)
     ap.add_argument('--truth_res', type=int, default=96)
     ap.add_argument('--no_viz', action='store_true')
@@ -124,10 +126,10 @@ def main():
     planners = {rep: PLANNER_BUILDERS[rep](
         args.particle_ckpt if rep == 'particles' else args.spectral_ckpt, device)
         for rep in reps}
-    refiner = SvgdRefiner(seed=args.seed)
+    refiner = SvgdRefiner(seed=args.seed, backend=args.refiner)
     ee = ExploreExploitErgodic(device=device)
 
-    out_dir = os.path.join(_here, 'results', args.out_tag)
+    out_dir = os.path.join(_here, 'results', args.out_tag + run_suffix(args.refiner))
     raw_dir = os.path.join(out_dir, 'raw')
     tables_dir = os.path.join(out_dir, 'tables')
     plots_dir = os.path.join(out_dir, 'plots')
@@ -135,6 +137,7 @@ def main():
         os.makedirs(d, exist_ok=True)
     with open(os.path.join(out_dir, 'config.json'), 'w') as f:
         json.dump({
+            'refiner': args.refiner,
             'representations': reps, 'strategies': {k: vr.STRATEGIES[k] for k in strategies},
             'replan_schemes': schemes, 'shapes_resolved': names,
             'knowledge_conditions': vr.KNOWLEDGE_CONDITIONS,

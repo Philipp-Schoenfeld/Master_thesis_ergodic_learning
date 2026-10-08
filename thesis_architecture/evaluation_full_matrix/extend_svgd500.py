@@ -42,7 +42,7 @@ for _p in (_here, os.path.join(_arch, 'exploration'), _arch,
         sys.path.insert(0, _p)
 
 from common.data import load_truth                                 # noqa: E402
-from common.svgd_refine import SvgdRefiner                          # noqa: E402
+from common.svgd_refine import SvgdRefiner, add_refiner_arg, run_suffix  # noqa: E402
 import variant_runner as vr                                         # noqa: E402
 from metrics_explore_exploit import ExploreExploitErgodic           # noqa: E402
 from run_eval_matrix import compute_row, save_trajectory_files, DEFAULT_CKPT  # noqa: E402
@@ -67,7 +67,12 @@ def main():
                     default='cuda' if torch.cuda.is_available() else 'cpu')
     ap.add_argument('--particle_ckpt', type=str, default=DEFAULT_CKPT)
     ap.add_argument('--spectral_ckpt', type=str, default=SPECTRAL_CKPT)
+    add_refiner_arg(ap)
     args = ap.parse_args()
+    # Die bisherigen Zeilen dieses Ordners sind mit dem TSVEC-Refiner entstanden;
+    # mit --refiner sun tragen die neuen Strategie-Namen und die CSV den Zusatz
+    # '_sun', damit sie sich nicht mit ihnen mischen.
+    sfx = run_suffix(args.refiner)
 
     shapes = [s.strip() for s in args.shapes.split(',') if s.strip()]
     device = args.device
@@ -76,7 +81,7 @@ def main():
         'particles': PLANNER_BUILDERS['particles'](args.particle_ckpt, device),
         'spectral': PLANNER_BUILDERS['spectral'](args.spectral_ckpt, device),
     }
-    refiner = SvgdRefiner(seed=SEED)
+    refiner = SvgdRefiner(seed=SEED, backend=args.refiner)
     ee = ExploreExploitErgodic(device=device)
 
     names, truths = load_truth(labels=shapes, n=999, split='val',
@@ -114,7 +119,7 @@ def main():
                     refined = vr.svgd(refiner, raw_curve, phi, SVGD_ITERS_EXT, nxi=nxi)
 
                     family = svgd0_strat[:-len('_svgd0')]
-                    strat500 = f"{family}_svgd{SVGD_ITERS_EXT}"
+                    strat500 = f"{family}_svgd{SVGD_ITERS_EXT}{sfx}"
                     sub500 = f"{strat500}__no_replan"
                     row = compute_row(refined, truth, phi_k_truth, ee, name, rep,
                                       sub500, None, cond)
@@ -123,7 +128,7 @@ def main():
                     rows.append(row)
         print(f"[extend_svgd500] {name} done, {len(rows)} rows so far")
 
-    out_csv = os.path.join(_here, 'results', 'svgd500_extension.csv')
+    out_csv = os.path.join(_here, 'results', f'svgd500_extension{sfx}.csv')
     if rows:
         keys = sorted({k for row in rows for k in row})
         with open(out_csv, 'w', newline='') as f:
@@ -133,7 +138,7 @@ def main():
     print(f"[extend_svgd500] finished: {len(rows)} rows ({n_missing} missing raw "
          f"trajectories skipped) -> {out_csv}")
     print("[extend_svgd500] new rows also saved under "
-         f"results/{OUT_TAG}/raw/**/*_svgd500__no_replan/ like any other row.")
+         f"results/{OUT_TAG}/raw/**/*_svgd500{sfx}__no_replan/ like any other row.")
 
 
 if __name__ == '__main__':

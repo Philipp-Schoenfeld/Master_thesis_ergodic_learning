@@ -38,3 +38,11 @@ thesis_architecture/exploration/modelle_und_Datenbank/ergodic_dataset_3d.db
 
 # SQLite log of every SVGD state of the 2026-10-01 convergence run (2.6 GB, above the GitHub file limit; regenerate with run_svgd_convergence.py)
 thesis_architecture/evaluation_full_matrix/results/svgd_convergence_20261001/svgd_convergence.db
+
+# Replanning-mission shard DBs of mission_eval_20261006: 27 files of 350-640 MB
+# (13 GB, every SVGD state of every candidate), far above GitHub's 100 MB limit.
+# They stay on the cluster and locally; regenerate with run_mission_eval.py.
+thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/shards/
+
+# LibreOffice lock files
+.~lock.*#

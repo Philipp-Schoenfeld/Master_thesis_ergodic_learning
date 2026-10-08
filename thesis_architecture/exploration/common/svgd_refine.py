@@ -13,6 +13,18 @@ auseinanderdriften, ohne dass es jemandem auffiele. `interactive_sim.py`
 importiert die Klasse deshalb von hier und verhaelt sich unveraendert.
 
 Der Inhalt ist gegenueber der GUI-Fassung unveraendert.
+
+Zwei Verfahren (`backend`), seit 2026-10-06:
+
+* ``'sun'`` (Standard): Suns FM-Stein-Loeser (Stein-Fluss + LQ-Flow-Matching),
+  derselbe Kern wie die Datengenerierung in `ergodic_solver.py` -- siehe
+  `common/sun_refine.py`. `n_iters` zaehlt dann FM-Stein-Iterationen.
+* ``'tsvec'``: der bisherige TSVEC-artige Partikel-SVGD (Adam auf einer
+  Fourier-Energie, Gewichte aus `SE3_SVGD/tsvec_2d.py`), unveraendert. Damit
+  bleiben alle bisherigen Ergebnisse reproduzierbar.
+
+Laeufe mit ``'sun'`` tragen den Namenszusatz `run_suffix('sun') == '_sun'`;
+``'tsvec'``-Laeufe behalten ihre bisherigen Namen.
 """
 
 import contextlib
@@ -35,9 +47,41 @@ import ergodic_core as ergo          # noqa: E402
 import svgd_engine as svgde          # noqa: E402
 from waypoints import WaypointPins   # noqa: E402
 
+#: Verfuegbare Verfeinerungsverfahren.
+BACKENDS = ('sun', 'tsvec')
+#: Standard: Suns Loeser. Die Umgebungsvariable THESIS_REFINER=tsvec stellt
+#: alle Aufrufer ohne eigenes Flag (GUI, `exploration_optimierung`) auf den
+#: bisherigen Refiner zurueck, z. B. fuer laufende Job-Ketten.
+DEFAULT_BACKEND = os.environ.get('THESIS_REFINER', 'sun')
+if DEFAULT_BACKEND not in BACKENDS:
+    raise ValueError(f"THESIS_REFINER={DEFAULT_BACKEND!r}; bekannt: {BACKENDS}")
+
+
+def run_suffix(backend):
+    """Namenszusatz fuer Ausgabeordner/Run-Tags: `'_sun'` fuer Suns Loeser,
+    leer fuer den bisherigen TSVEC-Refiner (alte Namen bleiben gueltig)."""
+    if backend not in BACKENDS:
+        raise ValueError(f"unbekanntes Verfeinerungsverfahren {backend!r}; bekannt: {BACKENDS}")
+    return '' if backend == 'tsvec' else f'_{backend}'
+
+
+def add_refiner_arg(ap):
+    """Gemeinsames CLI-Flag aller Runner: `--refiner {sun,tsvec}`."""
+    ap.add_argument('--refiner', type=str, default=DEFAULT_BACKEND, choices=BACKENDS,
+                    help="Nachverfeinerung: 'sun' = Suns FM-Stein-Loeser wie in der "
+                         "Datengenerierung (Standard, Ausgabe mit Zusatz '_sun'), "
+                         "'tsvec' = bisheriger TSVEC-artiger SVGD (alte Run-Namen).")
+    return ap
+
 
 class SvgdRefiner:
-    """Verfeinert eine geplante Bahn mit dem bestehenden SVGD-Solver
+    """Verfeinert eine geplante Bahn gegen die aktuelle Zieldichte Phi.
+
+    `backend='sun'` (Standard) delegiert an `SunSteinRefiner`
+    (`common/sun_refine.py`, Kern von `ergodic_solver.py`). Alles Folgende
+    beschreibt `backend='tsvec'`, den bisherigen Weg:
+
+    Verfeinert eine geplante Bahn mit dem bestehenden SVGD-Solver
     (SE3_SVGD/svgd_engine.py + ergodic_core.py) — Ziel ist die aktuelle
     Zieldichte Phi der jeweiligen Runde, nicht ein fest verdrahtetes Ziel wie
     in `SE3_SVGD/tsvec_2d.py`.
@@ -69,10 +113,17 @@ class SvgdRefiner:
     #: nicht nur weich lernen).
     W_START = 500.0
 
-    def __init__(self, seed=0):
+    def __init__(self, seed=0, backend=DEFAULT_BACKEND):
+        if backend not in BACKENDS:
+            raise ValueError(f"unbekanntes Verfeinerungsverfahren {backend!r}; bekannt: {BACKENDS}")
+        self.backend = backend
         self.k_idx = ergo.build_fourier_indices(self.K, self.DIM)
         self.Lambda_k = ergo.compute_lambda_k(self.k_idx)
         self.rng = np.random.default_rng(seed)
+        self._sun = None
+        if backend == 'sun':
+            from common.sun_refine import SunSteinRefiner
+            self._sun = SunSteinRefiner(seed=seed)
 
     def _phi_k(self, phi_grid):
         R = phi_grid.shape[-1]
@@ -141,6 +192,10 @@ class SvgdRefiner:
         Eintrag i = bester Partikel (niedrigste Energie, dieselbe Auswahl wie
         beim Rueckgabewert) nach Iteration i. Rein lesend -- das Ergebnis ist
         mit und ohne Log identisch."""
+        if self._sun is not None:
+            return self._sun.refine(curve_np, phi_np, n_iters, nxi=nxi, obstacle=obstacle,
+                                    obstacle_weight=obstacle_weight, start=start,
+                                    trajectory_log=trajectory_log)
         if trajectory_log is not None and (nxi is None or nxi == curve_np.shape[0]):
             raise ValueError("trajectory_log braucht den B-Spline-Zweig (nxi != T)")
         if n_iters <= 0:

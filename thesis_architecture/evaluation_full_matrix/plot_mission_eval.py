@@ -142,6 +142,15 @@ def executions_to_99(arr):
     return float(arr['n_exec'][hit[0]]) if len(hit) else float('nan')
 
 
+def executions_to_threshold(arr, threshold):
+    """Executed units until the swept ground-truth mass first reaches `threshold`
+    (0.99 -> same as `executions_to_99`), else NaN."""
+    if threshold >= 0.99:
+        return executions_to_99(arr)
+    hit = np.nonzero(arr['swept_mass'] >= threshold)[0]
+    return float(arr['n_exec'][hit[0]]) if len(hit) else float('nan')
+
+
 # ── figures ──────────────────────────────────────────────────────────────────
 
 def grid_axes(data, figsize_unit=(4.4, 3.4), sharey=False):
@@ -230,7 +239,7 @@ def plot_cdf(data, out_path, n_max, n_shapes):
     plt.close(fig)
 
 
-def plot_box(data, out_path, n_max, n_shapes):
+def plot_box(data, out_path, n_max, n_shapes, threshold=0.99):
     fig, axes, conds, strats = grid_axes(data, sharey=True)
     rng = np.random.default_rng(0)
     methods = list(METHOD_STYLE)
@@ -243,7 +252,7 @@ def plot_box(data, out_path, n_max, n_shapes):
                 if not per:
                     continue
                 sty = METHOD_STYLE[m]
-                n99 = np.array([executions_to_99(per[s]) for s in sorted(per)])
+                n99 = np.array([executions_to_threshold(per[s], threshold) for s in sorted(per)])
                 got = n99[np.isfinite(n99)]
                 if len(got):
                     bp = ax.boxplot([got], positions=[k], widths=0.5, showfliers=False,
@@ -265,8 +274,9 @@ def plot_box(data, out_path, n_max, n_shapes):
                                rotation=12)
             ax.axhline(n_max + 0.5, color=MUTED, lw=0.6, ls=':')
             ax.set_ylim(0, n_max + 2)
-    finish_grid(fig, axes, conds, strats, 'Executed units until 99 %',
-                f"Executed length units until 99 % is swept -- {n_shapes} holdout shapes "
+    pct = f"{threshold * 100:g} %"
+    finish_grid(fig, axes, conds, strats, f'Executed units until {pct}',
+                f"Executed length units until {pct} of the ground-truth mass is swept -- {n_shapes} holdout shapes "
                 f"(x above the dotted line: not reached within the {n_max}-unit cap)",
                 xlabel=False)
     fig.savefig(out_path, dpi=140, facecolor='white', bbox_inches='tight')
@@ -448,6 +458,11 @@ def main():
     ap.add_argument('--no_per_shape', action='store_true')
     ap.add_argument('--paths', action='store_true',
                     help='Also draw the driven paths of every mission (27 figures).')
+    ap.add_argument('--box_thresholds', type=str, default='',
+                    help='Comma-separated swept-mass thresholds (e.g. 0.75,0.8,0.9,0.95,0.99): '
+                         'one executions-to-threshold box plot each, in plots/executions_to_threshold/.')
+    ap.add_argument('--box_only', action='store_true',
+                    help='Only write the --box_thresholds figures, nothing else.')
     ap.add_argument('--svgd_rounds', type=str, default='0,5',
                     help='Planning rounds (0-based) for the SVGD-convergence figures.')
     args = ap.parse_args()
@@ -461,9 +476,18 @@ def main():
     n_shapes = len({s for v in data.values() for s in v})
     plots = os.path.join(root, 'plots')
     os.makedirs(plots, exist_ok=True)
+    cap = int(cfg.get('max_rounds', n_max))
+    if args.box_thresholds:
+        d = os.path.join(plots, 'executions_to_threshold')
+        os.makedirs(d, exist_ok=True)
+        for thr in [float(t) for t in args.box_thresholds.split(',') if t]:
+            plot_box(data, os.path.join(d, f'executions_to_{thr * 100:g}_box.png'), cap, n_shapes,
+                     threshold=thr)
+        print(f"[plot_mission_eval] wrote threshold box plots to {d}")
+        if args.box_only:
+            return
     for metric in METRICS:
         plot_overview(data, metric, os.path.join(plots, f'overview_{metric}.png'), n_max, n_shapes)
-    cap = int(cfg.get('max_rounds', n_max))
     plot_cdf(data, os.path.join(plots, 'executions_to_99_cdf.png'), cap, n_shapes)
     plot_box(data, os.path.join(plots, 'executions_to_99_box.png'), cap, n_shapes)
     for rnd in [int(r) for r in args.svgd_rounds.split(',') if r != '']:

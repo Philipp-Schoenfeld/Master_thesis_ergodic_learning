@@ -123,6 +123,25 @@
 # `-J` from the sbatch command line before any `#SBATCH` pragma, so
 # overriding it there needs no edit here) to also keep the two apart in
 # `squeue`/log filenames.
+#
+# PPO_EPISODEN -- more transitions per PPO update (previously hardcoded to
+# ppo.py's default of 2)
+# ----------------------------------------------------------------------------
+# The stored run of this pipeline (job whose numbers are in
+# `results/policy_b_training.json`) collected only
+# n_envs(8) x episoden_pro_iter(2) x n_max(8) = 128 transitions per PPO
+# iteration. Over the 156 iterations it got through before its time budget
+# ran out, `J` oscillated noisily between ~0.30 and ~0.35 with no visible
+# trend, entropy barely moved (2.09 -> 1.85), and the policy loss stayed
+# near zero throughout -- the GAE advantage estimate from that few, highly
+# correlated transitions is dominated by noise, so the policy gradient has
+# essentially nothing to climb. Raising PPO_EPISODEN multiplies the
+# transitions (and therefore the batches PPO's minibatch loop actually
+# updates on) per iteration without touching n_envs, so the per-round SVGD
+# load stays matched to WORKERS. The cost is fewer completed iterations for
+# the same wall-clock budget -- `ppo.py --max_minuten` already absorbs that
+# by stopping early and keeping the best smoothed checkpoint, same as
+# before.
 # ===========================================================================
 
 set -o pipefail
@@ -150,6 +169,7 @@ SVGD_BUCKETS=${SVGD_BUCKETS:-"0 25 100"}
 SPLIT=${SPLIT:-train}               # Orakel + PPO; Stufe 4 nutzt immer 'val'
 PPO_ITER=${PPO_ITER:-200}           # Obergrenze; das Zeitbudget bremst frueher
 PPO_ENVS=${PPO_ENVS:-8}
+PPO_EPISODEN=${PPO_EPISODEN:-6}      # Episoden/Iteration -- siehe Begruendung oben
 PPO_NMAX=${PPO_NMAX:-8}
 EVAL_NMAX=${EVAL_NMAX:-8}
 FOLDS=${FOLDS:-5}
@@ -176,7 +196,10 @@ MIT_ORAKEL=${MIT_ORAKEL:-0}
 
 # Reserven, damit die spaeteren Stufen ueberhaupt stattfinden
 MIN_A=${MIN_A:-20}                  # Option A braucht nur Minuten
-MIN_B=${MIN_B:-150}                 # PPO unter 2,5 h lohnt kaum
+MIN_B=${MIN_B:-300}                  # ~22 Iterationen Mindestfloor bei den
+                                     # gemessenen 798 s/Iteration (Job 161415)
+                                     # -- 150 min waeren bei dieser realen
+                                     # Kostenlage nur noch ~11 Iterationen
 MIN_EVAL=${MIN_EVAL:-30}            # ohne Orakelspalte reicht das
 
 ERG=exploration_optimierung/results
@@ -224,15 +247,14 @@ nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null || tr
 python -c "import torch;print('torch',torch.__version__,'cuda',torch.cuda.is_available())"
 
 # ── Grobe Erwartung, bevor irgendetwas rechnet ─────────────────────────────
-# Bezugswert: 1,5 s je Entscheidung-Kandidat, Planung UND SVGD-Verfeinerung
-# zusammen, gemessen mit --workers 7 auf einer dgx-station V100 (Job 155259,
-# 10 Formen). Der fruehere Wert (0,38 s) hatte nur die GPU-Planung erfasst
-# und die CPU-gebundene SVGD-Verfeinerung komplett ausgelassen -- das war
-# einer der beiden Gruende, warum Job 154992 bei 150 Formen kollabierte
-# (siehe Postmortem oben). SEK_JE_WOLKE bleibt ueberschreibbar, falls ein
-# spaeterer Lauf auf anderer Hardware/anderem --workers-Wert eine neue
-# Sondierung liefert.
-SEK_JE_WOLKE=${SEK_JE_WOLKE:-150}     # Hundertstelsekunden, also 1,50 s
+# Bezugswert: 1,26 s je Entscheidung-Kandidat, Planung UND SVGD-Verfeinerung
+# zusammen, gemessen mit --workers 7 auf einer dgx-station V100 (Job 161415,
+# 10 Formen, 2 Runden, 960 Wolken in 1209,3 s). Etwas guenstiger als der
+# vorherige Bezugswert (1,50 s, Job 155259) -- beide auf derselben
+# Hardware/Konfiguration, die Differenz ist normale Lauf-zu-Lauf-Streuung.
+# SEK_JE_WOLKE bleibt ueberschreibbar, falls eine spaetere Sondierung auf
+# anderer Hardware/anderem --workers-Wert eine neue Zahl liefert.
+SEK_JE_WOLKE=${SEK_JE_WOLKE:-126}     # Hundertstelsekunden, also 1,26 s
 N_BUCKETS=$(echo $SVGD_BUCKETS | wc -w)
 K=$(( 4 * PARAM_PUNKTE * N_BUCKETS ))
 WOLKEN_ORAKEL=$(( N_SHAPES_TRAIN * K * N_MAX * SEEDS ))
@@ -241,16 +263,31 @@ MIN_ORAKEL=$(( WOLKEN_ORAKEL * SEK_JE_WOLKE / 100 / 60 ))
 MIN_EVAL_ORAKEL=$(( WOLKEN_EVAL * SEK_JE_WOLKE / 100 / 60 ))
 if [ "$MIT_ORAKEL" = "1" ]; then EVAL_EXTRA=$MIN_EVAL_ORAKEL; else EVAL_EXTRA=0; fi
 echo "  Kandidaten je Entscheidung: $K"
-echo "  Erwartung (Massstab dgx-station V100 mit --workers 7, gemessen in Job 155259):"
+echo "  Erwartung (Massstab dgx-station V100 mit --workers 7, gemessen in Job 161415):"
 echo "    Stufe 1 Orakel        ~${MIN_ORAKEL} min  (${WOLKEN_ORAKEL} geplante Wolken)"
 echo "    Stufe 2 Option A      ~10 min"
-echo "    Stufe 3 PPO           bis $(( PPO_ITER * 65 / 60 )) min (${PPO_ITER} Iterationen; Budget bremst frueher)"
+# PPO_SEK_ITER -- korrigiert nach Job 161415's Zeit-Sondierung
+# --------------------------------------------------------------------------
+# Die vorherige Formel (65 s/Iteration bei episoden_pro_iter=2, linear auf
+# PPO_EPISODEN skaliert) war eine Hochrechnung, keine Messung, und sie war
+# erheblich zu optimistisch: Job 161415 mass bei episoden_pro_iter=6 real
+# 798 s fuer eine einzelne Iteration (n_envs=8, n_max=8, --workers 7, dgx-
+# station V100) -- gut 4x mehr als die 195 s, die die alte Formel fuer
+# dieselbe Einstellung vorhergesagt haette. Selbst der zugrundeliegende
+# 65-s-Wert war schon falsch: die tatsaechlichen Zahlen in
+# policy_b_training.json (episoden_pro_iter=2, derselbe n_envs/n_max) zeigen
+# im eingeschwungenen Zustand ~170 s/Iteration, nicht 65 s. Da nur dieser
+# eine Messpunkt vorliegt, wird linear um ihn herum skaliert (798 * x/6) --
+# das ist immnoch eine Annahme fuer andere PPO_EPISODEN-Werte, aber verankert
+# an einer echten statt einer erfundenen Zahl.
+PPO_SEK_ITER=$(( 798 * PPO_EPISODEN / 6 ))
+echo "    Stufe 3 PPO           bis $(( PPO_ITER * PPO_SEK_ITER / 60 )) min (${PPO_ITER} Iterationen x ${PPO_EPISODEN} Episoden; Budget bremst frueher)"
 if [ "$MIT_ORAKEL" = "1" ]; then
   echo "    Stufe 4 Auswertung    ~10 min + ~${MIN_EVAL_ORAKEL} min fuer die Orakelspalte (MIT_ORAKEL=1)"
 else
   echo "    Stufe 4 Auswertung    ~10 min (MIT_ORAKEL=0 -- orakel_rollout-Obergrenze kommt trotzdem aus Stufe 1)"
 fi
-echo "    Summe                 ~$(( MIN_ORAKEL + 10 + PPO_ITER * 65 / 60 + 10 + EVAL_EXTRA )) min von ${GESAMT_MIN} min"
+echo "    Summe                 ~$(( MIN_ORAKEL + 10 + PPO_ITER * PPO_SEK_ITER / 60 + 10 + EVAL_EXTRA )) min von ${GESAMT_MIN} min"
 
 # ── 1. Orakel ──────────────────────────────────────────────────────────────
 if [ "$FORCE" != "1" ] && [ -s "$DATENSATZ" ]; then
@@ -301,7 +338,8 @@ else
     # Verhaltensklonen (aus der CSV) die Maskierung, PPOs eigenes Training
     # aber nicht.
     $RUN python -m exploration_optimierung.policy.ppo \
-        --iterationen "$PPO_ITER" --n_envs "$PPO_ENVS" --n_max "$PPO_NMAX" \
+        --iterationen "$PPO_ITER" --n_envs "$PPO_ENVS" \
+        --episoden_pro_iter "$PPO_EPISODEN" --n_max "$PPO_NMAX" \
         --n_shapes "$N_SHAPES_TRAIN" --split "$SPLIT" --workers "$WORKERS" \
         --datensatz "$DATENSATZ" --out "$POLICY_B_PT" --bericht "$POLICY_B_JSON" \
         $MASKE_FLAGS \

@@ -67,7 +67,7 @@ def extend_task(task):
             method=task['method'], init_idx=task['init_idx'],
             init_param=None, init_curve=task['init_curve'], phi=task['phi'],
             phi_k_truth=task['phi_k_truth'], n_iters=task['total_iters'],
-            nxi=task['nxi'], seed=task['seed']))
+            nxi=task['nxi'], seed=task['seed'], refiner=task['refiner']))
         cps = res['cps']
         prefix_diff = float(np.abs(cps[:stored_n + 1] - task['stored_cps']).max())
         e_old = task['stored_E_total']
@@ -108,6 +108,9 @@ def main():
     conn = sdb.open_db(db_path)
     cfg = sdb.get_meta(conn, 'config', {})
     svgd_target = cfg.get('svgd_target', 'belief')   # DBs before the flag existed: belief
+    # Verlaengert wird immer mit dem Refiner, mit dem die DB entstanden ist
+    # (DBs vor dem --refiner-Flag: der bisherige TSVEC-Refiner).
+    refiner = cfg.get('refiner', 'tsvec')
     done = sdb.ext_run_ids(conn)
 
     ee = ExploreExploitErgodic(device=args.device)
@@ -180,6 +183,7 @@ def main():
                 'phi': phi, 'phi_k_truth': phi_k, 'nxi': run['nxi'],
                 'stored_n_iters': stored_n, 'stored_cps': run['cps'],
                 'stored_E_total': run['E_total'], 'total_iters': args.total_iters,
+                'refiner': refiner,
                 'seed': rsc.task_seed(shape, cond, strat, method, idx)},)))
             while len(pending) > max_pending:
                 drain(block=False)

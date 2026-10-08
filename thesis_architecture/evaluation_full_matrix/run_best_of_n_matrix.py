@@ -97,7 +97,8 @@ for _p in (_here, os.path.join(_arch, 'exploration'), _arch,
 import torch
 
 from common.data import load_truth                                # noqa: E402
-from common.svgd_refine import SvgdRefiner                         # noqa: E402
+from common.svgd_refine import (SvgdRefiner, add_refiner_arg,  # noqa: E402
+                               run_suffix)
 
 import variant_runner as vr                                        # noqa: E402
 from metrics_explore_exploit import ExploreExploitErgodic          # noqa: E402
@@ -230,6 +231,7 @@ def main():
     ap.add_argument('--device', type=str,
                     default='cuda' if torch.cuda.is_available() else 'cpu')
     ap.add_argument('--out_tag', type=str, required=True)
+    add_refiner_arg(ap)
     ap.add_argument('--seed', type=int, default=0)
     ap.add_argument('--truth_res', type=int, default=96)
     ap.add_argument('--no_viz', action='store_true')
@@ -274,10 +276,10 @@ def main():
     planners = {rep: PLANNER_BUILDERS[rep](
         args.particle_ckpt if rep == 'particles' else args.spectral_ckpt, device)
         for rep in reps}
-    refiner = SvgdRefiner(seed=args.seed)
+    refiner = SvgdRefiner(seed=args.seed, backend=args.refiner)
     ee = ExploreExploitErgodic(device=device)
 
-    out_dir = os.path.join(_here, 'results', args.out_tag)
+    out_dir = os.path.join(_here, 'results', args.out_tag + run_suffix(args.refiner))
     raw_dir = os.path.join(out_dir, 'raw')
     tables_dir = os.path.join(out_dir, 'tables')
     plots_dir = os.path.join(out_dir, 'plots')
@@ -293,6 +295,7 @@ def main():
 
     with open(os.path.join(out_dir, 'config.json'), 'w') as f:
         json.dump({
+            'refiner': args.refiner,
             'n_candidates': args.n_candidates, 'selection': args.selection,
             'representations': reps,
             'strategies': strategies, 'replan_schemes': schemes,

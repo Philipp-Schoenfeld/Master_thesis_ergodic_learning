@@ -1,0 +1,30 @@
+[continuous] half_known/eid/random_walk: 25 missions, 5910 alternatives
+[continuous] half_known/eid/linear: 25 missions, 5910 alternatives
+[continuous] half_known/eid/cfm: 25 missions, 5880 alternatives
+[continuous] half_known/lse/cfm: 25 missions, 5910 alternatives
+[continuous] half_known/lse/random_walk: 25 missions, 5940 alternatives
+[continuous] half_known/ucb/cfm: 25 missions, 5850 alternatives
+[continuous] half_known/lse/linear: 25 missions, 5940 alternatives
+[continuous] half_known/ucb/linear: 25 missions, 6000 alternatives
+[continuous] none_known/eid/cfm: 25 missions, 6000 alternatives
+[continuous] half_known/ucb/random_walk: 25 missions, 5940 alternatives
+[continuous] none_known/eid/random_walk: 25 missions, 6000 alternatives
+[continuous] none_known/eid/linear: 25 missions, 5880 alternatives
+[continuous] none_known/lse/random_walk: 25 missions, 6000 alternatives
+[continuous] none_known/lse/cfm: 25 missions, 6000 alternatives
+[continuous] none_known/lse/linear: 25 missions, 5970 alternatives
+[continuous] none_known/ucb/cfm: 25 missions, 6000 alternatives
+[continuous] none_known/ucb/linear: 25 missions, 5940 alternatives
+[continuous] ten_samples/eid/cfm: 25 missions, 5910 alternatives
+[continuous] none_known/ucb/random_walk: 25 missions, 6000 alternatives
+[continuous] ten_samples/eid/linear: 25 missions, 5970 alternatives
+[continuous] ten_samples/eid/random_walk: 25 missions, 6000 alternatives
+[continuous] ten_samples/lse/cfm: 25 missions, 5880 alternatives
+[continuous] ten_samples/lse/linear: 25 missions, 6000 alternatives
+[continuous] ten_samples/lse/random_walk: 25 missions, 5970 alternatives
+[continuous] ten_samples/ucb/cfm: 25 missions, 5970 alternatives
+[continuous] ten_samples/ucb/linear: 25 missions, 6000 alternatives
+[continuous] ten_samples/ucb/random_walk: 25 missions, 6000 alternatives
+[continuous] driven path vs. stored E_truth/J_truth: worst relative deviation 1.3e-05; re-rendered selected candidate vs. stored segment: worst 5.9e-05; 160770 alternatives scored
+[continuous] wrote /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/plots/overview_E_truth_continuous_8units.png
+[continuous] wrote /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/plots/overview_J_truth_continuous_8units.png

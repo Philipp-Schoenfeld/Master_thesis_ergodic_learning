@@ -1,0 +1,46 @@
+[continuous] half_known/eid/random_walk: 25 missions, 5910 alternatives
+[continuous] half_known/eid/cfm: 25 missions, 5880 alternatives
+[continuous] half_known/eid/linear: 25 missions, 5910 alternatives
+[continuous] half_known/lse/cfm: 25 missions, 5910 alternatives
+[continuous] half_known/ucb/cfm: 25 missions, 5850 alternatives
+[continuous] half_known/lse/random_walk: 25 missions, 5940 alternatives
+[continuous] half_known/lse/linear: 25 missions, 5940 alternatives
+[continuous] half_known/ucb/linear: 25 missions, 6000 alternatives
+[continuous] none_known/eid/linear: 25 missions, 5880 alternatives
+[continuous] half_known/ucb/random_walk: 25 missions, 5940 alternatives
+[continuous] none_known/eid/cfm: 25 missions, 6000 alternatives
+[continuous] none_known/eid/random_walk: 25 missions, 6000 alternatives
+[continuous] none_known/lse/cfm: 25 missions, 6000 alternatives
+[continuous] none_known/lse/linear: 25 missions, 5970 alternatives
+[continuous] none_known/lse/random_walk: 25 missions, 6000 alternatives
+[continuous] none_known/ucb/cfm: 25 missions, 6000 alternatives
+[continuous] none_known/ucb/linear: 25 missions, 5940 alternatives
+[continuous] none_known/ucb/random_walk: 25 missions, 6000 alternatives
+[continuous] ten_samples/eid/cfm: 25 missions, 5910 alternatives
+[continuous] ten_samples/eid/linear: 25 missions, 5970 alternatives
+[continuous] ten_samples/lse/cfm: 25 missions, 5880 alternatives
+[continuous] ten_samples/eid/random_walk: 25 missions, 6000 alternatives
+[continuous] ten_samples/lse/linear: 25 missions, 6000 alternatives
+[continuous] ten_samples/lse/random_walk: 25 missions, 5970 alternatives
+[continuous] ten_samples/ucb/cfm: 25 missions, 5970 alternatives
+[continuous] ten_samples/ucb/linear: 25 missions, 6000 alternatives
+[continuous] ten_samples/ucb/random_walk: 25 missions, 6000 alternatives
+[continuous] driven path vs. stored E_truth/J_truth: worst relative deviation 1.3e-05; re-rendered selected candidate vs. stored segment: worst 5.9e-05; 160770 alternatives scored
+[continuous] conv plateau E cfm        : median    340 iters, not converged within 1500:   0.1 %
+[continuous] conv plateau E linear     : median    780 iters, not converged within 1500:   6.5 %
+[continuous] conv plateau E random_walk: median   1050 iters, not converged within 1500:  21.2 %
+[continuous] conv plateau J cfm        : median    310 iters, not converged within 1500:   0.0 %
+[continuous] conv plateau J linear     : median    730 iters, not converged within 1500:   3.9 %
+[continuous] conv plateau J random_walk: median   1000 iters, not converged within 1500:  16.0 %
+[continuous] conv target  E cfm        : median    540 iters, not converged within 1500:   9.5 %
+[continuous] conv target  E linear     : median   1500 iters, not converged within 1500:  55.3 %
+[continuous] conv target  E random_walk: median   1500 iters, not converged within 1500:  78.5 %
+[continuous] conv target  J cfm        : median    550 iters, not converged within 1500:  10.7 %
+[continuous] conv target  J linear     : median   1500 iters, not converged within 1500:  53.2 %
+[continuous] conv target  J random_walk: median   1500 iters, not converged within 1500:  79.6 %
+[continuous] time-to-target levels E (median final value of all candidates per round): r1 0.347, r2 0.343, r3 0.358, r4 0.377, r5 0.400, r6 0.417, r7 0.437, r8 0.450
+[continuous] time-to-target levels J (median final value of all candidates per round): r1 0.455, r2 0.445, r3 0.458, r4 0.475, r5 0.497, r6 0.515, r7 0.533, r8 0.548
+[continuous] wrote /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/plots/overview_E_truth_continuous_8units_svgd_conv_plateau.png
+[continuous] wrote /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/plots/overview_J_truth_continuous_8units_svgd_conv_plateau.png
+[continuous] wrote /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/plots/overview_E_truth_continuous_8units_svgd_conv_target.png
+[continuous] wrote /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/plots/overview_J_truth_continuous_8units_svgd_conv_target.png

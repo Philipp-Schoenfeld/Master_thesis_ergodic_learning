@@ -1,0 +1,72 @@
+[job] Wed Oct  7 00:52:41 CEST 2026 Selbsttest
+ok  solvers vs reference (start pin off): numpy-vs-ref max|d|=5.8e-08, torch (cuda) fp64/mixed within tolerance
+ok  solvers vs reference (start pin on): numpy-vs-ref max|d|=5.8e-08, torch (cuda) fp64/mixed within tolerance
+ok  start pin: first control point within 0.02 of the start (free run drifts away)
+ok  state codec round trip (incl. wide-delta fallback)
+ok  linear_ray_path: starts at the position, stays in the box, length and heading right
+ok  DB round trip (rounds, candidates, states)
+ok  dry-run mission: 6 sets x 2 shapes x 4 rounds; units start where the last ended, one length unit each; resumed run == straight-through run (bit-identical)
+ok  plots and tables written (101 s)
+ok  mission with the real CFM checkpoint (35 s): plans begin at the previous end point, start pin satisfied, 3 rounds stored
+ALL OK (259 s)
+[job] Wed Oct  7 00:57:13 CEST 2026 voller Lauf -> results/mission_eval_20261006
+[mission] 25 shapes: ['A', 'greek_upper_0', 'korean_5', 'digit_5', 'a_lc', 'rand_gmm_10', 'rand_gmm_20', 'rand_ana_poly_10', 'rand_ana_poly_20', 'rand_ana_poly_30', 'rand_gmm_complex_0', 'rand_gmm_complex_10', 'rand_gmm_complex_20', 'rand_gmm_complex_30', 'rand_ana_poly_complex_0', 'rand_ana_poly_complex_10', 'rand_ana_poly_complex_20', 'rand_ana_poly_complex_30', 'organic_0', 'organic_10', 'organic_20', 'organic_30', 'cjk_0', 'cjk_10', 'cjk_20']
+[mission] 27 mission sets x 25 shapes; 30 candidates x 1500 SVGD iterations per round; svgd=mixed, workers=2
+[mission] cfm/lse/half_known: resumed, replayed 657 stored rounds
+[mission] random_walk/lse/half_known: resumed, replayed 660 stored rounds
+[mission] linear/lse/half_known: resumed, replayed 649 stored rounds
+[mission] cfm/ucb/half_known: resumed, replayed 575 stored rounds
+[mission] cfm/lse/half_known FINISHED: 14/25 shapes reached 99%, 0.1 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/lse/half_known FINISHED: 14/25 shapes reached 99%, 0.1 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/lse/half_known FINISHED: 14/25 shapes reached 99%, 0.1 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] cfm/ucb/half_known FINISHED: 18/25 shapes reached 99%, 0.1 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/ucb/half_known: resumed, replayed 528 stored rounds
+[mission] linear/ucb/half_known: resumed, replayed 500 stored rounds
+[mission] cfm/eid/half_known: resumed, replayed 413 stored rounds
+[mission] random_walk/eid/half_known: resumed, replayed 394 stored rounds
+[mission] random_walk/ucb/half_known FINISHED: 18/25 shapes reached 99%, 0.2 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/ucb/half_known FINISHED: 19/25 shapes reached 99%, 0.2 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] cfm/eid/half_known FINISHED: 24/25 shapes reached 99%, 0.2 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/eid/half_known FINISHED: 23/25 shapes reached 99%, 0.2 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/eid/half_known: resumed, replayed 441 stored rounds
+[mission] cfm/lse/ten_samples: resumed, replayed 574 stored rounds
+[mission] random_walk/lse/ten_samples: resumed, replayed 611 stored rounds
+[mission] linear/lse/ten_samples: resumed, replayed 577 stored rounds
+[mission] linear/eid/half_known FINISHED: 21/25 shapes reached 99%, 0.2 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] cfm/lse/ten_samples FINISHED: 17/25 shapes reached 99%, 0.2 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/lse/ten_samples FINISHED: 17/25 shapes reached 99%, 0.2 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/lse/ten_samples FINISHED: 18/25 shapes reached 99%, 0.2 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] cfm/ucb/ten_samples: resumed, replayed 494 stored rounds
+[mission] random_walk/ucb/ten_samples: resumed, replayed 445 stored rounds
+[mission] linear/ucb/ten_samples: resumed, replayed 491 stored rounds
+[mission] cfm/eid/ten_samples: resumed, replayed 388 stored rounds
+[mission] cfm/ucb/ten_samples FINISHED: 21/25 shapes reached 99%, 0.3 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/ucb/ten_samples FINISHED: 24/25 shapes reached 99%, 0.3 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/ucb/ten_samples FINISHED: 22/25 shapes reached 99%, 0.3 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] cfm/eid/ten_samples FINISHED: 25/25 shapes reached 99%, 0.3 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/eid/ten_samples: resumed, replayed 388 stored rounds
+[mission] linear/eid/ten_samples: resumed, replayed 388 stored rounds
+[mission] cfm/lse/none_known: resumed, replayed 523 stored rounds
+[mission] random_walk/lse/none_known: resumed, replayed 546 stored rounds
+[mission] random_walk/eid/ten_samples FINISHED: 25/25 shapes reached 99%, 0.3 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/eid/ten_samples FINISHED: 25/25 shapes reached 99%, 0.3 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] cfm/lse/none_known FINISHED: 18/25 shapes reached 99%, 0.3 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/lse/none_known FINISHED: 18/25 shapes reached 99%, 0.3 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/lse/none_known: resumed, replayed 588 stored rounds
+[mission] cfm/ucb/none_known: resumed, replayed 532 stored rounds
+[mission] random_walk/ucb/none_known: resumed, replayed 510 stored rounds
+[mission] linear/ucb/none_known: resumed, replayed 493 stored rounds
+[mission] linear/lse/none_known FINISHED: 16/25 shapes reached 99%, 0.4 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] cfm/ucb/none_known FINISHED: 21/25 shapes reached 99%, 0.4 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/ucb/none_known FINISHED: 22/25 shapes reached 99%, 0.4 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/ucb/none_known FINISHED: 22/25 shapes reached 99%, 0.4 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] cfm/eid/none_known: resumed, replayed 397 stored rounds
+[mission] random_walk/eid/none_known: resumed, replayed 407 stored rounds
+[mission] linear/eid/none_known: resumed, replayed 373 stored rounds
+[mission] cfm/eid/none_known FINISHED: 25/25 shapes reached 99%, 0.4 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] random_walk/eid/none_known FINISHED: 25/25 shapes reached 99%, 0.4 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] linear/eid/none_known FINISHED: 25/25 shapes reached 99%, 0.4 min (CFM planning 0.0 min, SVGD 0.0 min)
+[mission] done in 0.01 h -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006 (uniform-target fallbacks: 0, rounds without a full-unit plan: 0)
+[job] Wed Oct  7 00:58:11 CEST 2026 Lauf beendet mit Exit-Code 0
+[job] Wed Oct  7 00:58:11 CEST 2026 Plots/Tabellen
+[plot_mission_eval] wrote figures to /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/plots and tables to /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/tables (27 sets, 25 shapes, up to 40 units)

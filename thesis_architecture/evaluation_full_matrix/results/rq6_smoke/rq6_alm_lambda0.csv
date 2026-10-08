@@ -1,0 +1,11 @@
+trial,round1_iters,round1_feasible,cold_iters,cold_feasible,warm_iters,warm_feasible
+0,16,True,9,True,9,True
+1,16,True,9,True,7,True
+2,14,True,13,True,11,True
+3,13,True,3,True,4,True
+4,16,True,9,True,11,True
+5,14,True,9,True,11,True
+6,15,True,10,True,13,True
+7,16,True,13,True,13,True
+8,14,True,10,True,9,True
+9,15,True,10,True,8,True
