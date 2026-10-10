@@ -36,6 +36,41 @@ Was gegenueber der Datengenerierung dazukommt, ist nur die Schnittstelle:
 `n_iters` zaehlt FM-Stein-Iterationen (bei der Datengenerierung 600).
 Einzel- und Stapelaufruf laufen durch dieselbe vmap-Funktion, ein Kandidat ist
 also im Batch exakt so wie allein.
+
+Zwei opt-in Erweiterungen fuer den Smoothness-Vergleich (2026-10-08, Philipps
+Meeting-Notiz: "Svdg direkt auf einer Trajektorie ohne B-Spline mit
+Smoothing-Cost" / "fuege fuer die SVGD-Optimierung noch Smoothness hinzu"),
+beide mit Default = bisheriges Verhalten, bit-identisch:
+
+* `smoothness_weight` (Default 0.0) in `run_batch`/`_iteration`: ein
+  zusaetzlicher Term `-smoothness_weight * grad(accel^2)` auf den
+  Positions-Anteil des Stein-Gradienten `dx`, bevor er in den LQ-Regler
+  (`_PM.solve`) geht -- dieselbe 3-Punkt-Beschleunigungs-Strafe wie
+  `SE3_SVGD/svgd_engine.py::compute_smoothness_grad_numpy`, hier direkt auf
+  die simulierten Positionen statt auf Kontrollpunkte. Bei 0.0 ist der Term
+  exakt 0 (keine neue Verzweigung, kein Rekompilieren je nach Wert).
+* `log_space` (Default 'cps') in `run_batch`: 'cps' loggt wie bisher ueber
+  `_fit_matrix(nxi)` (ein B-Spline-Fit, auch wenn `nxi == T` -- dort immer
+  noch eine ueberparametrisierte, aber glatte Basis); 'raw' loggt stattdessen
+  die simulierten Positionen, linear auf `nxi` Punkte heruntergesampelt
+  (`_linear_resample_matrix`, exakt dieselbe Interpolation wie `_resample`,
+  nur als Matrix fuer den jit-Scan) -- echte "ohne B-Spline"-Zwischenschritte,
+  nicht nur die Endkurve.
+
+Dritte opt-in Erweiterung (2026-10-09, Philipps Variante "Sun_svgd ... auf
+einer glatteren Dynamik"): `dynamics` (Default 'pointmass', bisheriges
+Verhalten) waehlt in `run_batch` zwischen `PointMassLQR` (4D Zustand
+[px,py,vx,vy], Beschleunigung als Steuerung -- kann zwischen Zeitschritten
+sprunghaft sein) und `JerkPenalizedLQR` (6D Zustand [px,py,vx,vy,ax,ay], Ruck
+als Steuerung -- Beschleunigung ist jetzt selbst ein per Q bestrafter
+Zustand, Ruck selbst wird per R bestraft, siehe deren Docstring). Beide teilen
+denselben Stein-Gradientenfluss (`_kernel`/`_stein_grad`), die Positions- und
+Kernel-Logik greift ohnehin nur auf `x[:2]` zu und ist damit zustandsdimension-
+unabhaengig. Implementiert als eigener, paralleler Satz jit-kompilierter
+Funktionen (`_iteration2`/`_run_batch_logged2`/...) statt eines Laufzeit-
+Parameters auf den bestehenden -- bewusst dupliziert statt den bereits
+genutzten Pointmass-Pfad anzufassen (siehe CLAUDE.md: neue Features als Flag,
+Bestehendes unveraendert).
 """
 
 import os
@@ -53,8 +88,37 @@ for _p in (_arch, os.path.join(_arch, 'ergodic_dataset_generator')):
 
 import jax                                   # noqa: E402
 import jax.numpy as jnp                      # noqa: E402
+from lqrax import LQR                        # noqa: E402
 
 import ergodic_solver as es                  # noqa: E402
+
+
+class JerkPenalizedLQR(LQR):
+    """Third-order point-mass dynamics: state = [px, py, vx, vy, ax, ay],
+    control = jerk [jx, jy] (vs. `PointMassLQR`'s state=[px,py,vx,vy],
+    control=acceleration). Acceleration is now a Q-penalised STATE instead of
+    a free, directly-controlled input, and the control itself (jerk) carries
+    a heavier R-penalty than `PointMassLQR`'s R on raw acceleration -- both
+    push toward trajectories whose acceleration changes smoothly, rather than
+    the jumps `PointMassLQR` allows between consecutive control steps. Same
+    `LQR` base class, same `dt`; only `dyn`/`x_dim`/`u_dim`/`Q`/`R` differ, so
+    it drops into `linearize_dyn`/`solve`/`traj_sim` unchanged.
+
+    Provisional weights (2026-10-09, Philipp's "smoother dynamics model"
+    variant) -- position weight unchanged from `PointMassLQR` (1.0), a mild
+    new penalty on the acceleration state (0.01) and R raised 5x over
+    `PointMassLQR`'s 0.01 on raw acceleration, reflecting that jerk should be
+    discouraged more than acceleration was. Not swept."""
+
+    def __init__(self, dt, x_dim=6, u_dim=2, Q=None, R=None):
+        if Q is None:
+            Q = jnp.diag(jnp.array([1.0, 1.0, 0.001, 0.001, 0.01, 0.01]))
+        if R is None:
+            R = jnp.diag(jnp.array([0.05, 0.05]))
+        super().__init__(dt, x_dim, u_dim, Q, R)
+
+    def dyn(self, xt, ut):
+        return jnp.array([xt[2], xt[3], xt[4], xt[5], ut[0], ut[1]])
 
 
 #: Loeser-Konstanten, identisch zu den Defaults von `generate_dataset.py`.
@@ -118,11 +182,26 @@ def _stein_grad(traj, phi, floor, obs_c, obs_r, w_obs, h):
     return jax.vmap(state)(traj)
 
 
-def _iteration(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step):
+def _smoothness_grad_pos(pos):
+    """(..., N, 2) -> (..., N, 2): grad of sum(accel^2), accel = 3-point finite
+    difference, same formula as `SE3_SVGD/svgd_engine.py::compute_smoothness_grad_numpy`,
+    here applied to simulated positions instead of B-spline control points."""
+    accel = pos[..., 2:, :] - 2.0 * pos[..., 1:-1, :] + pos[..., :-2, :]
+    g = jnp.zeros_like(pos)
+    g = g.at[..., :-2, :].add(2.0 * accel)
+    g = g.at[..., 1:-1, :].add(-4.0 * accel)
+    g = g.at[..., 2:, :].add(2.0 * accel)
+    return g
+
+
+def _iteration(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w):
     """Eine Iteration von Algorithmus 1 bei Sun (= Schleifenkoerper von
-    `run_ergodic_coverage`)."""
+    `run_ergodic_coverage`), optional um eine Glattheits-Kraft erweitert
+    (`smooth_w`, Default 0.0 reproduziert die alte Iteration exakt)."""
     x_traj, A, B = _PM.linearize_dyn(x0, u)
     dx = _stein_grad(x_traj, phi, floor, obs_c, obs_r, w_obs, h)
+    sgrad = _smoothness_grad_pos(x_traj[:, :2])
+    dx = dx.at[:, :2].add(-smooth_w * sgrad)
     v, _ = _PM.solve(jnp.zeros(4), A, B, dx)
     return u + step * v
 
@@ -132,21 +211,36 @@ def _positions(u, x0):
     return jnp.concatenate([x0[None, :2], _PM.traj_sim(x0, u)[:, :2]], axis=0)
 
 
-_it_batch = jax.vmap(_iteration, in_axes=(0, 0, 0, 0, None, None, None, None, None))
+_it_batch = jax.vmap(_iteration,
+                     in_axes=(0, 0, 0, 0, None, None, None, None, None, None))
+
+
+def _linear_resample_matrix(n_out, n_in):
+    """(n_out, n_in): lineare Interpolationsmatrix, exakt dieselbe Abbildung
+    wie `_resample`s `np.interp(linspace(0, n_in-1, n_out), ...)`, nur als
+    Matrix (fuer den jit-Scan -- `log_space='raw'`)."""
+    s = np.linspace(0, n_in - 1, n_out)
+    i0 = np.clip(np.floor(s).astype(np.int64), 0, n_in - 2)
+    frac = s - i0
+    M = np.zeros((n_out, n_in))
+    M[np.arange(n_out), i0] = 1.0 - frac
+    M[np.arange(n_out), i0 + 1] = frac
+    return M
 
 
 @partial(jax.jit, static_argnums=(8,))
 def _run_batch_logged(u0, x0, phi, floor, obs_c, obs_r, w_obs, fit, n_iters,
-                      h=H, step=STEP_SIZE):
+                      h=H, step=STEP_SIZE, smooth_w=0.0):
     """u0: (C, TSTEPS, 2), x0: (C, 4), phi: (C, R, R), floor: (C,),
-    fit: (nxi, TSTEPS+1) lineare Fit-Abbildung Positionen -> Kontrollpunkte
-    (`_fit_matrix`).
+    fit: (nxi, TSTEPS+1) lineare Abbildung Positionen -> geloggter Zustand --
+    `_fit_matrix` (B-Spline-Fit, `log_space='cps'`) oder
+    `_linear_resample_matrix` (rohe Positionen, `log_space='raw'`).
     -> (u_final (C, TSTEPS, 2), log (n_iters, C, nxi, 2)). Die Laenge des Logs
     ist Teil der Form, `n_iters` ist hier deshalb statisch."""
     pos = jax.vmap(_positions)
 
     def body(u, _):
-        u = _it_batch(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step)
+        u = _it_batch(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w)
         return u, jnp.einsum('ij,cjd->cid', fit, pos(u, x0))
 
     return jax.lax.scan(body, u0, None, length=n_iters)
@@ -154,11 +248,59 @@ def _run_batch_logged(u0, x0, phi, floor, obs_c, obs_r, w_obs, fit, n_iters,
 
 @jax.jit
 def _run_batch_plain(u0, x0, phi, floor, obs_c, obs_r, w_obs, n_iters,
-                     h=H, step=STEP_SIZE):
+                     h=H, step=STEP_SIZE, smooth_w=0.0):
     """Wie `_run_batch_logged` ohne Log; `n_iters` ist dynamisch, ein Wechsel
     der Iterationszahl (GUI-Regler, SVGD-Sweeps) kompiliert also nicht neu."""
     return jax.lax.fori_loop(
-        0, n_iters, lambda _, u: _it_batch(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step), u0)
+        0, n_iters,
+        lambda _, u: _it_batch(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w),
+        u0)
+
+
+# ── Zweite Dynamik (`dynamics='jerk'`): bewusst dupliziert statt den obigen,
+#    bereits genutzten Pointmass-Pfad mit einem Laufzeit-Parameter zu
+#    versehen -- siehe Modulkopf. Identisch bis auf `_PM2` und die
+#    Zustandsdimension (6 statt 4) in `_positions2`/`.solve`. ───────────────
+
+_PM2 = JerkPenalizedLQR(dt=DT)
+
+
+def _iteration2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w):
+    x_traj, A, B = _PM2.linearize_dyn(x0, u)
+    dx = _stein_grad(x_traj, phi, floor, obs_c, obs_r, w_obs, h)
+    sgrad = _smoothness_grad_pos(x_traj[:, :2])
+    dx = dx.at[:, :2].add(-smooth_w * sgrad)
+    v, _ = _PM2.solve(jnp.zeros(6), A, B, dx)
+    return u + step * v
+
+
+def _positions2(u, x0):
+    return jnp.concatenate([x0[None, :2], _PM2.traj_sim(x0, u)[:, :2]], axis=0)
+
+
+_it_batch2 = jax.vmap(_iteration2,
+                      in_axes=(0, 0, 0, 0, None, None, None, None, None, None))
+
+
+@partial(jax.jit, static_argnums=(8,))
+def _run_batch_logged2(u0, x0, phi, floor, obs_c, obs_r, w_obs, fit, n_iters,
+                       h=H, step=STEP_SIZE, smooth_w=0.0):
+    pos = jax.vmap(_positions2)
+
+    def body(u, _):
+        u = _it_batch2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w)
+        return u, jnp.einsum('ij,cjd->cid', fit, pos(u, x0))
+
+    return jax.lax.scan(body, u0, None, length=n_iters)
+
+
+@jax.jit
+def _run_batch_plain2(u0, x0, phi, floor, obs_c, obs_r, w_obs, n_iters,
+                      h=H, step=STEP_SIZE, smooth_w=0.0):
+    return jax.lax.fori_loop(
+        0, n_iters,
+        lambda _, u: _it_batch2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w),
+        u0)
 
 
 # ── Hilfen: Eingabe vorbereiten, Ausgabe zurueckgeben ─────────────────────────
@@ -209,9 +351,13 @@ def make_grid_score(phi_grid):
     return jax.grad(log_p)
 
 
-def prepare(curves, starts):
-    """Startbahnen -> (u0 (C,TSTEPS,2), x0 (C,4)) ueber das PID-Tracking des
-    Generators. `starts`: (C,2) oder None (dann der erste Bahnpunkt)."""
+def prepare(curves, starts, dynamics='pointmass'):
+    """Startbahnen -> (u0 (C,TSTEPS,2), x0 (C,4 oder 6)) ueber das PID-Tracking
+    des Generators. `starts`: (C,2) oder None (dann der erste Bahnpunkt).
+    `dynamics='jerk'`: x0 wird um zwei Nullen (Anfangsbeschleunigung 0)
+    erweitert; die PID-Steuerfolge selbst (fuer `PointMassLQR` ausgelegt)
+    dient unveraendert als grober Startwert fuer die Ruck-Folge -- beide haben
+    dieselbe Form (TSTEPS,2), und 2000 SVGD-Iterationen verfeinern ohnehin."""
     us, xs = [], []
     for c, curve in enumerate(curves):
         p = _resample(curve, TSTEPS + 1)
@@ -219,7 +365,10 @@ def prepare(curves, starts):
             p[0] = np.asarray(starts[c], dtype=np.float64)
         u, v0 = es._pid_track(p, DT, TSTEPS)
         us.append(u)
-        xs.append([p[0, 0], p[0, 1], v0[0], v0[1]])
+        x = [p[0, 0], p[0, 1], v0[0], v0[1]]
+        if dynamics == 'jerk':
+            x += [0.0, 0.0]
+        xs.append(x)
     return np.stack(us), np.asarray(xs, dtype=np.float64)
 
 
@@ -250,12 +399,28 @@ def effective_targets(phis):
 
 
 def run_batch(curves, phis, starts, n_iters, nxi, record=False, obstacle=None,
-              obstacle_weight=20.0):
+              obstacle_weight=20.0, smoothness_weight=0.0, log_space='cps',
+              dynamics='pointmass'):
     """Stapel-Verfeinerung. curves: (C, T, 2); phis: (C, R, R) oder (R, R);
     starts: (C, 2), (2,) oder None.
+
+    `smoothness_weight` (Default 0.0, bisheriges Verhalten exakt): Gewicht
+    einer zusaetzlichen Glattheits-Kraft im Stein-Gradienten, siehe Modulkopf.
+    `log_space` ('cps', Default, bisheriges Verhalten): 'raw' loggt rohe,
+    linear heruntergesampelte Positionen statt des B-Spline-Fits -- nur die
+    FORM von `log`/`init_cps` aendert sich (jetzt (nxi,2) rohe Punkte statt
+    Kontrollpunkte), `final_cps`/`final_pos` sind unveraendert, da `fit` dort
+    schon vorher nur fuer `log`/`init_cps` verwendet wurde.
+    `dynamics` ('pointmass', Default, bisheriges Verhalten): 'jerk' nutzt
+    `JerkPenalizedLQR` statt `PointMassLQR` (siehe Modulkopf) -- ein dichteres
+    Zustands-/Steuerungsmodell, der Rest der Schnittstelle ist identisch.
     -> dict(final_cps (C,nxi,2), final_pos (C,TSTEPS+1,2), init_cps (C,nxi,2),
             log (C, n_iters, nxi, 2) oder None) -- alles numpy. Gerechnet wird in
             float32 wie in der Datengenerierung."""
+    if log_space not in ('cps', 'raw'):
+        raise ValueError(f"log_space must be 'cps' or 'raw', got {log_space!r}")
+    if dynamics not in ('pointmass', 'jerk'):
+        raise ValueError(f"dynamics must be 'pointmass' or 'jerk', got {dynamics!r}")
     curves = np.asarray(curves, dtype=np.float64)
     C, T = curves.shape[:2]
     phis = np.asarray(phis, dtype=np.float64)
@@ -266,26 +431,48 @@ def run_batch(curves, phis, starts, n_iters, nxi, record=False, obstacle=None,
         starts = np.asarray(starts, dtype=np.float64)
         if starts.ndim == 1:
             starts = np.broadcast_to(starts, (C, 2))
-    u0, x0 = prepare(curves, starts)
+    u0, x0 = prepare(curves, starts, dynamics=dynamics)
     B_T = _basis(nxi, T)
     init_cps = np.linalg.lstsq(B_T, curves.transpose(1, 0, 2).reshape(T, C * 2),
                                rcond=None)[0].reshape(nxi, C, 2).transpose(1, 0, 2)
     fit = _fit_matrix(nxi)
+    log_fit = fit if log_space == 'cps' else _linear_resample_matrix(nxi, TSTEPS + 1)
+    if log_space == 'raw':
+        init_cps = _resample_all(curves, starts, nxi)
     obs_c, obs_r, w_obs = _obstacle_arrays(obstacle, obstacle_weight)
     # float32 wie in der Datengenerierung (JAX-Standard, kein x64).
     f32 = lambda a: jnp.asarray(np.asarray(a, dtype=np.float32))
     phi_eff, floor = effective_targets(phis)
     args = (f32(u0), f32(x0), f32(phi_eff), f32(floor), f32(obs_c), f32(obs_r),
             jnp.float32(w_obs))
+    logged_fn, plain_fn, pos_fn = (
+        (_run_batch_logged2, _run_batch_plain2, _positions2) if dynamics == 'jerk'
+        else (_run_batch_logged, _run_batch_plain, _positions))
     if record:
-        u, log = _run_batch_logged(*args, f32(fit), int(n_iters))
+        u, log = logged_fn(*args, f32(log_fit), int(n_iters),
+                           smooth_w=jnp.float32(smoothness_weight))
     else:
-        u, log = _run_batch_plain(*args, jnp.int32(n_iters)), None
-    pos = np.asarray(jax.vmap(_positions)(u, f32(x0)), dtype=np.float64)
+        u, log = plain_fn(*args, jnp.int32(n_iters),
+                          smooth_w=jnp.float32(smoothness_weight)), None
+    pos = np.asarray(jax.vmap(pos_fn)(u, f32(x0)), dtype=np.float64)
     final_cps = np.einsum('ij,cjd->cid', fit, pos)
     if log is not None:
         log = np.asarray(log).transpose(1, 0, 2, 3)
     return dict(final_cps=final_cps, final_pos=pos, init_cps=init_cps, log=log)
+
+
+def _resample_all(curves, starts, n):
+    """(C, T, 2) -> (C, n, 2): `_resample` per candidate, start overwritten
+    like `prepare` does -- the raw-log counterpart of the B-spline `init_cps`
+    fit, used as `log_space='raw'`'s entry 0 (`SunSteinRefiner`-style:
+    entry 0 = fit of the init curve)."""
+    out = []
+    for c, curve in enumerate(curves):
+        p = _resample(curve, n)
+        if starts is not None:
+            p[0] = np.asarray(starts[c], dtype=np.float64)
+        out.append(p)
+    return np.stack(out)
 
 
 class SunSteinRefiner:

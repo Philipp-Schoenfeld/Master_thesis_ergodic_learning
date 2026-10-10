@@ -11,9 +11,14 @@ Needs the GPU for part 7 (real CFM checkpoint); everything else runs on CPU.
  4. DB round trip (rounds, candidates, states)
  5. mini mission, dry run (random planner): row counts, every round starts where
     the previous unit ended, every unit is one length unit long, resume is
-    bit-identical to a straight-through run
+    bit-identical to a straight-through run -- covers all four methods
+    (cfm, selfsup, random_walk, linear)
  6. figures / tables of `plot_mission_eval.py` are produced from that run
- 7. mini mission with the REAL start-conditioned CFM network
+ 7. mini mission with the REAL start-conditioned CFM network (needs GPU)
+ 8. mini mission with the REAL self-supervised checkpoint, on CPU: despite
+    having no start conditioning (unlike cfm), the start-point force applied
+    during SVGD refinement still pulls its candidates to the agent position
+    (small start_gap after refinement)
 """
 import os
 
@@ -206,14 +211,15 @@ def test_mission_dry(tmp):
     out, _ = run_cli(RUNNER, *common, '--max_rounds', '4', '--out_tag', 'res')
     assert 'resumed' in out
     for cond in ('none_known', 'half_known'):
-        for m in ('cfm', 'random_walk', 'linear'):
+        for m in ('cfm', 'selfsup', 'random_walk', 'linear'):
             check_mission_db(os.path.join(tmp, 'full'), cond, 'ucb', m, ['A', 'digit_5'], 4)
             a = check_mission_db(os.path.join(tmp, 'res'), cond, 'ucb', m, ['A', 'digit_5'], 4)
             b = check_mission_db(os.path.join(tmp, 'full'), cond, 'ucb', m, ['A', 'digit_5'], 4)
             for x, y in zip(a, b):
                 for k in ('swept_mass', 'E_truth', 'info_gain', 'seg_len'):
                     assert x[k] == y[k], (cond, m, k, x[k], y[k])
-    print("ok  dry-run mission: 6 sets x 2 shapes x 4 rounds; units start where the last ended, "
+    print("ok  dry-run mission: 8 sets (2 conditions x 4 methods) x 2 shapes x 4 rounds; "
+          "units start where the last ended, "
           "one length unit each; resumed run == straight-through run (bit-identical)")
 
 
@@ -238,7 +244,8 @@ def test_plots(tmp):
         assert os.path.getsize(os.path.join(plots, f)) > 5000, f
     for f in ('missions.csv', 'summary.csv'):
         assert os.path.getsize(os.path.join(tmp, 'full', 'tables', f)) > 100, f
-    assert len(os.listdir(os.path.join(plots, 'paths'))) == 6
+    # 2 conditions x 1 strategy x 4 methods (cfm, selfsup, random_walk, linear)
+    assert len(os.listdir(os.path.join(plots, 'paths'))) == 8
     print(f"ok  plots and tables written ({dt:.0f} s)")
 
 
@@ -262,6 +269,31 @@ def test_mission_real(tmp):
           f"start pin satisfied, 3 rounds stored")
 
 
+def test_mission_real_selfsup(tmp):
+    """Real self-supervised checkpoint, CPU (cheap: a single forward pass, no
+    ODE integration) -- unlike cfm it has no start conditioning
+    (`SelfsupPlanner.start_cond == False`), so this specifically checks that
+    the start-point force applied during SVGD refinement (the same one every
+    method relies on) still pulls its candidates to the agent position.
+
+    `n_iters=500` (not the usual 100 of `test_mission_real`'s quick CFM check):
+    measured on this exact setup, selfsup's start_gap was still ~0.17-0.38 at
+    100 iterations (vs. cfm's ~0, since cfm already begins exactly at the
+    start by construction) and down to ~0.01-0.03 at 500 -- production runs
+    use 1500/3000 iterations, so this is a lower bound on how well it
+    converges there, not the real-run number."""
+    out, dt = run_cli(RUNNER, '--refiner', 'tsvec', '--shapes', 'A,rand_gmm_10', '--conditions', 'half_known',
+                      '--strategies', 'eid', '--methods', 'selfsup', '--n_init', '6',
+                      '--n_iters', '500', '--max_rounds', '3', '--workers', '3',
+                      '--parallel_sets', '2', '--device', 'cpu', '--out_root', tmp, '--out_tag', 'real_selfsup')
+    rows = check_mission_db(os.path.join(tmp, 'real_selfsup'), 'half_known', 'eid', 'selfsup',
+                            ['A', 'rand_gmm_10'], 3)
+    print(f"ok  mission with the real self-supervised checkpoint ({dt:.0f} s, CPU): no start "
+          f"conditioning in the network itself, but the refiner's start-point force still pins "
+          f"it within check_mission_db's start_gap < 0.1, 3 rounds stored "
+          f"(worst start_gap: {max(r['start_gap'] for r in rows):.3f})")
+
+
 def main():
     torch.set_num_threads(1)
     t0 = time.time()
@@ -274,10 +306,11 @@ def main():
         test_mission_dry(tmp)
         test_mission_dry_sun(tmp)
         test_plots(tmp)
+        test_mission_real_selfsup(tmp)
         if torch.cuda.is_available():
             test_mission_real(tmp)
         else:
-            print("skip real-checkpoint mission test (no GPU)")
+            print("skip real-CFM-checkpoint mission test (no GPU)")
     print(f"ALL OK ({time.time() - t0:.0f} s)")
 
 
