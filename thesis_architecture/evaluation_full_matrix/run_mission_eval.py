@@ -17,6 +17,14 @@ and runs as follows (one "length unit" = the workspace diagonal, `mission.LENGTH
          cfm          one batched forward pass of the start-conditioned CFM
                       planner (the start point is a network input, the first
                       control point is set exactly),
+         selfsup      one batched forward pass of the self-supervised
+                      single-pass generator (`selfsup_planner.SelfsupPlanner`);
+                      it has no start conditioning, so its raw output does NOT
+                      begin exactly at the agent position -- the start-point
+                      force in step 3 (applied to every candidate of every
+                      method regardless) pulls it there during refinement
+                      instead, same as it would for any other unconditioned
+                      init,
          random_walk  `init_baselines.random_walk_path(start=position)`,
          linear       `init_baselines.linear_ray_path`: straight rays from the
                       position, headings 360*i/n_init degrees,
@@ -126,8 +134,10 @@ def _pool_task(t):
                     inits=baseline_inits(t['method'], t['start'], t['init_params'],
                                          t['linear_length']))
     if t['kind'] == 'pack':
+        wide_range = t.get('wide_range', False)
         return dict(shape=t['shape'], round=t['round'],
-                    blobs=[pack_states(t['cps'][c]) for c in range(t['cps'].shape[0])])
+                    blobs=[pack_states(t['cps'][c], wide_range=wide_range)
+                          for c in range(t['cps'].shape[0])])
     raise KeyError(t['kind'])
 
 
@@ -272,9 +282,11 @@ class MissionSet:
         st.unc = float(sd.sum())
 
     # -- candidates ----------------------------------------------------------
-    def cfm_candidates(self, active, r, starts):
-        """Slice-wise batched CFM planning -> self._cfm_curves (A, n_init, T, 2) float32."""
+    def network_candidates(self, method, active, r, starts):
+        """Slice-wise batched planning with `ctx.planners[method]` (cfm or
+        selfsup) -> self._net_curves (A, n_init, T, 2) float32."""
         ctx, args = self.ctx, self.args
+        planner = ctx.planners[method]
         n_init = ctx.args.n_init
         clouds = []
         for st in active:
@@ -288,23 +300,29 @@ class MissionSet:
         total, chunk, out = all_parts.shape[0], ctx.args.cfm_chunk, []
         for c0 in range(0, total, chunk):
             t0 = time.time()
-            ctx.planner.cfg_weight = self.cfg_weight
+            planner.cfg_weight = self.cfg_weight
             torch.manual_seed(task_seed(self.cond, self.strat, self.method, 'plan', r, c0))
             with torch.no_grad():
-                cps = ctx.planner.plan(all_parts[c0:c0 + chunk], n_candidates=min(chunk, total - c0),
-                                       start=all_starts[c0:c0 + chunk])
-                out.append(ctx.planner.render(cps).detach().cpu())
+                cps = planner.plan(all_parts[c0:c0 + chunk], n_candidates=min(chunk, total - c0),
+                                   start=all_starts[c0:c0 + chunk])
+                out.append(planner.render(cps).detach().cpu())
             self.plan_s += time.time() - t0
             yield None
         curves = torch.cat(out, dim=0).numpy().astype(np.float32)
-        self._cfm_curves = curves.reshape(len(active), n_init, *curves.shape[1:])
+        self._net_curves = curves.reshape(len(active), n_init, *curves.shape[1:])
 
-    def run_svgd(self, active, inits, starts):
+    def run_svgd(self, active, inits, starts, n_iters=None):
         """SVGD of all candidates of all active shapes in ONE GPU batch, then the
         ergodic error against each shape's planning target along the iterations.
-        -> dict of host arrays (+ the stored-state log on the host)."""
+        -> dict of host arrays (+ the stored-state log on the host).
+
+        `n_iters`: override for `ctx.args.n_iters` (default: unchanged), so a
+        caller can run a shorter (or longer) batch than the run's nominal
+        budget, e.g. to cap baselines to a CFM-derived iteration count
+        (`run_mission_eval_budget_matched.py`)."""
         ctx = self.ctx
         a = ctx.args
+        n_iters = a.n_iters if n_iters is None else n_iters
         A, n_init = len(active), a.n_init
         r = active[0].n_done
         flat = inits.reshape(A * n_init, *inits.shape[2:]).astype(np.float64)
@@ -321,12 +339,12 @@ class MissionSet:
         seeds = [task_seed(st.name, self.cond, self.strat, self.method, r, i)
                  for st in active for i in range(n_init)]
         t0 = time.time()
-        out = ctx.bs.run(flat, target, starts_rep, seeds, a.n_iters, record=True)
+        out = ctx.bs.run(flat, target, starts_rep, seeds, n_iters, record=True)
         if ctx.device != 'cpu':
             torch.cuda.synchronize()
         self.svgd_s += time.time() - t0
         cps = out['cps']                                              # (A*n, n_iters+1, nxi, 2) float32, device
-        midx = eval_indices(a.n_iters, a.metric_stride)
+        midx = eval_indices(n_iters, a.metric_stride)
         with torch.no_grad():
             curves = torch.einsum('pi,csid->cspd', ctx.B32, cps[:, midx])
             E = ergodic_E_batch(ctx, curves.reshape(-1, curves.shape[2], 2),
@@ -334,7 +352,7 @@ class MissionSet:
             E_init = ergodic_E_batch(ctx, torch.as_tensor(flat, dtype=torch.float32, device=ctx.device),
                                      phi_k10)
             del curves
-        sidx = eval_indices(a.n_iters, a.state_stride)
+        sidx = eval_indices(n_iters, a.state_stride)
         cps_host = cps[:, sidx].cpu().numpy()
         del cps, out['cps']
         return dict(final_cps=out['final_cps'], E_series=E.cpu().numpy().astype(np.float32),
@@ -342,9 +360,15 @@ class MissionSet:
                     seeds=seeds)
 
     # -- one executed unit ---------------------------------------------------
-    def execute(self, st, res, r, start):
-        """Pick the winner, drive one unit, update the belief, score. -> (row, cand rows)."""
+    def execute(self, st, res, r, start, n_iters_used=None):
+        """Pick the winner, drive one unit, update the belief, score. -> (row, cand rows).
+
+        `n_iters_used`: the SVGD iteration count actually behind `res` (default:
+        `ctx.args.n_iters`), recorded in the stored candidate rows -- lets a
+        caller execute on a truncated/capped run (budget-matched evaluation)
+        while keeping the DB honest about how many iterations were spent."""
         ctx, args = self.ctx, self.args
+        n_iters_used = ctx.args.n_iters if n_iters_used is None else n_iters_used
         from common.metrics import coverage_vs_truth, path_length, trim_to_length
         from common.observation import measure, thin
         from exploration_optimierung.mission import (LENGTH_UNIT, PTS_PER_UNIT,
@@ -417,7 +441,7 @@ class MissionSet:
             sd_plan=sd_plan.detach().cpu().numpy(), segment=seg.detach().cpu().numpy(),
             obs_pts=pts_t.detach().cpu().numpy(), obs_vals=vals_t.detach().cpu().numpy())
         cands = [dict(cand_idx=c, selected=(c == sel), init_param=res['init_params'][c],
-                      n_iters=ctx.args.n_iters, nxi=NXI, n_states=res['n_states'],
+                      n_iters=n_iters_used, nxi=NXI, n_states=res['n_states'],
                       state_stride=ctx.args.state_stride, E_stride=ctx.args.metric_stride,
                       E_init=float(res['E_init'][c]), E_final=float(E_final[c]),
                       init_curve=res['inits'][c], states=res['blobs'][c],
@@ -447,9 +471,9 @@ class MissionSet:
                                 if st.driven is not None else np.array(ctx.start_pos))
                                for st in active])
             # 1. candidates -------------------------------------------------
-            if self.method == 'cfm':
-                yield from self.cfm_candidates(active, r, starts)
-                inits = self._cfm_curves
+            if self.method in rsc.NETWORK_METHODS:
+                yield from self.network_candidates(self.method, active, r, starts)
+                inits = self._net_curves
                 init_params = [[float('nan')] * a.n_init for _ in active]
             else:
                 if self.method == 'random_walk':
@@ -490,7 +514,7 @@ class MissionSet:
         n99 = sum(1 for s in states if s.done)
         print(f"[mission] {self.tag} FINISHED: {n99}/{len(states)} shapes reached "
               f"{a.coverage_threshold:.0%}, {(time.time() - self.t0) / 60:.1f} min "
-              f"(CFM planning {self.plan_s / 60:.1f} min, SVGD {self.svgd_s / 60:.1f} min)", flush=True)
+              f"(planning {self.plan_s / 60:.1f} min, SVGD {self.svgd_s / 60:.1f} min)", flush=True)
         self.conn.commit()
 
 
@@ -586,6 +610,8 @@ def main():
     ap.add_argument('--representation', type=str, default='particles', choices=['particles'])
     ap.add_argument('--ckpt', type=str, default=None,
                     help='Start-conditioned CFM checkpoint (default: transfer/netz2d_startpunkt.pt).')
+    ap.add_argument('--selfsup_ckpt', type=str, default=None,
+                    help='Self-supervised checkpoint (default: selfsup_planner.DEFAULT_SELFSUP_CKPT).')
     ap.add_argument('--workers', type=int, default=6,
                     help='CPU workers for baseline inits and log compression.')
     ap.add_argument('--parallel_sets', type=int, default=4,
@@ -634,16 +660,24 @@ def main():
     out_dir = os.path.join(a.out_root, a.out_tag + run_suffix(a.refiner))
     os.makedirs(out_dir, exist_ok=True)
 
-    planner = None
+    planners = {}
     if 'cfm' in methods:
         if a.dry_run:
-            planner = DummyPlanner()
+            planners['cfm'] = DummyPlanner()
         else:
             from run_eval_matrix import DEFAULT_CKPT
             from run_ideal_matrix import PLANNER_BUILDERS
-            planner = PLANNER_BUILDERS[a.representation](a.ckpt or DEFAULT_CKPT, device)
-            assert planner.nxi == NXI, f"planner nxi={planner.nxi}, expected {NXI}"
-            assert planner.start_cond, "the mission needs a start-conditioned checkpoint"
+            planners['cfm'] = PLANNER_BUILDERS[a.representation](a.ckpt or DEFAULT_CKPT, device)
+            assert planners['cfm'].nxi == NXI, f"planner nxi={planners['cfm'].nxi}, expected {NXI}"
+            assert planners['cfm'].start_cond, "the mission needs a start-conditioned checkpoint"
+    if 'selfsup' in methods:
+        if a.dry_run:
+            planners['selfsup'] = DummyPlanner()
+        else:
+            from selfsup_planner import SelfsupPlanner, DEFAULT_SELFSUP_CKPT
+            planners['selfsup'] = SelfsupPlanner(a.selfsup_ckpt or DEFAULT_SELFSUP_CKPT, device)
+            assert planners['selfsup'].nxi == NXI, \
+                f"selfsup planner nxi={planners['selfsup'].nxi}, expected {NXI}"
 
     ee = ExploreExploitErgodic(device=device)
     truths_t = list(truths)
@@ -654,7 +688,7 @@ def main():
         bs = BatchedSvgdTorch(B_np, device, torch.float64,
                               compute_dtype=torch.float32 if a.svgd_precision == 'mixed' else torch.float64)
     ctx = types.SimpleNamespace(
-        args=a, device=device, names=list(names), truths=truths_t, planner=planner, ee=ee,
+        args=a, device=device, names=list(names), truths=truths_t, planners=planners, ee=ee,
         acb=acb, svgd_ref=SvgdRefiner(0, backend=a.refiner), start_pos=start_pos, length_unit=LENGTH_UNIT, bs=bs,
         B64=B_np.astype(np.float64), B32=torch.as_tensor(B_np, dtype=torch.float32, device=device),
         cov_blind=[blind_coverage(t) for t in truths_t], n_uniform_fallback=0, n_short_plans=0,

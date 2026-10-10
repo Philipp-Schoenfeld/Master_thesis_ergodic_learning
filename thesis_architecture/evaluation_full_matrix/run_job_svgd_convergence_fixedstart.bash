@@ -2,7 +2,7 @@
 #SBATCH -J svgd_conv_fs
 #SBATCH -o %x-%j.out
 #SBATCH -e %x-%j.err
-#SBATCH -t 01:40:00
+#SBATCH -t 04:00:00
 #SBATCH -p stud
 #SBATCH --gres=gpu:1
 ##SBATCH -C 'rtx3080|rtx3090|a5000'
@@ -31,13 +31,16 @@
 # naturally capped at 1000 iterations since this DB holds no 3000-iteration
 # extension -- exactly what was asked for).
 #
-# Time budget (Philipp's request 2026-10-08): 100 min hard SLURM limit
-# instead of the usual 24h (estimated workload ~45 % of the original run, via
-# convergence_summary.csv: with --svgd_target truth, random_walk/linear cost
-# is per-shape, not per-strategy, so dropping lse/eid only removes the cfm
-# blocks). --time_budget_h 1.0 stops submitting new blocks after 60 min,
-# leaving ~35 min for the pool to drain pending runs and for the two
-# (fast, single-strategy) plot calls before the hard limit.
+# Time budget: the first attempt (job 164081, 100 min hard limit) only
+# finished 4/12 shapes -- the fixed-start pin (`WaypointPins`, a torch
+# autograd pass every SVGD iteration to get the pin penalty/gradient) turned
+# out to cost ~4x an unpinned run (~16 min/shape instead of the ~4 min/shape
+# the original un-pinned run implied), not the ~45 min/90 min originally
+# estimated from the 2026-10-01 log. This run resumes it (same --out_tag,
+# finished (shape, cond, strategy, method, init_idx) rows are skipped) with
+# a generous 4h hard limit / --time_budget_h 3.5 (210 min submission budget,
+# ~30 min buffer for the pool to drain and for the two plot calls) --
+# estimated remaining work (~8 shapes) is ~130 min.
 
 OUT_TAG=svgd_convergence_fixedstart_ucb_20261008
 
@@ -54,7 +57,7 @@ srun --unbuffered python -u run_svgd_convergence.py \
     --start_pos 0.04,0.04 \
     --refiner tsvec \
     --workers 6 \
-    --time_budget_h 1.0
+    --time_budget_h 3.5
 rc=$?
 echo "[job] $(date) run finished with exit code ${rc}"
 

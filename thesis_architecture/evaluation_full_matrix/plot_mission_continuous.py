@@ -49,9 +49,21 @@ Candidates that never get there count as n_iters. Per shape and round the
 median over the 30 candidates is taken; the markers are the mean over the
 shapes still running.
 
+A third metric, `swept` (fraction of the ground-truth probability mass within
+`--coverage_radius` of the driven path so far, the continuous counterpart of
+the existing per-round `overview_swept_mass.png`), is computed the same way
+as E/J but from the stored per-round states via a running per-grid-cell
+minimum distance (`swept_prefixes`, `torch.cummin`) instead of a cumulative
+Fourier sum. It gets only the base line+band curve, never a `--svgd_conv`
+right axis: that axis needs the metric evaluated at every stored SVGD
+iteration (up to 1500/candidate), which is cheap for E/J (a running Fourier
+sum) but would mean a fresh distance-matrix evaluation per stored iteration
+for `swept` -- decided against for now.
+
 Outputs (in <out_root>/<out_tag>/plots/):
     overview_E_truth_continuous_<n>units.png
     overview_J_truth_continuous_<n>units.png
+    overview_swept_truth_continuous_<n>units.png
     (with --svgd_conv: overview_{E,J}_truth_continuous_<n>units_svgd_conv_{plateau,target}.png)
 plus the curves as <out_tag>/analysis/continuous_<n>units.npz.
 
@@ -92,6 +104,37 @@ def score_prefixes(F_prev_sum, n_prev, s_prev, pts, ee, phi, lam):
     return E, E + lam * s, s, F
 
 
+def truth_grid(truth):
+    """Cell coordinates (R*R, 2) and ground-truth mass weights (R*R,) of a
+    density grid, same construction as
+    `metrics_explore_exploit.swept_mass_fraction` -- float64, so the running
+    min-distance accumulation in `swept_prefixes` doesn't drift over a long
+    driven path."""
+    R = truth.shape[-1]
+    ys, xs = torch.meshgrid(torch.linspace(0, 1, R, dtype=torch.float64),
+                            torch.linspace(0, 1, R, dtype=torch.float64), indexing='ij')
+    cells = torch.stack([xs.reshape(-1), ys.reshape(-1)], dim=-1)
+    w = truth.to(torch.float64).reshape(-1).clamp(min=0.0)
+    return cells, w
+
+
+def swept_prefixes(dmin_prev, pts, cells, w, radius):
+    """Ground-truth-mass fraction swept by every prefix of `pts` (T,2),
+    continuing from a running per-cell minimum distance `dmin_prev` (R*R,) or
+    None at the start of a path -- the distance-based counterpart of
+    `score_prefixes`'s cumulative Fourier sum, via `torch.cummin` instead of a
+    running sum (same trick as `metrics_explore_exploit.steps_to_full_coverage`).
+    -> (frac (T,) float64 np, dmin (R*R, T) float64, for the next call's
+    `dmin_prev` at any point along this prefix)."""
+    d = torch.cdist(cells, pts.double())                       # (R*R, T)
+    dmin = torch.cummin(d, dim=1).values
+    if dmin_prev is not None:
+        dmin = torch.minimum(dmin, dmin_prev.unsqueeze(1))
+    covered = (dmin <= radius).to(w.dtype)
+    frac = (covered * w.unsqueeze(1)).sum(0) / w.sum().clamp(min=1e-12)
+    return frac.numpy(), dmin
+
+
 def iters_to_convergence(metric, stride, n_iters, window, tol):
     """First logged iteration after which `metric` improves by less than `tol`
     (relative to its current value) over the next `window` iterations; n_iters if
@@ -112,9 +155,10 @@ def iters_to_target(metric, stride, n_iters, level):
 
 
 def shard_curves(task):
-    """One shard -> {shape: dict(E, J, E_lo, E_hi, J_lo, J_hi)} on x_grid (length units)."""
+    """One shard -> {shape: dict(E, J, swept, E_lo, E_hi, ...)} on x_grid (length units)."""
     path, x_grid, max_units = task['path'], task['x_grid'], task['max_units']
     conv = task.get('conv')                    # None or dict(window, tol)
+    radius = task['radius']
     from common.metrics import trim_to_length, path_length
     from exploration_optimierung.mission import LENGTH_UNIT, PTS_PER_UNIT, resample_arclength
     from metrics_explore_exploit import ExploreExploitErgodic, LAMBDA_LEN_J
@@ -124,7 +168,7 @@ def shard_curves(task):
     ee = ExploreExploitErgodic(device='cpu')
     B = basis_matrix(NXI, N_POINTS, DEGREE).astype(np.float64)
     conn = sqlite3.connect(f'file:{path}?mode=ro', uri=True)
-    out, worst_row, worst_seg, n_cands = {}, 0.0, 0.0, 0
+    out, worst_row, worst_seg, worst_swept, n_cands = {}, 0.0, 0.0, 0.0, 0
     shapes = [r[0] for r in conn.execute("SELECT DISTINCT shape FROM rounds ORDER BY shape")]
     if task.get('n_shapes'):
         shapes = shapes[:task['n_shapes']]
@@ -132,22 +176,33 @@ def shard_curves(task):
         res, blob = conn.execute("SELECT res, density FROM truths WHERE shape=?", (shape,)).fetchone()
         truth = torch.from_numpy(np.frombuffer(blob, dtype=np.float32).reshape(res, res).copy())
         phi = ee.target_coeffs(truth)
-        rows = conn.execute("SELECT round, segment, E_truth, J_truth, start_x, start_y FROM rounds "
-                            "WHERE shape=? ORDER BY round", (shape,)).fetchall()
+        cells, w = truth_grid(truth)
+        rows = conn.execute("SELECT round, segment, E_truth, J_truth, swept_mass, start_x, start_y "
+                            "FROM rounds WHERE shape=? ORDER BY round", (shape,)).fetchall()
         segs = [torch.from_numpy(np.frombuffer(r[1], dtype=np.float32).reshape(-1, 2).copy()) for r in rows]
         # -- driven path, every prefix
         pts = torch.cat(segs)
         E, J, s, F = score_prefixes(torch.zeros(ee.k_idx.shape[0]), 0, 0.0, pts, ee, phi, LAMBDA_LEN_J)
+        Sw, dmin_full = swept_prefixes(None, pts, cells, w, radius)
         ends = np.cumsum([len(q) for q in segs]) - 1
         for k, i in enumerate(ends):
             worst_row = max(worst_row, abs(E[i] - rows[k][2]) / max(abs(rows[k][2]), 1e-9),
                             abs(J[i] - rows[k][3]) / max(abs(rows[k][3]), 1e-9))
+            # swept_mass is a bounded [0,1] fraction, often near 0 early in a
+            # mission, where a relative error (like E/J's) is numerically
+            # unstable (a tiny absolute gap looks huge against a ~0 reference)
+            # -- and it is a hard distance<=radius threshold, so a handful of
+            # grid cells exactly on the boundary can legitimately flip between
+            # the original float32 run and this float64 recomputation. An
+            # absolute tolerance is the appropriate check here.
+            worst_swept = max(worst_swept, abs(Sw[i] - rows[k][4]))
         Fcum = F.cumsum(0)
         xu = s / LENGTH_UNIT
         keep = np.r_[True, np.diff(xu) > 0]
         rec = dict(E=np.interp(x_grid, xu[keep], E[keep], left=np.nan),
-                   J=np.interp(x_grid, xu[keep], J[keep], left=np.nan))
-        for key in ('E', 'J'):                    # alternatives: default = no spread
+                   J=np.interp(x_grid, xu[keep], J[keep], left=np.nan),
+                   swept=np.interp(x_grid, xu[keep], Sw[keep], left=np.nan))
+        for key in ('E', 'J', 'swept'):             # alternatives: default = no spread
             rec[key + '_mean'] = rec[key].copy()
             rec[key + '_std'] = np.zeros_like(rec[key])
         rec['series'] = {}                        # round -> (E (n_cand, n_log), J, stride, n_iters)
@@ -159,8 +214,9 @@ def shard_curves(task):
             n_prev = 0 if k == 0 else int(ends[k - 1]) + 1
             F_prev = torch.zeros(ee.k_idx.shape[0]) if k == 0 else Fcum[n_prev - 1]
             s_prev = 0.0 if k == 0 else float(s[n_prev - 1])
-            start = np.array([row[4], row[5]], dtype=np.float32)
-            cand_E, cand_J, cand_x, conv_E, conv_J = [], [], [], [], []
+            dmin_prev = None if k == 0 else dmin_full[:, n_prev - 1]
+            start = np.array([row[5], row[6]], dtype=np.float32)
+            cand_E, cand_J, cand_Sw, cand_x, conv_E, conv_J = [], [], [], [], [], []
             for sel, n_states, nxi, blob_s, e_blob, e_stride, n_it in conn.execute(
                     "SELECT selected, n_states, nxi, states, E_series, E_stride, n_iters FROM candidates "
                     "WHERE shape=? AND round=? ORDER BY cand_idx", (shape, r)):
@@ -185,7 +241,8 @@ def shard_curves(task):
                     else:
                         worst_seg = max(worst_seg, 1.0)
                 Ec, Jc, sc, _ = score_prefixes(F_prev, n_prev, s_prev, seg, ee, phi, LAMBDA_LEN_J)
-                cand_E.append(Ec); cand_J.append(Jc); cand_x.append(sc / LENGTH_UNIT)
+                Swc, _ = swept_prefixes(dmin_prev, seg, cells, w, radius)
+                cand_E.append(Ec); cand_J.append(Jc); cand_Sw.append(Swc); cand_x.append(sc / LENGTH_UNIT)
                 n_cands += 1
             if not cand_E:
                 continue
@@ -193,17 +250,19 @@ def shard_curves(task):
                 rec['series'][r] = (np.stack(conv_E), np.stack(conv_J)) + conv_meta
             m = (x_grid > r + 1e-9) & (x_grid <= r + 1 + 1e-9)
             xg = x_grid[m]
-            for key, vals in (('E', cand_E), ('J', cand_J)):
+            for key, vals in (('E', cand_E), ('J', cand_J), ('swept', cand_Sw)):
                 G = np.stack([np.interp(xg, cx, v) for cx, v in zip(cand_x, vals)])
                 rec[key + '_mean'][m] = G.mean(0)
                 rec[key + '_std'][m] = G.std(0)
         out[shape] = rec
     conn.close()
-    return dict(key=task['key'], curves=out, worst_row=worst_row, worst_seg=worst_seg, n_cands=n_cands)
+    return dict(key=task['key'], curves=out, worst_row=worst_row, worst_seg=worst_seg,
+               worst_swept=worst_swept, n_cands=n_cands)
 
 
 def plot_grid(curves, metric, x_grid, max_units, n_shapes, n_cand, out_path, conv=None):
-    label = {'E': 'Ergodic error E (vs. ground truth)', 'J': 'J = E + 0.02 * path length'}[metric]
+    label = {'E': 'Ergodic error E (vs. ground truth)', 'J': 'J = E + 0.02 * path length',
+             'swept': 'Fraction of ground-truth mass swept'}[metric]
     fig, axes, conds, strats = pme.grid_axes({k: True for k in curves}, figsize_unit=(4.6, 3.4))
     for i, st in enumerate(strats):
         for j, cnd in enumerate(conds):
@@ -220,12 +279,18 @@ def plot_grid(curves, metric, x_grid, max_units, n_shapes, n_cand, out_path, con
                 cs = np.stack([v[metric + '_std'] for v in per.values()])
                 lo = np.nanmean(cm - cs, 0)
                 hi = np.nanmean(cm + cs, 0)
-                lo = np.maximum(lo, np.nanmean(cm, 0) * 0.05)
+                if metric != 'swept':             # log axis: keep the band off zero/negative
+                    lo = np.maximum(lo, np.nanmean(cm, 0) * 0.05)
+                else:                              # linear fraction: clip to the valid [0, 1] range
+                    lo, hi = np.clip(lo, 0.0, 1.0), np.clip(hi, 0.0, 1.0)
                 ok = np.isfinite(drv)
                 ax.fill_between(x_grid[ok], lo[ok], hi[ok], color=sty['color'], alpha=0.16, linewidth=0)
                 ax.plot(x_grid[ok], drv[ok], color=sty['color'], lw=sty['lw'], label=sty['label'],
                         alpha=0.95)
-            ax.set_yscale('log')
+            if metric == 'swept':
+                ax.set_ylim(0.0, 1.02)
+            else:
+                ax.set_yscale('log')
             ax.set_xlim(0, max_units)
             ax.set_xticks(range(0, max_units + 1))
             if conv is not None:
@@ -248,7 +313,8 @@ def plot_grid(curves, metric, x_grid, max_units, n_shapes, n_cand, out_path, con
                 if j == len(conds) - 1:
                     ax2.set_ylabel('SVGD iterations to convergence\n(squares, dashed)', fontsize=8,
                                    color=pme.INK)
-    title = (f"{label} of the driven path vs. distance driven -- mean over {n_shapes} holdout shapes; "
+    subject = label if metric == 'swept' else f"{label} of the driven path"
+    title = (f"{subject} vs. distance driven -- mean over {n_shapes} holdout shapes; "
              f"line: driven path; band: +-1 std across the {n_cand} alternative candidates of each "
              f"round; dotted: replanning")
     if conv is not None:
@@ -257,8 +323,8 @@ def plot_grid(curves, metric, x_grid, max_units, n_shapes, n_cand, out_path, con
     if conv is not None:                       # legend entry for the right-axis markers
         axes[0][0].plot([], [], color=pme.MUTED, lw=0.9, ls='--', marker='s', ms=4.5,
                         label='SVGD iterations to convergence (right axis)')
-    pme.finish_grid(fig, axes, conds, strats, label if metric == 'J' else 'Ergodic error E (total)',
-                    title, ncols_legend=4 if conv is not None else 3)
+    ylabel = {'E': 'Ergodic error E (total)', 'J': label, 'swept': label}[metric]
+    pme.finish_grid(fig, axes, conds, strats, ylabel, title, ncols_legend=4 if conv is not None else 3)
     if conv is not None:                       # two-line title: lift it clear of the legend
         fig.suptitle(title, fontsize=10, color=pme.INK, y=1.07)
     fig.savefig(out_path, dpi=140, facecolor='white', bbox_inches='tight')
@@ -329,6 +395,9 @@ def main():
     ap.add_argument('--conv_tol', type=float, default=0.05,
                     help='Converged once the relative improvement over the window drops below this.')
     ap.add_argument('--n_iters', type=int, default=1500, help='SVGD iterations per round in the run.')
+    ap.add_argument('--coverage_radius', type=float, default=0.06,
+                    help='Sensor/coverage radius for the ground-truth-mass-swept metric '
+                         '(must match the run\'s --coverage_radius, default 0.06).')
     ap.add_argument('--shards', type=str, default='',
                     help='Comma-separated shard names (cond__strategy__method) to restrict to (smoke test).')
     ap.add_argument('--n_shapes', type=int, default=0, help='Only the first n shapes per shard (smoke test).')
@@ -344,20 +413,23 @@ def main():
         if only and name not in only:
             continue
         tasks.append(dict(key=tuple(name.split('__')), path=f, x_grid=x_grid,
-                          max_units=a.max_units, conv=conv, n_shapes=a.n_shapes))
-    curves, n_shapes, worst_row, worst_seg, n_cands = {}, 0, 0.0, 0.0, 0
+                          max_units=a.max_units, conv=conv, n_shapes=a.n_shapes,
+                          radius=a.coverage_radius))
+    curves, n_shapes, worst_row, worst_seg, worst_swept, n_cands = {}, 0, 0.0, 0.0, 0.0, 0
     with mp.get_context('spawn').Pool(a.workers, initializer=_setup) as pool:
         for res in pool.imap_unordered(shard_curves, tasks):
             curves[res['key']] = res['curves']
             n_shapes = max(n_shapes, len(res['curves']))
             worst_row, worst_seg = max(worst_row, res['worst_row']), max(worst_seg, res['worst_seg'])
+            worst_swept = max(worst_swept, res['worst_swept'])
             n_cands += res['n_cands']
             print(f"[continuous] {'/'.join(res['key'])}: {len(res['curves'])} missions, "
                   f"{res['n_cands']} alternatives", flush=True)
     print(f"[continuous] driven path vs. stored E_truth/J_truth: worst relative deviation {worst_row:.1e}; "
           f"re-rendered selected candidate vs. stored segment: worst {worst_seg:.1e}; "
+          f"driven path vs. stored swept_mass: worst absolute deviation {worst_swept:.1e}; "
           f"{n_cands} alternatives scored", flush=True)
-    if worst_row > 1e-3 or worst_seg > 1e-2:
+    if worst_row > 1e-3 or worst_seg > 1e-2 or worst_swept > 1e-2:
         raise AssertionError('consistency check failed')
 
     variants = [None]
@@ -372,10 +444,18 @@ def main():
             p = os.path.join(plots, f'overview_{metric}_truth_continuous_{a.max_units}units{suffix}.png')
             plot_grid(curves, metric, x_grid, a.max_units, n_shapes, 30, p, conv=var)
             print(f"[continuous] wrote {p}", flush=True)
+    # Ground-truth-coverage continuous plot: base curve only, no SVGD-convergence
+    # right axis (that would need a distance-matrix evaluation at every stored
+    # SVGD iteration instead of the cheap cumulative Fourier sum E/J use --
+    # decided against for now, see the plan).
+    swept_suffix = '_smoke' if smoke else ''
+    p = os.path.join(plots, f'overview_swept_truth_continuous_{a.max_units}units{swept_suffix}.png')
+    plot_grid(curves, 'swept', x_grid, a.max_units, n_shapes, 30, p, conv=None)
+    print(f"[continuous] wrote {p}", flush=True)
     if smoke:
         return
     os.makedirs(os.path.join(root, 'analysis'), exist_ok=True)
-    fields = ('E', 'J', 'E_mean', 'E_std', 'J_mean', 'J_std')
+    fields = ('E', 'J', 'swept', 'E_mean', 'E_std', 'J_mean', 'J_std', 'swept_mean', 'swept_std')
     if conv is not None:
         fields += tuple(f"conv_{v['key']}_{m}" for v in variants for m in ('E', 'J'))
     suffix = '_svgd_conv' if conv is not None else ''

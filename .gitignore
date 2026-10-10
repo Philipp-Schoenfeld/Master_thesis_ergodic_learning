@@ -44,5 +44,15 @@ thesis_architecture/evaluation_full_matrix/results/svgd_convergence_20261001/svg
 # They stay on the cluster and locally; regenerate with run_mission_eval.py.
 thesis_architecture/evaluation_full_matrix/results/mission_eval_20261006/shards/
 
+# SVGD-state DBs of the 2026-10-08/10 runs (fixed-start convergence 144 MB,
+# budget-matched mission shards 27 x 64-133 MB, smoothness comparison rounds 1/2
+# up to 872 MB): above or near GitHub's 100 MB limit. They stay on the cluster
+# and locally; plots/CSVs next to them are tracked. Regenerate with
+# run_svgd_convergence.py / run_mission_eval_budget_matched.py /
+# run_smoothness_comparison{,_v2}.py.
+thesis_architecture/evaluation_full_matrix/results/svgd_convergence_fixedstart_ucb_20261008/svgd_convergence.db
+thesis_architecture/evaluation_full_matrix/results/mission_eval_budget_matched_20261008_sun/shards/
+thesis_architecture/evaluation_full_matrix/results/*/smoothness_comparison.db*
+
 # LibreOffice lock files
 .~lock.*#

@@ -410,13 +410,23 @@ class BatchedSunTorch:
         self.dev = torch.device(device)
         self.T, self.nxi = np.asarray(B).shape
 
-    def run(self, init_curves, phis, start, seeds, n_iters, record=True):
+    def run(self, init_curves, phis, start, seeds, n_iters, record=True,
+           smoothness_weight=0.0, log_space='cps', dynamics='pointmass'):
+        """`smoothness_weight`/`log_space`/`dynamics`: opt-in, forwarded to
+        `common.sun_refine.run_batch` (see its docstring) -- all default to
+        the original behaviour. `log_space='raw'` logs linearly-resampled raw
+        positions instead of a B-spline fit; construct this instance with a
+        placeholder (nxi, nxi) matrix (e.g. `np.eye(nxi)`) in that case, since
+        `self.nxi` only needs to carry the logged point count, `self.B`'s
+        values are otherwise unused by this class."""
         from common.sun_refine import run_batch
         torch = self.torch
         curves = np.asarray(init_curves, dtype=np.float64)
         if curves.shape[1] != self.T:
             raise ValueError(f"init curves have {curves.shape[1]} points, basis expects {self.T}")
-        out = run_batch(curves, phis, start, int(n_iters), self.nxi, record=record)
+        out = run_batch(curves, phis, start, int(n_iters), self.nxi, record=record,
+                        smoothness_weight=smoothness_weight, log_space=log_space,
+                        dynamics=dynamics)
         log = None
         if record:
             C = curves.shape[0]
@@ -424,7 +434,8 @@ class BatchedSunTorch:
             log[:, 0] = torch.as_tensor(out['init_cps'], dtype=torch.float32, device=self.dev)
             if n_iters >= 1:
                 log[:, 1:] = torch.as_tensor(np.array(out['log']), dtype=torch.float32, device=self.dev)
-        return dict(cps=log, final_cps=out['final_cps'], final_energy=None)
+        return dict(cps=log, final_cps=out['final_cps'], final_energy=None,
+                   final_pos=out['final_pos'])
 
 
 # -- compact storage of the logged states: see state_codec.py (numpy-only, so the

@@ -58,6 +58,7 @@ import mission_db as mdb                                             # noqa: E40
 
 METHOD_STYLE = {                       # same colours as plot_svgd_convergence.py
     'cfm': dict(color='#00C853', label='CFM warm start', lw=2.0),
+    'selfsup': dict(color='#1565C0', label='Self-supervised (single-pass)', lw=1.8),
     'random_walk': dict(color='#E65100', label='Random walk', lw=1.6),
     'linear': dict(color='#6A1B9A', label='Linear (angled lines)', lw=1.6),
 }

@@ -3,11 +3,17 @@ test_svgd_convergence.py -- self-test for the SVGD-convergence pipeline.
 CPU only, no checkpoint, ~1 minute.  Run:  python test_svgd_convergence.py
 Checks (1) the trajectory log hook leaves `SvgdRefiner.refine` unchanged and
 its last state equals the returned curve, (2) the batched metric equals
-`ExploreExploitErgodic.score`, (3) DB round trip, (4) the angled line inits.
+`ExploreExploitErgodic.score`, (3) DB round trip, (4) the angled line inits,
+(7) an end-to-end `--dry_run` CLI pass of `run_svgd_convergence.py` with all
+four methods (cfm, selfsup, random_walk, linear) via `DummyPlanner` stand-ins
+for the two network methods -- no checkpoint needed, exercises the same
+NETWORK_METHODS / shared-baseline dispatch the real run uses.
 """
 import os
+import subprocess
 import sys
 import tempfile
+import time
 
 _here = os.path.dirname(os.path.abspath(__file__))
 _arch = os.path.dirname(_here)
@@ -26,6 +32,52 @@ import svgd_convergence_db as sdb
 from common.svgd_refine import SvgdRefiner
 from init_baselines import linear_angle_path, random_walk_path
 from metrics_explore_exploit import ExploreExploitErgodic
+
+RUNNER = os.path.join(_here, 'run_svgd_convergence.py')
+
+
+def run_cli(*args):
+    t = time.time()
+    r = subprocess.run([sys.executable, RUNNER, *args], capture_output=True, text=True)
+    if r.returncode != 0:
+        print(r.stdout[-3000:])
+        print(r.stderr[-3000:])
+        raise AssertionError(f"run_svgd_convergence.py failed with exit code {r.returncode}")
+    return r.stdout, time.time() - t
+
+
+def test_cli_dry_run():
+    """End-to-end `--dry_run` pass through `main()`: both NETWORK_METHODS
+    (cfm, selfsup) get a `DummyPlanner` stand-in (no checkpoint needed), so
+    this exercises the exact method-dispatch code real runs use, including
+    the random_walk/linear SHARED-baseline path, without needing a GPU."""
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as d:
+        out_tag = 'selftest_dry'
+        out, dt = run_cli('--dry_run', '--shapes', 'A', '--conditions', 'none_known,half_known',
+                          '--strategies', 'ucb', '--n_init', '2', '--n_iters', '5', '--workers', '2',
+                          '--out_tag', out_tag)
+        assert 'done:' in out
+        import run_svgd_convergence as rsc2
+        import svgd_convergence_db as sdb2
+        out_dir = os.path.join(_here, 'results', out_tag + '_sun')
+        try:
+            conn = sdb2.open_db(os.path.join(out_dir, 'svgd_convergence.db'))
+            methods_seen = {r[0] for r in conn.execute("SELECT DISTINCT method FROM runs")}
+            assert methods_seen == set(rsc2.METHODS), methods_seen
+            # cfm/selfsup: once per (cond, strat) = 2x1 blocks x 2 inits; random_walk/linear: SHARED, once per shape
+            for m in rsc2.NETWORK_METHODS:
+                n = conn.execute("SELECT COUNT(*) FROM runs WHERE method=?", (m,)).fetchone()[0]
+                assert n == 2 * 2, (m, n)
+            for m in ('random_walk', 'linear'):
+                n = conn.execute("SELECT COUNT(*) FROM runs WHERE method=? AND knowledge_condition=?",
+                                 (m, sdb2.SHARED)).fetchone()[0]
+                assert n == 2, (m, n)
+            conn.close()
+        finally:
+            import shutil
+            shutil.rmtree(out_dir, ignore_errors=True)
+    print(f"ok  --dry_run CLI end-to-end ({dt:.0f} s): all four methods stored, "
+          f"cfm/selfsup per (condition, strategy), random_walk/linear shared once per shape")
 
 
 def main():
@@ -146,6 +198,8 @@ def main():
     g = pem.iteration_grid(3000)
     assert g[0] == 0 and g[-1] == 3000 and len(g) == 79, len(g)
     print("ok  extra metrics: swept mass == reference, Chamfer/diversity sanity, first passage, grid")
+    # (7) end-to-end --dry_run CLI, all four methods
+    test_cli_dry_run()
     print("ALL OK")
 
 

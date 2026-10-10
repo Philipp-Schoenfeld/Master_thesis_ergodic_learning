@@ -22,19 +22,28 @@ Design
 
   (the Optuna `ucb`/`niveau` bests come from 2-5 trials only, the grid ones
   from the full sweep.)
-* Three initialisation families with `--n_init` (30) members each:
+* Four initialisation families with `--n_init` (30) members each:
     cfm          one batched forward pass of the CFM planner, n_init samples
                  (single shot, no replanning: the planner output IS the
                  warm start; the strategy's tuned kappa/tau, quantile
                  particles, cfg_weight and GP settings are used, its
                  mission-level debt/visit terms and internal SVGD budget are
                  not -- iteration 0 is the raw network sample)
+    selfsup      one batched forward pass of the self-supervised single-pass
+                 generator (`flow_matching_particles_selfsupervised.py`,
+                 wrapped by `selfsup_planner.SelfsupPlanner`), same particle
+                 conditioning as cfm but no CFG, no ODE integration and no
+                 start conditioning. Known caveat: the only trained
+                 checkpoint has a measured `diversity` of ~0.08 (near
+                 "ignores the noise input"), so its n_init candidates are
+                 markedly more similar to each other than cfm's.
     random_walk  `init_baselines.random_walk_path`, seeds 0..n_init-1
     linear       `init_baselines.linear_angle_path`, n_init angles evenly
                  spaced over [0, 180) deg, each a full chord through the
                  workspace centre
   Random walk / linear inits do not depend on shape, knowledge or strategy
-  (paired design).
+  (paired design); cfm and selfsup both do (they condition on the belief's
+  target density), so both run once per (shape, knowledge, strategy).
 * SVGD target (`--svgd_target`):
     truth   (default) every init is refined against the TRUE density. The
             knowledge state then only shapes what the CFM planner is
@@ -99,7 +108,11 @@ STRATEGY_MAP = {
     'ucb': 'ucb_tuned_svgd0',
     'eid': 'eid_optuna_ideal_v2',
 }
-METHODS = ('cfm', 'random_walk', 'linear')
+METHODS = ('cfm', 'random_walk', 'linear', 'selfsup')
+#: Methods that need a network forward pass and condition on the belief's
+#: target density -- unlike random_walk/linear, they are not shared across
+#: knowledge states/strategies (see the SHARED-baseline handling below).
+NETWORK_METHODS = ('cfm', 'selfsup')
 SHARED = 'all'      # knowledge/strategy label of baseline rows that do not depend on either
 NXI = 25
 N_POINTS = 128
@@ -207,12 +220,15 @@ class DummyPlanner:
         return torch.einsum('pi,kid->kpd', self.B, cps.float())
 
 
-def build_cfm_curves(planner, representation, belief, strategy_name, n_init,
-                     device, seed, start=None):
-    """n_init CFM samples for the belief's target density, as dense curves.
+def build_planner_curves(planner, representation, belief, strategy_name, n_init,
+                         device, seed, start=None):
+    """n_init samples from `planner` (CfmPlanner or SelfsupPlanner) for the
+    belief's target density, as dense curves. Generic over any object with
+    the `.plan`/`.render` interface -- used for both 'cfm' and 'selfsup'.
     `start`: (2,) tensor or None, forwarded to `planner.plan` (only takes
     effect with a start-conditioned checkpoint; one shared start for the
-    whole batch, same as every other start-conditioned caller in this repo).
+    whole batch, same as every other start-conditioned caller in this repo;
+    `SelfsupPlanner.plan` ignores it, see `selfsup_planner.py`).
     -> (curves (n,T,2) float32 np, phi (R,R) float32 np)."""
     import apply_cfm_belief as acb
     import variant_runner as vr
@@ -288,6 +304,8 @@ def main():
     ap.add_argument('--ckpt', type=str, default=None,
                     help='CFM checkpoint (default: transfer/netz2d_startpunkt.pt for '
                          'particles, the spectral checkpoint otherwise).')
+    ap.add_argument('--selfsup_ckpt', type=str, default=None,
+                    help='Self-supervised checkpoint (default: selfsup_planner.DEFAULT_SELFSUP_CKPT).')
     ap.add_argument('--start_pos', type=str, default=None,
                     help='"x,y": fix every init (cfm/random_walk/linear) and the SVGD '
                          'refinement itself to this start point (default: unset, the '
@@ -360,15 +378,23 @@ def main():
         started=time.strftime('%Y-%m-%d %H:%M:%S')))
     conn.commit()
 
-    planner = None
+    planners = {}
     if 'cfm' in methods:
         if args.dry_run:
-            planner = DummyPlanner()
+            planners['cfm'] = DummyPlanner()
         else:
             ckpt = args.ckpt or (DEFAULT_CKPT if args.representation == 'particles'
                                  else SPECTRAL_CKPT)
-            planner = PLANNER_BUILDERS[args.representation](ckpt, device)
-            assert planner.nxi == NXI, f"planner nxi={planner.nxi}, expected {NXI}"
+            planners['cfm'] = PLANNER_BUILDERS[args.representation](ckpt, device)
+            assert planners['cfm'].nxi == NXI, f"planner nxi={planners['cfm'].nxi}, expected {NXI}"
+    if 'selfsup' in methods:
+        if args.dry_run:
+            planners['selfsup'] = DummyPlanner()
+        else:
+            from selfsup_planner import SelfsupPlanner, DEFAULT_SELFSUP_CKPT
+            planners['selfsup'] = SelfsupPlanner(args.selfsup_ckpt or DEFAULT_SELFSUP_CKPT, device)
+            assert planners['selfsup'].nxi == NXI, \
+                f"selfsup planner nxi={planners['selfsup'].nxi}, expected {NXI}"
 
     ee_main = ExploreExploitErgodic(device=device)
     ctx = mp.get_context('spawn')
@@ -411,7 +437,7 @@ def main():
             sdb.save_truth(conn, shape, truth_np)
             phi_k_truth = ee_main.target_coeffs(truth).detach().cpu().numpy()
             if args.svgd_target == 'truth':
-                shared = [m for m in methods if m != 'cfm']
+                shared = [m for m in methods if m not in NETWORK_METHODS]
                 have = sdb.existing_keys(conn, shape, SHARED, SHARED)
                 need = {m: [i for i in range(args.n_init) if (m, i) not in have]
                         for m in shared}
@@ -429,7 +455,8 @@ def main():
                         raise StopIteration
                     strat_name = STRATEGY_MAP[strat]
                     belief_mode = args.svgd_target == 'belief'
-                    block_methods = methods if belief_mode else [m for m in methods if m == 'cfm']
+                    block_methods = methods if belief_mode else \
+                        [m for m in methods if m in NETWORK_METHODS]
                     have = sdb.existing_keys(conn, shape, cond, strat)
                     need = {m: [i for i in range(args.n_init) if (m, i) not in have]
                             for m in block_methods}
@@ -443,14 +470,15 @@ def main():
                         gp_lengthscale=s.get('gp_lengthscale', 0.08))
                     start_t = (None if start_pos is None
                               else torch.tensor(start_pos, dtype=torch.float32))
-                    inits = {}
-                    if 'cfm' in block_methods and need['cfm']:
-                        curves, phi = build_cfm_curves(
-                            planner, args.representation, belief, strat_name,
-                            args.n_init, device, task_seed(shape, cond, strat, 'cfm'),
-                            start=start_t)
-                        inits['cfm'] = [(c, None) for c in curves]
-                    else:
+                    inits, phi = {}, None
+                    for m in NETWORK_METHODS:
+                        if m in block_methods and need[m]:
+                            curves, phi = build_planner_curves(
+                                planners[m], args.representation, belief, strat_name,
+                                args.n_init, device, task_seed(shape, cond, strat, m),
+                                start=start_t)
+                            inits[m] = [(c, None) for c in curves]
+                    if phi is None:
                         phi = target_density(belief, strat_name, device)
                     for m in ('random_walk', 'linear'):
                         if m in block_methods and need[m]:
