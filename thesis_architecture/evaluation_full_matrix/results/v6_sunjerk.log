@@ -1,0 +1,27 @@
+[smooth_v2] 25 shapes: ['A', 'greek_upper_0', 'korean_5', 'digit_5', 'a_lc', 'rand_gmm_10', 'rand_gmm_20', 'rand_ana_poly_10', 'rand_ana_poly_20', 'rand_ana_poly_30', 'rand_gmm_complex_0', 'rand_gmm_complex_10', 'rand_gmm_complex_20', 'rand_gmm_complex_30', 'rand_ana_poly_complex_0', 'rand_ana_poly_complex_10', 'rand_ana_poly_complex_20', 'rand_ana_poly_complex_30', 'organic_0', 'organic_10', 'organic_20', 'organic_30', 'cjk_0', 'cjk_10', 'cjk_20']
+[smooth_v2] block 1/25 (A/linear_sun_jerk) done in 128.0s; 1 cells stored, 2.1 min total
+[smooth_v2] block 2/25 (greek_upper_0/linear_sun_jerk) done in 122.6s; 2 cells stored, 4.2 min total
+[smooth_v2] block 3/25 (korean_5/linear_sun_jerk) done in 161.2s; 3 cells stored, 6.9 min total
+[smooth_v2] block 4/25 (digit_5/linear_sun_jerk) done in 152.9s; 4 cells stored, 9.4 min total
+[smooth_v2] block 5/25 (a_lc/linear_sun_jerk) done in 143.6s; 5 cells stored, 11.8 min total
+[smooth_v2] block 6/25 (rand_gmm_10/linear_sun_jerk) done in 145.4s; 6 cells stored, 14.2 min total
+[smooth_v2] block 7/25 (rand_gmm_20/linear_sun_jerk) done in 140.9s; 7 cells stored, 16.6 min total
+[smooth_v2] block 8/25 (rand_ana_poly_10/linear_sun_jerk) done in 130.7s; 8 cells stored, 18.8 min total
+[smooth_v2] block 9/25 (rand_ana_poly_20/linear_sun_jerk) done in 141.2s; 9 cells stored, 21.1 min total
+[smooth_v2] block 10/25 (rand_ana_poly_30/linear_sun_jerk) done in 143.4s; 10 cells stored, 23.5 min total
+[smooth_v2] block 11/25 (rand_gmm_complex_0/linear_sun_jerk) done in 144.2s; 11 cells stored, 25.9 min total
+[smooth_v2] block 12/25 (rand_gmm_complex_10/linear_sun_jerk) done in 149.2s; 12 cells stored, 28.4 min total
+[smooth_v2] block 13/25 (rand_gmm_complex_20/linear_sun_jerk) done in 141.5s; 13 cells stored, 30.7 min total
+[smooth_v2] block 14/25 (rand_gmm_complex_30/linear_sun_jerk) done in 140.5s; 14 cells stored, 33.1 min total
+[smooth_v2] block 15/25 (rand_ana_poly_complex_0/linear_sun_jerk) done in 138.5s; 15 cells stored, 35.4 min total
+[smooth_v2] block 16/25 (rand_ana_poly_complex_10/linear_sun_jerk) done in 135.7s; 16 cells stored, 37.7 min total
+[smooth_v2] block 17/25 (rand_ana_poly_complex_20/linear_sun_jerk) done in 137.4s; 17 cells stored, 39.9 min total
+[smooth_v2] block 18/25 (rand_ana_poly_complex_30/linear_sun_jerk) done in 138.7s; 18 cells stored, 42.3 min total
+[smooth_v2] block 19/25 (organic_0/linear_sun_jerk) done in 143.9s; 19 cells stored, 44.7 min total
+[smooth_v2] block 20/25 (organic_10/linear_sun_jerk) done in 138.9s; 20 cells stored, 47.0 min total
+[smooth_v2] block 21/25 (organic_20/linear_sun_jerk) done in 137.1s; 21 cells stored, 49.3 min total
+[smooth_v2] block 22/25 (organic_30/linear_sun_jerk) done in 146.3s; 22 cells stored, 51.7 min total
+[smooth_v2] block 23/25 (cjk_0/linear_sun_jerk) done in 143.8s; 23 cells stored, 54.1 min total
+[smooth_v2] block 24/25 (cjk_10/linear_sun_jerk) done in 143.6s; 24 cells stored, 56.5 min total
+[smooth_v2] block 25/25 (cjk_20/linear_sun_jerk) done in 141.8s; 25 cells stored, 58.8 min total
+[smooth_v2] done: 25 cells stored, 0 already complete, 58.8 min -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6_sunjerk_20261012\smoothness_comparison.db

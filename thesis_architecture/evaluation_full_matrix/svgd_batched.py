@@ -241,11 +241,19 @@ class BatchedSvgdTorch:
     GPU. Same math, same float64 default; `test_mission_eval.py` compares it with
     `BatchedSvgd` and with the reference `SvgdRefiner`."""
 
-    def __init__(self, B, device='cuda', dtype=None, compute_dtype=None):
+    def __init__(self, B, device='cuda', dtype=None, compute_dtype=None, smoothness_weight=None,
+                 jitter_scale=None):
         """`dtype`: dtype of the optimiser state (particles, Adam moments,
         kernel); `compute_dtype`: dtype of the energy / gradient evaluation
         (the memory-bound bulk of the work; consumer GPUs run float64 at
-        1/32 of their float32 rate). Default: both float64 = the reference."""
+        1/32 of their float32 rate). Default: both float64 = the reference.
+        `smoothness_weight`: weight of the acceleration term (default `W_SMOOTH`;
+        0.0 switches the smoothness cost off).
+        `jitter_scale`: std of the swarm jitter (default `JITTER`). 0.0 keeps the
+        particles of a candidate identical: the kernel repulsion is then exactly zero
+        (see the Adam-SVGD notes in `run_smoothness_comparison_v2.py`)."""
+        self.w_smooth = W_SMOOTH if smoothness_weight is None else float(smoothness_weight)
+        self.jitter = JITTER if jitter_scale is None else float(jitter_scale)
         import torch
         self.torch = torch
         self.dev = torch.device(device)
@@ -296,7 +304,7 @@ class BatchedSvgdTorch:
         lo = torch.clamp(X - BOUNDARY_MARGIN, max=0.0)
         hi = torch.clamp(X - (1.0 - BOUNDARY_MARGIN), min=0.0)
         bd = 0.5 * ((lo ** 2).sum(dim=(1, 2)) + (hi ** 2).sum(dim=(1, 2))).reshape(C, N)
-        energy = W_ERGODIC * erg + W_SMOOTH * sm + W_BOUNDARY * bd
+        energy = W_ERGODIC * erg + self.w_smooth * sm + W_BOUNDARY * bd
         d0 = None
         if start is not None:
             d0 = X[:, 0, :] - start.repeat_interleave(N, dim=0)         # (CN, 2)
@@ -313,7 +321,7 @@ class BatchedSvgdTorch:
         gs[:, :-2] += 2.0 * accel
         gs[:, 1:-1] -= 4.0 * accel
         gs[:, 2:] += 2.0 * accel
-        gX = gX + W_SMOOTH * gs + W_BOUNDARY * (lo + hi)
+        gX = gX + self.w_smooth * gs + W_BOUNDARY * (lo + hi)
         if d0 is not None:
             gX[:, 0, :] += W_START * d0
         gP = torch.matmul(self.B.T, gX)                                 # (CN, nxi, 2)
@@ -350,7 +358,7 @@ class BatchedSvgdTorch:
         phik = np.asarray(phi_k, dtype=np.float64)
         if phik.ndim == 1:
             phik = np.broadcast_to(phik, (C, phik.shape[0]))
-        jitter = np.stack([np.random.default_rng(int(s)).normal(scale=JITTER, size=(N, nxi, 2))
+        jitter = np.stack([np.random.default_rng(int(s)).normal(scale=self.jitter, size=(N, nxi, 2))
                            for s in seeds])
         dev, dt = self.dev, self.dt
         phik_t = torch.as_tensor(np.ascontiguousarray(phik), device=dev, dtype=dt)
@@ -411,8 +419,9 @@ class BatchedSunTorch:
         self.T, self.nxi = np.asarray(B).shape
 
     def run(self, init_curves, phis, start, seeds, n_iters, record=True,
-           smoothness_weight=0.0, log_space='cps', dynamics='pointmass'):
-        """`smoothness_weight`/`log_space`/`dynamics`: opt-in, forwarded to
+           smoothness_weight=0.0, log_space='cps', dynamics='pointmass',
+           depletion_eta=0.0, depletion_sigma=0.06):
+        """`smoothness_weight`/`log_space`/`dynamics`/`depletion_*`: opt-in, forwarded to
         `common.sun_refine.run_batch` (see its docstring) -- all default to
         the original behaviour. `log_space='raw'` logs linearly-resampled raw
         positions instead of a B-spline fit; construct this instance with a
@@ -426,7 +435,8 @@ class BatchedSunTorch:
             raise ValueError(f"init curves have {curves.shape[1]} points, basis expects {self.T}")
         out = run_batch(curves, phis, start, int(n_iters), self.nxi, record=record,
                         smoothness_weight=smoothness_weight, log_space=log_space,
-                        dynamics=dynamics)
+                        dynamics=dynamics, depletion_eta=depletion_eta,
+                        depletion_sigma=depletion_sigma)
         log = None
         if record:
             C = curves.shape[0]

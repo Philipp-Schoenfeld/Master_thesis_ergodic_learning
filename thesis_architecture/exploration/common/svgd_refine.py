@@ -14,7 +14,7 @@ importiert die Klasse deshalb von hier und verhaelt sich unveraendert.
 
 Der Inhalt ist gegenueber der GUI-Fassung unveraendert.
 
-Zwei Verfahren (`backend`), seit 2026-10-06:
+Drei Verfahren (`backend`), seit 2026-10-10:
 
 * ``'sun'`` (Standard): Suns FM-Stein-Loeser (Stein-Fluss + LQ-Flow-Matching),
   derselbe Kern wie die Datengenerierung in `ergodic_solver.py` -- siehe
@@ -22,9 +22,16 @@ Zwei Verfahren (`backend`), seit 2026-10-06:
 * ``'tsvec'``: der bisherige TSVEC-artige Partikel-SVGD (Adam auf einer
   Fourier-Energie, Gewichte aus `SE3_SVGD/tsvec_2d.py`), unveraendert. Damit
   bleiben alle bisherigen Ergebnisse reproduzierbar.
+* ``'li_se3'``: direkte Reimplementierung des SVGD-Kerns von Li, Jin, Teng,
+  Gong, Chalvatzaki, "Stein Variational Ergodic Surface Coverage with SE(3)
+  Constraints" (TSVEC), arXiv:2603.09458 -- derselbe Preconditioned-SVGD-
+  Update (Eq. 3/18/19/21/22, auf die flache 2D-Ebene reduziert) wie in
+  `common/tsvec_svgd.py::TsvecSvgd`, siehe dort fuer Details/Abweichungen
+  (Energieskalen-Fix, analytische statt Autodiff-Jacobians). Kein Hindernis-
+  Term -- `obstacle` muss `None` sein.
 
-Laeufe mit ``'sun'`` tragen den Namenszusatz `run_suffix('sun') == '_sun'`;
-``'tsvec'``-Laeufe behalten ihre bisherigen Namen.
+Laeufe mit ``'sun'``/``'li_se3'`` tragen den Namenszusatz `run_suffix(...)`
+(`'_sun'`/`'_li_se3'`); ``'tsvec'``-Laeufe behalten ihre bisherigen Namen.
 """
 
 import contextlib
@@ -48,29 +55,33 @@ import svgd_engine as svgde          # noqa: E402
 from waypoints import WaypointPins   # noqa: E402
 
 #: Verfuegbare Verfeinerungsverfahren.
-BACKENDS = ('sun', 'tsvec')
-#: Standard: Suns Loeser. Die Umgebungsvariable THESIS_REFINER=tsvec stellt
-#: alle Aufrufer ohne eigenes Flag (GUI, `exploration_optimierung`) auf den
-#: bisherigen Refiner zurueck, z. B. fuer laufende Job-Ketten.
+BACKENDS = ('sun', 'tsvec', 'li_se3')
+#: Standard: Suns Loeser. Die Umgebungsvariable THESIS_REFINER=tsvec|li_se3
+#: stellt alle Aufrufer ohne eigenes Flag (GUI, `exploration_optimierung`) auf
+#: einen der anderen Refiner zurueck, z. B. fuer laufende Job-Ketten.
 DEFAULT_BACKEND = os.environ.get('THESIS_REFINER', 'sun')
 if DEFAULT_BACKEND not in BACKENDS:
     raise ValueError(f"THESIS_REFINER={DEFAULT_BACKEND!r}; bekannt: {BACKENDS}")
 
 
 def run_suffix(backend):
-    """Namenszusatz fuer Ausgabeordner/Run-Tags: `'_sun'` fuer Suns Loeser,
-    leer fuer den bisherigen TSVEC-Refiner (alte Namen bleiben gueltig)."""
+    """Namenszusatz fuer Ausgabeordner/Run-Tags: `'_sun'`/`'_li_se3'` fuer die
+    neueren Loeser, leer fuer den bisherigen TSVEC-Refiner (alte Namen bleiben
+    gueltig)."""
     if backend not in BACKENDS:
         raise ValueError(f"unbekanntes Verfeinerungsverfahren {backend!r}; bekannt: {BACKENDS}")
     return '' if backend == 'tsvec' else f'_{backend}'
 
 
 def add_refiner_arg(ap):
-    """Gemeinsames CLI-Flag aller Runner: `--refiner {sun,tsvec}`."""
+    """Gemeinsames CLI-Flag aller Runner: `--refiner {sun,tsvec,li_se3}`."""
     ap.add_argument('--refiner', type=str, default=DEFAULT_BACKEND, choices=BACKENDS,
                     help="Nachverfeinerung: 'sun' = Suns FM-Stein-Loeser wie in der "
                          "Datengenerierung (Standard, Ausgabe mit Zusatz '_sun'), "
-                         "'tsvec' = bisheriger TSVEC-artiger SVGD (alte Run-Namen).")
+                         "'tsvec' = bisheriger TSVEC-artiger Partikel-SVGD mit Adam "
+                         "(alte Run-Namen), 'li_se3' = Li et al.s praekonditionierter "
+                         "SVGD aus dem SE(3)-Constraints-Paper arXiv:2603.09458 "
+                         "(Ausgabe mit Zusatz '_li_se3').")
     return ap
 
 
@@ -78,8 +89,10 @@ class SvgdRefiner:
     """Verfeinert eine geplante Bahn gegen die aktuelle Zieldichte Phi.
 
     `backend='sun'` (Standard) delegiert an `SunSteinRefiner`
-    (`common/sun_refine.py`, Kern von `ergodic_solver.py`). Alles Folgende
-    beschreibt `backend='tsvec'`, den bisherigen Weg:
+    (`common/sun_refine.py`, Kern von `ergodic_solver.py`). `backend='li_se3'`
+    delegiert an `_refine_li_se3` (`common/tsvec_svgd.py::TsvecSvgd`, Li et
+    al.s SE(3)-Constraints-Paper arXiv:2603.09458). Alles Folgende beschreibt
+    `backend='tsvec'`, den bisherigen Weg:
 
     Verfeinert eine geplante Bahn mit dem bestehenden SVGD-Solver
     (SE3_SVGD/svgd_engine.py + ergodic_core.py) — Ziel ist die aktuelle
@@ -198,6 +211,10 @@ class SvgdRefiner:
                                     trajectory_log=trajectory_log)
         if trajectory_log is not None and (nxi is None or nxi == curve_np.shape[0]):
             raise ValueError("trajectory_log braucht den B-Spline-Zweig (nxi != T)")
+        if self.backend == 'li_se3':
+            return self._refine_li_se3(curve_np, phi_np, n_iters, nxi=nxi,
+                                       obstacle=obstacle, start=start,
+                                       trajectory_log=trajectory_log)
         if n_iters <= 0:
             if start is not None:
                 curve_np = curve_np.copy()
@@ -265,6 +282,77 @@ class SvgdRefiner:
             # Bedingung *erfuellen* statt nur annaehern -- dieselbe Konvention
             # wie der harte Startpunkt-Snap in
             # `flow_matching_cond_particles_start.py`.
+            curve_out = curve_out.copy()
+            curve_out[0] = np.asarray(start, dtype=curve_out.dtype)
+        return curve_out
+
+    def _refine_li_se3(self, curve_np, phi_np, n_iters, nxi, obstacle, start,
+                       trajectory_log):
+        """`backend='li_se3'`: Li et al.s praekonditionierter SVGD
+        (`common/tsvec_svgd.py::TsvecSvgd`, arXiv:2603.09458) gegen die
+        Fourier-Koeffizienten von Phi -- analog zum `backend='tsvec'`-Zweig
+        oben (verrauschter Partikelschwarm, B-Spline-Fit falls `nxi != T`),
+        aber SVGD-Update/Kernel/Preconditioner folgen dem Paper statt
+        plattem Adam. Kein Hindernis-Term (TsvecSvgd hat keinen) -- `obstacle`
+        muss `None` sein. Der harte Startpunkt-Snap am Ende gilt wie bei den
+        anderen Backends; ein weiches Ziehen waehrend der Iterationen (wie
+        `WaypointPins` beim `'tsvec'`-Zweig) gibt es hier nicht."""
+        if n_iters <= 0:
+            if start is not None:
+                curve_np = curve_np.copy()
+                curve_np[0] = np.asarray(start, dtype=curve_np.dtype)
+            return curve_np
+        if obstacle is not None:
+            raise NotImplementedError(
+                "backend='li_se3' unterstuetzt noch keine Hindernisse "
+                "(TsvecSvgd hat keinen Hindernis-Term) -- 'sun' oder 'tsvec' "
+                "verwenden, solange Hindernisse gezeichnet sind.")
+        from common.tsvec_svgd import TsvecSvgd, make_k_grid_torch
+        from ergodic_energy_torch import target_coeffs_from_grid
+
+        T = curve_np.shape[0]
+        dtype = torch.float64
+        k_idx_t, _ = make_k_grid_torch(self.K, dtype=dtype)
+        phi_k = target_coeffs_from_grid(
+            torch.as_tensor(np.clip(phi_np, 0.0, None), dtype=dtype), k_idx_t)
+
+        if nxi is not None and nxi != T:
+            from obstacles import bspline_basis_matrix
+            B = bspline_basis_matrix(nxi, T, 5)
+            P0, _, _, _ = np.linalg.lstsq(B, curve_np, rcond=None)
+            svgd = TsvecSvgd(B=B, K=self.K, device='cpu', dtype=dtype)
+            jitter = self.rng.normal(scale=self.JITTER, size=(self.N_PARTICLES, nxi, 2))
+            init_P = P0[None] + jitter
+        else:
+            P0 = curve_np
+            svgd = TsvecSvgd(B=None, K=self.K, device='cpu', dtype=dtype)
+            jitter = self.rng.normal(scale=self.JITTER, size=(self.N_PARTICLES, T, 2))
+            init_P = np.clip(P0[None] + jitter, 0.02, 0.98)
+
+        out = svgd.run(init_P, phi_k, int(n_iters), record=trajectory_log is not None)
+        residual_fn = svgd._residual_fn(phi_k)
+
+        def best_of(particles):
+            """particles: (N, nxi_or_T, 2) torch -> (best index, energies)."""
+            e = torch.stack([
+                0.5 * torch.sum(residual_fn(particles[i].reshape(-1)) ** 2)
+                for i in range(particles.shape[0])])
+            return int(torch.argmin(e))
+
+        P_final = out['final']
+        best_idx = best_of(P_final)
+        best_P = P_final[best_idx:best_idx + 1]
+        curve_out = svgd.render(best_P).squeeze(0).detach().cpu().numpy()
+
+        if trajectory_log is not None:
+            trajectory_log.append(np.asarray(P0, dtype=np.float64).copy())
+            log = out['log']  # (n_iters+1, N, nxi_or_T, 2); entry 0 = jittered init
+            for it in range(1, log.shape[0]):
+                parts = log[it]
+                bi = best_of(parts)
+                trajectory_log.append(parts[bi].detach().cpu().numpy().copy())
+
+        if start is not None:
             curve_out = curve_out.copy()
             curve_out[0] = np.asarray(start, dtype=curve_out.dtype)
         return curve_out

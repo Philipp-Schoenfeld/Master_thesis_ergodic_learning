@@ -1,0 +1,4 @@
+[smooth_v2] 2 shapes: ['A', 'organic_30']
+[smooth_v2] block 1/2 (A/linear_sun_jerk) done in 158.2s; 1 cells stored, 2.6 min total
+[smooth_v2] block 2/2 (organic_30/linear_sun_jerk) done in 148.9s; 2 cells stored, 5.1 min total
+[smooth_v2] done: 2 cells stored, 0 already complete, 5.1 min -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v4test_sunjerk\smoothness_comparison.db

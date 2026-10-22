@@ -1,0 +1,25 @@
+[mission] 1 shapes: ['A']
+[mission] 1 mission sets x 1 shapes; 5 candidates x 1500 refinement iterations per round; refiner=sun, svgd=mixed, workers=2
+[mission] cfm/eid/none_known round 1: 1 shapes planned, 0/1 at >= 99%, SVGD batch 20 s, 0.4 min
+[mission] cfm/eid/none_known round 2: 1 shapes planned, 0/1 at >= 99%, SVGD batch 20 s, 0.7 min
+[mission] cfm/eid/none_known round 3: 1 shapes planned, 0/1 at >= 99%, SVGD batch 20 s, 1.1 min
+[mission] cfm/eid/none_known round 4: 1 shapes planned, 0/1 at >= 99%, SVGD batch 20 s, 1.4 min
+[mission] cfm/eid/none_known round 5: 1 shapes planned, 0/1 at >= 99%, SVGD batch 20 s, 1.8 min
+[mission] cfm/eid/none_known round 6: 1 shapes planned, 0/1 at >= 99%, SVGD batch 19 s, 2.1 min
+[mission] cfm/eid/none_known round 7: 1 shapes planned, 0/1 at >= 99%, SVGD batch 18 s, 2.5 min
+[mission] cfm/eid/none_known round 8: 1 shapes planned, 1/1 at >= 99%, SVGD batch 16 s, 2.8 min
+[mission] cfm/eid/none_known FINISHED: 1/1 shapes reached 99%, 2.8 min (planning 0.2 min, SVGD 2.5 min)
+[mission] done in 0.05 h -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\depletion_A_n5_eta0_sun (uniform-target fallbacks: 0, rounds without a full-unit plan: 0)
+[mission] 1 shapes: ['A']
+[mission] 1 mission sets x 1 shapes; 5 candidates x 1500 refinement iterations per round; refiner=sun, svgd=mixed, workers=2
+[mission] cfm/eid/none_known round 1: 1 shapes planned, 0/1 at >= 99%, SVGD batch 14 s, 0.3 min
+[mission] cfm/eid/none_known round 2: 1 shapes planned, 0/1 at >= 99%, SVGD batch 15 s, 0.6 min
+[mission] cfm/eid/none_known round 3: 1 shapes planned, 0/1 at >= 99%, SVGD batch 15 s, 0.8 min
+[mission] cfm/eid/none_known round 4: 1 shapes planned, 0/1 at >= 99%, SVGD batch 15 s, 1.1 min
+[mission] cfm/eid/none_known round 5: 1 shapes planned, 0/1 at >= 99%, SVGD batch 16 s, 1.4 min
+[mission] cfm/eid/none_known round 6: 1 shapes planned, 0/1 at >= 99%, SVGD batch 16 s, 1.7 min
+[mission] cfm/eid/none_known round 7: 1 shapes planned, 0/1 at >= 99%, SVGD batch 15 s, 2.0 min
+[mission] cfm/eid/none_known round 8: 1 shapes planned, 0/1 at >= 99%, SVGD batch 16 s, 2.3 min
+[mission] cfm/eid/none_known round 9: 1 shapes planned, 1/1 at >= 99%, SVGD batch 15 s, 2.6 min
+[mission] cfm/eid/none_known FINISHED: 1/1 shapes reached 99%, 2.6 min (planning 0.3 min, SVGD 2.3 min)
+[mission] done in 0.04 h -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\depletion_A_n5_eta0.5_sun (uniform-target fallbacks: 0, rounds without a full-unit plan: 0)

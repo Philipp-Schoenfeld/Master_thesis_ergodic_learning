@@ -1,0 +1,70 @@
+[finish] 2026-10-16 13:13:07 all three continuations done, merging
+[merge] smoothness_comparison_v6cont2_gpu_20261012: merged
+[merge] smoothness_comparison_v6cont2_sunpm_20261012: merged
+[merge] smoothness_comparison_v6cont2_sunjerk_20261012: merged
+[merge]   750 runs of cfm_adam_bspline
+[merge]   750 runs of cfm_bspline_svgd
+[merge]   750 runs of cfm_only
+[merge]   750 runs of linear_adam_bspline
+[merge]   750 runs of linear_adam_waypoint
+[merge]   750 runs of linear_adam_waypoint_smooth
+[merge]   750 runs of linear_bspline_svgd
+[merge]   750 runs of linear_sun_jerk
+[merge]   750 runs of linear_sun_pointmass
+[merge]   750 runs of linear_waypoint_svgd
+[merge]   750 runs of linear_waypoint_svgd_smooth
+[merge] -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6cont2_20261012\smoothness_comparison.db
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\plot_smoothness_comparison.py:193: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\utils\tensor_numpy.cpp:212.)
+  truth = torch.as_tensor(sdb.load_truth(self.conn, shape), dtype=torch.float32)
+[plot_smooth] summary.csv written (25 shapes x 11 variants)
+[plot_smooth] aggregate.png written
+[plot_smooth] 25 per-shape plots written -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6cont2_20261012\plots
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\plot_smoothness_comparison.py:193: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\utils\tensor_numpy.cpp:212.)
+  truth = torch.as_tensor(sdb.load_truth(self.conn, shape), dtype=torch.float32)
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\compute_convergence.py:65: RuntimeWarning: Mean of empty slice
+  curve = np.nanmean(np.stack(per_cand), axis=0)
+[convergence] A done (1/25)
+[convergence] greek_upper_0 done (2/25)
+[convergence] korean_5 done (3/25)
+[convergence] digit_5 done (4/25)
+[convergence] a_lc done (5/25)
+[convergence] rand_gmm_10 done (6/25)
+[convergence] rand_gmm_20 done (7/25)
+[convergence] rand_ana_poly_10 done (8/25)
+[convergence] rand_ana_poly_20 done (9/25)
+[convergence] rand_ana_poly_30 done (10/25)
+[convergence] rand_gmm_complex_0 done (11/25)
+[convergence] rand_gmm_complex_10 done (12/25)
+[convergence] rand_gmm_complex_20 done (13/25)
+[convergence] rand_gmm_complex_30 done (14/25)
+[convergence] rand_ana_poly_complex_0 done (15/25)
+[convergence] rand_ana_poly_complex_10 done (16/25)
+[convergence] rand_ana_poly_complex_20 done (17/25)
+[convergence] rand_ana_poly_complex_30 done (18/25)
+[convergence] organic_0 done (19/25)
+[convergence] organic_10 done (20/25)
+[convergence] organic_20 done (21/25)
+[convergence] organic_30 done (22/25)
+[convergence] cjk_0 done (23/25)
+[convergence] cjk_10 done (24/25)
+[convergence] cjk_20 done (25/25)
+[convergence] cfm_only                       median n90 =     nan
+[convergence] cfm_bspline_svgd               median n90 =    56.0
+[convergence] linear_bspline_svgd            median n90 =    30.0
+[convergence] linear_waypoint_svgd           median n90 =    89.0
+[convergence] linear_waypoint_svgd_smooth    median n90 =    77.0
+[convergence] linear_sun_pointmass           median n90 =   104.0
+[convergence] linear_sun_jerk                median n90 =  1699.0
+[convergence] cfm_adam_bspline               median n90 =   104.0
+[convergence] linear_adam_bspline            median n90 =   166.0
+[convergence] linear_adam_waypoint           median n90 =   142.0
+[convergence] linear_adam_waypoint_smooth    median n90 =   142.0
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6cont2_20261012\convergence.npz
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6cont2_20261012\overview.png
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\plot_smoothness_overview.py:176: RuntimeWarning: All-NaN slice encountered
+  curve = np.nanmedian(conv['curves'][:, c_variants.index(v)], axis=0)
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6cont2_20261012\overview_convergence.png
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6cont2_20261012\qualitative_final.png
+[backfill] summary: 275 rows -> DB
+[backfill] convergence: 275 (shape, variant) rows -> DB
+[finish] 2026-10-16 14:12:13 done rc=0

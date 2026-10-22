@@ -1,0 +1,20 @@
+[smooth_v2] 2 shapes: ['A', 'organic_30']
+[smooth_v2] block 1/18 (A/cfm_only) done in 0.0s; 1 cells stored, 0.2 min total
+[smooth_v2] block 2/18 (A/cfm_bspline_svgd) done in 17.2s; 2 cells stored, 0.5 min total
+[smooth_v2] block 3/18 (A/linear_bspline_svgd) done in 17.4s; 3 cells stored, 0.7 min total
+[smooth_v2] block 4/18 (A/linear_waypoint_svgd) done in 22.3s; 4 cells stored, 1.1 min total
+[smooth_v2] block 5/18 (A/linear_waypoint_svgd_smooth) done in 22.4s; 5 cells stored, 1.5 min total
+[smooth_v2] block 6/18 (A/cfm_adam_bspline) done in 17.7s; 6 cells stored, 1.8 min total
+[smooth_v2] block 7/18 (A/linear_adam_bspline) done in 17.4s; 7 cells stored, 2.1 min total
+[smooth_v2] block 8/18 (A/linear_adam_waypoint) done in 31.4s; 8 cells stored, 2.6 min total
+[smooth_v2] block 9/18 (A/linear_adam_waypoint_smooth) done in 17.6s; 9 cells stored, 2.9 min total
+[smooth_v2] block 10/18 (organic_30/cfm_only) done in 0.0s; 10 cells stored, 3.0 min total
+[smooth_v2] block 11/18 (organic_30/cfm_bspline_svgd) done in 17.1s; 11 cells stored, 3.3 min total
+[smooth_v2] block 12/18 (organic_30/linear_bspline_svgd) done in 17.4s; 12 cells stored, 3.6 min total
+[smooth_v2] block 13/18 (organic_30/linear_waypoint_svgd) done in 22.2s; 13 cells stored, 4.0 min total
+[smooth_v2] block 14/18 (organic_30/linear_waypoint_svgd_smooth) done in 22.1s; 14 cells stored, 4.4 min total
+[smooth_v2] block 15/18 (organic_30/cfm_adam_bspline) done in 17.6s; 15 cells stored, 4.6 min total
+[smooth_v2] block 16/18 (organic_30/linear_adam_bspline) done in 17.7s; 16 cells stored, 4.9 min total
+[smooth_v2] block 17/18 (organic_30/linear_adam_waypoint) done in 31.2s; 17 cells stored, 5.5 min total
+[smooth_v2] block 18/18 (organic_30/linear_adam_waypoint_smooth) done in 17.6s; 18 cells stored, 5.8 min total
+[smooth_v2] done: 18 cells stored, 0 already complete, 5.8 min -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v4test_gpu\smoothness_comparison.db

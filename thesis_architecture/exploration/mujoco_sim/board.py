@@ -31,8 +31,13 @@ import sqlite3
 import numpy as np
 
 # -- Board geometry ----------------------------------------------------------
-BOARD_ORIGIN = np.array([0.500, 0.0, 0.45])   # centre of the board body
-BOARD_SIZE = 0.6                              # edge length of the square face
+# Placement chosen so that ONE continuous Panda joint branch keeps the eraser
+# orthogonal to the face over the whole board.  With the long eraser the arm
+# cannot do that on a 0.6 m board at any distance/height (the wrist runs into
+# its joint-6 limit); a 0.4 m board centred at x=0.6 m, z=0.7 m can (verified by
+# `joint_map.build_joint_map`: tilt 0.000 deg, tip error < 0.03 mm everywhere).
+BOARD_ORIGIN = np.array([0.600, 0.0, 0.70])   # centre of the board body
+BOARD_SIZE = 0.4                              # edge length of the square face
 SITE_OFFSET_X = 0.003                         # pixel sites sit in front of the body
 SITE_HALF_THICK = 0.001                       # half thickness of a pixel site
 BOARD_FACE_X = float(BOARD_ORIGIN[0] + SITE_OFFSET_X + SITE_HALF_THICK)

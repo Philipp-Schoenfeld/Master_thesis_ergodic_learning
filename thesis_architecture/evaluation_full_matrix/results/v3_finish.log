@@ -1,0 +1,22 @@
+[finish] 2026-10-11 16:53:39 all three runs done, merging
+[merge] smoothness_comparison_v3_gpu_20261011: merged
+[merge] smoothness_comparison_v3_sunpm_20261011: merged
+[merge] smoothness_comparison_v3_sunjerk_20261011: merged
+[merge]   750 runs of cfm_adam_bspline
+[merge]   750 runs of cfm_bspline_svgd
+[merge]   750 runs of cfm_only
+[merge]   750 runs of linear_adam_bspline
+[merge]   750 runs of linear_adam_waypoint
+[merge]   750 runs of linear_adam_waypoint_smooth
+[merge]   750 runs of linear_bspline_svgd
+[merge]   750 runs of linear_sun_jerk
+[merge]   750 runs of linear_sun_pointmass
+[merge]   750 runs of linear_waypoint_svgd
+[merge]   750 runs of linear_waypoint_svgd_smooth
+[merge] -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v3_20261011\smoothness_comparison.db
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\plot_smoothness_comparison.py:177: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\utils\tensor_numpy.cpp:212.)
+  truth = torch.as_tensor(sdb.load_truth(self.conn, shape), dtype=torch.float32)
+[plot_smooth] summary.csv written (25 shapes x 11 variants)
+[plot_smooth] aggregate.png written
+[plot_smooth] 25 per-shape plots written -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v3_20261011\plots
+[finish] 2026-10-11 17:24:23 done rc=0

@@ -37,6 +37,7 @@ if _PARENT not in sys.path:                       # allow `python run_mujoco.py`
 
 from mujoco_sim import board as board_mod          # noqa: E402
 from mujoco_sim.ik import TaskPriorityIK, plan_joint_path  # noqa: E402
+from mujoco_sim.joint_map import get_joint_map     # noqa: E402
 from mujoco_sim.board import (                     # noqa: E402
     BOARD_FACE_X, BOARD_ORIGIN, BOARD_SIZE, SITE_RES, TOOL_AXIS, TRUTH_RES,
     DEFAULT_STANDOFF, JOINT_VMAX, MAX_TIP_SPEED,
@@ -486,11 +487,9 @@ def _update_tip_marker(viewer, tip):
 
 
 # -- Live mode driven by the 2D control centre --------------------------------
-def run_mujoco_sim(agent_info_array, shared_truth, truth_res=TRUTH_RES,
-                   axis='Z', standoff=DEFAULT_STANDOFF, fps=60.0,
-                   max_tip_speed=MAX_TIP_SPEED):
+class LiveArm:
     """
-    Mirror the 2D agent from ``interactive_sim.py`` with the Panda.
+    Mirror a 2D goal on the board with the Panda (one ``step`` per frame).
 
     The 2D agent teleports between planning rounds and can sweep far faster
     than the arm.  Its position is therefore treated as a *goal* that the tool
@@ -505,66 +504,110 @@ def run_mujoco_sim(agent_info_array, shared_truth, truth_res=TRUTH_RES,
     leaving the board.  Ramping it out cuts the worst excursion from 95 mm to
     26 mm and keeps the tip behind the board surface throughout.
     """
-    model = _build_scene(_HERE, orthogonal_axis=axis)
-    data = mujoco.MjData(model)
 
-    key_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "home")
-    if key_id >= 0:
-        mujoco.mj_resetDataKeyframe(model, data, key_id)
-    mujoco.mj_forward(model, data)
+    def __init__(self, axis='Z', standoff=DEFAULT_STANDOFF, fps=60.0,
+                 max_tip_speed=MAX_TIP_SPEED, ik_iters=4):
+        self.ik_iters = ik_iters
+        self.model = _build_scene(_HERE, orthogonal_axis=axis)
+        self.data = mujoco.MjData(self.model)
+        model, data = self.model, self.data
 
-    painter = BoardPainter(model)
-    ik = TaskPriorityIK(model, tool_axis=TOOL_AXIS)
+        key_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "home")
+        if key_id >= 0:
+            mujoco.mj_resetDataKeyframe(model, data, key_id)
+        mujoco.mj_forward(model, data)
 
-    # Settle on the board centre before following the agent.
-    centre = board_mod.uv_to_world(np.array([0.5, 0.5]), standoff)
-    q_cmd, pos_err, _ = ik.solve_from_restarts(centre, restarts=16)
-    if pos_err > 1e-3:
-        print("[mujoco] warning: could not reach the board centre (%.1f mm)" % (pos_err * 1e3))
-    data.qpos[:N_ARM_JOINTS] = q_cmd
-    data.ctrl[:N_ARM_JOINTS] = q_cmd
-    data.ctrl[N_ARM_JOINTS] = GRIPPER_CTRL
-    mujoco.mj_forward(model, data)
+        self.ik = TaskPriorityIK(model, tool_axis=TOOL_AXIS)
+        self.standoff = standoff
+        self.tip_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, "eraser_tip")
 
-    dt = model.opt.timestep
-    n_sub = max(1, int(round((1.0 / fps) / dt)))
-    frame_dt = n_sub * dt
-    max_step_uv = max_tip_speed * frame_dt / BOARD_SIZE
-    lead = servo_lead_time(model)
-    cursor = np.array([0.5, 0.5])
+        # One smooth, validated orthogonal joint configuration per board point.
+        self.jmap = get_joint_map(
+            self.ik, standoff, CACHE_DIR,
+            key_parts=(BOARD_FACE_X, BOARD_SIZE, tuple(BOARD_ORIGIN), ERASER_TIP, axis))
+        rep = self.jmap.report
+        if rep['max_pos_err'] > 5e-4 or rep['max_axis_err'] > np.radians(0.1):
+            print("[mujoco] warning: joint map is not exact (tip %.2f mm, tilt %.2f deg)"
+                  % (rep['max_pos_err'] * 1e3, np.degrees(rep['max_axis_err'])))
 
-    with mujoco.viewer.launch_passive(model, data) as viewer:
+        # Settle on the board centre before following the agent.
+        centre = board_mod.uv_to_world(np.array([0.5, 0.5]), standoff)
+        self.q_cmd, pos_err, _ = self.ik.solve(
+            self.jmap.query((0.5, 0.5)), centre, TOOL_AXIS, iterations=100,
+            priority='axis')
+        if pos_err > 1e-3:
+            print("[mujoco] warning: could not reach the board centre (%.1f mm)" % (pos_err * 1e3))
+        data.qpos[:N_ARM_JOINTS] = self.q_cmd
+        data.ctrl[:N_ARM_JOINTS] = self.q_cmd
+        data.ctrl[N_ARM_JOINTS] = GRIPPER_CTRL
+        mujoco.mj_forward(model, data)
+
+        dt = model.opt.timestep
+        self.n_sub = max(1, int(round((1.0 / fps) / dt)))
+        self.frame_dt = self.n_sub * dt
+        self.max_step_uv = max_tip_speed * self.frame_dt / BOARD_SIZE
+        self.lead = servo_lead_time(model)
+        self.cursor = np.array([0.5, 0.5])
+
+    def step(self, goal):
+        """Advance one frame towards the board goal ``(u, v)``."""
+        model, data, ik = self.model, self.data, self.ik
+
+        step = np.clip(np.asarray(goal, dtype=np.float64), 0.0, 1.0) - self.cursor
+        dist = np.linalg.norm(step)
+        if dist > self.max_step_uv:
+            step *= self.max_step_uv / dist
+        self.cursor += step
+
+        # Aim where the cursor will be one servo time-constant from now, so
+        # the arm sits on the agent instead of trailing it (see
+        # ``servo_lead_time``).  With a stationary cursor this is a no-op.
+        aim = np.clip(self.cursor + (self.lead / self.frame_dt) * step, 0.0, 1.0)
+        target = board_mod.uv_to_world(aim, self.standoff)
+        # Start from the validated map value (never from the previous command),
+        # so the arm cannot drift onto a tilted branch; a few IK steps then
+        # remove the interpolation error.
+        q_next, _, _ = ik.solve(self.jmap.query(aim), target, TOOL_AXIS,
+                                iterations=self.ik_iters, priority='axis')
+
+        # Never ask for more joint speed than the real arm has.
+        delta = q_next - self.q_cmd
+        excess = np.abs(delta) / (JOINT_VMAX * self.frame_dt)
+        if excess.max() > 1.0:
+            delta /= excess.max()
+        self.q_cmd = self.q_cmd + delta
+
+        for _ in range(self.n_sub):
+            data.ctrl[:N_ARM_JOINTS] = self.q_cmd
+            data.ctrl[N_ARM_JOINTS] = GRIPPER_CTRL
+            data.qfrc_applied[:] = data.qfrc_bias
+            mujoco.mj_step(model, data)
+
+    def tool_state(self):
+        """(tip position, tool-axis tilt vs. the board normal [rad]) of the
+        *simulated* arm, not of the commanded joint configuration."""
+        pos = self.data.site_xpos[self.tip_id].copy()
+        z = self.data.site_xmat[self.tip_id].reshape(3, 3)[:, 2]
+        tilt = float(np.arccos(np.clip(z @ TOOL_AXIS, -1.0, 1.0)))
+        return pos, tilt
+
+
+def run_mujoco_sim(agent_info_array, shared_truth, truth_res=TRUTH_RES,
+                   axis='Z', standoff=DEFAULT_STANDOFF, fps=60.0,
+                   max_tip_speed=MAX_TIP_SPEED):
+    """Live mode: follow the 2D agent from ``interactive_sim.py`` (see
+    :class:`LiveArm`) and paint the shared target density on the board."""
+    arm = LiveArm(axis=axis, standoff=standoff, fps=fps, max_tip_speed=max_tip_speed)
+    painter = BoardPainter(arm.model)
+
+    with mujoco.viewer.launch_passive(arm.model, arm.data) as viewer:
         while viewer.is_running():
             frame_start = time.perf_counter()
 
             with agent_info_array.get_lock():
                 goal = np.array([float(agent_info_array[0]),
                                  float(agent_info_array[1])])
-            step = np.clip(goal, 0.0, 1.0) - cursor
-            dist = np.linalg.norm(step)
-            if dist > max_step_uv:
-                step *= max_step_uv / dist
-            cursor += step
-
-            # Aim where the cursor will be one servo time-constant from now, so
-            # the arm sits on the agent instead of trailing it (see
-            # ``servo_lead_time``).  With a stationary cursor this is a no-op.
-            aim = np.clip(cursor + (lead / frame_dt) * step, 0.0, 1.0)
-            target = board_mod.uv_to_world(aim, standoff)
-            q_next, _, _ = ik.solve(q_cmd, target, TOOL_AXIS, iterations=10)
-
-            # Never ask for more joint speed than the real arm has.
-            delta = q_next - q_cmd
-            excess = np.abs(delta) / (JOINT_VMAX * frame_dt)
-            if excess.max() > 1.0:
-                delta /= excess.max()
-            q_cmd = q_cmd + delta
-
-            for _ in range(n_sub):
-                data.ctrl[:N_ARM_JOINTS] = q_cmd
-                data.ctrl[N_ARM_JOINTS] = GRIPPER_CTRL
-                data.qfrc_applied[:] = data.qfrc_bias
-                mujoco.mj_step(model, data)
+            arm.step(goal)
 
             if shared_truth is not None:
                 with shared_truth.get_lock():

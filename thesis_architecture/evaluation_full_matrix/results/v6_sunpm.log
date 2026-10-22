@@ -1,0 +1,27 @@
+[smooth_v2] 25 shapes: ['A', 'greek_upper_0', 'korean_5', 'digit_5', 'a_lc', 'rand_gmm_10', 'rand_gmm_20', 'rand_ana_poly_10', 'rand_ana_poly_20', 'rand_ana_poly_30', 'rand_gmm_complex_0', 'rand_gmm_complex_10', 'rand_gmm_complex_20', 'rand_gmm_complex_30', 'rand_ana_poly_complex_0', 'rand_ana_poly_complex_10', 'rand_ana_poly_complex_20', 'rand_ana_poly_complex_30', 'organic_0', 'organic_10', 'organic_20', 'organic_30', 'cjk_0', 'cjk_10', 'cjk_20']
+[smooth_v2] block 1/25 (A/linear_sun_pointmass) done in 154.0s; 1 cells stored, 2.6 min total
+[smooth_v2] block 2/25 (greek_upper_0/linear_sun_pointmass) done in 149.1s; 2 cells stored, 5.1 min total
+[smooth_v2] block 3/25 (korean_5/linear_sun_pointmass) done in 180.3s; 3 cells stored, 8.1 min total
+[smooth_v2] block 4/25 (digit_5/linear_sun_pointmass) done in 153.3s; 4 cells stored, 10.6 min total
+[smooth_v2] block 5/25 (a_lc/linear_sun_pointmass) done in 137.9s; 5 cells stored, 12.9 min total
+[smooth_v2] block 6/25 (rand_gmm_10/linear_sun_pointmass) done in 238.1s; 6 cells stored, 16.9 min total
+[smooth_v2] block 7/25 (rand_gmm_20/linear_sun_pointmass) done in 229.0s; 7 cells stored, 20.7 min total
+[smooth_v2] block 8/25 (rand_ana_poly_10/linear_sun_pointmass) done in 128.2s; 8 cells stored, 22.8 min total
+[smooth_v2] block 9/25 (rand_ana_poly_20/linear_sun_pointmass) done in 133.2s; 9 cells stored, 25.1 min total
+[smooth_v2] block 10/25 (rand_ana_poly_30/linear_sun_pointmass) done in 143.9s; 10 cells stored, 27.5 min total
+[smooth_v2] block 11/25 (rand_gmm_complex_0/linear_sun_pointmass) done in 236.9s; 11 cells stored, 31.4 min total
+[smooth_v2] block 12/25 (rand_gmm_complex_10/linear_sun_pointmass) done in 231.1s; 12 cells stored, 35.3 min total
+[smooth_v2] block 13/25 (rand_gmm_complex_20/linear_sun_pointmass) done in 241.1s; 13 cells stored, 39.3 min total
+[smooth_v2] block 14/25 (rand_gmm_complex_30/linear_sun_pointmass) done in 237.2s; 14 cells stored, 43.2 min total
+[smooth_v2] block 15/25 (rand_ana_poly_complex_0/linear_sun_pointmass) done in 141.6s; 15 cells stored, 45.6 min total
+[smooth_v2] block 16/25 (rand_ana_poly_complex_10/linear_sun_pointmass) done in 185.5s; 16 cells stored, 48.7 min total
+[smooth_v2] block 17/25 (rand_ana_poly_complex_20/linear_sun_pointmass) done in 134.3s; 17 cells stored, 50.9 min total
+[smooth_v2] block 18/25 (rand_ana_poly_complex_30/linear_sun_pointmass) done in 135.5s; 18 cells stored, 53.2 min total
+[smooth_v2] block 19/25 (organic_0/linear_sun_pointmass) done in 195.8s; 19 cells stored, 56.4 min total
+[smooth_v2] block 20/25 (organic_10/linear_sun_pointmass) done in 157.2s; 20 cells stored, 59.1 min total
+[smooth_v2] block 21/25 (organic_20/linear_sun_pointmass) done in 170.2s; 21 cells stored, 61.9 min total
+[smooth_v2] block 22/25 (organic_30/linear_sun_pointmass) done in 111.6s; 22 cells stored, 63.8 min total
+[smooth_v2] block 23/25 (cjk_0/linear_sun_pointmass) done in 193.8s; 23 cells stored, 67.0 min total
+[smooth_v2] block 24/25 (cjk_10/linear_sun_pointmass) done in 158.0s; 24 cells stored, 69.6 min total
+[smooth_v2] block 25/25 (cjk_20/linear_sun_pointmass) done in 167.2s; 25 cells stored, 72.4 min total
+[smooth_v2] done: 25 cells stored, 0 already complete, 72.4 min -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6_sunpm_20261012\smoothness_comparison.db

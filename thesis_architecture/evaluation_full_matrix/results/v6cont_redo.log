@@ -1,0 +1,4 @@
+C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\plot_smoothness_comparison.py:177: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\builder\windows\pytorch\torch\csrc\utils\tensor_numpy.cpp:212.)
+  truth = torch.as_tensor(sdb.load_truth(self.conn, shape), dtype=torch.float32)
+[plot_smooth] summary.csv written (25 shapes x 11 variants)
+[plot_smooth] aggregate.png written

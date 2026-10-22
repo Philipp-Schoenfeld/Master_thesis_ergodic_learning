@@ -1,0 +1,27 @@
+[continue] copied smoothness_comparison_v6cont_20261012 -> smoothness_comparison_v6cont2_sunjerk_20261012
+[continue] (A/linear_sun_jerk) +4000 it. done in 345.3s; 1 cells extended, 5.8 min total
+[continue] (greek_upper_0/linear_sun_jerk) +4000 it. done in 339.7s; 2 cells extended, 11.4 min total
+[continue] (korean_5/linear_sun_jerk) +4000 it. done in 332.1s; 3 cells extended, 17.0 min total
+[continue] (digit_5/linear_sun_jerk) +4000 it. done in 328.5s; 4 cells extended, 22.4 min total
+[continue] (a_lc/linear_sun_jerk) +4000 it. done in 325.5s; 5 cells extended, 27.9 min total
+[continue] (rand_gmm_10/linear_sun_jerk) +4000 it. done in 312.5s; 6 cells extended, 33.1 min total
+[continue] (rand_gmm_20/linear_sun_jerk) +4000 it. done in 311.2s; 7 cells extended, 38.3 min total
+[continue] (rand_ana_poly_10/linear_sun_jerk) +4000 it. done in 321.8s; 8 cells extended, 43.6 min total
+[continue] (rand_ana_poly_20/linear_sun_jerk) +4000 it. done in 322.8s; 9 cells extended, 49.0 min total
+[continue] (rand_ana_poly_30/linear_sun_jerk) +4000 it. done in 307.0s; 10 cells extended, 54.1 min total
+[continue] (rand_gmm_complex_0/linear_sun_jerk) +4000 it. done in 284.1s; 11 cells extended, 58.9 min total
+[continue] (rand_gmm_complex_10/linear_sun_jerk) +4000 it. done in 279.9s; 12 cells extended, 63.5 min total
+[continue] (rand_gmm_complex_20/linear_sun_jerk) +4000 it. done in 286.6s; 13 cells extended, 68.3 min total
+[continue] (rand_gmm_complex_30/linear_sun_jerk) +4000 it. done in 298.1s; 14 cells extended, 73.3 min total
+[continue] (rand_ana_poly_complex_0/linear_sun_jerk) +4000 it. done in 301.4s; 15 cells extended, 78.3 min total
+[continue] (rand_ana_poly_complex_10/linear_sun_jerk) +4000 it. done in 296.4s; 16 cells extended, 83.2 min total
+[continue] (rand_ana_poly_complex_20/linear_sun_jerk) +4000 it. done in 302.5s; 17 cells extended, 88.3 min total
+[continue] (rand_ana_poly_complex_30/linear_sun_jerk) +4000 it. done in 313.4s; 18 cells extended, 93.5 min total
+[continue] (organic_0/linear_sun_jerk) +4000 it. done in 295.5s; 19 cells extended, 98.4 min total
+[continue] (organic_10/linear_sun_jerk) +4000 it. done in 310.6s; 20 cells extended, 103.6 min total
+[continue] (organic_20/linear_sun_jerk) +4000 it. done in 298.2s; 21 cells extended, 108.6 min total
+[continue] (organic_30/linear_sun_jerk) +4000 it. done in 301.7s; 22 cells extended, 113.6 min total
+[continue] (cjk_0/linear_sun_jerk) +4000 it. done in 307.2s; 23 cells extended, 118.7 min total
+[continue] (cjk_10/linear_sun_jerk) +4000 it. done in 301.1s; 24 cells extended, 123.8 min total
+[continue] (cjk_20/linear_sun_jerk) +4000 it. done in 304.3s; 25 cells extended, 128.8 min total
+[continue] done: 25 cells extended, 0 already at target, 128.8 min -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6cont2_sunjerk_20261012\smoothness_comparison.db

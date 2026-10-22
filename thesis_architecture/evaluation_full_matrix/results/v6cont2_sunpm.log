@@ -1,0 +1,27 @@
+[continue] copied smoothness_comparison_v6cont_20261012 -> smoothness_comparison_v6cont2_sunpm_20261012
+[continue] (A/linear_sun_pointmass) +4000 it. done in 327.8s; 1 cells extended, 5.5 min total
+[continue] (greek_upper_0/linear_sun_pointmass) +4000 it. done in 312.7s; 2 cells extended, 10.7 min total
+[continue] (korean_5/linear_sun_pointmass) +4000 it. done in 368.4s; 3 cells extended, 16.8 min total
+[continue] (digit_5/linear_sun_pointmass) +4000 it. done in 310.6s; 4 cells extended, 22.0 min total
+[continue] (a_lc/linear_sun_pointmass) +4000 it. done in 294.9s; 5 cells extended, 26.9 min total
+[continue] (rand_gmm_10/linear_sun_pointmass) +4000 it. done in 487.8s; 6 cells extended, 35.1 min total
+[continue] (rand_gmm_20/linear_sun_pointmass) +4000 it. done in 481.8s; 7 cells extended, 43.1 min total
+[continue] (rand_ana_poly_10/linear_sun_pointmass) +4000 it. done in 276.9s; 8 cells extended, 47.7 min total
+[continue] (rand_ana_poly_20/linear_sun_pointmass) +4000 it. done in 282.2s; 9 cells extended, 52.4 min total
+[continue] (rand_ana_poly_30/linear_sun_pointmass) +4000 it. done in 288.8s; 10 cells extended, 57.2 min total
+[continue] (rand_gmm_complex_0/linear_sun_pointmass) +4000 it. done in 480.6s; 11 cells extended, 65.2 min total
+[continue] (rand_gmm_complex_10/linear_sun_pointmass) +4000 it. done in 475.1s; 12 cells extended, 73.2 min total
+[continue] (rand_gmm_complex_20/linear_sun_pointmass) +4000 it. done in 471.9s; 13 cells extended, 81.0 min total
+[continue] (rand_gmm_complex_30/linear_sun_pointmass) +4000 it. done in 480.5s; 14 cells extended, 89.0 min total
+[continue] (rand_ana_poly_complex_0/linear_sun_pointmass) +4000 it. done in 295.4s; 15 cells extended, 94.0 min total
+[continue] (rand_ana_poly_complex_10/linear_sun_pointmass) +4000 it. done in 368.0s; 16 cells extended, 100.1 min total
+[continue] (rand_ana_poly_complex_20/linear_sun_pointmass) +4000 it. done in 286.7s; 17 cells extended, 104.9 min total
+[continue] (rand_ana_poly_complex_30/linear_sun_pointmass) +4000 it. done in 267.3s; 18 cells extended, 109.3 min total
+[continue] (organic_0/linear_sun_pointmass) +4000 it. done in 407.6s; 19 cells extended, 116.1 min total
+[continue] (organic_10/linear_sun_pointmass) +4000 it. done in 318.5s; 20 cells extended, 121.4 min total
+[continue] (organic_20/linear_sun_pointmass) +4000 it. done in 348.3s; 21 cells extended, 127.2 min total
+[continue] (organic_30/linear_sun_pointmass) +4000 it. done in 241.6s; 22 cells extended, 131.3 min total
+[continue] (cjk_0/linear_sun_pointmass) +4000 it. done in 383.6s; 23 cells extended, 137.7 min total
+[continue] (cjk_10/linear_sun_pointmass) +4000 it. done in 331.3s; 24 cells extended, 143.2 min total
+[continue] (cjk_20/linear_sun_pointmass) +4000 it. done in 334.0s; 25 cells extended, 148.8 min total
+[continue] done: 25 cells extended, 0 already at target, 148.8 min -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\smoothness_comparison_v6cont2_sunpm_20261012\smoothness_comparison.db

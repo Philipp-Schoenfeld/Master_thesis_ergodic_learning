@@ -67,6 +67,26 @@ CREATE TABLE IF NOT EXISTS basis (
     matrix BLOB NOT NULL, PRIMARY KEY (nxi, n_points, degree)
 );
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+-- Derived results computed from `runs` by plot_smoothness_comparison.py / compute_convergence.py.
+-- Kept in the DB (not just the .csv/.npz files next to it) so one file is the full, durable
+-- record of a run; the files remain as the fast/plain-text path for quick inspection.
+CREATE TABLE IF NOT EXISTS summary (
+    shape TEXT NOT NULL, variant TEXT NOT NULL, n_cand INTEGER NOT NULL,
+    smooth_final_mean REAL NOT NULL, smooth_final_std REAL NOT NULL,
+    path_len_final_mean REAL NOT NULL, path_len_final_std REAL NOT NULL,
+    ergodic_final_mean REAL NOT NULL, ergodic_final_std REAL NOT NULL,
+    created_at REAL NOT NULL,
+    PRIMARY KEY (shape, variant)
+);
+-- `compute_convergence.py`'s per-(shape, variant) result: the candidate-mean ergodic error at
+-- each of `checkpoints` (float32, packed with `pack_checkpoint_array`) and n90 (iteration at
+-- which 90% of the final improvement was reached, NULL for cfm_only / not reached).
+CREATE TABLE IF NOT EXISTS convergence (
+    shape TEXT NOT NULL, variant TEXT NOT NULL,
+    checkpoints BLOB NOT NULL, curve BLOB NOT NULL, n90 REAL,
+    created_at REAL NOT NULL,
+    PRIMARY KEY (shape, variant)
+);
 """
 
 
@@ -157,3 +177,60 @@ def iter_runs(conn, with_states=False, **filters):
         if with_states:
             d['cps'] = unpack_states(d.pop('states'), d['n_states'], d['nxi'])
         yield d
+
+
+def save_summary(conn, rows):
+    """`rows`: iterable of dicts with shape, variant, n_cand, smooth_final_mean/std,
+    path_len_final_mean/std, ergodic_final_mean/std (the columns `write_summary_csv` writes
+    to summary.csv) -- same values, additionally persisted in the DB. One transaction."""
+    now = time.time()
+    conn.executemany(
+        """INSERT OR REPLACE INTO summary
+           (shape, variant, n_cand, smooth_final_mean, smooth_final_std,
+            path_len_final_mean, path_len_final_std, ergodic_final_mean, ergodic_final_std,
+            created_at) VALUES (?,?,?,?,?,?,?,?,?,?)""",
+        [(r['shape'], r['variant'], int(r['n_cand']), float(r['smooth_final_mean']),
+          float(r['smooth_final_std']), float(r['path_len_final_mean']),
+          float(r['path_len_final_std']), float(r['ergodic_final_mean']),
+          float(r['ergodic_final_std']), now) for r in rows])
+    conn.commit()
+
+
+def iter_summary(conn, **filters):
+    """Yield summary rows as dicts (mirrors `iter_runs`'s filter/order convention)."""
+    cols = ['shape', 'variant', 'n_cand', 'smooth_final_mean', 'smooth_final_std',
+            'path_len_final_mean', 'path_len_final_std', 'ergodic_final_mean', 'ergodic_final_std']
+    where, params = [], []
+    for k, v in filters.items():
+        if v is None:
+            continue
+        where.append(f'{k}=?')
+        params.append(v)
+    q = (f"SELECT {','.join(cols)} FROM summary" +
+        (' WHERE ' + ' AND '.join(where) if where else '') + ' ORDER BY shape, variant')
+    for row in conn.execute(q, params):
+        yield dict(zip(cols, row))
+
+
+def save_convergence(conn, shape, variant, checkpoints, curve, n90):
+    """`checkpoints`: (K,) int iteration indices; `curve`: (K,) float candidate-mean ergodic
+    error at each; `n90`: iteration at 90% of the final improvement, or None/NaN."""
+    now = time.time()
+    n90v = None if n90 is None or not np.isfinite(n90) else float(n90)
+    conn.execute(
+        "INSERT OR REPLACE INTO convergence (shape, variant, checkpoints, curve, n90, created_at) "
+        "VALUES (?,?,?,?,?,?)",
+        (shape, variant, np.asarray(checkpoints, dtype=np.int32).tobytes(),
+         np.asarray(curve, dtype=np.float32).tobytes(), n90v, now))
+    conn.commit()
+
+
+def load_convergence(conn, shape, variant):
+    """-> (checkpoints (K,) int32, curve (K,) float32, n90 float or None), or None if absent."""
+    row = conn.execute("SELECT checkpoints, curve, n90 FROM convergence WHERE shape=? AND variant=?",
+                       (shape, variant)).fetchone()
+    if row is None:
+        return None
+    ck = np.frombuffer(row[0], dtype=np.int32)
+    curve = np.frombuffer(row[1], dtype=np.float32)
+    return ck, curve, row[2]
