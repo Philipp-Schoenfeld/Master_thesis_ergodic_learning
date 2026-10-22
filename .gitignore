@@ -56,3 +56,4 @@ thesis_architecture/evaluation_full_matrix/results/*/smoothness_comparison.db*
 
 # LibreOffice lock files
 .~lock.*#
+thesis_architecture/evaluation_full_matrix/results/svgd_convergence_belief_ucb_20261008/svgd_convergence.db
