@@ -1,0 +1,202 @@
+{
+ "grid": [
+  {
+   "name": "gui_lr8e-3_n3000",
+   "solver": "gui_adam",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 3000,
+   "K": 10,
+   "lr": 0.008,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_o2_w15",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_K16_o2_w15",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 16,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_K16_cont_o2_w15",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 16,
+   "lr": null,
+   "schedule": [
+    150.0,
+    50.0,
+    15.0
+   ],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  }
+ ],
+ "shapes": [
+  "v_lc",
+  "rand_ana_poly_100",
+  "rand_ana_poly_53",
+  "I",
+  "rand_gmm_78",
+  "rand_gmm_170",
+  "rand_gmm_47",
+  "rand_gmm_171",
+  "rand_gmm_158",
+  "rand_ana_poly_4",
+  "rand_ana_poly_0",
+  "rand_ana_poly_69",
+  "rand_gmm_87",
+  "greek_lower_21",
+  "rand_gmm_110",
+  "rand_gmm_18",
+  "korean_29",
+  "rand_ana_poly_177",
+  "rand_ana_poly_123",
+  "rand_ana_poly_155",
+  "rand_gmm_56",
+  "X",
+  "greek_upper_21",
+  "rand_ana_poly_97",
+  "rand_gmm_81",
+  "rand_ana_poly_62",
+  "cjk_32",
+  "rand_ana_poly_complex_39",
+  "cjk_40",
+  "organic_9",
+  "cjk_47",
+  "rand_gmm_complex_1",
+  "cjk_57",
+  "rand_gmm_complex_33",
+  "rand_gmm_complex_60",
+  "rand_gmm_complex_52",
+  "rand_ana_poly_complex_74",
+  "rand_gmm_complex_16",
+  "cjk_43",
+  "organic_42"
+ ],
+ "n_init": 30,
+ "device": "cuda",
+ "seed": 0,
+ "started": "2026-10-24 16:44:08"
+}

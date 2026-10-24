@@ -1,0 +1,709 @@
+{
+ "grid": [
+  {
+   "name": "gui_lr8e-3_n1000",
+   "solver": "gui_adam",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 1000,
+   "K": 10,
+   "lr": 0.008,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "gui_lr8e-3_n3000",
+   "solver": "gui_adam",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 3000,
+   "K": 10,
+   "lr": 0.008,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "gui_lr2e-3_n3000",
+   "solver": "gui_adam",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 3000,
+   "K": 10,
+   "lr": 0.002,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_o2_w5",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 5.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_o2_w15",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_o2_w50",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 50.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_K16_o2_w15",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 16,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_K16_o2_w50",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 50.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 16,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_cont_o2_w15",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 10,
+   "lr": null,
+   "schedule": [
+    150.0,
+    50.0,
+    15.0
+   ],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_K16_cont_o2_w15",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 16,
+   "lr": null,
+   "schedule": [
+    150.0,
+    50.0,
+    15.0
+   ],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_o3_w0.01",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 0.01,
+   "smooth_order": 3,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "lm_o1_w3000",
+   "solver": "lm",
+   "nxi": null,
+   "w_smooth": 3000.0,
+   "smooth_order": 1,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 300,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "adam_o2_w5",
+   "solver": "adam",
+   "nxi": null,
+   "w_smooth": 5.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 5000,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "adam_o2_w15",
+   "solver": "adam",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 5000,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "tsvec_o2_w5",
+   "solver": "tsvec",
+   "nxi": null,
+   "w_smooth": 5.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 2000,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "tsvec_o2_w15",
+   "solver": "tsvec",
+   "nxi": null,
+   "w_smooth": 15.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 2000,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "sun_sinkhorn_o2_w3000",
+   "solver": "sun_sinkhorn",
+   "nxi": null,
+   "w_smooth": 3000.0,
+   "smooth_order": 2,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 600,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  },
+  {
+   "name": "sun_sinkhorn_o3_w3",
+   "solver": "sun_sinkhorn",
+   "nxi": null,
+   "w_smooth": 3.0,
+   "smooth_order": 3,
+   "dynamics": "pointmass",
+   "damping": null,
+   "init": "chord",
+   "n_iters": 600,
+   "K": 10,
+   "lr": null,
+   "schedule": [],
+   "projections": [
+    [
+     25,
+     5
+    ],
+    [
+     20,
+     5
+    ],
+    [
+     35,
+     5
+    ],
+    [
+     25,
+     3
+    ]
+   ],
+   "polish_iters": [
+    100,
+    300
+   ],
+   "polish_w": null
+  }
+ ],
+ "shapes": [
+  "A",
+  "greek_upper_0",
+  "korean_5",
+  "digit_5",
+  "a_lc",
+  "rand_gmm_10",
+  "rand_gmm_20",
+  "rand_ana_poly_10",
+  "rand_ana_poly_20",
+  "rand_ana_poly_30",
+  "rand_gmm_complex_0",
+  "rand_gmm_complex_10",
+  "rand_gmm_complex_20",
+  "rand_gmm_complex_30",
+  "rand_ana_poly_complex_0",
+  "rand_ana_poly_complex_10",
+  "rand_ana_poly_complex_20",
+  "rand_ana_poly_complex_30",
+  "organic_0",
+  "organic_10",
+  "organic_20",
+  "organic_30",
+  "cjk_0",
+  "cjk_10",
+  "cjk_20"
+ ],
+ "n_init": 30,
+ "device": "cuda",
+ "seed": 0,
+ "started": "2026-10-24 15:06:44"
+}

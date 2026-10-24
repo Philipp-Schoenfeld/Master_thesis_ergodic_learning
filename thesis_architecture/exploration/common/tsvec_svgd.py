@@ -182,6 +182,25 @@ def _accel_matrix(T, device='cpu', dtype=torch.float32):
     return A
 
 
+def _diff_matrix(T, order=2, device='cpu', dtype=torch.float32):
+    """(T-order, T) finite-difference operator of the given order along the time axis.
+
+    order 2 is `_accel_matrix` exactly (the default smoothness force). Orders 1 (velocity)
+    and 3 (jerk) are scaled by (T-1)^(order-2), so every order measures h^2 x^(order) with
+    h = 1/(T-1) and one weight means a comparable force strength across orders and T."""
+    if order == 2:
+        return _accel_matrix(T, device=device, dtype=dtype)
+    if order not in (1, 3):
+        raise ValueError(f"smooth_order must be 1, 2 or 3, got {order!r}")
+    stencil = torch.tensor([-1.0, 1.0] if order == 1 else [-1.0, 3.0, -3.0, 1.0],
+                           device=device, dtype=dtype)
+    D = torch.zeros(T - order, T, device=device, dtype=dtype)
+    idx = torch.arange(T - order)
+    for j, s in enumerate(stencil):
+        D[idx, idx + j] = s
+    return D * float(T - 1) ** (order - 2)
+
+
 def _residual(X, k_idx, Lambda, phi_k, w_smooth, w_ergodic, w_boundary,
              margin=BOUNDARY_MARGIN, A=None):
     """Single particle, dense points: X: (T,2) -> r: (R,). Forward-only
@@ -224,10 +243,14 @@ class TsvecSvgd:
 
     def __init__(self, B, K=10, device='cpu', dtype=torch.float32,
                 w_smooth=W_SMOOTH, w_ergodic=W_ERGODIC,
-                w_boundary=W_BOUNDARY, damping=LM_DAMPING, margin=BOUNDARY_MARGIN, beta=1.0):
+                w_boundary=W_BOUNDARY, damping=LM_DAMPING, margin=BOUNDARY_MARGIN, beta=1.0,
+                smooth_order=2):
         """`B`: (T, nxi) numpy/torch render matrix for B-spline control
         points, or None for raw waypoints (particles ARE the T dense points).
         `w_smooth=0.0` reproduces the "no smoothness force" variant.
+        `smooth_order`: finite-difference order of the smoothness residual
+        (1 velocity, 2 acceleration = the paper's term and the default, 3 jerk);
+        see `_diff_matrix` for the scaling.
         `beta`: temperature -- all three energy weights are multiplied by it (target
         p ~ exp(-beta V), see "Temperature" in the module docstring)."""
         self.device = torch.device(device)
@@ -244,6 +267,7 @@ class TsvecSvgd:
         self.w_boundary = w_boundary * self.beta
         self.damping = damping
         self.margin = margin
+        self.smooth_order = smooth_order
 
     def render(self, P):
         """(N, nxi_or_T, 2) -> (N, T, 2) dense points."""
@@ -262,7 +286,7 @@ class TsvecSvgd:
         """X: (N, T, 2) -> (r (N,R), dr_dX (N,R,T*2)) in closed form.
         R = (T-2)*2 [smoothness] + S [ergodic] + 4*T [boundary lo+hi]."""
         N, T, _ = X.shape
-        A = _accel_matrix(T, device=X.device, dtype=X.dtype)          # (T-2, T)
+        A = _diff_matrix(T, self.smooth_order, device=X.device, dtype=X.dtype)   # (T-order, T)
 
         # -- smoothness: r_s = sqrt(w_s) * (A @ X), LINEAR in X --
         accel = torch.einsum('ts,nsd->ntd', A, X)                     # (N, T-2, 2)
@@ -396,5 +420,6 @@ class TsvecSvgd:
         def f(P_flat):
             P = P_flat.reshape(-1, 2)
             X = (B @ P) if B is not None else P
-            return _residual(X, k_idx, Lambda, phi_k, w_s, w_e, w_b, margin)
+            A = _diff_matrix(X.shape[0], self.smooth_order, device=X.device, dtype=X.dtype)
+            return _residual(X, k_idx, Lambda, phi_k, w_s, w_e, w_b, margin, A=A)
         return f

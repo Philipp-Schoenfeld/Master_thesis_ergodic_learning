@@ -242,7 +242,7 @@ class BatchedSvgdTorch:
     `BatchedSvgd` and with the reference `SvgdRefiner`."""
 
     def __init__(self, B, device='cuda', dtype=None, compute_dtype=None, smoothness_weight=None,
-                 jitter_scale=None):
+                 jitter_scale=None, lr=None):
         """`dtype`: dtype of the optimiser state (particles, Adam moments,
         kernel); `compute_dtype`: dtype of the energy / gradient evaluation
         (the memory-bound bulk of the work; consumer GPUs run float64 at
@@ -251,7 +251,9 @@ class BatchedSvgdTorch:
         0.0 switches the smoothness cost off).
         `jitter_scale`: std of the swarm jitter (default `JITTER`). 0.0 keeps the
         particles of a candidate identical: the kernel repulsion is then exactly zero
-        (see the Adam-SVGD notes in `run_smoothness_comparison_v2.py`)."""
+        (see the Adam-SVGD notes in `run_smoothness_comparison_v2.py`).
+        `lr`: Adam step size (default `ADAM_LR` = 2e-3)."""
+        self.lr = ADAM_LR if lr is None else float(lr)
         self.w_smooth = W_SMOOTH if smoothness_weight is None else float(smoothness_weight)
         self.jitter = JITTER if jitter_scale is None else float(jitter_scale)
         import torch
@@ -391,7 +393,7 @@ class BatchedSvgdTorch:
             v = ADAM_B2 * v + (1 - ADAM_B2) * delta ** 2
             m_hat = m / (1 - ADAM_B1 ** t)
             v_hat = v / (1 - ADAM_B2 ** t)
-            P = torch.clamp(P + ADAM_LR * m_hat / (torch.sqrt(v_hat) + ADAM_EPS), *CP_CLIP)
+            P = torch.clamp(P + self.lr * m_hat / (torch.sqrt(v_hat) + ADAM_EPS), *CP_CLIP)
         e, _ = self.energy_grad(P.reshape(C, N, nxi, 2), phik_t, st, want_grad=False)
         best = e.argmin(dim=1)
         final = P[ar, best].reshape(C, nxi, 2)

@@ -203,14 +203,27 @@ def _lqr_fns(dynamics, pm=None):
     return _LQR_FNS[key]
 
 
+def _smooth_force_torch(pos, order):
+    """(C, N, 2) -> gradient of sum_t |D pos_t|^2 w.r.t. pos (= 2 D^T D pos), D the finite-difference
+    operator of `order` from `tsvec_svgd._diff_matrix` (order 2 = Sun's own acceleration force)."""
+    from .tsvec_svgd import _diff_matrix
+    D = _diff_matrix(pos.shape[1], order, device=pos.device, dtype=pos.dtype)
+    return 2.0 * (D.T @ (D @ pos))
+
+
 def run_batch(curves, phi, n_iters, nxi, record=False, log_space='raw', dynamics='pointmass', step=STEP_SIZE,
-              device=None, lqr=None):
+              device=None, lqr=None, smoothness_weight=0.0, smooth_order=2):
     """Same contract as `sun_refine.run_batch` (one shared target grid `phi` (R, R)):
     -> dict(final_cps, final_pos (C, TSTEPS+1, 2), init_cps, log (C, n_iters, nxi, 2) or None).
     `device`: torch device for the Sinkhorn part (default: cuda if available). With
     device='jax' everything runs in the jit-compiled JAX scan (`_run`, the tested reference).
-    `lqr`: optional LQR instance overriding the default Q / R of `dynamics` (torch path only)."""
+    `lqr`: optional LQR instance overriding the default Q / R of `dynamics` (torch path only).
+    `smoothness_weight` (default 0.0 = unchanged behaviour), `smooth_order` (1/2/3): extra force
+    -w * grad sum |D pos|^2 on the positions, added to the Sinkhorn gradient like Stein's
+    `smooth_w` (torch path only)."""
     import torch
+    if smoothness_weight and device == 'jax':
+        raise ValueError('smoothness_weight needs the torch path (device != "jax")')
     curves = np.asarray(curves, dtype=np.float64)
     C, T = curves.shape[:2]
     u0, x0 = sr.prepare(curves, None, dynamics=dynamics)
@@ -244,7 +257,10 @@ def run_batch(curves, phi, n_iters, nxi, record=False, log_space='raw', dynamics
             grad, f, g, fxx = divergence_grad_torch(xt, Yt, lbt, f, g, fxx, N_INNER_FIRST if it == 0 else N_INNER)
             if it == 0:                                    # converge the potentials once, no move
                 continue
-            u = upd(x0j, u, jnp.asarray((-SCALE * grad + boundary_push(xt)).cpu().numpy()), jnp.float32(step))
+            dx_pos = -SCALE * grad + boundary_push(xt)
+            if smoothness_weight:
+                dx_pos = dx_pos - smoothness_weight * _smooth_force_torch(xt, smooth_order)
+            u = upd(x0j, u, jnp.asarray(dx_pos.cpu().numpy()), jnp.float32(step))
             if record:
                 logs.append(np.einsum('ij,cjd->cid', log_fit, np.asarray(posf(u, x0j))))
         log = np.stack(logs, axis=1) if record else None

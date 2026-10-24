@@ -37,9 +37,10 @@ ADAM_B1, ADAM_B2, ADAM_EPS = 0.9, 0.999, 1e-8
 
 class AdamSvgd:
     def __init__(self, B, K=10, device='cpu', dtype=torch.float32, w_smooth=None, beta=1.0,
-                 lr=ADAM_LR, use_kernel=True):
+                 lr=ADAM_LR, use_kernel=True, smooth_order=2):
         kw = {} if w_smooth is None else dict(w_smooth=w_smooth)
-        self.energy = TsvecSvgd(B=B, K=K, device=device, dtype=dtype, beta=beta, **kw)
+        self.energy = TsvecSvgd(B=B, K=K, device=device, dtype=dtype, beta=beta,
+                                smooth_order=smooth_order, **kw)
         self.device, self.dtype = self.energy.device, dtype
         self.lr = lr
         self.use_kernel = use_kernel
@@ -73,11 +74,16 @@ class AdamSvgd:
         rep = (2.0 / h) * (Kx.sum(1, keepdim=True) * Pf - Kx @ Pf)
         return (Kx @ score + rep) / N
 
-    def run(self, init_P, phi_k, n_iters, record=True):
-        """init_P: (N, D_in, 2) -> dict(final, log (n_iters+1, N, D_in, 2) or None, energy)."""
+    def run(self, init_P, phi_k, n_iters, record=True, start=None):
+        """init_P: (N, D_in, 2) -> dict(final, log (n_iters+1, N, D_in, 2) or None, energy).
+        `start`: (2,) or None -- hard-pins parameter index 0 (the rendered first point for a
+        clamped B-spline basis or raw waypoints) after every update, as `TsvecSvgd.step` does."""
         P = torch.as_tensor(np.asarray(init_P) if not torch.is_tensor(init_P) else init_P,
                             dtype=self.dtype).to(self.device).clone()
         phi_k = (phi_k if torch.is_tensor(phi_k) else torch.as_tensor(np.asarray(phi_k))).to(self.device, self.dtype)
+        if start is not None:
+            start = torch.as_tensor(np.asarray(start), dtype=self.dtype, device=self.device)
+            P[:, 0, :] = start
         shape = P.shape
         Pf = P.reshape(shape[0], -1)
         m = torch.zeros_like(Pf)
@@ -94,6 +100,8 @@ class AdamSvgd:
             v = ADAM_B2 * v + (1 - ADAM_B2) * d * d
             step = self.lr * (m / (1 - ADAM_B1 ** t)) / (torch.sqrt(v / (1 - ADAM_B2 ** t)) + ADAM_EPS)
             Pf = (Pf + step).clamp(*PARAM_CLIP)
+            if start is not None:
+                Pf.view(shape)[:, 0, :] = start
             if record:
                 log[t] = Pf.reshape(shape)
         V, _ = self.grad_energy(Pf.reshape(shape), phi_k)
