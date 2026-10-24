@@ -438,6 +438,112 @@ class BatchedSunTorch:
                    final_pos=out['final_pos'])
 
 
+class BatchedTsvecSvgdTorch:
+    """Adapter giving `tsvec_svgd.TsvecSvgd` (the paper-faithful, direct
+    preconditioned SVGD -- Philipp's "TSVEC-SVGD", added 2026-10-20 for the
+    active-exploration comparison) the same `.run(init_curves, phi_k, start,
+    seeds, n_iters, record) -> dict(cps, final_cps, final_energy)` contract
+    `BatchedSvgdTorch`/`BatchedSunTorch` share, so `run_mission_eval.py` can
+    select it via `--refiner tsvec_svgd` like any other backend.
+
+    NOT a thin wrapper, for a real reason: `TsvecSvgd.run` treats its WHOLE
+    particle batch as ONE joint, mutually-interacting SVGD swarm against a
+    SINGLE shared `phi_k` (deliberate, the paper's actual algorithm -- see
+    tsvec_svgd.py's module docstring). `run_mission_eval.MissionSet.run_svgd`
+    calls `.run()` once per ROUND with ALL currently-active SHAPES'
+    candidates concatenated into one flat batch, each shape carrying its OWN
+    target density. Feeding that whole multi-shape batch through one
+    `TsvecSvgd.run()` call would be wrong (particles from different shapes
+    would spuriously repel/attract each other through the shared SVGD
+    kernel, and there is only room for one global target). This adapter
+    instead groups the flat batch by distinct target rows -- one group per
+    shape, since every candidate of a shape shares that shape's `phi_k`
+    bit-for-bit via `run_svgd`'s own `np.repeat` construction -- and runs one
+    `TsvecSvgd.run()` call per group: the same "one joint swarm per shape"
+    semantics `run_init_comparison.py::run_cell_tsvec_svgd` already uses in
+    the static comparison, just applied per group instead of per whole-DB
+    cell.
+
+    Cost note, not yet measured at the time this was written: unlike
+    `BatchedSvgdTorch`/`BatchedSunTorch`, which batch ALL active shapes into
+    one GPU call per round, this issues one sequential call per active shape
+    per round -- more Python/kernel-launch overhead, though each call is
+    still a vectorised GPU tensor op over `n_init` particles. Real cost at
+    mission-harness scale (n_init=30, n_iters=1500, up to 25 active shapes
+    per round) is for the active-exploration plan's timing-probe step to
+    reveal, not to guess here.
+
+    Start-pin fix (2026-10-22): `TsvecSvgd` used to accept `start` and
+    silently ignore it -- nothing in its energy/kernel referenced point 0, so
+    it drifted freely for the whole refinement, and the caller's post-hoc
+    `winner[0] = start` hard-snap (`run_mission_eval.MissionSet.execute`,
+    `sample_annealed_mission.py`) then reintroduced a one-point kink relative
+    to point 1's already-drifted direction. `TsvecSvgd.step`/`run` now
+    hard-pin parameter index 0 to `start` every iteration instead (see their
+    docstrings); this `run` just forwards each group's (shared, per the
+    `np.repeat`/grouping assumption above) `start` through.
+    """
+
+    def __init__(self, B, device='cuda', K=10, w_smooth=None):
+        import torch
+        self.torch = torch
+        self.dev = torch.device(device)
+        self.B_np = np.asarray(B, dtype=np.float32)
+        self.T, self.nxi = self.B_np.shape
+        self.K = K
+        if w_smooth is None:
+            from ergodic_energy_torch import W_SMOOTH
+            w_smooth = W_SMOOTH
+        self.w_smooth = w_smooth
+
+    def run(self, init_curves, phi_k, start, seeds, n_iters, record=True):
+        """Same contract as `BatchedSvgdTorch.run`: `init_curves` (C, T, 2)
+        dense curves, `phi_k` (C, K*K) or (K*K,) per-candidate Fourier target
+        coefficients at THIS class's `K` (10 by default, this project's
+        K_DEFAULT -- NOT the K=8 `SvgdRefiner`/`tsvec` backend uses; the
+        caller must build `phi_k` at the matching K, see run_mission_eval
+        .py's target-construction branch for `tsvec_svgd`). `start`: (2,) or
+        (C, 2) or None -- forwarded to `TsvecSvgd.run` as a HARD pin on
+        parameter index 0 (see that method's docstring); one group's
+        candidates share one target AND must share one start (same
+        assumption `phi_k[idx[0]]` below already makes for the target).
+        `seeds` accepted but unused (`TsvecSvgd` has no stochastic element
+        beyond the caller-supplied `init_curves`)."""
+        from common.tsvec_svgd import TsvecSvgd
+        torch = self.torch
+        C = np.asarray(init_curves).shape[0]
+        phi_k = np.asarray(phi_k, dtype=np.float64)
+        if phi_k.ndim == 1:
+            phi_k = np.broadcast_to(phi_k, (C, phi_k.shape[0]))
+        starts = None
+        if start is not None:
+            starts = np.asarray(start, dtype=np.float64)
+            if starts.ndim == 1:
+                starts = np.broadcast_to(starts, (C, 2))
+
+        _uniq, inverse = np.unique(phi_k, axis=0, return_inverse=True)
+        groups = [np.flatnonzero(inverse == g) for g in range(_uniq.shape[0])]
+
+        B64 = self.B_np.astype(np.float64)
+        curves_np = np.asarray(init_curves)
+        log = torch.empty((C, n_iters + 1, self.nxi, 2), dtype=torch.float32,
+                          device=self.dev) if record else None
+        final_cps = np.empty((C, self.nxi, 2), dtype=np.float32)
+        solver = TsvecSvgd(B=self.B_np, K=self.K, device=self.dev, w_smooth=self.w_smooth)
+        for idx in groups:
+            curves_g = curves_np[idx].astype(np.float64)
+            rhs = curves_g.transpose(1, 0, 2).reshape(self.T, len(idx) * 2)
+            P0 = np.linalg.lstsq(B64, rhs, rcond=None)[0].reshape(
+                self.nxi, len(idx), 2).transpose(1, 0, 2).astype(np.float32)
+            group_start = starts[idx[0]] if starts is not None else None
+            out = solver.run(P0, phi_k[idx[0]], n_iters=n_iters, record=record,
+                            start=group_start)
+            if record:
+                log[idx] = out['log'].permute(1, 0, 2, 3).to(device=self.dev, dtype=torch.float32)
+            final_cps[idx] = out['final'].detach().cpu().numpy()
+        return dict(cps=log, final_cps=final_cps, final_energy=None)
+
+
 # -- compact storage of the logged states: see state_codec.py (numpy-only, so the
 #    worker processes do not have to import the solver stack) --------------------
 from state_codec import pack_states, unpack_states, Q_LO, Q_HI      # noqa: E402,F401

@@ -76,9 +76,13 @@ for _v in ('OMP_NUM_THREADS', 'OPENBLAS_NUM_THREADS', 'MKL_NUM_THREADS', 'NUMEXP
     os.environ.setdefault(_v, '1')
 
 import argparse
+import ast
 import collections
+import glob
+import hashlib
 import json
 import multiprocessing as mp
+import sqlite3
 import sys
 import time
 import traceback
@@ -102,10 +106,122 @@ import run_svgd_convergence as rsc                                 # noqa: E402
 from state_codec import pack_states                                # noqa: E402
 
 STRATEGY_MAP = rsc.STRATEGY_MAP
-METHODS = rsc.METHODS
+#: 'ebm' (Energy-Policy, network_candidates path) and 'heuristic' (belief-
+#: density-grid GUI heuristic, baseline_inits path) added 2026-10-20 for the
+#: active-exploration comparison -- extended LOCALLY (not in `rsc`/run_svgd_
+#: convergence.py, which other callers still use with its original 4
+#: methods unchanged). 'dfl' deliberately excluded: its conditioning needs
+#: the ground-truth trajectory's own spectral coefficients
+#: (`trajectory_to_spectral`), which don't exist under partial belief.
+METHODS = rsc.METHODS + ('ebm', 'heuristic')
+NETWORK_METHODS = rsc.NETWORK_METHODS + ('ebm',)
 DEFAULT_CONDITIONS = ('half_known', 'ten_samples', 'none_known')
 NXI, N_POINTS, DEGREE, SEED, TRUTH_RES = rsc.NXI, rsc.N_POINTS, rsc.DEGREE, rsc.SEED, rsc.TRUTH_RES
 task_seed = rsc.task_seed
+
+
+# ── Result fingerprint: reuse stored missions, never mix configurations ──────
+
+#: Bump when the mission logic in THIS file changes its results (this file is
+#: not part of the code digest, so harmless edits here keep resumes working).
+RESULT_VERSION = 1
+
+#: Modules whose code determines the stored results. Their digest ignores
+#: comments, docstrings and formatting, so only real code changes count.
+RESULT_MODULES = (
+    os.path.join(_here, 'svgd_batched.py'), os.path.join(_here, 'run_svgd_convergence.py'),
+    os.path.join(_here, 'variant_runner.py'), os.path.join(_here, 'init_baselines.py'),
+    os.path.join(_here, 'selfsup_planner.py'), os.path.join(_here, 'ebm_planner.py'),
+    os.path.join(_here, 'metrics_explore_exploit.py'), os.path.join(_here, 'run_ideal_matrix.py'),
+    os.path.join(_arch, 'exploration', 'apply_cfm_belief.py'),
+    *(os.path.join(_arch, 'exploration', 'common', f) for f in (
+        'tsvec_svgd.py', 'belief.py', 'ak_belief.py', 'np_belief.py', 'observation.py',
+        'metrics.py', 'acquisition.py', 'svgd_refine.py')),
+    os.path.join(_arch, 'attentive_kernel_belief.py'), os.path.join(_arch, 'neural_process_belief.py'),
+    os.path.join(_arch, 'ergodic_energy_torch.py'),
+    os.path.join(_arch, 'exploration_optimierung', 'mission.py'))
+
+#: CLI arguments that change what a mission computes (not where it is stored or
+#: how fast it runs). `max_rounds` only caps a mission -- a run extended to more
+#: rounds is a valid resume -- and acts on results solely through the kappa
+#: schedule, which enters the fingerprint as the effective per-round list.
+RESULT_ARGS = ('refiner', 'n_init', 'n_iters', 'coverage_threshold',
+               'coverage_radius', 'select_by', 'start_pos', 'linear_length_units',
+               'svgd_precision', 'state_stride', 'metric_stride', 'representation',
+               'cfm_chunk', 'full_execution', 'dry_run')
+
+
+def code_digest(paths=RESULT_MODULES):
+    h = hashlib.sha256()
+    for p in paths:
+        if not os.path.exists(p):
+            h.update(f'{os.path.basename(p)}:missing'.encode())
+            continue
+        tree = ast.parse(open(p, encoding='utf-8').read())
+        for node in ast.walk(tree):
+            body = getattr(node, 'body', None)
+            if (isinstance(body, list) and body and isinstance(body[0], ast.Expr)
+                    and isinstance(body[0].value, ast.Constant)
+                    and isinstance(body[0].value.value, str)):
+                node.body = body[1:] or [ast.Pass()]
+        h.update(os.path.basename(p).encode())
+        h.update(ast.dump(tree).encode())
+    return h.hexdigest()
+
+
+def file_id(path):
+    """Portable identity of a checkpoint: name and size, not the absolute path."""
+    return None if not path else [os.path.basename(path), os.path.getsize(path)]
+
+
+def result_fingerprint(ctx, cond, strat, method, belief, scfg, kappas):
+    """-> (sha256 hex, the dict it is computed from) of everything that
+    determines the results of one mission set."""
+    a = ctx.args
+    d = dict(version=RESULT_VERSION, code=ctx.code_digest, shapes=list(ctx.names),
+             cond=cond, strategy=strat, method=method, belief=belief, strategy_args=scfg,
+             args={k: getattr(a, k, None) for k in RESULT_ARGS}, kappa_schedule=kappas,
+             planner_ckpt=ctx.ckpt_ids.get(method))
+    if belief == 'ak':
+        d['ak_fit_iters'] = a.ak_fit_iters
+    if belief == 'np':
+        d['np_ckpt'] = file_id(a.np_ckpt)
+    blob = json.dumps(d, sort_keys=True, default=str)
+    return hashlib.sha256(blob.encode()).hexdigest(), d
+
+
+def reuse_index(roots, exclude):
+    """{fingerprint: (shard path, n stored rounds)} over all shards under
+    `roots` (also belief_*/ sub-roots), skipping the current run `exclude`.
+    Shards from before the fingerprint existed have none and are never reused."""
+    index = {}
+    excl = os.path.abspath(exclude)
+    for root in roots:
+        for path in (glob.glob(os.path.join(root, '*', 'shards', '*.db'))
+                     + glob.glob(os.path.join(root, '*', 'belief_*', 'shards', '*.db'))):
+            if os.path.abspath(path).startswith(excl + os.sep):
+                continue
+            try:
+                conn = sqlite3.connect(f'file:{path}?mode=ro', uri=True)
+                fp = mdb.get_meta(conn, 'fingerprint')
+                n = conn.execute('SELECT COUNT(*) FROM rounds').fetchone()[0] if fp else 0
+                conn.close()
+            except sqlite3.Error:
+                continue
+            if fp and n > index.get(fp, (None, 0))[1]:
+                index[fp] = (path, n)
+    return index
+
+
+def copy_shard(src, dst):
+    """Consistent snapshot of `src` into `dst` (SQLite backup API, safe while
+    another process may still be writing `src`)."""
+    os.makedirs(os.path.dirname(os.path.abspath(dst)), exist_ok=True)
+    s = sqlite3.connect(f'file:{src}?mode=ro', uri=True)
+    d = sqlite3.connect(dst)
+    s.backup(d)
+    d.close()
+    s.close()
 
 
 # ── Worker side (CPU): baseline initialisations, log compression ─────────────
@@ -114,14 +230,42 @@ def _worker_init():
     torch.set_num_threads(1)
 
 
-def baseline_inits(method, start, init_params, linear_length, n_points=N_POINTS):
+#: Same symmetry-breaking jitter scale as `run_init_comparison.py`'s static-
+#: comparison heuristic variant (matches `common.svgd_refine.SvgdRefiner
+#: .JITTER`): `gui_heuristic_path` is deterministic given (phi, start), so
+#: without this every one of a shape's `n_init` "candidates" would be a
+#: byte-identical duplicate -- fine for the independent-swarm backends
+#: (sun/tsvec), but degenerates `tsvec_svgd`'s mutually-interacting JOINT
+#: swarm to a zero-diversity kernel at iteration 0 (no jitter of its own,
+#: see `svgd_batched.BatchedTsvecSvgdTorch`).
+HEURISTIC_JITTER = 0.01
+
+
+def baseline_inits(method, start, init_params, linear_length, n_points=N_POINTS, phi=None):
     """(C, T, 2) float32 start curves of a baseline method, all beginning at
-    `start`. `init_params`: random walk -> seeds, linear -> headings in degrees."""
-    from init_baselines import random_walk_path, linear_ray_path
+    `start`. `init_params`: random walk -> seeds, linear -> headings in
+    degrees, heuristic -> jitter seeds. `phi`: (R, R) belief density grid
+    (numpy), required only for `method == 'heuristic'` -- the GUI/
+    interactive_sim heuristic conditioned on the CURRENT BELIEF, not the
+    ground truth or the dataset-generator's analytic shape_def (neither of
+    which exists mid-mission); see `init_baselines.gui_heuristic_path`'s own
+    docstring on why this is the fair "same information level" choice here."""
+    from init_baselines import random_walk_path, linear_ray_path, gui_heuristic_path
     out = []
+    base = None
+    if method == 'heuristic':
+        base = gui_heuristic_path(torch.as_tensor(phi, dtype=torch.float32),
+                                  start_pos=tuple(float(v) for v in start), n_points=n_points)
     for p in init_params:
         if method == 'random_walk':
             c = random_walk_path(n_points, seed=int(p), start=torch.tensor(start, dtype=torch.float32))
+        elif method == 'heuristic':
+            rng = np.random.default_rng(int(p))
+            jitter = rng.normal(scale=HEURISTIC_JITTER, size=(n_points, 2)).astype(np.float32)
+            c_np = base.numpy() + jitter
+            c_np[0] = base.numpy()[0]                    # keep the start point exact
+            out.append(np.clip(c_np, 0.0, 1.0).astype(np.float32))
+            continue
         else:
             c = linear_ray_path(start, float(p), linear_length, n_points)
         out.append(c.numpy().astype(np.float32))
@@ -132,9 +276,16 @@ def _pool_task(t):
     if t['kind'] == 'init':
         return dict(shape=t['shape'], round=t['round'],
                     inits=baseline_inits(t['method'], t['start'], t['init_params'],
-                                         t['linear_length']))
+                                         t['linear_length'], phi=t.get('phi')))
     if t['kind'] == 'pack':
-        wide_range = t.get('wide_range', False)
+        # wide_range default True: candidates well short of the configured n_iters
+        # (low --n_iters budgets, or any early-stopped run) are not yet pulled back
+        # into [0, 1] by SVGD's boundary term and can exceed the narrow quantisation
+        # range state_codec.py uses for converged (iteration ~1500) states -- caused
+        # a real consistency-check failure (worst_seg up to 5.8e-1) on the
+        # n_iters<=1000 budget-sweep runs. Negligible precision cost either way
+        # (~1.7e-4 vs ~3.1e-5 per coordinate, both far below sensor/solver scale).
+        wide_range = t.get('wide_range', True)
         return dict(shape=t['shape'], round=t['round'],
                     blobs=[pack_states(t['cps'][c], wide_range=wide_range)
                           for c in range(t['cps'].shape[0])])
@@ -173,12 +324,31 @@ class DummyPlanner:
         return torch.einsum('pi,kid->kpd', self.B, cps.float())
 
 
-def belief_rmse_from_mu(mu, truth):
+def _truth_like(truth, mu):
     t = truth.to(device=mu.device, dtype=mu.dtype)
     if t.shape != mu.shape:
         t = torch.nn.functional.interpolate(t[None, None], size=mu.shape, mode='bilinear',
                                             align_corners=True)[0, 0]
-    return float(((mu - t) ** 2).mean().sqrt())
+    return t
+
+
+def belief_rmse_from_mu(mu, truth):
+    return float(((mu - _truth_like(truth, mu)) ** 2).mean().sqrt())
+
+
+def belief_quality(mu, sd, truth):
+    """Active-sensing scores of a belief (mu, sd on the belief grid) against the
+    ground truth: rmse, corr (Pearson, scale-free), nll (mean Gaussian NLL of
+    the truth, i.e. whether sigma is calibrated), cov95, sd_mean."""
+    mu, sd = mu.double(), sd.double().clamp(min=1e-3)
+    t = _truth_like(truth, mu)
+    err = mu - t
+    a, b = mu.flatten() - mu.mean(), t.flatten() - t.mean()
+    corr = float((a * b).sum() / (a.norm() * b.norm()).clamp(min=1e-12))
+    nll = float((torch.log(sd) + 0.5 * (err / sd) ** 2).mean() + 0.5 * np.log(2 * np.pi))
+    return dict(rmse=float(err.pow(2).mean().sqrt()), corr=corr, nll=nll,
+                cov95=float((err.abs() <= 1.96 * sd).double().mean()),
+                sd_mean=float(sd.mean()))
 
 
 def eval_indices(n_iters, stride):
@@ -221,16 +391,84 @@ class MissionSet:
     receives the list of their results via `send`.
     """
 
-    def __init__(self, ctx, cond, strat, method):
+    def __init__(self, ctx, cond, strat, method, belief='rbf'):
         self.ctx, self.cond, self.strat, self.method = ctx, cond, strat, method
+        self.belief = belief
         self.tag = f'{method}/{strat}/{cond}'
+        # Belief comparison runs keep one result root per belief model (each with
+        # the usual shards/ layout); without --beliefs it is ctx.out_dir as before.
+        belief_roots = getattr(ctx, 'belief_roots', None)
+        root = belief_roots[belief] if belief_roots else ctx.out_dir
+        if belief_roots:
+            self.tag += f'/{belief}'
         import variant_runner as vr
         self.vr = vr
         self.strat_name = STRATEGY_MAP[strat]
         self.args, _svgd, self.cfg_weight = vr.build_strategy_args(self.strat_name, ctx.device)
         self.scfg = vr.STRATEGIES[self.strat_name]
-        self.conn = mdb.open_db(mdb.shard_path(ctx.out_dir, cond, strat, method))
+        # Explicit per-round kappa schedule (Philipp's request, 2026-10-21):
+        # only 'ucb' has a kappa `debt_density` reads directly -- 'eid'/'lse'
+        # are governed by their own tuned parameter (e.g. phi_tau), which a
+        # kappa list says nothing about, so the schedule is a no-op for them
+        # (same scoping `sample_annealed_mission.py` already documents).
+        # Reuses `common.acquisition.kappa_schedule` verbatim, not a new
+        # formula -- `--kappas` (explicit per-round list) takes priority over
+        # `--kappa0`/`--kappa1` (that function's smooth interpolation) when
+        # both are given, matching `sample_annealed_mission.py`'s own CLI.
+        self.kappas = None
+        a = ctx.args
+        if self.strat == 'ucb' and (a.kappas or a.kappa0 is not None):
+            if a.kappas:
+                self.kappas = [float(v) for v in a.kappas.split(',')]
+                if len(self.kappas) != a.max_rounds:
+                    raise ValueError(f"--kappas has {len(self.kappas)} values, "
+                                     f"need {a.max_rounds} (= --max_rounds)")
+            else:
+                from common.acquisition import kappa_schedule
+                self.kappas = [kappa_schedule(r, a.max_rounds, a.kappa0, a.kappa1)
+                              for r in range(a.max_rounds)]
+        path = mdb.shard_path(root, cond, strat, method)
+        self.fingerprint = None
+        if getattr(ctx, 'code_digest', None) is not None:
+            self.fingerprint, fp_detail = result_fingerprint(ctx, cond, strat, method, belief,
+                                                             self.scfg, self.kappas)
+            self._reuse(path)
+        self.conn = mdb.open_db(path)
+        if self.fingerprint is not None:
+            self._check_fingerprint(fp_detail)
         self.t0 = time.time()
+
+    def _reuse(self, path):
+        """Start from an identical, already computed mission set of another run."""
+        if os.path.exists(path):
+            conn = sqlite3.connect(path)
+            n = conn.execute("SELECT COUNT(*) FROM sqlite_master WHERE name='rounds'").fetchone()[0]
+            n = conn.execute('SELECT COUNT(*) FROM rounds').fetchone()[0] if n else 0
+            conn.close()
+            if n:
+                return
+        src = getattr(self.ctx, 'reuse', {}).get(self.fingerprint)
+        if src:
+            copy_shard(src[0], path)
+            print(f"[mission] {self.tag}: reusing {src[1]} stored rounds of an identical "
+                  f"mission set from {src[0]}", flush=True)
+
+    def _check_fingerprint(self, detail):
+        n = self.conn.execute('SELECT COUNT(*) FROM rounds').fetchone()[0]
+        stored = mdb.get_meta(self.conn, 'fingerprint')
+        if n and stored is None:
+            print(f"[mission] {self.tag}: WARNING resuming a shard without fingerprint "
+                  f"(created before fingerprints existed); configuration not verified",
+                  flush=True)
+        elif n and stored != self.fingerprint:
+            old = mdb.get_meta(self.conn, 'fingerprint_detail', {}) or {}
+            diff = sorted(k for k in set(old) | set(detail) if old.get(k) != detail.get(k))
+            raise RuntimeError(
+                f"{self.tag}: the stored rounds in this shard were computed with a different "
+                f"configuration (differs in: {diff}); refusing to mix them. Use a new --out_tag.")
+        mdb.set_meta(self.conn, 'fingerprint', self.fingerprint)
+        mdb.set_meta(self.conn, 'fingerprint_detail', detail)
+        self.conn.commit()
         self.plan_s = self.svgd_s = 0.0
 
     # -- state construction / resume -----------------------------------------
@@ -239,17 +477,26 @@ class MissionSet:
         vr = self.vr
         mdb.save_basis(self.conn, rsc.basis_matrix(NXI, N_POINTS, DEGREE), NXI, N_POINTS, DEGREE)
         mdb.set_meta(self.conn, 'config', dict(ctx.config, cond=self.cond, strategy=self.strat,
-                                              method=self.method, strategy_args=self.scfg))
+                                              method=self.method, belief=self.belief,
+                                              strategy_args=self.scfg))
+        a = ctx.args
         states = []
         for name, truth in zip(ctx.names, ctx.truths):
             mdb.save_truth(self.conn, name, truth.detach().cpu().numpy())
+            t0 = time.time()
             b = vr.build_belief(self.cond, truth, seed=SEED, device=ctx.device,
                                 gp_noise=self.scfg.get('gp_noise', 0.05),
                                 gp_lengthscale=self.scfg.get('gp_lengthscale', 0.08),
-                                dtype=torch.float64)
+                                dtype=torch.float64, kernel=self.belief,
+                                ak_fit_iters=getattr(a, 'ak_fit_iters', 200),
+                                np_ckpt=getattr(a, 'np_ckpt', None))
             st = ShapeState(name, truth, b)
-            st.unc0 = float(b.posterior_grid()[1].float().sum())   # same path as `refresh` -> consistent gains
+            mu0, sd0 = b.posterior_grid()
+            st.unc0 = float(sd0.float().sum())   # same path as `refresh` -> consistent gains
             b._cache = None
+            mdb.save_belief_metrics(self.conn, dict(
+                shape=name, round=-1, belief=self.belief, update_s=time.time() - t0,
+                n_obs=int(b.n_obs), **belief_quality(mu0.float(), sd0.float(), truth)))
             states.append(st)
         self.conn.commit()
         replayed = 0
@@ -269,6 +516,14 @@ class MissionSet:
     def refresh(self, st):
         """Belief fields, visitation and the target density of the CURRENT state."""
         ctx, args = self.ctx, self.args
+        if self.kappas is not None:
+            # `st.n_done` is the round ABOUT TO BE planned (0-indexed, same
+            # convention as `run()`'s `for r in range(a.max_rounds)`) --
+            # `self.args` is this MissionSet's OWN args instance (`build_
+            # strategy_args` builds a fresh one per set), so mutating it here
+            # cannot cross-talk with other concurrently-scheduled sets the
+            # way mutating the shared `ctx.args` would.
+            args.kappa = self.kappas[min(st.n_done, len(self.kappas) - 1)]
         mu, sd = st.belief.posterior_grid()
         st.belief._cache = None                      # free the n x n Cholesky factor
         mu, sd = mu.float(), sd.float()
@@ -330,6 +585,14 @@ class MissionSet:
             # Sun: the density grid itself is the target (score of log Phi).
             target = np.repeat(np.stack([st.phi.detach().cpu().numpy().astype(np.float64)
                                          for st in active]), n_init, axis=0)
+        elif a.refiner == 'tsvec_svgd':
+            # BatchedTsvecSvgdTorch needs Fourier coefficients at THIS
+            # project's K_DEFAULT=10 (100 modes) -- NOT `ctx.svgd_ref._phi_k`
+            # (K=8, 64 modes, built for the 'tsvec'/Adam-SVGD backend only).
+            # `ctx.ee.target_coeffs` is exactly the K=10 computation already
+            # used for `phi_k10` below (the metric target), reused here.
+            target = np.repeat(np.stack([ctx.ee.target_coeffs(st.phi).detach().cpu().numpy().astype(np.float64)
+                                         for st in active]), n_init, axis=0)
         else:
             target = np.repeat(np.stack([ctx.svgd_ref._phi_k(st.phi.detach().cpu().numpy().astype(np.float64))
                                          for st in active]), n_init, axis=0)
@@ -360,13 +623,18 @@ class MissionSet:
                     seeds=seeds)
 
     # -- one executed unit ---------------------------------------------------
-    def execute(self, st, res, r, start, n_iters_used=None):
+    def execute(self, st, res, r, start, n_iters_used=None, full_execution=False):
         """Pick the winner, drive one unit, update the belief, score. -> (row, cand rows).
 
         `n_iters_used`: the SVGD iteration count actually behind `res` (default:
         `ctx.args.n_iters`), recorded in the stored candidate rows -- lets a
         caller execute on a truncated/capped run (budget-matched evaluation)
-        while keeping the DB honest about how many iterations were spent."""
+        while keeping the DB honest about how many iterations were spent.
+
+        `full_execution`: drive the WHOLE refined candidate (whatever length it
+        naturally is, ~2-7 length units depending on method) instead of trimming
+        to exactly one length unit before replanning. Candidates are no longer
+        required to be at least one length unit long to be eligible."""
         ctx, args = self.ctx, self.args
         n_iters_used = ctx.args.n_iters if n_iters_used is None else n_iters_used
         from common.metrics import coverage_vs_truth, path_length, trim_to_length
@@ -386,20 +654,21 @@ class MissionSet:
             sel_score = E_final
         # A plan shorter than one length unit cannot be driven for a full unit: such
         # candidates are only eligible if no candidate is long enough (counted).
+        # (full_execution: any positive-length plan is eligible -- it gets driven whole.)
         dense_all = np.einsum('pi,cid->cpd', ctx.B64, res['final_cps'])
         plan_len = np.linalg.norm(np.diff(dense_all, axis=1), axis=-1).sum(axis=-1)
-        eligible = plan_len >= LENGTH_UNIT
+        eligible = plan_len >= (1e-6 if full_execution else LENGTH_UNIT)
         if eligible.any():
             sel = int(np.argmin(np.where(eligible, sel_score, np.inf)))
         else:
             sel = int(np.argmax(plan_len))
             ctx.n_short_plans += 1
 
-        # -- the unit that is driven
+        # -- the unit (or, full_execution: the whole refined candidate) that is driven
         curve = torch.as_tensor(ctx.B64 @ res['final_cps'][sel], dtype=torch.float32, device=dev)
         curve[0] = torch.as_tensor(start, dtype=torch.float32, device=dev)      # hard snap, as SvgdRefiner.refine
         curve = curve.clamp(0.0, 1.0)
-        seg = trim_to_length(curve, LENGTH_UNIT)
+        seg = curve if full_execution else trim_to_length(curve, LENGTH_UNIT)
         n_pts = max(8, int(round(PTS_PER_UNIT * path_length(seg) / LENGTH_UNIT)))
         seg = resample_arclength(seg, n_pts)
         torch.manual_seed(task_seed(st.name, self.cond, self.strat, self.method, 'meas', r))
@@ -407,9 +676,13 @@ class MissionSet:
         pts_t, vals_t = thin(pts, vals, max_points=args.max_obs)
 
         plan_target, mu_plan, sd_plan, unc_before = st.phi, st.mu, st.sd, st.unc
+        t_upd = time.time()
         st.belief.observe(pts_t, vals_t)
+        update_s = time.time() - t_upd
         st.driven = seg if st.driven is None else torch.cat([st.driven, seg], dim=0)
         self.refresh(st)                                        # belief / target AFTER the update
+        belief_row = dict(shape=st.name, round=r, belief=self.belief, update_s=update_s,
+                          n_obs=int(st.belief.n_obs), **belief_quality(st.mu, st.sd, st.truth))
 
         # -- scores of the whole driven path
         sc_truth = ctx.ee.score(st.driven, ctx.phi_k_truth_t[si])
@@ -439,7 +712,8 @@ class MissionSet:
             E_cand_worst=float(E_final.max()),
             target=plan_target.detach().cpu().numpy(), mu_plan=mu_plan.detach().cpu().numpy(),
             sd_plan=sd_plan.detach().cpu().numpy(), segment=seg.detach().cpu().numpy(),
-            obs_pts=pts_t.detach().cpu().numpy(), obs_vals=vals_t.detach().cpu().numpy())
+            obs_pts=pts_t.detach().cpu().numpy(), obs_vals=vals_t.detach().cpu().numpy(),
+            belief_metrics=belief_row)
         cands = [dict(cand_idx=c, selected=(c == sel), init_param=res['init_params'][c],
                       n_iters=n_iters_used, nxi=NXI, n_states=res['n_states'],
                       state_stride=ctx.args.state_stride, E_stride=ctx.args.metric_stride,
@@ -471,19 +745,21 @@ class MissionSet:
                                 if st.driven is not None else np.array(ctx.start_pos))
                                for st in active])
             # 1. candidates -------------------------------------------------
-            if self.method in rsc.NETWORK_METHODS:
+            if self.method in NETWORK_METHODS:
                 yield from self.network_candidates(self.method, active, r, starts)
                 inits = self._net_curves
                 init_params = [[float('nan')] * a.n_init for _ in active]
             else:
-                if self.method == 'random_walk':
+                if self.method in ('random_walk', 'heuristic'):
                     init_params = [[float(task_seed(st.name, 'rw', r, i)) for i in range(a.n_init)]
                                    for st in active]
                 else:
                     init_params = [[360.0 * i / a.n_init for i in range(a.n_init)] for _ in active]
                 res_init = yield [dict(kind='init', shape=st.name, round=r, method=self.method,
                                        start=starts[j], init_params=init_params[j],
-                                       linear_length=a.linear_length_units * ctx.length_unit)
+                                       linear_length=a.linear_length_units * ctx.length_unit,
+                                       phi=(st.phi.detach().cpu().numpy()
+                                            if self.method == 'heuristic' else None))
                                   for j, st in enumerate(active)]
                 inits = np.stack([x['inits'] for x in res_init])
             # 2. SVGD of the whole batch on the GPU --------------------------
@@ -503,7 +779,8 @@ class MissionSet:
                            E_final=sv['E_series'][sl][:, -1], E_series=sv['E_series'][sl],
                            E_init=sv['E_init'][sl], inits=inits[j], init_params=init_params[j],
                            blobs=packed[j]['blobs'], n_states=len(sv['sidx']))
-                row, cands = self.execute(st, res, r, starts[j])
+                row, cands = self.execute(st, res, r, starts[j], full_execution=a.full_execution)
+                mdb.save_belief_metrics(self.conn, row['belief_metrics'])
                 mdb.save_round(self.conn, row, cands)
                 yield None
             n_done99 = sum(1 for s in states if s.done)
@@ -612,6 +889,8 @@ def main():
                     help='Start-conditioned CFM checkpoint (default: transfer/netz2d_startpunkt.pt).')
     ap.add_argument('--selfsup_ckpt', type=str, default=None,
                     help='Self-supervised checkpoint (default: selfsup_planner.DEFAULT_SELFSUP_CKPT).')
+    ap.add_argument('--ebm_ckpt', type=str, default=None,
+                    help='Ranking-NCE EBM checkpoint (default: ebm_planner.DEFAULT_EBM_CKPT).')
     ap.add_argument('--workers', type=int, default=6,
                     help='CPU workers for baseline inits and log compression.')
     ap.add_argument('--parallel_sets', type=int, default=4,
@@ -625,6 +904,39 @@ def main():
                          '--out_tag to resume.')
     ap.add_argument('--dry_run', action='store_true',
                     help='Self-test: random control points instead of the CFM network.')
+    ap.add_argument('--full_execution', action='store_true',
+                    help='Drive each refined candidate in full (whatever length it naturally is) '
+                         'instead of trimming to exactly one length unit before replanning. '
+                         'Default off: unchanged one-length-unit-per-round behaviour.')
+    ap.add_argument('--kappas', type=str, default=None,
+                    help="Comma-separated, explicit per-round kappa values for the 'ucb' "
+                         'strategy (must have exactly --max_rounds entries), e.g. '
+                         '"2,1,0.5,0.1,0.05" for a 5-round exploration-to-exploitation '
+                         "schedule. No-op for 'eid'/'lse' (governed by their own tuned "
+                         'parameter, not kappa). Takes priority over --kappa0/--kappa1.')
+    ap.add_argument('--kappa0', type=float, default=None,
+                    help="Starting kappa (round 0) for 'ucb' via common.acquisition"
+                         '.kappa_schedule, used only when --kappas is not given.')
+    ap.add_argument('--kappa1', type=float, default=0.05,
+                    help="Final-round kappa for 'ucb', used only when --kappa0 is given "
+                         'and --kappas is not.')
+    ap.add_argument('--beliefs', type=str, default=None,
+                    help="Comma-separated belief models to compare: 'rbf' (GP, stationary "
+                         "kernel), 'ak' (GP, Attentive Kernel), 'np' (pretrained neural "
+                         "process). Each gets its own result root <out_dir>/belief_<name>/ "
+                         "with the usual shards/ layout. Default: no belief dimension, RBF "
+                         "GP, results directly in <out_dir> (previous behaviour). 'ak'/'np' "
+                         "only for the conditions none_known and ten_samples.")
+    ap.add_argument('--ak_fit_iters', type=int, default=200,
+                    help='Marginal-likelihood Adam steps per AK belief update.')
+    ap.add_argument('--np_ckpt', type=str, default=None,
+                    help='Neural-process checkpoint (default: newest '
+                         'checkpoints/belief_np_date_*_final.pt).')
+    ap.add_argument('--reuse_from', type=str, default=None,
+                    help='Comma-separated result roots searched for mission sets with an '
+                         'identical fingerprint (same configuration, shapes, checkpoints and '
+                         'solver/belief code); those are copied instead of recomputed. '
+                         "Default: --out_root. 'none' disables the search.")
     a = ap.parse_args()
 
     import variant_runner as vr
@@ -632,7 +944,7 @@ def main():
     from common.svgd_refine import SvgdRefiner, run_suffix
     from metrics_explore_exploit import ExploreExploitErgodic
     from exploration_optimierung.mission import LENGTH_UNIT, blind_coverage
-    from svgd_batched import BatchedSvgdTorch, BatchedSunTorch
+    from svgd_batched import BatchedSvgdTorch, BatchedSunTorch, BatchedTsvecSvgdTorch
     import apply_cfm_belief as acb
 
     strategies = [s for s in a.strategies.split(',') if s]
@@ -650,6 +962,17 @@ def main():
     start_pos = tuple(float(v) for v in a.start_pos.split(','))
     if len(start_pos) != 2:
         raise ValueError('--start_pos needs "x,y"')
+    beliefs = [b for b in a.beliefs.split(',') if b] if a.beliefs else ['rbf']
+    for b in beliefs:
+        if b not in ('rbf', 'ak', 'np'):
+            raise KeyError(f"unknown belief {b!r}; known: rbf, ak, np")
+        if b != 'rbf':
+            bad = [c for c in conditions if c not in ('none_known', 'ten_samples')]
+            if bad:
+                raise ValueError(f"belief {b!r} does not support conditions {bad}")
+    if 'np' in beliefs:
+        from common.np_belief import latest_np_ckpt
+        a.np_ckpt = a.np_ckpt or latest_np_ckpt()
 
     device = a.device
     labels = [s.strip() for s in a.shapes.split(',')] if a.shapes else None
@@ -660,13 +983,14 @@ def main():
     out_dir = os.path.join(a.out_root, a.out_tag + run_suffix(a.refiner))
     os.makedirs(out_dir, exist_ok=True)
 
-    planners = {}
+    planners, ckpt_ids = {}, {}
     if 'cfm' in methods:
         if a.dry_run:
             planners['cfm'] = DummyPlanner()
         else:
             from run_eval_matrix import DEFAULT_CKPT
             from run_ideal_matrix import PLANNER_BUILDERS
+            ckpt_ids['cfm'] = file_id(a.ckpt or DEFAULT_CKPT)
             planners['cfm'] = PLANNER_BUILDERS[a.representation](a.ckpt or DEFAULT_CKPT, device)
             assert planners['cfm'].nxi == NXI, f"planner nxi={planners['cfm'].nxi}, expected {NXI}"
             assert planners['cfm'].start_cond, "the mission needs a start-conditioned checkpoint"
@@ -675,15 +999,26 @@ def main():
             planners['selfsup'] = DummyPlanner()
         else:
             from selfsup_planner import SelfsupPlanner, DEFAULT_SELFSUP_CKPT
+            ckpt_ids['selfsup'] = file_id(a.selfsup_ckpt or DEFAULT_SELFSUP_CKPT)
             planners['selfsup'] = SelfsupPlanner(a.selfsup_ckpt or DEFAULT_SELFSUP_CKPT, device)
             assert planners['selfsup'].nxi == NXI, \
                 f"selfsup planner nxi={planners['selfsup'].nxi}, expected {NXI}"
+    if 'ebm' in methods:
+        if a.dry_run:
+            planners['ebm'] = DummyPlanner()
+        else:
+            from ebm_planner import EbmPlanner, DEFAULT_EBM_CKPT
+            ckpt_ids['ebm'] = file_id(a.ebm_ckpt or DEFAULT_EBM_CKPT)
+            planners['ebm'] = EbmPlanner(a.ebm_ckpt or DEFAULT_EBM_CKPT, device)
+            assert planners['ebm'].nxi == NXI, f"ebm planner nxi={planners['ebm'].nxi}, expected {NXI}"
 
     ee = ExploreExploitErgodic(device=device)
     truths_t = list(truths)
     B_np = rsc.basis_matrix(NXI, N_POINTS, DEGREE)
     if a.refiner == 'sun':
         bs = BatchedSunTorch(B_np, device)
+    elif a.refiner == 'tsvec_svgd':
+        bs = BatchedTsvecSvgdTorch(B_np, device)
     else:
         bs = BatchedSvgdTorch(B_np, device, torch.float64,
                               compute_dtype=torch.float32 if a.svgd_precision == 'mixed' else torch.float64)
@@ -692,8 +1027,14 @@ def main():
         acb=acb, svgd_ref=SvgdRefiner(0, backend=a.refiner), start_pos=start_pos, length_unit=LENGTH_UNIT, bs=bs,
         B64=B_np.astype(np.float64), B32=torch.as_tensor(B_np, dtype=torch.float32, device=device),
         cov_blind=[blind_coverage(t) for t in truths_t], n_uniform_fallback=0, n_short_plans=0,
-        phi_k_truth_t=[ee.target_coeffs(t) for t in truths_t], out_dir=out_dir)
+        phi_k_truth_t=[ee.target_coeffs(t) for t in truths_t], out_dir=out_dir,
+        code_digest=code_digest(), ckpt_ids=ckpt_ids)
     ctx.phi_k_truth = [p.detach().cpu().numpy() for p in ctx.phi_k_truth_t]
+    reuse_roots = ([] if a.reuse_from == 'none' else
+                   [r for r in (a.reuse_from or a.out_root).split(',') if r])
+    ctx.reuse = reuse_index(reuse_roots, out_dir) if reuse_roots else {}
+    print(f"[mission] code digest {ctx.code_digest[:12]}; {len(ctx.reuse)} fingerprinted "
+          f"mission sets found for reuse under {reuse_roots or 'nothing'}", flush=True)
     t_start = time.time()
     ctx.should_stop = lambda: (a.time_budget_h is not None
                                and (time.time() - t_start) / 3600.0 > a.time_budget_h)
@@ -702,11 +1043,18 @@ def main():
                       n_points=N_POINTS, degree=DEGREE)
     with open(os.path.join(out_dir, 'config.json'), 'w') as f:
         json.dump(ctx.config, f, indent=1, default=str)
+    if a.beliefs:
+        ctx.belief_roots = {b: os.path.join(out_dir, f'belief_{b}') for b in beliefs}
+        for b, root in ctx.belief_roots.items():
+            os.makedirs(root, exist_ok=True)
+            with open(os.path.join(root, 'config.json'), 'w') as f:
+                json.dump(dict(ctx.config, belief=b), f, indent=1, default=str)
 
-    sets = [MissionSet(ctx, c, s, m) for c in conditions for s in strategies for m in methods]
+    sets = [MissionSet(ctx, c, s, m, b) for c in conditions for s in strategies
+            for m in methods for b in beliefs]
     print(f"[mission] {len(sets)} mission sets x {len(names)} shapes; {a.n_init} candidates x "
           f"{a.n_iters} refinement iterations per round; refiner={a.refiner}, "
-          f"svgd={a.svgd_precision}, workers={a.workers}",
+          f"svgd={a.svgd_precision}, workers={a.workers}, beliefs={','.join(beliefs)}",
           flush=True)
     mp_ctx = mp.get_context('spawn')
     pool = mp_ctx.Pool(a.workers, initializer=_worker_init)

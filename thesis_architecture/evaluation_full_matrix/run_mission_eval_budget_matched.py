@@ -174,15 +174,16 @@ class BudgetGroup:
                        E_final=sv['E_series'][sl][:, mi], E_series=sv['E_series'][sl][:, :mi + 1],
                        E_init=sv['E_init'][sl], inits=inits[j], init_params=init_params[j],
                        blobs=packed[j]['blobs'], n_states=u + 1)
-            row, cands = ms.execute(st, res, r, starts[j], n_iters_used=u)
+            row, cands = ms.execute(st, res, r, starts[j], n_iters_used=u,
+                                    full_execution=self.ctx.args.full_execution)
             mdb.save_round(ms.conn, row, cands)
 
     def _do_cfm_round(self, active, r, pool):
         ms, ctx, a = self.cfm, self.ctx, self.ctx.args
         starts = self._starts(active)
-        for _ in ms.cfm_candidates(active, r, starts):
+        for _ in ms.network_candidates('cfm', active, r, starts):
             pass                                                      # exhaust the (single-process) generator
-        inits = ms._cfm_curves
+        inits = ms._net_curves
         init_params = [[float('nan')] * a.n_init for _ in active]
         sv = ms.run_svgd(active, inits, starts, n_iters=self.cfm_run_iters)
         budgets = shape_plateau_iters(sv['E_series'], a.n_init, a.metric_stride,
@@ -294,6 +295,11 @@ def main():
     ap.add_argument('--device', type=str, default=None)
     ap.add_argument('--time_budget_h', type=float, default=None)
     ap.add_argument('--dry_run', action='store_true')
+    ap.add_argument('--full_execution', dest='full_execution', action='store_true', default=True,
+                    help='Drive each refined candidate in full per round instead of trimming to '
+                         'one length unit (default: on -- this is the point of this runner).')
+    ap.add_argument('--no_full_execution', dest='full_execution', action='store_false',
+                    help='Fall back to the original one-length-unit-per-round behaviour.')
     a = ap.parse_args()
     if a.state_stride != 1:
         raise ValueError('--state_stride must be 1 for this runner (see help text)')
@@ -332,13 +338,13 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
 
     if a.dry_run:
-        planner = rme.DummyPlanner()
+        planners = {'cfm': rme.DummyPlanner()}
     else:
         from run_eval_matrix import DEFAULT_CKPT
         from run_ideal_matrix import PLANNER_BUILDERS
-        planner = PLANNER_BUILDERS[a.representation](a.ckpt or DEFAULT_CKPT, device)
-        assert planner.nxi == rsc.NXI, f"planner nxi={planner.nxi}, expected {rsc.NXI}"
-        assert planner.start_cond, "the mission needs a start-conditioned checkpoint"
+        planners = {'cfm': PLANNER_BUILDERS[a.representation](a.ckpt or DEFAULT_CKPT, device)}
+        assert planners['cfm'].nxi == rsc.NXI, f"planner nxi={planners['cfm'].nxi}, expected {rsc.NXI}"
+        assert planners['cfm'].start_cond, "the mission needs a start-conditioned checkpoint"
 
     ee = ExploreExploitErgodic(device=device)
     truths_t = list(truths)
@@ -349,7 +355,7 @@ def main():
         bs = BatchedSvgdTorch(B_np, device, torch.float64,
                               compute_dtype=torch.float32 if a.svgd_precision == 'mixed' else torch.float64)
     ctx = types.SimpleNamespace(
-        args=a, device=device, names=list(names), truths=truths_t, planner=planner, ee=ee,
+        args=a, device=device, names=list(names), truths=truths_t, planners=planners, ee=ee,
         acb=acb, svgd_ref=SvgdRefiner(0, backend=a.refiner), start_pos=start_pos, length_unit=LENGTH_UNIT, bs=bs,
         B64=B_np.astype(np.float64), B32=torch.as_tensor(B_np, dtype=torch.float32, device=device),
         cov_blind=[blind_coverage(t) for t in truths_t], n_uniform_fallback=0, n_short_plans=0,

@@ -56,3 +56,16 @@ thesis_architecture/evaluation_full_matrix/results/*/smoothness_comparison.db*
 
 # LibreOffice lock files
 .~lock.*#
+
+# SVGD-state DBs of the 2026-10-11..23 runs (init comparison 209 MB, convergence
+# logs 2.5/5.1 GB, mission/active-sensing shards up to 606 MB each): above or near
+# GitHub's 100 MB limit. They stay on the cluster and locally; plots/CSVs/analysis
+# next to them are tracked. Regenerate with the corresponding run_*.py scripts.
+thesis_architecture/evaluation_full_matrix/results/svgd_convergence.db
+thesis_architecture/evaluation_full_matrix/results/svgd_convergence_full4/svgd_convergence.db
+thesis_architecture/evaluation_full_matrix/results/init_comparison_20261019/init_comparison.db
+thesis_architecture/evaluation_full_matrix/results/mission_eval_budget_matched_fullexec_20261011_sun/shards/
+thesis_architecture/evaluation_full_matrix/results/mission_active_exploration_20261020/shards/
+thesis_architecture/evaluation_full_matrix/results/mission_active_exploration_20261020_tsvec_svgd/shards/
+thesis_architecture/evaluation_full_matrix/results/mission_kappa_schedule_20261021_tsvec_svgd/shards/
+thesis_architecture/evaluation_full_matrix/results/active_sensing_20261023_tsvec_svgd/*/shards/

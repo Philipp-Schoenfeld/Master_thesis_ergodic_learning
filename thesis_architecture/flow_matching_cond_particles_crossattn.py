@@ -231,11 +231,14 @@ def compute_particle_cfm_loss(
     particle_batch: torch.Tensor,
     p_drop: float = 0.0,
     ergodic=None,
+    erg_particles: torch.Tensor = None,
 ) -> tuple:
     """Conditional flow-matching loss, optionally with an ergodic coverage term.
 
     Returns (total_loss, components) where components maps a name to a detached
     scalar tensor, so the runner can log the two terms separately.
+    `erg_particles` is the cloud the ergodic term targets; None uses the
+    conditioning cloud.
     """
     B = x1_batch.shape[0]
     device = x1_batch.device
@@ -256,7 +259,8 @@ def compute_particle_cfm_loss(
         # Flow matching predicts a velocity, so the endpoint has to be estimated
         # before a trajectory-level metric can be applied to it.
         x1_hat = xt + (1.0 - t_exp) * v_t
-        loss_erg = ergodic(x1_hat, particle_batch, t)
+        target = particle_batch if erg_particles is None else erg_particles
+        loss_erg = ergodic(x1_hat, target, t)
         total = total + ergodic.weight * loss_erg
         parts['erg'] = loss_erg.detach()
 

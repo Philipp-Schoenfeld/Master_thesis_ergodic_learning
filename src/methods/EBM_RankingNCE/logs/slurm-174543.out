@@ -1,0 +1,23 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+Evaluating checkpoint: checkpoints/ebm_ebm_rankingnce_particles_start_date_10_13_18h43min_nxi25_D256_N256_C100_final.pt
+  Loaded checkpoint: checkpoints/ebm_ebm_rankingnce_particles_start_date_10_13_18h43min_nxi25_D256_N256_C100_final.pt
+  nxi=25 nd=2 D=256 n_particles=256
+  Precomputing 128x128 density grids for 1295 rows...
+WARNING:2026-10-19 11:51:14,045:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+  Loaded 49 holdout ('val') shapes from /home/stud_schonfeld/Master_thesis/src/methods/EBM_RankingNCE/../../../thesis_architecture/ergodic_dataset_generator/ergodic_dataset_start_plus.db
+
+  [1] Ranking accuracy on 49 holdout shapes: 0.943
+
+  [2.mild] Langevin refinement, corruption sigma=0.3
+      dist   : 2.1240 -> 1.5984 (improved in 96% of shapes)
+      energy : -14.319 -> -28.531 (improved in 96% of shapes)
+
+  [2.severe] Langevin refinement, corruption sigma=0.8
+      dist   : 5.6641 -> 4.9045 (improved in 100% of shapes)
+      energy : 6.601 -> -1.595 (improved in 100% of shapes)
+
+  [2.cem] CEM local search, corruption sigma=0.3
+      dist   : 2.1240 -> 1.3668 (improved in 100% of shapes)
+
+  Figure saved -> /home/stud_schonfeld/Master_thesis/src/methods/EBM_RankingNCE/results/holdout_ebm_ebm_rankingnce_particles_start_date_10_13_18h43min_nxi25_D256_N256_C100_final.png
+  Summary saved -> /home/stud_schonfeld/Master_thesis/src/methods/EBM_RankingNCE/results/holdout_ebm_ebm_rankingnce_particles_start_date_10_13_18h43min_nxi25_D256_N256_C100_final.json

@@ -180,21 +180,27 @@ def _load_shapes(nxi, grid_res=128):
     return train_shapes, val_shapes, train_densities, val_densities
 
 
-def _build_dataset(train_shapes, train_densities, holdout_shapes, holdout_densities, copies_per_char, n_particles, device, sample_mode='uniform'):
+def _build_dataset(train_shapes, train_densities, holdout_shapes, holdout_densities, copies_per_char, n_particles, device, sample_mode='uniform', plain_oversample_factor=1.0):
     all_x1 = []
     all_indices = []
-    
+
     shape_keys = list(train_shapes.keys())
     density_grid_tensors = []
-    
+
     for i, lbl in enumerate(shape_keys):
         base = train_shapes[lbl]
         d_map = train_densities[lbl]
         density_grid_tensors.append(torch.tensor(d_map, dtype=torch.float32))
-        
-        tiled = np.tile(base[None], (copies_per_char, 1, 1))         
+
+        # '#unk' rows are the injected-unknown-region variants from
+        # generate_dataset_unknown.py (n_variants=2 per base shape by
+        # default), so plain rows are outnumbered 1:2 in the raw DB.
+        # plain_oversample_factor lets a finetune rebalance the per-epoch
+        # gradient mass back toward plain shapes without touching the DB.
+        n_copies = copies_per_char if '#unk' in lbl else max(1, round(copies_per_char * plain_oversample_factor))
+        tiled = np.tile(base[None], (n_copies, 1, 1))
         all_x1.append(tiled)
-        all_indices.extend([i] * copies_per_char)
+        all_indices.extend([i] * n_copies)
 
     x1_np = np.concatenate(all_x1, axis=0)
     all_indices = np.array(all_indices)
@@ -300,8 +306,22 @@ def _save_viz(model, holdout_shapes, holdout_particles, holdout_densities, title
 
 
 def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, holdout_shapes=None, holdout_particles=None, holdout_densities=None):
-    opt       = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.epochs, eta_min=1e-5)
+    opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
+    warmup_epochs = getattr(args, 'lr_warmup_epochs', 0)
+    if warmup_epochs > 0:
+        # AdamW's bias-corrected moment estimates can take oversized first
+        # steps even at a low nominal --lr ("cold start"), which matters when
+        # finetuning on top of an already-converged checkpoint (no such
+        # moment history yet) instead of training from scratch. Linear
+        # ramp-up before the usual cosine decay avoids that initial shock.
+        warmup  = torch.optim.lr_scheduler.LinearLR(
+            opt, start_factor=1e-2, end_factor=1.0, total_iters=warmup_epochs)
+        cosine  = torch.optim.lr_scheduler.CosineAnnealingLR(
+            opt, T_max=max(1, args.epochs - warmup_epochs), eta_min=1e-5)
+        scheduler = torch.optim.lr_scheduler.SequentialLR(
+            opt, schedulers=[warmup, cosine], milestones=[warmup_epochs])
+    else:
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.epochs, eta_min=1e-5)
     model.train()
 
     ergodic = None
@@ -597,6 +617,7 @@ def run(args):
         train_shapes, train_densities, holdout_shapes, holdout_densities,
         copies_per_char=args.copies_per_char, n_particles=args.n_particles,
         device=device, sample_mode=args.sample_mode,
+        plain_oversample_factor=args.plain_oversample_factor,
     )
 
     print(f"  Training: {len(train_shapes)} shapes, {x1.shape[0]} samples")
@@ -721,6 +742,17 @@ def parse_args():
     p.add_argument('--lr',              type=float, default=1e-4)
     p.add_argument('--mini_batch',      type=int,   default=64)
     p.add_argument('--copies_per_char', type=int,   default=100)
+    p.add_argument('--plain_oversample_factor', type=float, default=1.0,
+                   help='Multiplies copies_per_char for shape rows WITHOUT '
+                        '"#unk" in their name (plain shapes, see '
+                        'generate_dataset_unknown.py). Default 1.0 keeps old '
+                        'behaviour unchanged; e.g. 2.0 roughly rebalances a '
+                        'DB with 2 unknown-region variants per plain shape '
+                        'back to ~1:1 per-epoch gradient mass.')
+    p.add_argument('--lr_warmup_epochs', type=int, default=0,
+                   help='Linear LR warmup over this many epochs before the '
+                        'usual cosine decay (0 = old behaviour, no warmup). '
+                        'See train() for why this matters for finetuning.')
     p.add_argument('--noise_std',       type=float, default=0.015)
     
     p.add_argument('--p_flip',      type=float, default=0.0)

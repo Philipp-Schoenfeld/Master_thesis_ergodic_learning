@@ -36,8 +36,11 @@ from flow_matching_cond_particles_crossattn import (
 sys.path.append(os.path.join(_here, 'ergodic_dataset_generator'))
 from shape_library import pdf_on_grid
 from checkpoint_rotation import nach_zwischenstand, nach_endstand
+from attentive_kernel_belief import measure_density, fit_belief_grids
+from neural_process_belief import load_np
 
 _DB_PATH = os.path.join(_here, 'ergodic_dataset_generator', 'ergodic_dataset_775.db')
+_BELIEF_CHUNK = 64
 
 
 # ===========================================================================
@@ -212,9 +215,42 @@ def _build_dataset(train_shapes, train_densities, holdout_shapes, holdout_densit
     return x1, shape_indices, density_grids_stack, holdout_particles
 
 
+def _build_belief_pool(true_grids, n_pool, args, generator, rng, np_model=None):
+    """(S, H, W) true grids -> (S, n_pool, G, G) beliefs from sparse measurements.
+
+    Uses the AK-GP, or the frozen neural process if `np_model` is given. Each
+    pool entry draws its own measurement count K and its own measurement
+    locations; all shapes of one entry share K.
+    """
+    S = true_grids.shape[0]
+    G = args.belief_grid
+    pool = torch.empty(S, n_pool, G, G, device=true_grids.device)
+    for p in range(n_pool):
+        k = rng.randint(args.belief_k_min, args.belief_k_max)
+        for i in range(0, S, _BELIEF_CHUNK):
+            meas = measure_density(true_grids[i:i + _BELIEF_CHUNK], k, args.belief_noise, generator)
+            if np_model is None:
+                pool[i:i + _BELIEF_CHUNK, p] = fit_belief_grids(
+                    meas, grid_res=G, n_iters=args.belief_iters, generator=generator)
+            else:
+                pool[i:i + _BELIEF_CHUNK, p] = np_model.predict_grid(meas, G)
+        print(f"  Belief pool {p + 1}/{n_pool}: {S} shapes, K={k} measurements each")
+    return pool
+
+
 # ===========================================================================
 # Training
 # ===========================================================================
+
+def _belief_meta(args):
+    if getattr(args, 'belief_mode', 'none') == 'none':
+        return {}
+    keys = ('belief_mode', 'belief_k_min', 'belief_k_max', 'belief_noise', 'belief_pool',
+            'belief_iters', 'belief_grid', 'belief_seed')
+    if args.belief_mode == 'np':
+        keys += ('belief_np_ckpt',)
+    return {k: getattr(args, k) for k in keys}
+
 
 def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     os.makedirs(os.path.dirname(args.save_model) or '.', exist_ok=True)
@@ -233,6 +269,7 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
         'erg_K': getattr(args, 'erg_K', 0),
         'erg_pts': getattr(args, 'erg_pts', 0),
         'erg_t_power': getattr(args, 'erg_t_power', 0.0),
+        **_belief_meta(args),
     }
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt_dict['wandb_id'] = wandb.run.id
@@ -255,7 +292,10 @@ def _save_viz(model, holdout_shapes, holdout_particles, holdout_densities, title
     return viz_path
 
 
-def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, holdout_shapes=None, holdout_particles=None, holdout_densities=None):
+def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, holdout_shapes=None, holdout_particles=None, holdout_densities=None,
+          belief_grids=None):
+    """belief_grids: optional (S * belief_pool, G, G); the network is then
+    conditioned on particles from a belief instead of the true density."""
     opt       = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.epochs, eta_min=1e-5)
     model.train()
@@ -309,12 +349,26 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, ho
                 # 1. Sample fresh particles from the base grid!
                 particles_clean = sample_particles(density_grids_stack, batch_indices, args.n_particles, x1_clean.device, mode=args.sample_mode)
 
+                cond_clean = particles_clean
+                if belief_grids is not None:
+                    pool_idx = batch_indices * args.belief_pool + torch.randint(
+                        args.belief_pool, batch_indices.shape, device=x1_clean.device)
+                    belief_clean = sample_particles(belief_grids, pool_idx, args.n_particles,
+                                                    x1_clean.device, mode=args.sample_mode)
+                    cond_clean = torch.cat([belief_clean, particles_clean], dim=1)
+
                 # 2. Augment BOTH trajectory and particles synchronously
-                batch_aug, particles_aug = augment_batch_torch(
-                    batch_clean, particles_clean, noise_std=args.noise_std, p_flip=args.p_flip,
+                batch_aug, cond_aug = augment_batch_torch(
+                    batch_clean, cond_clean, noise_std=args.noise_std, p_flip=args.p_flip,
                     rot_range=args.rot_range, scale_range=args.scale_range,
                     trans_range=args.trans_range,
                 )
+                # With a belief the network sees the belief cloud, while the
+                # ergodic term keeps targeting the true density.
+                particles_aug, erg_particles = cond_aug, None
+                if belief_grids is not None:
+                    particles_aug = cond_aug[:, :args.n_particles]
+                    erg_particles = cond_aug[:, args.n_particles:]
 
                 opt.zero_grad(set_to_none=True)
                 with torch.autocast(
@@ -324,6 +378,7 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, ho
                     loss, parts = loss_fn(
                         model, batch_aug, particles_aug,
                         p_drop=args.p_drop, ergodic=ergodic,
+                        erg_particles=erg_particles,
                     )
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -506,6 +561,9 @@ def run(args):
             args.run_str += (f"_ERGLOSS-BOTH-w{args.lambda_erg:g}-K{args.erg_K}"
                              f"-blur{args.sinkhorn_blur:g}-r{args.sinkhorn_ratio:g}"
                              f"-tp{args.erg_t_power:g}")
+    if args.belief_mode != 'none':
+        args.run_str += (f"_BELIEF-{args.belief_mode.upper()}-K{args.belief_k_min}-{args.belief_k_max}"
+                         f"-n{args.belief_noise:g}-P{args.belief_pool}")
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if device.type == 'cuda':
         torch.backends.cudnn.benchmark = True
@@ -527,6 +585,29 @@ def run(args):
     )
 
     print(f"  Training: {len(train_shapes)} shapes, {x1.shape[0]} samples")
+
+    belief_pool = None
+    if args.belief_mode != 'none':
+        np_model = None
+        if args.belief_mode == 'np':
+            np_model, np_ckpt = load_np(args.belief_np_ckpt, device)
+            print(f"  Predicting NP beliefs from {args.belief_k_min}-{args.belief_k_max} measurements "
+                  f"(noise std {args.belief_noise:g}); NP trained on K {np_ckpt['k_min']}-"
+                  f"{np_ckpt['k_max']}, noise {np_ckpt['noise']:g}: {args.belief_np_ckpt}")
+        else:
+            print(f"  Fitting AK-GP beliefs from {args.belief_k_min}-{args.belief_k_max} "
+                  f"measurements (noise std {args.belief_noise:g}, {args.belief_iters} iters)...")
+        gen = torch.Generator(device=device).manual_seed(args.belief_seed)
+        rng = random.Random(args.belief_seed)
+        belief_pool = _build_belief_pool(density_grids_stack, args.belief_pool, args, gen, rng, np_model)
+        holdout_keys = list(holdout_shapes.keys())
+        holdout_grids = torch.stack([torch.tensor(holdout_densities[k], dtype=torch.float32)
+                                     for k in holdout_keys]).to(device)
+        holdout_belief = _build_belief_pool(holdout_grids, 1, args, gen, rng, np_model)[:, 0]
+        idx_all = torch.arange(len(holdout_keys), device=device)
+        parts = sample_particles(holdout_belief, idx_all, args.n_particles, device=device,
+                                 mode=args.sample_mode)
+        holdout_particles = {k: parts[i] for i, k in enumerate(holdout_keys)}
 
     model = ParticleCrossAttnFlowNetwork(
         nxi=args.nxi, nd=args.nd, D=args.D,
@@ -558,8 +639,12 @@ def run(args):
                     id=resume_id,
                     resume="allow" if resume_id else None
                 )
+        belief_grids = None
+        if belief_pool is not None:
+            belief_grids = belief_pool.reshape(-1, *belief_pool.shape[2:])
         train(model, x1, shape_indices, density_grids_stack, compute_particle_cfm_loss, args,
-              holdout_shapes=holdout_shapes, holdout_particles=holdout_particles, holdout_densities=holdout_densities)
+              holdout_shapes=holdout_shapes, holdout_particles=holdout_particles, holdout_densities=holdout_densities,
+              belief_grids=belief_grids)
         print("  Training complete!")
         if args.use_wandb and _WANDB_OK:
             wandb.finish()
@@ -573,6 +658,7 @@ def run(args):
             'model_state_dict': model.state_dict(),
             'nxi': args.nxi, 'nd': args.nd, 'D': args.D, 'n_particles': args.n_particles,
             'epochs': args.epochs, 'lr': args.lr, 'sample_mode': args.sample_mode,
+            **_belief_meta(args),
         }, final_save_path)
         print(f"  Checkpoint saved -> {final_save_path}")
         # Nach dem Endstand bleibt nur das `_final`: die Zwischenstaende
@@ -584,9 +670,12 @@ def run(args):
     viz_train_keys = random.sample(list(train_shapes.keys()), min(5, len(train_shapes)))
     viz_train = {k: train_shapes[k] for k in viz_train_keys}
     viz_train_particles = {}
+    train_keys = list(train_shapes.keys())
     for lbl in viz_train_keys:
-        d_map = train_densities[lbl]
-        grid_t = torch.tensor(d_map, dtype=torch.float32).unsqueeze(0).to(device)
+        if belief_pool is not None:
+            grid_t = belief_pool[train_keys.index(lbl), 0:1]
+        else:
+            grid_t = torch.tensor(train_densities[lbl], dtype=torch.float32).unsqueeze(0).to(device)
         idx_t = torch.tensor([0], dtype=torch.long).to(device)
         parts = sample_particles(grid_t, idx_t, args.n_particles, device=device, mode=args.sample_mode)
         viz_train_particles[lbl] = parts[0]  # (N, 3)
@@ -652,7 +741,31 @@ def parse_args():
                         'geomloss default 0.9 at the same gradient.')
     p.add_argument('--sinkhorn_ratio', type=float, default=1.0,
                    help="Factor on the Sinkhorn part when --erg_metric both.")
-    
+
+    # Belief from sparse measurements. 'none' = condition on the true density
+    # (previous behaviour); 'ak' = condition on an Attentive-Kernel GP fitted
+    # to K noisy point measurements per shape; 'np' = same measurements, belief
+    # from a pretrained neural process (train_belief_np.py). The ergodic term
+    # always targets the true density.
+    p.add_argument('--belief_mode', type=str, default='none', choices=['none', 'ak', 'np'],
+                   help='Source of the conditioning particles.')
+    p.add_argument('--belief_np_ckpt', type=str, default=None,
+                   help='Neural-process checkpoint for --belief_mode np.')
+    p.add_argument('--belief_k_min', type=int, default=32,
+                   help='Minimum number of point measurements per belief.')
+    p.add_argument('--belief_k_max', type=int, default=128,
+                   help='Maximum number of point measurements per belief.')
+    p.add_argument('--belief_noise', type=float, default=0.01,
+                   help='Measurement noise std on the max-normalised density.')
+    p.add_argument('--belief_pool', type=int, default=8,
+                   help='Precomputed beliefs per training shape (fresh measurements each).')
+    p.add_argument('--belief_iters', type=int, default=300,
+                   help='Adam steps on the GP marginal likelihood per belief.')
+    p.add_argument('--belief_grid', type=int, default=64,
+                   help='Resolution of the belief grid the particles are drawn from.')
+    p.add_argument('--belief_seed', type=int, default=0,
+                   help='Seed for measurement locations and kernel init.')
+
     p.add_argument('--n_gen',       type=int, default=5)
     p.add_argument('--steps',       type=int, default=100)
     p.add_argument('--bspline_pts', type=int, default=512)

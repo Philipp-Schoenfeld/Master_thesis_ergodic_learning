@@ -61,6 +61,16 @@ METHOD_STYLE = {                       # same colours as plot_svgd_convergence.p
     'selfsup': dict(color='#1565C0', label='Self-supervised (single-pass)', lw=1.8),
     'random_walk': dict(color='#E65100', label='Random walk', lw=1.6),
     'linear': dict(color='#6A1B9A', label='Linear (angled lines)', lw=1.6),
+    # Added 2026-10-21/22 for the active-exploration comparison (ebm_planner.py
+    # /gui_heuristic_path wiring in run_mission_eval.py) -- every plot in this
+    # module and in plot_mission_continuous.py only ever draws methods present
+    # as keys here (`for m, sty in METHOD_STYLE.items()`), so a method missing
+    # from this dict is silently dropped from every figure, not an error --
+    # caught only by actually looking at a rendered plot's legend against the
+    # DB's shard list, not by any crash. Colours distinct from the 4 above
+    # (green/blue/orange/purple): magenta and teal.
+    'ebm': dict(color='#D81B60', label='Energy-Policy (EBM)', lw=1.8),
+    'heuristic': dict(color='#00838F', label='Heuristic (dataset-gen)', lw=1.6),
 }
 STRATEGY_TITLE = {'lse': 'LSE (level set)', 'ucb': 'UCB', 'eid': 'EID'}
 COND_TITLE = {'ground_truth': 'Ground truth known', 'half_known': 'Half known',
@@ -143,6 +153,40 @@ def executions_to_99(arr):
     return float(arr['n_exec'][hit[0]]) if len(hit) else float('nan')
 
 
+def distance_to_threshold(arr, threshold):
+    """Driven distance (length units) until the swept ground-truth mass first
+    reaches `threshold`, linearly interpolated between the straddling rounds'
+    (path_len, swept_mass) pairs; NaN if never reached. Use under
+    `--full_execution`, where a round's driven length varies by shape/method,
+    so a round COUNT is no longer a fair cross-method comparison -- distance
+    is."""
+    from exploration_optimierung.mission import LENGTH_UNIT
+    sw = arr['swept_mass']
+    hit = np.nonzero(sw >= threshold)[0]
+    if not len(hit):
+        return float('nan')
+    i = int(hit[0])
+    L1 = float(arr['path_len'][i])
+    if i == 0:
+        return L1 / LENGTH_UNIT
+    sw0, sw1, L0 = float(sw[i - 1]), float(sw[i]), float(arr['path_len'][i - 1])
+    frac = 0.0 if sw1 <= sw0 else (threshold - sw0) / (sw1 - sw0)
+    return (L0 + frac * (L1 - L0)) / LENGTH_UNIT
+
+
+def max_distance(data):
+    """Worst-case final driven distance (length units) across all missions --
+    used as the box-plot cap under `--full_execution` (a round-count cap is
+    meaningless there, see `distance_to_threshold`)."""
+    from exploration_optimierung.mission import LENGTH_UNIT
+    best = 0.0
+    for per in data.values():
+        for arr in per.values():
+            if len(arr['path_len']):
+                best = max(best, float(arr['path_len'][-1]) / LENGTH_UNIT)
+    return best
+
+
 def executions_to_threshold(arr, threshold):
     """Executed units until the swept ground-truth mass first reaches `threshold`
     (0.99 -> same as `executions_to_99`), else NaN."""
@@ -216,7 +260,7 @@ def plot_overview(data, metric, out_path, n_max, n_shapes):
     plt.close(fig)
 
 
-def plot_cdf(data, out_path, n_max, n_shapes):
+def plot_cdf(data, out_path, n_max, n_shapes, by_distance=False):
     fig, axes, conds, strats = grid_axes(data, sharey=True)
     for i, st in enumerate(strats):
         for j, c in enumerate(conds):
@@ -226,8 +270,9 @@ def plot_cdf(data, out_path, n_max, n_shapes):
                 per = data.get((c, st, m))
                 if not per:
                     continue
-                n99 = np.array([executions_to_99(per[s]) for s in sorted(per)])
-                x = np.arange(0, n_max + 1)
+                n99 = np.array([(distance_to_threshold(per[s], 0.99) if by_distance
+                                else executions_to_99(per[s])) for s in sorted(per)])
+                x = np.linspace(0, n_max, 200) if by_distance else np.arange(0, n_max + 1)
                 frac = np.array([(n99 <= k).sum() / len(n99) for k in x])
                 ax.plot(x, frac, drawstyle='steps-post', color=sty['color'], lw=sty['lw'],
                         label=sty['label'], alpha=0.95)
@@ -240,7 +285,7 @@ def plot_cdf(data, out_path, n_max, n_shapes):
     plt.close(fig)
 
 
-def plot_box(data, out_path, n_max, n_shapes, threshold=0.99):
+def plot_box(data, out_path, n_max, n_shapes, threshold=0.99, by_distance=False):
     fig, axes, conds, strats = grid_axes(data, sharey=True)
     rng = np.random.default_rng(0)
     methods = list(METHOD_STYLE)
@@ -253,7 +298,9 @@ def plot_box(data, out_path, n_max, n_shapes, threshold=0.99):
                 if not per:
                     continue
                 sty = METHOD_STYLE[m]
-                n99 = np.array([executions_to_threshold(per[s], threshold) for s in sorted(per)])
+                n99 = np.array([(distance_to_threshold(per[s], threshold) if by_distance
+                                else executions_to_threshold(per[s], threshold))
+                               for s in sorted(per)])
                 got = n99[np.isfinite(n99)]
                 if len(got):
                     bp = ax.boxplot([got], positions=[k], widths=0.5, showfliers=False,
@@ -276,9 +323,10 @@ def plot_box(data, out_path, n_max, n_shapes, threshold=0.99):
             ax.axhline(n_max + 0.5, color=MUTED, lw=0.6, ls=':')
             ax.set_ylim(0, n_max + 2)
     pct = f"{threshold * 100:g} %"
-    finish_grid(fig, axes, conds, strats, f'Executed units until {pct}',
+    cap_desc = ('the worst mission' if by_distance else f'the {n_max}-unit round cap')
+    finish_grid(fig, axes, conds, strats, f'Executed length units until {pct}',
                 f"Executed length units until {pct} of the ground-truth mass is swept -- {n_shapes} holdout shapes "
-                f"(x above the dotted line: not reached within the {n_max}-unit cap)",
+                f"(x above the dotted line: not reached within {cap_desc})",
                 xlabel=False)
     fig.savefig(out_path, dpi=140, facecolor='white', bbox_inches='tight')
     plt.close(fig)
@@ -477,20 +525,29 @@ def main():
     n_shapes = len({s for v in data.values() for s in v})
     plots = os.path.join(root, 'plots')
     os.makedirs(plots, exist_ok=True)
-    cap = int(cfg.get('max_rounds', n_max))
+    by_distance = bool(cfg.get('full_execution', False))
+    if by_distance:
+        # round count is not a fair cross-method comparison once rounds no longer
+        # map 1:1 to distance (--full_execution): use driven distance instead, capped
+        # at the worst mission's final distance (with headroom for the "not reached" marker).
+        cap = max_distance(data) * 1.1
+        print(f"[plot_mission_eval] full_execution run: threshold plots use driven distance "
+              f"(length units), cap={cap:.1f}", flush=True)
+    else:
+        cap = int(cfg.get('max_rounds', n_max))
     if args.box_thresholds:
         d = os.path.join(plots, 'executions_to_threshold')
         os.makedirs(d, exist_ok=True)
         for thr in [float(t) for t in args.box_thresholds.split(',') if t]:
             plot_box(data, os.path.join(d, f'executions_to_{thr * 100:g}_box.png'), cap, n_shapes,
-                     threshold=thr)
+                     threshold=thr, by_distance=by_distance)
         print(f"[plot_mission_eval] wrote threshold box plots to {d}")
         if args.box_only:
             return
     for metric in METRICS:
         plot_overview(data, metric, os.path.join(plots, f'overview_{metric}.png'), n_max, n_shapes)
-    plot_cdf(data, os.path.join(plots, 'executions_to_99_cdf.png'), cap, n_shapes)
-    plot_box(data, os.path.join(plots, 'executions_to_99_box.png'), cap, n_shapes)
+    plot_cdf(data, os.path.join(plots, 'executions_to_99_cdf.png'), cap, n_shapes, by_distance=by_distance)
+    plot_box(data, os.path.join(plots, 'executions_to_99_box.png'), cap, n_shapes, by_distance=by_distance)
     for rnd in [int(r) for r in args.svgd_rounds.split(',') if r != '']:
         plot_svgd_rounds(root, data, rnd, os.path.join(plots, f'svgd_convergence_round{rnd + 1}.png'))
     if not args.no_per_shape:

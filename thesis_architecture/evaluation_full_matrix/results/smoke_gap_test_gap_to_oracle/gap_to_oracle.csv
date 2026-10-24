@@ -1,0 +1,5 @@
+method,strategy,refiner,condition,n_shapes,gap_rounds_mean,gap_rounds_std,gap_rounds_median,frac_caught_up
+cfm,ucb,tsvec_svgd,none_known,2,1.0,1.0,1.0,1.0
+heuristic,ucb,tsvec_svgd,none_known,2,2.0,0.0,2.0,0.5
+cfm,eid,tsvec_svgd,none_known,2,2.0,0.0,2.0,0.5
+heuristic,eid,tsvec_svgd,none_known,2,0.0,0.0,0.0,1.0

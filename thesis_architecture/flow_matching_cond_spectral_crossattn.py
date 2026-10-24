@@ -436,20 +436,20 @@ class SpectralCrossAttnFlowNetwork(nn.Module):
 # 9. Training utility (with CFG Dropout)
 # ---------------------------------------------------------------------------
 
-def compute_spectral_cfm_loss(
+def _spectral_cfm_forward(
     model: nn.Module,
     x1_batch: torch.Tensor,
     spectral_batch: torch.Tensor,
     k_idx_batch: torch.Tensor,
     p_drop: float = 0.0,
-) -> torch.Tensor:
-    """
-    Conditional CFM loss with spectral conditioning and CFG dropout.
+):
+    """Shared forward pass for the spectral CFM loss: samples the flow-matching
+    interpolant, runs the model once, and returns everything both the plain
+    CFM loss and the decision-focused lambda0 loss need, so they stay in sync
+    (same x0/t/xt/cond_drop_mask draw).
 
-    x1_batch:       (B, nxi, nd) — target trajectories
-    spectral_batch: (B, S, 2) — spectral coefficients [real, imag] (condition)
-    k_idx_batch:    (B, S, 2) — frequencies
-    p_drop:         probability of dropping condition (CFG)
+    Returns: cfm_loss, lambda0 (or None), x1_batch (unchanged, passed through
+    for convenience at the call site).
     """
     B = x1_batch.shape[0]
     device = x1_batch.device
@@ -465,12 +465,114 @@ def compute_spectral_cfm_loss(
     v_t, lambda0 = model(xt, t, spectral_batch, k_idx_batch, cond_drop_mask=cond_drop_mask)
 
     # Flow matching loss (MSE on velocity field)
-    loss = torch.mean((v_t - ut) ** 2)
+    cfm_loss = torch.mean((v_t - ut) ** 2)
+    return cfm_loss, lambda0
 
-    # Lambda loss is NOT computed here — ground-truth lambdas require the output
-    # of a paired ergodic trajectory optimizer (e.g. SVGD or flow-matching solver)
-    # to provide optimal Lagrange multipliers for each training trajectory.
-    return loss
+
+def compute_spectral_cfm_loss(
+    model: nn.Module,
+    x1_batch: torch.Tensor,
+    spectral_batch: torch.Tensor,
+    k_idx_batch: torch.Tensor,
+    p_drop: float = 0.0,
+) -> torch.Tensor:
+    """
+    Conditional CFM loss with spectral conditioning and CFG dropout.
+
+    x1_batch:       (B, nxi, nd) — target trajectories
+    spectral_batch: (B, S, 2) — spectral coefficients [real, imag] (condition)
+    k_idx_batch:    (B, S, 2) — frequencies
+    p_drop:         probability of dropping condition (CFG)
+
+    Lambda loss is NOT computed here — see `compute_spectral_cfm_loss_dfl` for
+    the decision-focused training signal for the lambda0 head. This function's
+    behaviour is unchanged from before that signal existed (opt-in elsewhere).
+    """
+    cfm_loss, _lambda0 = _spectral_cfm_forward(
+        model, x1_batch, spectral_batch, k_idx_batch, p_drop,
+    )
+    return cfm_loss
+
+
+def compute_spectral_cfm_loss_dfl(
+    model: nn.Module,
+    x1_batch: torch.Tensor,
+    spectral_batch: torch.Tensor,
+    k_idx_batch: torch.Tensor,
+    p_drop: float = 0.0,
+    dfl_weight: float = 0.0,
+    dfl_basis: torch.Tensor = None,
+    dfl_nxi: int = None,
+    dfl_obstacle_radius: float = 0.0,
+    dfl_obstacle_center=(0.5, 0.5),
+    dfl_n_outer: int = 5,
+    dfl_inner_steps: int = 8,
+    dfl_inner_lr: float = 2e-3,
+    dfl_rho0: float = 10.0,
+    dfl_rho_growth: float = 1.3,
+    dfl_w_objective: float = 1e-3,
+) -> torch.Tensor:
+    """
+    Same CFM loss as `compute_spectral_cfm_loss`, plus an optional
+    Decision-Focused Learning (DFL) term for the lambda0 head: instead of
+    imitating a ground-truth multiplier (none exists for this head anywhere
+    in the repo), lambda0 is scored by how much it actually helps a few
+    unrolled Augmented-Lagrangian outer iterations (see `alm_solver_torch.py`)
+    converge from a generic cold start — the quantity `rq_experiments/
+    rq6_alm_lambda0.py` calls `outer_iters`, made trainable here.
+
+    Set `dfl_weight=0.0` (default) to recover the exact old behaviour with
+    zero extra compute. When `dfl_weight > 0`, `model.predict_lambda` must be
+    True and `model.lambda_head`'s `n_lambda` must equal
+    `alm_solver_torch.n_lambda_for_alm(dfl_nxi)`.
+
+    The DFL sub-computation always runs in float32 outside any ambient bf16
+    autocast context: the unrolled inner Adam recursion is numerically
+    sensitive at this objective's scale (same caveat `alm_solver.py` notes
+    for its JAX version).
+
+    Stores the last call's logging-friendly scalars on
+    `compute_spectral_cfm_loss_dfl.last_metrics` (a plain dict, overwritten
+    every call) so a training loop can optionally read them (e.g. for W&B)
+    without changing this function's single-scalar return type.
+    """
+    cfm_loss, lambda0 = _spectral_cfm_forward(
+        model, x1_batch, spectral_batch, k_idx_batch, p_drop,
+    )
+    compute_spectral_cfm_loss_dfl.last_metrics = {'cfm_loss': cfm_loss.detach()}
+
+    if dfl_weight <= 0.0 or lambda0 is None:
+        return cfm_loss
+
+    assert dfl_basis is not None and dfl_nxi is not None, (
+        "dfl_weight > 0 requires dfl_basis (T, nxi) and dfl_nxi to be passed."
+    )
+
+    import alm_solver_torch as _alm
+
+    with torch.autocast(device_type=x1_batch.device.type, enabled=False):
+        lambda0_f32 = lambda0.float()
+        x1_f32 = x1_batch.float()
+        basis_f32 = dfl_basis.float()
+        spectral_f32 = spectral_batch.float()
+        k_idx_f32 = k_idx_batch.float()
+
+        start = x1_f32[:, 0, :]
+        xi0 = _alm.make_cold_start(start, dfl_nxi)
+        phi_k_target = spectral_f32[..., 0]   # c_k channel, see trajectory_to_spectral()
+
+        dfl_loss, dfl_info = _alm.decision_focused_loss(
+            lambda0_f32, xi0, start, phi_k_target, k_idx_f32, basis_f32, dfl_nxi,
+            obstacle_center=dfl_obstacle_center, obstacle_radius=dfl_obstacle_radius,
+            n_outer=dfl_n_outer, inner_steps=dfl_inner_steps, inner_lr=dfl_inner_lr,
+            rho0=dfl_rho0, rho_growth=dfl_rho_growth, w_objective=dfl_w_objective,
+        )
+
+    compute_spectral_cfm_loss_dfl.last_metrics.update(dfl_info)
+    return cfm_loss + dfl_weight * dfl_loss
+
+
+compute_spectral_cfm_loss_dfl.last_metrics = {}
 
 
 # ---------------------------------------------------------------------------

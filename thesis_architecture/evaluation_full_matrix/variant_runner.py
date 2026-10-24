@@ -55,8 +55,21 @@ TARGET_LENGTH = N_REPLAN_ROUNDS * LENGTH_UNIT   # Bezugslaenge fuer Maeander
 
 # ── Wissensstufen ───────────────────────────────────────────────────────────
 
+def _gp_belief(kernel, seed, ak_fit_iters, np_ckpt, **kw):
+    if kernel == 'rbf':
+        return GPBelief(**kw)
+    if kernel == 'ak':
+        from common.ak_belief import AKBelief
+        return AKBelief(fit_iters=ak_fit_iters, seed=seed, **kw)
+    if kernel == 'np':
+        from common.np_belief import NPBelief
+        return NPBelief(ckpt=np_ckpt, **kw)
+    raise KeyError(kernel)
+
+
 def build_belief(condition, truth, seed=0, device='cpu', gp_noise=0.05,
-                 gp_lengthscale=0.08, dtype=torch.float32):
+                 gp_lengthscale=0.08, dtype=torch.float32, kernel='rbf',
+                 ak_fit_iters=200, np_ckpt=None):
     """GPBelief/MaskiertesWissen fuer eine der vier Wissensstufen.
 
     `noise=0.05`, nicht der `GPBelief`-Default 0.01 — siehe die Messung im
@@ -72,23 +85,33 @@ def build_belief(condition, truth, seed=0, device='cpu', gp_noise=0.05,
     (`run_mission_eval.py`, dozens of replanning rounds, thousands of
     measurements) need float64, otherwise the Cholesky of the Gram matrix can
     fail on densely sampled revisits.
+
+    `kernel='ak'` swaps the RBF kernel for the Attentive Kernel
+    (`common.ak_belief.AKBelief`, `gp_lengthscale` is then unused);
+    `kernel='np'` replaces the GP by the pretrained neural process
+    (`common.np_belief.NPBelief`, `np_ckpt` or the newest
+    checkpoints/belief_np_date_*_final.pt). Both are supported for the
+    GP-only conditions 'none_known' and 'ten_samples'.
     """
+    if kernel != 'rbf' and condition not in ('none_known', 'ten_samples'):
+        raise ValueError(f"kernel={kernel!r} is only supported for 'none_known' "
+                         f"and 'ten_samples', not {condition!r}")
+    gp_kw = dict(grid_res=GP_RES, noise=gp_noise, lengthscale=gp_lengthscale,
+                 device=device, dtype=dtype)
     if condition == 'ground_truth':
         maske = muster_maske('alles', GP_RES, device=device)
         return MaskiertesWissen(maske, truth, sigma_bekannt=0.0,
                                 grid_res=GP_RES, noise=gp_noise,
                                 lengthscale=gp_lengthscale, device=device, dtype=dtype)
     if condition == 'none_known':
-        return GPBelief(grid_res=GP_RES, noise=gp_noise,
-                        lengthscale=gp_lengthscale, device=device, dtype=dtype)
+        return _gp_belief(kernel, seed, ak_fit_iters, np_ckpt, **gp_kw)
     if condition == 'half_known':
         maske = muster_maske('haelfte', GP_RES, device=device)
         return MaskiertesWissen(maske, truth, sigma_bekannt=0.0,
                                 grid_res=GP_RES, noise=gp_noise,
                                 lengthscale=gp_lengthscale, device=device, dtype=dtype)
     if condition == 'ten_samples':
-        b = GPBelief(grid_res=GP_RES, noise=gp_noise,
-                     lengthscale=gp_lengthscale, device=device, dtype=dtype)
+        b = _gp_belief(kernel, seed, ak_fit_iters, np_ckpt, **gp_kw)
         g = torch.Generator(device='cpu').manual_seed(seed * 1013 + 7)
         pts = torch.rand(10, 2, generator=g).to(device)
         p, v = measure(pts, truth, noise_std=gp_noise)

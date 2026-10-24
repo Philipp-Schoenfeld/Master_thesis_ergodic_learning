@@ -95,7 +95,24 @@ CREATE TABLE IF NOT EXISTS basis (
     matrix BLOB NOT NULL, PRIMARY KEY (nxi, n_points, degree)
 );
 CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS belief_metrics (
+    shape TEXT NOT NULL,
+    round INTEGER NOT NULL,           -- -1 = initial belief, r = after the update of round r
+    belief TEXT NOT NULL,             -- rbf / ak / np
+    rmse REAL,                        -- belief mean vs. ground truth
+    corr REAL,                        -- Pearson correlation mean vs. ground truth (scale-free)
+    nll REAL,                         -- mean Gaussian NLL of the truth under N(mu, sd^2)
+    cov95 REAL,                       -- fraction of cells with |truth - mu| <= 1.96 sd
+    sd_mean REAL,                     -- mean predictive sd (scale differs between beliefs)
+    update_s REAL,                    -- wall time of the belief update (AK: kernel fit)
+    n_obs INTEGER,
+    PRIMARY KEY (shape, round)
+);
 """
+
+#: columns of `belief_metrics`, in table order.
+BELIEF_METRICS = ('shape', 'round', 'belief', 'rmse', 'corr', 'nll', 'cov95', 'sd_mean',
+                  'update_s', 'n_obs')
 
 #: scalar columns of `rounds` (everything but blobs / ids), in table order.
 ROUND_SCALARS = (
@@ -206,7 +223,23 @@ def save_round(conn, row, candidates):
     conn.commit()
 
 
+def save_belief_metrics(conn, row):
+    """One `belief_metrics` row, NOT committed: the next `save_round` commits it
+    together with its round (the initial row is committed by the caller)."""
+    conn.execute(
+        f"INSERT OR REPLACE INTO belief_metrics ({','.join(BELIEF_METRICS)}) "
+        f"VALUES ({','.join('?' * len(BELIEF_METRICS))})",
+        [row[c] for c in BELIEF_METRICS])
+
+
 # -- reading -----------------------------------------------------------------
+
+def iter_belief_metrics(conn):
+    """Yield `belief_metrics` rows as dicts, ordered by (shape, round)."""
+    q = f"SELECT {','.join(BELIEF_METRICS)} FROM belief_metrics ORDER BY shape, round"
+    for row in conn.execute(q):
+        yield dict(zip(BELIEF_METRICS, row))
+
 
 def round_numbers(conn):
     """{shape: [completed round numbers]} -- resume support."""

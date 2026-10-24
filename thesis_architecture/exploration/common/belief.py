@@ -121,12 +121,16 @@ class GPBelief:
         return self.X.shape[0]
 
     # ── Posterior ──────────────────────────────────────────────────────────
+    def _k(self, a, b):
+        """Kovarianzfunktion; Unterklassen (z. B. AKBelief) ersetzen nur diese."""
+        return rbf_kernel(a, b, self.ls, self.var)
+
     def _factor(self):
         """Cholesky der Gram-Matrix plus geloester Beobachtungsvektor."""
         if self._cache is not None:
             return self._cache
         n = self.X.shape[0]
-        K = rbf_kernel(self.X, self.X, self.ls, self.var)
+        K = self._k(self.X, self.X)
         K = K + (self.noise ** 2) * torch.eye(n, device=self.device,
                                               dtype=self.dtype)
         L = torch.linalg.cholesky(K)
@@ -147,7 +151,7 @@ class GPBelief:
             return z, torch.full_like(z, self.var ** 0.5)
 
         L, alpha = self._factor()
-        Ks = rbf_kernel(pts, self.X, self.ls, self.var)          # (N, n)
+        Ks = self._k(pts, self.X)                                # (N, n)
         mu = (Ks @ alpha).squeeze(-1)
         v = torch.cholesky_solve(Ks.transpose(0, 1), L)          # (n, N)
         var = self.var - (Ks * v.transpose(0, 1)).sum(dim=-1)
@@ -186,10 +190,10 @@ class GPBelief:
         pts = pts.to(device=self.device, dtype=self.dtype)
         X = torch.cat([self.X, pts], dim=0) if self.X.shape[0] else pts
         n = X.shape[0]
-        K = rbf_kernel(X, X, self.ls, self.var)
+        K = self._k(X, X)
         K = K + (self.noise ** 2) * torch.eye(n, device=X.device, dtype=X.dtype)
         L = torch.linalg.cholesky(K)
-        Ks = rbf_kernel(self.grid, X, self.ls, self.var)
+        Ks = self._k(self.grid, X)
         v = torch.cholesky_solve(Ks.transpose(0, 1), L)
         var = self.var - (Ks * v.transpose(0, 1)).sum(dim=-1)
         return var.clamp(min=1e-12).sqrt().sum()

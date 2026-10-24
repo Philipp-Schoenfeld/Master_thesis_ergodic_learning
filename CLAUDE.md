@@ -91,17 +91,27 @@ Bei Divergenz-Problemen im CFM-Training prüfen:
 - Sind `out_proj`-Gewichte im Attention-Block explizit null-initialisiert?
 - Ist der Übergang von `Conv1D`-Darstellung `(B, D, L)` zu Transformer-Darstellung `(B, L, D)` über ein explizites `.permute(0, 2, 1)` korrekt gemacht und vor den Decoder-Stufen wieder zurückgemappt?
 
-## 🖥 Cluster-Regeln & Ressourcen-Limits (IAS Cluster, `stud`-Partition)
+## 🖥 Cluster-Regeln & Ressourcen-Limits (IAS Cluster)
 
-- **Maximale Laufzeit:** 24 Stunden (`#SBATCH --time=24:00:00`). Längere Jobs werden abgelehnt.
-- **GPUs:** maximal 1 GPU pro Job (`#SBATCH --gres=gpu:1`).
-- **CPUs & RAM:** standardmäßig `-c 4` und `--mem=16G` bis `--mem=32G`.
-- **Kein Cherry-Picking von GPU-Modellen:** `#SBATCH -C 'rtx3080|rtx3090|...'` ist auf `stud` **verboten** und lässt den Job nicht starten. Der `-C`-Parameter darf in keinem Skript aktiv vorkommen (in den bestehenden `run_job_*.bash`-Skripten ist die Zeile bewusst mit `##SBATCH` auskommentiert — so muss es bleiben).
-- **Checkpoint & Restart:** Da Jobs maximal 24h laufen, muss regelmäßig gecheckpointet werden (`--save_every` niedrig genug wählen, damit mindestens ein Checkpoint sicher vor Ablauf des Zeitlimits entsteht).
-- **SIGTERM nutzen:** `#SBATCH --signal=SIGTERM@120` warnt das Python-Skript 120s vor dem harten 24h-Limit, um einen finalen Notfall-Checkpoint auszulösen (siehe `TerminateInterrupt`-Handler in den Runnern).
-- **Job-Ketten:** Folge-Jobs nach Ablauf des Zeitlimits werden mit `sbatch --dependency=afterany:<JOBID> script.bash` eingereiht.
+> **Vollständige, kanonische Referenz:** Das Skill `ias-cluster` (installiert unter `~/.claude/skills/ias-cluster/SKILL.md`, Quelle: https://pages.ias.informatik.tu-darmstadt.de/cluster-user-docs-62eb9b/) wird automatisch geladen, sobald Cluster-Themen anstehen (sbatch/srun-Skripte, GPU-Wahl, QOS, Pending-Diagnose, Storage, Docker). **Bei Widerspruch zwischen Skill und Live-Zustand (`squeue`, `sinfo`, `sprio` ...) gewinnt der Live-Zustand; bei Widerspruch zwischen Skill und offizieller Doku gewinnt die Doku.** Die folgenden Punkte sind der für dieses Projekt relevante Auszug, Stand 2026-10-19 (Cluster-Team-Ankündigung "GPU sharing changes").
+>
+> **⚠️ Historisch (bis ~2026-10-16) galt eine `stud`-Partition mit eigenen Regeln (24h-Limit, 1 GPU/Job, `-C`-Cherry-Picking verboten).** Diese Partition ist **geschlossen** — `-p stud` lässt Jobs mit `Required partition not available (inactive or drain)` scheitern. Alle Regeln unten ersetzen die alten vollständig; alte `run_job_*.bash`-Skripte mit `#SBATCH -p stud` brauchen beim nächsten Anfassen nur die `-p`-Zeile entfernt zu werden (kein Ersatz nötig, `main` ist Default).
+
+- **Keine Partition mehr angeben.** `main` ist Default (alle Server außer `cn14`, max. 3 Tage) und für reguläre Jobs richtig. `interactive` (nur `cn14`, max. 1 Tag) ist für interaktive Sessions/Tests gedacht.
+- **Immer `-t` setzen.** Ohne `-t` bekommt ein Job in `main` nur **1 Stunde**. Kürzere Limits können dank Backfill früher starten.
+- **Laufzeit:** bis zu 3 Tage unter normaler/`student`-QOS (nicht mehr 24h). `--qos=debug` max. 4h.
+- **GPU-Limit pro Nutzer (Studierende): 3 GPUs gleichzeitig**, zusätzlich 50 CPUs, 150GB RAM — zählt über alle eigenen laufenden Jobs zusammen (erklärt `AssocGrpGRES`-Pending: sobald 3 eigene GPU-Jobs laufen, warten alle weiteren). **Admins erhöhen dieses Limit nicht** (auch nicht für Deadlines) — stattdessen `--qos=scavenger` nutzen.
+- **`--qos=scavenger`** für alles über das 3-GPU-Limit hinaus (praktisch unlimitiert, nutzt die ~17 im Schnitt idlen GPUs mit). Preemption: 120s Vorwarnung (SIGTERM, danach SIGKILL + Requeue auf ggf. anderem Node, gleiche Job-ID). Gut für lange Trainings/Sweeps mit Checkpointing — **nicht** für ununterbrechbare Jobs. Offizielles Checkpoint/Requeue-Template siehe Skill (`--requeue`, `--open-mode=append`, `--signal=B:USR1@120`, `scontrol requeue $SLURM_JOB_ID`).
+- **`--qos=debug`** für schnelle Tests/Kalibrierungsläufe (max. 2 GPUs, 16 CPUs, 64GB, max. 2 Jobs gleichzeitig, startet vor allen anderen). Für die in diesem Projekt üblichen kurzen "Timing-Smoke-Tests" (siehe `run_job_ergodic_dfl_test.bash`-Muster) ist das die richtige QOS statt normaler Queue.
+- **GPU-Auswahl per `-C` ist jetzt erlaubt und wird empfohlen** (kein Verbot mehr): VRAM-Tags (`vram11gb`, `vram12gb`, `vram24gb`, `vram32gb`, `vram48gb`) oder Typ-Namen (`rtx2080`, `rtx3080`, `rtx3090`, `a5000`, `rtx6000Ada`, `a6000`, `v100`), kombinierbar mit `|`. VRAM-Constraint bevorzugen, wenn der genaue Typ egal ist (Typ-Constraint schränkt die Knotenwahl stärker ein → längere Wartezeit).
+- **CPUs & RAM:** weiterhin `-c 4` und `--mem=16G`–`32G` als sinnvoller Default für diese Jobs (siehe [[cluster-ressourcen-passend-anfordern]]); Richtwert auf den `gn*`-Knoten: ~1/8 des Knotens pro GPU.
+- **Checkpoint & Restart:** weiterhin nötig, jetzt primär wegen `--qos=scavenger`-Preemption (120s), nicht mehr wegen eines harten 24h-Cutoffs. `--save_every` entsprechend niedrig wählen.
+- **SIGTERM-Handler bleiben gültig:** `#SBATCH --signal=SIGTERM@120` + `TerminateInterrupt`-Handler in den Runnern fangen sowohl das alte 24h-Szenario als auch eine Scavenger-Preemption ab (Slurm schickt in beiden Fällen `SIGTERM` mit 120s Vorlauf). Für volle Scavenger-Automatik (`--requeue` + automatisches Resume beim Neustart ohne manuelles `--resume`) fehlt aktuell nur der `scontrol requeue`-Aufruf im Handler — siehe Skill-Template, falls das mal gebraucht wird.
+- **Job-Ketten:** weiterhin `sbatch --dependency=afterany:<JOBID> script.bash` für Folge-Jobs.
 - **Ausführungsverzeichnis:** SLURM startet im Verzeichnis, aus dem `sbatch` aufgerufen wurde — immer explizit per `cd` ins Projektverzeichnis wechseln (`cd ~/Master_thesis/thesis_architecture/`).
 - **Live-Debugging eines laufenden Jobs:** `srun --jobid=<ID> --overlap nvidia-smi` bzw. `--pty bash` klinkt sich in eine bestehende Job-Allokation ein (nur nach expliziter Nutzer-Aufforderung, siehe Sicherheitsregeln oben).
+- **Pending-Diagnose:** `squeue -u $USER -o "%.10i %.9q %.20j %.2t %.10M %.12l %.4D %R"` zeigt den Grund (`Resources`, `Priority`, `QOSMaxGRESPerUser` usw. — volle Tabelle im Skill). `csinfo` zeigt freie/gesamt Ressourcen pro Knoten.
+- **Wenn etwas am Cluster selbst kaputt wirkt** (Node down, Dateisystemfehler, fehlende GPU, Partition unerwartet im Drain) **nicht selbst umgehen/fixen** — dem Nutzer melden und auf den `ias-cluster`-Discord-Channel bzw. cluster@ias.informatik.tu-darmstadt.de verweisen.
 
 ## 🛠 Tech Stack & Environments
 
@@ -109,7 +119,7 @@ Bei Divergenz-Problemen im CFM-Training prüfen:
 - **Data:** SQLite3-Datenbanken (`ergodic_dataset_775.db`, `ergodic_pairs.db`), JSON für Dichte-Parameter.
 - **Environments:**
   - Conda-Environment: `thesis` (lokal und auf dem Cluster identisch benannt).
-  - Cluster-OS: Linux. Bekannte Nodes: `cn01`, `cn03`, `dgx-station`.
+  - Cluster-OS: Linux. ~20 GPU-Server (`cn01`–`cn14`, `gn01`–`gn11`, `dgx-station`), volle Hardware-/GPU-Tabelle im `ias-cluster`-Skill. Seit 2026-10-16 für Studierende alle Server nutzbar (vorher nur die `stud`-Partition), weiterhin max. 3 GPUs gleichzeitig.
 
 ## 🔄 Cluster & Development Workflow
 

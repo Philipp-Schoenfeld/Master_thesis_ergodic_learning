@@ -1,0 +1,26 @@
+{
+  "ranking_accuracy_holdout": 0.942857152223587,
+  "langevin_mild": {
+    "corrupt_sigma": 0.3,
+    "dist_before": 2.1240482330322266,
+    "dist_after": 1.5984089374542236,
+    "energy_before": -14.318567276000977,
+    "energy_after": -28.531110763549805,
+    "frac_dist_improved": 0.9591836929321289,
+    "frac_energy_improved": 0.9591836929321289
+  },
+  "langevin_severe": {
+    "corrupt_sigma": 0.8,
+    "dist_before": 5.664129257202148,
+    "dist_after": 4.904464244842529,
+    "energy_before": 6.600614070892334,
+    "energy_after": -1.5954426527023315,
+    "frac_dist_improved": 1.0,
+    "frac_energy_improved": 1.0
+  },
+  "cem_mild": {
+    "dist_before": 2.1240482330322266,
+    "dist_after": 1.3667643070220947,
+    "frac_dist_improved": 1.0
+  }
+}

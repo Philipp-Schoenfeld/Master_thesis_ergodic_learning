@@ -47,8 +47,15 @@ import ergodic_core as ergo          # noqa: E402
 import svgd_engine as svgde          # noqa: E402
 from waypoints import WaypointPins   # noqa: E402
 
-#: Verfuegbare Verfeinerungsverfahren.
-BACKENDS = ('sun', 'tsvec')
+#: Verfuegbare Verfeinerungsverfahren. 'tsvec_svgd' (2026-10-20, Philipp's
+#: active-exploration request): das neue papertreue, direkte preconditioned
+#: SVGD aus `tsvec_svgd.py` (Gauss-Newton, keine Dynamik) -- ein DRITTES,
+#: eigenstaendiges Verfahren neben 'sun' (Dynamik-Loeser) und 'tsvec' (dem
+#: aelteren Adam-basierten SVGD); nur `SvgdRefiner._phi_k()` (K=8-Fourier-
+#: Koeffizienten aus dem Dichtegitter) wird hier mitbenutzt, der eigentliche
+#: Solver-Aufruf laeuft ueber einen eigenen Adapter (`svgd_batched
+#: .BatchedTsvecSvgdTorch`), siehe `run_mission_eval.py`.
+BACKENDS = ('sun', 'tsvec', 'tsvec_svgd')
 #: Standard: Suns Loeser. Die Umgebungsvariable THESIS_REFINER=tsvec stellt
 #: alle Aufrufer ohne eigenes Flag (GUI, `exploration_optimierung`) auf den
 #: bisherigen Refiner zurueck, z. B. fuer laufende Job-Ketten.
@@ -66,11 +73,13 @@ def run_suffix(backend):
 
 
 def add_refiner_arg(ap):
-    """Gemeinsames CLI-Flag aller Runner: `--refiner {sun,tsvec}`."""
+    """Gemeinsames CLI-Flag aller Runner: `--refiner {sun,tsvec,tsvec_svgd}`."""
     ap.add_argument('--refiner', type=str, default=DEFAULT_BACKEND, choices=BACKENDS,
                     help="Nachverfeinerung: 'sun' = Suns FM-Stein-Loeser wie in der "
                          "Datengenerierung (Standard, Ausgabe mit Zusatz '_sun'), "
-                         "'tsvec' = bisheriger TSVEC-artiger SVGD (alte Run-Namen).")
+                         "'tsvec' = bisheriger Adam-basierter SVGD (alte Run-Namen), "
+                         "'tsvec_svgd' = papertreues, direktes preconditioned SVGD "
+                         "(tsvec_svgd.py, Ausgabe mit Zusatz '_tsvec_svgd').")
     return ap
 
 

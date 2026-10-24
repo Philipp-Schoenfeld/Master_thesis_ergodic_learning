@@ -13,8 +13,7 @@ Usage:
   python flow_matching_runner_spectral.py --load_model checkpoints/cond_spectral_crossattn.pt  # viz
 """
 
-import argparse, os, random, sqlite3, sys, math
-from datetime import datetime, json
+import argparse, functools, json, os, random, sqlite3, sys, math
 from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
@@ -35,10 +34,12 @@ for _p in (os.path.join(_root, 'bsplinax-main'), os.path.join(_root, 'src')):
 
 from bsplinax.bspline import BsplineBasisClamped
 from ergodic_dataset_generator.shape_library import pdf_on_grid
+from obstacles import basis_torch
 from flow_matching_cond_spectral_crossattn import (
     SpectralCrossAttnFlowNetwork, compute_spectral_cfm_loss,
-    generate_spectral_trajectories,
+    compute_spectral_cfm_loss_dfl, generate_spectral_trajectories,
 )
+import alm_solver_torch as alm_torch
 
 _DB_PATH = os.path.join(_here, 'ergodic_dataset_generator', 'ergodic_dataset_775.db')
 
@@ -279,6 +280,7 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
         'nxi':   args.nxi, 'nd': args.nd, 'D': args.D, 'S': args.S,
         'n_lambda': args.n_lambda, 'predict_lambda': args.predict_lambda,
         'p_drop': args.p_drop, 'cfg_weight': args.cfg_weight,
+        'dfl_weight': getattr(args, 'dfl_weight', 0.0),
     }
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt_dict['wandb_id'] = wandb.run.id
@@ -372,8 +374,17 @@ def train(model, x1_clean, loss_fn, args, holdout_shapes=None, holdout_spec=None
                         k_idx_cond_batch[:actual_bs], p_drop=args.p_drop,
                     )
                 loss.backward()
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-                opt.step()
+                grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                if torch.isfinite(grad_norm):
+                    opt.step()
+                else:
+                    # A single bad batch producing an inf/nan gradient would
+                    # otherwise corrupt every parameter on this step and the
+                    # model never recovers (loss stays nan for the rest of
+                    # training) -- skip this step instead of taking it.
+                    print(f"  [ep {ep+1}] non-finite grad_norm ({grad_norm.item()}) "
+                          f"at batch {nb} — skipping optimizer step")
+                    continue
                 ep_loss += loss.item()
                 nb      += 1
 
@@ -385,7 +396,12 @@ def train(model, x1_clean, loss_fn, args, holdout_shapes=None, holdout_spec=None
 
             # W&B logging
             if getattr(args, 'use_wandb', False) and _WANDB_OK:
-                wandb.log({'train/loss': avg, 'train/lr': lr_now, 'epoch': ep + 1})
+                log_dict = {'train/loss': avg, 'train/lr': lr_now, 'epoch': ep + 1}
+                if getattr(args, 'dfl_weight', 0.0) > 0.0:
+                    last = compute_spectral_cfm_loss_dfl.last_metrics
+                    log_dict.update({f'train/{k}': v.item() if torch.is_tensor(v) else v
+                                     for k, v in last.items()})
+                wandb.log(log_dict)
 
             # Periodic checkpoint
             if args.save_every > 0 and (ep + 1) % args.save_every == 0:
@@ -537,8 +553,12 @@ def run(args):
     print(f"\n{'=' * 70}")
     print(f"  Spectral Cross-Attention Flow Matching")
     print(f"  device={device}  nxi={args.nxi}  D={args.D}  S={args.S}")
-    print(f"  epochs={args.epochs}  predict_lambda={args.predict_lambda}")
+    print(f"  epochs={args.epochs}  predict_lambda={args.predict_lambda}  n_lambda={args.n_lambda}")
     print(f"  CFG: p_drop={args.p_drop}  cfg_weight={args.cfg_weight}")
+    if args.dfl_weight > 0.0:
+        print(f"  DFL (decision-focused lambda0): weight={args.dfl_weight}  "
+              f"n_outer={args.dfl_n_outer}  inner_steps={args.dfl_inner_steps}  "
+              f"obstacle_radius={args.dfl_obstacle_radius}")
     print(f"{'=' * 70}")
 
     # ── data ──
@@ -567,6 +587,28 @@ def run(args):
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"  Model params: {params:,}\n")
 
+    # ── decision-focused lambda0 loss (opt-in, see alm_solver_torch.py) ──
+    if args.dfl_weight > 0.0:
+        assert args.predict_lambda, "--dfl_weight > 0 requires --predict_lambda"
+        expected_n_lambda = alm_torch.n_lambda_for_alm(args.nxi)
+        assert args.n_lambda == expected_n_lambda, (
+            f"--n_lambda={args.n_lambda} does not match the ALM solver's "
+            f"constraint count ({expected_n_lambda} for nxi={args.nxi}); "
+            f"leave --n_lambda unset to pick it up automatically."
+        )
+        dfl_basis = basis_torch(args.nxi, pts=args.dfl_bspline_pts,
+                                deg=args.dfl_bspline_deg, device=device)
+        loss_fn = functools.partial(
+            compute_spectral_cfm_loss_dfl,
+            dfl_weight=args.dfl_weight, dfl_basis=dfl_basis, dfl_nxi=args.nxi,
+            dfl_obstacle_radius=args.dfl_obstacle_radius,
+            dfl_n_outer=args.dfl_n_outer, dfl_inner_steps=args.dfl_inner_steps,
+            dfl_inner_lr=args.dfl_inner_lr, dfl_rho0=args.dfl_rho0,
+            dfl_rho_growth=args.dfl_rho_growth, dfl_w_objective=args.dfl_w_objective,
+        )
+    else:
+        loss_fn = compute_spectral_cfm_loss
+
     # ── train or load ──
     if args.load_model and os.path.isfile(args.load_model):
         ckpt = torch.load(args.load_model, map_location=device, weights_only=True)
@@ -592,7 +634,7 @@ def run(args):
                     id=resume_id,
                     resume="allow" if resume_id else None
                 )
-        train(model, x1, compute_spectral_cfm_loss, args,
+        train(model, x1, loss_fn, args,
               holdout_shapes=holdout_shapes, holdout_spec=holdout_spec, holdout_densities=holdout_densities)
         print("  Training complete!")
         if args.use_wandb and _WANDB_OK:
@@ -609,6 +651,7 @@ def run(args):
             'n_lambda': args.n_lambda, 'predict_lambda': args.predict_lambda,
             'epochs': args.epochs, 'lr': args.lr,
             'p_drop': args.p_drop, 'cfg_weight': args.cfg_weight,
+            'dfl_weight': args.dfl_weight,
             'holdout_labels': list(holdout_shapes.keys()),
         }, final_save_path)
         print(f"  Checkpoint saved -> {final_save_path}")
@@ -651,13 +694,45 @@ def parse_args():
     p.add_argument('--S',   type=int, default=50,
                    help="Number of spectral coefficients")
     # lambda head
-    p.add_argument('--n_lambda', type=int, default=6,
-                   help="Dimension of Lagrange multiplier output")
+    p.add_argument('--n_lambda', type=int, default=None,
+                   help="Dimension of Lagrange multiplier output. Default: 6 if "
+                        "--dfl_weight is 0, else alm_solver_torch.n_lambda_for_alm(nxi) "
+                        "(2 equality + 4*nxi box + nxi obstacle duals) -- required for "
+                        "the DFL loss's split_lambda0() to line up with the solver.")
     p.add_argument('--predict_lambda', action='store_true', default=False,
                    help="Enable lambda prediction head")
     p.add_argument('--no_predict_lambda', dest='predict_lambda',
                    action='store_false',
                    help="Disable lambda prediction head")
+    # Decision-Focused Learning (DFL) for the lambda0 head -- opt-in, see
+    # alm_solver_torch.py and compute_spectral_cfm_loss_dfl(). With
+    # --dfl_weight 0.0 (default) training is byte-for-byte the old behaviour.
+    p.add_argument('--dfl_weight', type=float, default=0.0,
+                   help="Weight of the decision-focused lambda0 loss added to the "
+                        "CFM loss. 0.0 (default) disables it entirely (no extra "
+                        "compute, requires --predict_lambda to have any effect).")
+    p.add_argument('--dfl_n_outer', type=int, default=5,
+                   help="Unrolled ALM outer iterations per training step")
+    p.add_argument('--dfl_inner_steps', type=int, default=8,
+                   help="Unrolled Adam inner-minimisation steps per outer iteration")
+    p.add_argument('--dfl_inner_lr', type=float, default=2e-3,
+                   help="Inner Adam learning rate (same scale as alm_solver.py)")
+    p.add_argument('--dfl_rho0', type=float, default=10.0,
+                   help="Initial ALM penalty weight rho")
+    p.add_argument('--dfl_rho_growth', type=float, default=1.3,
+                   help="Per-outer-iteration growth factor for rho")
+    p.add_argument('--dfl_w_objective', type=float, default=1e-3,
+                   help="Weight of the final ergodic+smoothness objective inside "
+                        "the DFL loss (the main signal is constraint violation)")
+    p.add_argument('--dfl_obstacle_radius', type=float, default=0.0,
+                   help="Obstacle inequality radius for the ALM solve (0 = disabled; "
+                        "this repo's ergodic training data carries no obstacle "
+                        "annotation, so this constraint block stays inert by default)")
+    p.add_argument('--dfl_bspline_pts', type=int, default=128,
+                   help="Curve evaluation points for the DFL solver's B-spline basis "
+                        "(alm_solver.py's N_EVAL; kept separate from --bspline_pts, "
+                        "which is only used for high-res visualisation)")
+    p.add_argument('--dfl_bspline_deg', type=int, default=5)
     # training
     p.add_argument('--epochs',          type=int,   default=750,
                    help="Total epochs (750 epochs ≈ 36h on cluster)")
@@ -711,7 +786,11 @@ def parse_args():
                    help="W&B project name")
     p.add_argument('--run_name',       type=str, default=None,
                    help="W&B run name (auto-generated if omitted)")
-    return p.parse_args()
+    args = p.parse_args()
+    if args.n_lambda is None:
+        args.n_lambda = (alm_torch.n_lambda_for_alm(args.nxi) if args.dfl_weight > 0.0
+                         else 6)
+    return args
 
 
 if __name__ == '__main__':

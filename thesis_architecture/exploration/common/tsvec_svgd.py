@@ -286,9 +286,22 @@ class TsvecSvgd:
         dr_dX = torch.cat([dr_s_dX, dr_e_dX, dr_lo_dX, dr_hi_dX], dim=1)
         return r, dr_dX
 
-    def step(self, P, phi_k, tau):
+    def step(self, P, phi_k, tau, start=None):
         """One preconditioned SVGD update. P: (N, nxi_or_T, 2) -> P' (same
-        shape). Analytic Jacobian throughout -- see module docstring."""
+        shape). Analytic Jacobian throughout -- see module docstring.
+
+        `start`: (2,) or None. When given, particle-parameter index 0 is
+        HARD-pinned to `start` after the update (not merely penalised in the
+        energy) -- for a clamped B-spline basis (`self.B[0] == [1,0,...,0]`)
+        or raw waypoints (`self.B is None`), parameter index 0 IS the
+        rendered first point, so this pins `X[:, 0, :] == start` exactly,
+        every iteration. Without this, nothing in the energy/kernel couples
+        point 0 to `start` at all (no term above references it), so it drifts
+        freely under the ergodic/smoothness/boundary/repulsion forces and a
+        caller that only hard-snaps the FINAL point afterwards (as
+        `sample_annealed_mission.py`/`run_mission_eval.py` do) reintroduces a
+        one-point discontinuity relative to point 1's already-adapted
+        direction -- the start-conditioning kink this was added to fix."""
         N = P.shape[0]
         D_in = P.shape[1]
         D = D_in * 2
@@ -317,6 +330,8 @@ class TsvecSvgd:
 
         alpha = torch.linalg.solve(lhs, phi_star.unsqueeze(-1)).squeeze(-1)  # (N, D)
         P_new = (P.reshape(N, D) + tau * alpha).clamp(*PARAM_CLIP).reshape(P.shape)
+        if start is not None:
+            P_new[:, 0, :] = start
         return P_new, X
 
     def _to_tensor(self, a):
@@ -328,18 +343,26 @@ class TsvecSvgd:
             return a.to(dtype=self.dtype, device=self.device)
         return torch.as_tensor(np.asarray(a), dtype=self.dtype, device=self.device)
 
-    def run(self, init_P, phi_k, n_iters, tau=TAU, record=True):
+    def run(self, init_P, phi_k, n_iters, tau=TAU, record=True, start=None):
         """init_P: (N, nxi_or_T, 2) numpy/torch. -> dict(final=P (N,.,2),
         log=(n_iters+1, N, nxi_or_T, 2) or None -- entry 0 = init, entry i =
-        particle state AFTER iteration i, same convention as `sun_refine.py`."""
+        particle state AFTER iteration i, same convention as `sun_refine.py`.
+
+        `start`: (2,) numpy/torch or None -- hard-pinned onto parameter index
+        0 of every particle, from the logged init state onwards (see
+        `step`'s docstring for why this must be a hard pin, not a penalty)."""
         P = self._to_tensor(init_P)
         phi_k = self._to_tensor(phi_k)
+        if start is not None:
+            start = self._to_tensor(start)
+            P = P.clone()
+            P[:, 0, :] = start
         log = None
         if record:
             log = torch.empty((n_iters + 1,) + P.shape, dtype=self.dtype, device=self.device)
             log[0] = P
         for it in range(n_iters):
-            P, _X = self.step(P, phi_k, tau)
+            P, _X = self.step(P, phi_k, tau, start=start)
             if record:
                 log[it + 1] = P
         return dict(final=P, log=log)
