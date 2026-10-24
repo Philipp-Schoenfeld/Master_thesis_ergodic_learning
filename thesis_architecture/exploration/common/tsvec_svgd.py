@@ -81,6 +81,22 @@ With these, the smoothness "freeze" that the first version hit at w_s = 5.0
 does not occur at the project's w_s = 15 either: it was a symptom of the
 energy-scale imbalance, not of the smoothness term itself.
 
+Temperature (2026-10-11): why the error rose again late in the run
+------------------------------------------------------------------
+Even with the fixes above, the round-3 run (v3, 25 shapes x 2000 iterations) showed that
+16-32 % of the shapes ended at > 1.5x their best error (up to 3.6x; e.g. organic_30
+0.28 -> 1.01, cjk_10 1.2 -> 3.6): the error fell, then crept back up. Cause: SVGD samples
+p ~ exp(-V). At a good solution the energy is only V ~ 0.4 .. 1 (it IS the reported
+ergodic error), so exp(-V) is almost flat there and the kernel repulsion wins over the
+score: the swarm slowly diffuses back to the level where V ~ O(1). Scaling all energy
+weights by a common factor beta (p ~ exp(-beta V), a "cold" posterior) removes this:
+on 5 shapes x {B-spline, waypoints + smoothness}, beta = 1 gives non-monotone traces
+with final errors 0.2 .. 3.6, beta = 10 is monotone, beta = 100 reaches 0.05 .. 0.2, and
+beta = 1000 is identical to 100 (saturated). `beta` is a constructor argument
+(default 1.0 = the previous behaviour); the smoothness-comparison runner uses 100.
+The Levenberg-Marquardt damping is relative to the system's mean diagonal, so it is
+invariant to beta.
+
 Deliberately NOT shared code with `sun_refine.py`: that module simulates a
 dynamics model (PointMassLQR / JerkPenalizedLQR via a PID-tracked control
 sequence) and applies the Stein gradient through an LQR solve; this module
@@ -208,21 +224,24 @@ class TsvecSvgd:
 
     def __init__(self, B, K=10, device='cpu', dtype=torch.float32,
                 w_smooth=W_SMOOTH, w_ergodic=W_ERGODIC,
-                w_boundary=W_BOUNDARY, damping=LM_DAMPING, margin=BOUNDARY_MARGIN):
+                w_boundary=W_BOUNDARY, damping=LM_DAMPING, margin=BOUNDARY_MARGIN, beta=1.0):
         """`B`: (T, nxi) numpy/torch render matrix for B-spline control
         points, or None for raw waypoints (particles ARE the T dense points).
-        `w_smooth=0.0` reproduces the "no smoothness force" variant."""
+        `w_smooth=0.0` reproduces the "no smoothness force" variant.
+        `beta`: temperature -- all three energy weights are multiplied by it (target
+        p ~ exp(-beta V), see "Temperature" in the module docstring)."""
         self.device = torch.device(device)
         self.dtype = dtype
         self.B = None if B is None else (
-            B.to(dtype=dtype, device=self.device) if torch.is_tensor(B)
-            else torch.as_tensor(np.asarray(B), dtype=dtype, device=self.device))
+            B.to(dtype=dtype, device=self.device).contiguous() if torch.is_tensor(B)
+            else torch.as_tensor(np.ascontiguousarray(B), dtype=dtype, device=self.device))
         self.T = self.B.shape[0] if self.B is not None else None
         self.nxi = self.B.shape[1] if self.B is not None else None
         self.k_idx, self.Lambda = make_k_grid_torch(K, device=self.device, dtype=dtype)
-        self.w_smooth = w_smooth
-        self.w_ergodic = w_ergodic
-        self.w_boundary = w_boundary
+        self.beta = float(beta)
+        self.w_smooth = w_smooth * self.beta
+        self.w_ergodic = w_ergodic * self.beta
+        self.w_boundary = w_boundary * self.beta
         self.damping = damping
         self.margin = margin
 

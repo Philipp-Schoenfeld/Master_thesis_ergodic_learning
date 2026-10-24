@@ -30,6 +30,10 @@ code.   Run: python test_tsvec_svgd.py   (exit 0 = all passed, CPU, ~1 min)
     on it unconditionally, which raises for any GPU tensor. Not reproducible
     on this CPU-only machine without simulating the "caller already built a
     tensor" case directly.
+ 8. Regression (2026-10-11): temperature `beta`. With beta = 1 the swarm diffuses back up
+    late in a run (energy ~O(1) near the solution, exp(-V) nearly flat, repulsion wins;
+    16-32 % of the shapes in the 25-shape run ended at > 1.5x their best error). With
+    beta = 100 the ergodic error must not creep back up and must end no worse than beta = 1.
 """
 import os
 import sys
@@ -233,6 +237,37 @@ def test_tensor_inputs_accepted():
     print("[test] TsvecSvgd.run() accepts torch-tensor init_P/phi_k (not just numpy): OK")
 
 
+def test_temperature_no_late_rise():
+    """beta = 100 keeps the ergodic error from rising again late in the run."""
+    from ergodic_energy_torch import ergodic_term, target_coeffs_from_grid
+    torch.manual_seed(0)
+    R = 64
+    xs = torch.linspace(0, 1, R)
+    X_, Y_ = torch.meshgrid(xs, xs, indexing='ij')
+    dens = (torch.exp(-((X_ - 0.35) ** 2 + (Y_ - 0.6) ** 2) / 0.01)
+            + 0.7 * torch.exp(-((X_ - 0.7) ** 2 + (Y_ - 0.35) ** 2) / 0.006))
+    N, T, n_it, step = 30, 48, 800, 100
+    ts = torch.linspace(0, 1, T).view(1, T, 1)
+    ang = torch.linspace(0, np.pi, N).view(N, 1, 1)
+    d = torch.cat([torch.cos(ang), torch.sin(ang)], dim=-1)
+    P0 = 0.5 + (ts - 0.5) * 0.9 * d
+    traces = {}
+    for beta in (1.0, 100.0):
+        svgd = TsvecSvgd(B=None, K=10, beta=beta)
+        phi_k = target_coeffs_from_grid(dens, svgd.k_idx)
+        P, tr = P0.clone(), []
+        for _ in range(n_it // step):
+            P = svgd.run(P, phi_k, n_iters=step, record=False)['final']
+            tr.append(ergodic_term(svgd.render(P), svgd.k_idx, svgd.Lambda, phi_k).mean().item())
+        traces[beta] = tr
+    t1, t100 = traces[1.0], traces[100.0]
+    print(f"[test] ergodic error every {step} it.: beta=1 {np.round(t1, 3).tolist()}, "
+          f"beta=100 {np.round(t100, 3).tolist()}")
+    assert t100[-1] <= 1.25 * min(t100), f"beta=100 error rose again: {t100}"
+    assert t100[-1] <= t1[-1] * 1.05 + 1e-3, f"beta=100 ends worse than beta=1: {t100[-1]} vs {t1[-1]}"
+    print("[test] beta=100: ergodic error does not creep back up and ends no worse than beta=1, OK")
+
+
 if __name__ == '__main__':
     test_residual_jacobian()
     test_kernel_gradient()
@@ -240,5 +275,6 @@ if __name__ == '__main__':
     test_identity_basis_matches_raw()
     test_descent_and_smoothness_force()
     test_tensor_inputs_accepted()
+    test_temperature_no_late_rise()
     test_timing_real_scale()
     print("ALL TESTS PASSED")

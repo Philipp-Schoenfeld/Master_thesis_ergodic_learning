@@ -40,6 +40,7 @@ _arch = os.path.dirname(_here)
 _root = os.path.dirname(_arch)
 for _p in (_here, os.path.join(_arch, 'exploration'), _arch,
            os.path.join(_arch, 'ergodic_dataset_generator'),
+           os.path.join(_arch, 'ergodic_validation'),
            os.path.join(_root, 'SE3_SVGD'), os.path.join(_root, 'src')):
     if os.path.isdir(_p) and _p not in sys.path:
         sys.path.insert(0, _p)
@@ -47,7 +48,6 @@ for _p in (_here, os.path.join(_arch, 'exploration'), _arch,
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt                                    # noqa: E402
-from matplotlib.patches import Ellipse                              # noqa: E402
 import torch                                                        # noqa: E402
 
 import smoothness_db as sdb                                         # noqa: E402
@@ -70,6 +70,11 @@ VARIANT_COLORS = {
     'linear_waypoint_svgd_smooth':  '#00C853',
     'linear_sun_pointmass':         '#6D4C41',
     'linear_sun_jerk':              '#00ACC1',
+    # Adam-SVGD (svgd_batched.BatchedSvgdTorch, the GUI's refiner)
+    'cfm_adam_bspline':            '#0D47A1',
+    'linear_adam_bspline':         '#E65100',
+    'linear_adam_waypoint':        '#AD1457',
+    'linear_adam_waypoint_smooth': '#2E7D32',
 }
 VARIANT_LABELS = {
     'cfm_only':               'CFM inference only',
@@ -81,8 +86,12 @@ VARIANT_LABELS = {
     'linear_bspline_svgd':          'Linear init + TSVEC-SVGD (B-spline)',
     'linear_waypoint_svgd':         'Linear init + TSVEC-SVGD (raw waypoints)',
     'linear_waypoint_svgd_smooth':  'Linear init + TSVEC-SVGD + smoothness (raw waypoints)',
-    'linear_sun_pointmass':         'Linear init + Sun SVGD (point-mass dynamics, waypoints)',
-    'linear_sun_jerk':              'Linear init + Sun SVGD (jerk-penalised dynamics, waypoints)',
+    'linear_sun_pointmass':         'Linear init + Sun flow matching (Sinkhorn flow, point mass)',
+    'linear_sun_jerk':              'Linear init + Sun flow matching (Stein flow, jerk-penalised)',
+    'cfm_adam_bspline':            'CFM + Adam-SVGD (B-spline)',
+    'linear_adam_bspline':         'Linear init + Adam-SVGD (B-spline)',
+    'linear_adam_waypoint':        'Linear init + Adam-SVGD (waypoints)',
+    'linear_adam_waypoint_smooth': 'Linear init + Adam-SVGD + smoothness force (waypoints)',
 }
 #: distinct dash pattern + linewidth per variant, on top of colour -- several
 #: of these curves land almost exactly on top of each other (e.g. the three
@@ -101,6 +110,10 @@ VARIANT_LINESTYLES = {
     'linear_waypoint_svgd_smooth':  (0, (4, 1, 1, 1)),
     'linear_sun_pointmass':         (0, (3, 1, 1, 1, 1, 1)),  # dash-dot-dot
     'linear_sun_jerk':              (0, (2, 1)),
+    'cfm_adam_bspline':            '-',
+    'linear_adam_bspline':         (0, (1, 1)),
+    'linear_adam_waypoint':        (0, (5, 2)),
+    'linear_adam_waypoint_smooth': (0, (4, 1, 1, 1)),
 }
 VARIANT_LW = {
     'cfm_svgd':                2.0,
@@ -113,6 +126,10 @@ VARIANT_LW = {
     'linear_waypoint_svgd_smooth':  1.6,
     'linear_sun_pointmass':         2.2,
     'linear_sun_jerk':              1.8,
+    'cfm_adam_bspline':            2.0,
+    'linear_adam_bspline':         2.6,
+    'linear_adam_waypoint':        2.0,
+    'linear_adam_waypoint_smooth': 1.6,
 }
 
 
@@ -138,6 +155,22 @@ def load_series(conn, shape, variant, series='smooth_series'):
     for i, r in enumerate(rows):
         mat[i, :len(r[series])] = r[series]
     return steps, mat
+
+
+#: log-spaced state-index subset `ErgodicSeriesCache.load` evaluates `ergodic_term` at, instead
+#: of every stored state (see its docstring). Independent of `compute_convergence.py`'s own grid
+#: (same idea, different consumer/cache) -- kept separate rather than shared to avoid a circular
+#: import (that module imports `ErgodicSeriesCache` from this one).
+_N_CHECKPOINTS = 150
+
+
+def _checkpoint_indices(n_states):
+    """Log-spaced indices in [0, n_states - 1], always including both ends."""
+    n_iters = n_states - 1
+    if n_iters <= 0:
+        return np.array([0])
+    idx = np.unique(np.round(np.geomspace(1, n_iters, _N_CHECKPOINTS - 1)).astype(int))
+    return np.concatenate([[0], idx])
 
 
 class ErgodicSeriesCache:
@@ -169,7 +202,13 @@ class ErgodicSeriesCache:
         return self._basis[nxi]
 
     def load(self, shape, variant):
-        """-> (n_states,) step indices, (n_cand, n_states) float array."""
+        """-> (n_states,) step indices, (n_cand, n_states) float array (NaN outside a log-spaced
+        checkpoint subset, see `_checkpoint_indices` -- evaluating `ergodic_term` at EVERY stored
+        state does not scale with `n_iters`: at 4000 iterations it took ~35-40 min/shape instead
+        of the few minutes the original 2000-iteration runs took (2026-10-12, Philipp's
+        4000-iteration continuation run). A log-spaced subset renders visually identically (the
+        plots are log-x anyway) at a cost independent of `n_iters`, like `compute_convergence.py`
+        already does for its own, separate checkpoint grid."""
         key = (shape, variant)
         if key in self._series:
             return self._series[key]
@@ -184,23 +223,23 @@ class ErgodicSeriesCache:
         for i, r in enumerate(rows):
             groups.setdefault((r['n_states'], r['log_space'], r['nxi']), []).append((i, r))
         for (ns, log_space, nxi), items in groups.items():
-            states = np.stack([r['cps'] for _, r in items])            # (G, ns, nxi, 2)
+            idx = _checkpoint_indices(ns)
+            states = np.stack([r['cps'][idx] for _, r in items])       # (G, len(idx), nxi, 2)
             if log_space == 'cps':
-                dense = np.einsum('pi,gsid->gspd', self.basis(nxi), states)   # (G, ns, T, 2)
+                dense = np.einsum('pi,gsid->gspd', self.basis(nxi), states)   # (G, K, T, 2)
             else:
                 dense = states
-            G, T = dense.shape[0], dense.shape[2]
-            flat = torch.as_tensor(dense.reshape(G * ns, T, 2), dtype=torch.float32)
+            G, K, T = dense.shape[0], dense.shape[1], dense.shape[2]
+            flat = torch.as_tensor(dense.reshape(G * K, T, 2), dtype=torch.float32)
             # `fourier_basis` materialises a (batch, T, M, 2) intermediate (M =
-            # K_DEFAULT**2 = 100 modes) -- for one full (shape, variant) cell
-            # (G*ns can be ~18000) that is ~1.8 GB in one shot, same concern
-            # `run_mission_eval.py::ergodic_E_batch` already chunks for.
+            # K_DEFAULT**2 = 100 modes); chunk it the same way
+            # `run_mission_eval.py::ergodic_E_batch` does for its own large batches.
             chunks = []
             for c0 in range(0, flat.shape[0], 2500):
                 chunks.append(ergodic_term(flat[c0:c0 + 2500], self.k_idx, self.Lambda, phi_k))
-            e = torch.cat(chunks).numpy().reshape(G, ns)
+            e = torch.cat(chunks).numpy().reshape(G, K)
             for g, (i, _r) in enumerate(items):
-                mat[i, :ns] = e[g]
+                mat[i, idx] = e[g]
         out = (np.arange(n_states), mat)
         self._series[key] = out
         return out
@@ -308,9 +347,16 @@ def plot_aggregate_series(conn, shapes, variants, out_path, ergo):
 
 
 def plot_trajectory_distribution(conn, shape, variant, step_fracs, out_path):
-    """Mean trajectory + pointwise positional covariance (as ellipses) of the
-    30-trajectory distribution, at a few steps -- the literal "Mean und
-    Covariance einer Verteilung von 30 Trajektorien" from Philipp's note."""
+    """Ergodicity view of the 30-trajectory distribution at a few steps (replaces the former
+    mean-trajectory + covariance-ellipse plot, 2026-10-11: the pointwise mean of 30 different
+    trajectories is not a trajectory -- it collapses towards the centre -- and the ellipses
+    covered the density). Top row: all 30 trajectories (thin) and the MEDIAN candidate by
+    Hellinger distance (bold; an honest representative, not the best). Bottom row: that
+    candidate's time-averaged visitation density with the target support as contour -- what
+    ergodicity is about: time spent vs. target mass. Numbers from
+    ergodic_validation/ergodicity_metrics.py (median over the 30 candidates)."""
+    import ergodicity_metrics as em
+    from scipy import ndimage
     rows = list(sdb.iter_runs(conn, shape=shape, variant=variant, with_states=True))
     if not rows:
         return
@@ -324,40 +370,43 @@ def plot_trajectory_distribution(conn, shape, variant, step_fracs, out_path):
             "SELECT matrix, n_points FROM basis WHERE nxi=?", (nxi,)).fetchone()
         B = np.frombuffer(basis_row[0], dtype=np.float32).reshape(basis_row[1], nxi)
     steps = sorted(set(int(round(f * (n_states - 1))) for f in step_fracs))
-    fig, axes = plt.subplots(1, len(steps), figsize=(3.2 * len(steps), 3.4), facecolor='white',
+    fig, axes = plt.subplots(2, len(steps), figsize=(3.0 * len(steps), 6.3), facecolor='white',
                              squeeze=False)
-    axes = axes[0]
-    for ax, step in zip(axes, steps):
-        viz.style_axes(ax)
-        viz.draw_density(ax, truth)
+    R = truth.shape[0]
+    for j, step in enumerate(steps):
         states = np.stack([r['cps'][min(step, r['cps'].shape[0] - 1)] for r in rows])  # (C, nxi, 2)
         dense = (np.einsum('pi,cid->cpd', B, states) if log_space == 'cps' else states)
-        mean = dense.mean(axis=0)
+        m = em.evaluate(dense, truth)
+        h = m['hellinger']
+        i_med = int(np.argsort(h)[len(h) // 2])
+        ax = axes[0, j]
+        viz.style_axes(ax)
+        viz.draw_density(ax, truth)
         for c in range(dense.shape[0]):
-            ax.plot(dense[c, :, 0], dense[c, :, 1], color=VARIANT_COLORS[variant],
-                   lw=0.6, alpha=0.18)
-        ax.plot(mean[:, 0], mean[:, 1], color='#1A1A2E', lw=2.0)
-        stride = max(1, dense.shape[1] // 10)
-        for p in range(0, dense.shape[1], stride):
-            pts = dense[:, p, :]
-            cov = np.cov(pts.T)
-            vals, vecs = np.linalg.eigh(cov)          # ascending: vals[1] = major axis
-            vals = np.clip(vals, 0, None)
-            angle = np.degrees(np.arctan2(vecs[1, 1], vecs[0, 1]))   # direction of vals[1]
-            w = 2 * np.sqrt(vals[1]) * 2.0            # major axis, along `angle`
-            h = 2 * np.sqrt(vals[0]) * 2.0            # minor axis; 2 std, scaled x2 for visibility
-            ell = Ellipse(mean[p], width=max(w, 1e-3), height=max(h, 1e-3), angle=angle,
-                         facecolor=VARIANT_COLORS[variant], alpha=0.25, edgecolor='none')
-            ax.add_patch(ell)
-        ax.set_title(f'step {step}/{n_states - 1}', color='#1A1A2E', fontsize=9)
-    fig.suptitle(f'{VARIANT_LABELS[variant]} -- {shape}: mean trajectory + '
-                'positional covariance (30 samples)', color='#1A1A2E', fontsize=10)
-    fig.tight_layout(rect=(0, 0, 1, 0.92))
-    fig.savefig(out_path, dpi=140, facecolor='white')
+            ax.plot(dense[c, :, 0], dense[c, :, 1], color='#00C853', lw=0.7, alpha=0.3)
+        ax.plot(dense[i_med, :, 0], dense[i_med, :, 1], color='#00C853', lw=2.2, alpha=0.95)
+        ax.set_title(f'step {step}/{n_states - 1}: Hellinger {np.median(h):.2f}, '
+                     f'time outside {np.median(m["low_excess"]):+.2f}', color='#1A1A2E', fontsize=8)
+        ax = axes[1, j]
+        vis = ndimage.gaussian_filter(em.visitation(dense[i_med]), em.BLUR * em.GRID)
+        ax.imshow(vis, origin='lower', extent=[0, 1, 0, 1], cmap=viz.CMAP)
+        ax.contour(np.linspace(0, 1, R), np.linspace(0, 1, R), truth, levels=[0.1],
+                   colors='#1565C0', linewidths=0.8)
+        ax.set_xticks([]), ax.set_yticks([])
+        ax.set_title(f'time spent, median candidate (H {h[i_med]:.2f})', color='#1A1A2E', fontsize=8)
+    fig.suptitle(f'{VARIANT_LABELS.get(variant, variant)} -- {shape}: 30 trajectories (bold: median '
+                 'candidate) and its time-averaged visitation density (blue: target support)',
+                 color='#1A1A2E', fontsize=9.5)
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.savefig(out_path, dpi=120, facecolor='white')
     plt.close(fig)
 
 
 def write_summary_csv(conn, shapes, variants, out_path, ergo):
+    """Writes summary.csv AND the same rows into the DB's `summary` table
+    (`smoothness_db.save_summary`) -- the DB stays the complete, durable record of a run,
+    the CSV the quick plain-text one."""
+    db_rows = []
     with open(out_path, 'w', newline='') as f:
         w = csv.writer(f)
         w.writerow(['shape', 'variant', 'n_cand', 'smooth_final_mean', 'smooth_final_std',
@@ -374,9 +423,15 @@ def write_summary_csv(conn, shapes, variants, out_path, ergo):
                               for r in rows])
                 _steps, emat = ergo.load(shape, variant)
                 e_final = emat[:, np.where(~np.all(np.isnan(emat), axis=0))[0][-1]]
-                w.writerow([shape, variant, len(rows), float(sm.mean()), float(sm.std()),
-                           float(pl.mean()), float(pl.std()),
-                           float(np.nanmean(e_final)), float(np.nanstd(e_final))])
+                vals = [shape, variant, len(rows), float(sm.mean()), float(sm.std()),
+                       float(pl.mean()), float(pl.std()),
+                       float(np.nanmean(e_final)), float(np.nanstd(e_final))]
+                w.writerow(vals)
+                db_rows.append(dict(zip(
+                    ['shape', 'variant', 'n_cand', 'smooth_final_mean', 'smooth_final_std',
+                     'path_len_final_mean', 'path_len_final_std', 'ergodic_final_mean',
+                     'ergodic_final_std'], vals)))
+    sdb.save_summary(conn, db_rows)
 
 
 def main():

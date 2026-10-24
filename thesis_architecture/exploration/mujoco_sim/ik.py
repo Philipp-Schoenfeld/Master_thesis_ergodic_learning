@@ -11,11 +11,15 @@ straight into ``joint7``/``joint6`` limits -- which is exactly what used to make
 the arm freeze roughly 180 deg away from the target and need a random-jitter
 escape hack.
 
-This solver instead uses a strict priority stack on the 7 arm joints:
+This solver instead uses a strict priority stack on the 7 arm joints
+(``priority='axis'``, the default):
 
-    1. tip **position**            (3 DOF, hard)
-    2. tool **axis** vs board normal (2 effective DOF, in the null space of 1)
-    3. stay away from joint limits   (remainder)
+    1. tool **axis** vs board normal (2 effective DOF, hard)
+    2. tip **position**            (3 DOF, in the null space of 1)
+    3. stay close to a reference posture / away from joint limits (remainder)
+
+so a position that cannot be reached exactly costs position accuracy, never
+tool tilt.  ``priority='position'`` keeps the older order (position first).
 
 Two details matter for it to actually converge:
 
@@ -67,6 +71,8 @@ class TaskPriorityIK:
         self.lo = model.jnt_range[:n_joints, 0].copy()
         self.hi = model.jnt_range[:n_joints, 1].copy()
         self.mid = 0.5 * (self.lo + self.hi)
+        #: Posture the null space is pulled towards (joint-range middle by default).
+        self.posture = self.mid.copy()
         self.span = self.hi - self.lo
 
         self._jac = np.zeros((6, model.nv))
@@ -92,10 +98,15 @@ class TaskPriorityIK:
                 float(np.linalg.norm(axis_error(rot[:, 2], axis))))
 
     # -- one damped step ----------------------------------------------------
-    def _step(self, q, e_pos, e_axis, jac_p, jac_r, free, k_limit, rcond, damp_r):
+    def _step(self, q, e_pos, e_axis, jac_p, jac_r, free, k_limit, rcond, damp_r,
+              damp_p, z_tool, priority):
         """Priority-stacked joint step restricted to the ``free`` joints."""
         mask = np.diag(free.astype(np.float64))
         jp, jr = jac_p @ mask, jac_r @ mask
+
+        if priority == 'axis':
+            return mask @ self._step_axis_first(q, e_pos, e_axis, jp, jr, k_limit,
+                                                rcond, damp_p, z_tool)
 
         jp_pinv = np.linalg.pinv(jp, rcond=rcond)        # truncated -> exact projector
         dq = jp_pinv @ e_pos
@@ -106,12 +117,40 @@ class TaskPriorityIK:
         dq = dq + null_1 @ (jr_n_pinv @ (e_axis - jr @ dq))
 
         null_2 = null_1 @ (self._eye - jr_n_pinv @ jr_n)
-        dq = dq + null_2 @ (-k_limit * (q - self.mid) / self.span ** 2)
+        dq = dq + null_2 @ (-k_limit * (q - self.posture) / self.span ** 2)
         return mask @ dq
+
+    def _step_axis_first(self, q, e_pos, e_axis, jp, jr, k_limit, rcond, damp_p,
+                         z_tool):
+        """Tool axis (hard) -> tip position (null space) -> joint limits.
+
+        The alignment task only has the two directions perpendicular to the
+        tool axis: spinning the cylindrical eraser about its own axis is free,
+        which leaves five joint directions for position and posture.
+        """
+        helper = np.array([1.0, 0.0, 0.0]) if abs(z_tool[0]) < 0.9 else np.array([0.0, 1.0, 0.0])
+        b1 = np.cross(z_tool, helper)
+        b1 /= np.linalg.norm(b1)
+        b2 = np.cross(z_tool, b1)
+        basis = np.stack([b1, b2])                       # (2, 3)
+
+        jr2 = basis @ jr
+        e2 = basis @ e_axis
+        jr2_pinv = np.linalg.pinv(jr2, rcond=rcond)
+        dq = jr2_pinv @ e2
+        null_1 = self._eye - jr2_pinv @ jr2
+
+        jp_n = jp @ null_1
+        jp_n_pinv = jp_n.T @ np.linalg.inv(jp_n @ jp_n.T + damp_p * np.eye(3))
+        dq = dq + null_1 @ (jp_n_pinv @ (e_pos - jp @ dq))
+
+        null_2 = null_1 @ (self._eye - jp_n_pinv @ jp_n)
+        return dq + null_2 @ (-k_limit * (q - self.posture) / self.span ** 2)
 
     def solve(self, q_init, target_pos, tool_axis=None, iterations=25,
               max_step=0.15, k_limit=0.5, rcond=1e-3, damp_r=1e-2,
-              max_pos_err=0.05, max_axis_err=0.1):
+              max_pos_err=0.05, max_axis_err=0.1, priority='axis',
+              damp_p=1e-4):
         """
         Iterate towards ``target_pos`` with the tool pointing along ``tool_axis``.
 
@@ -140,7 +179,7 @@ class TaskPriorityIK:
             dq = np.zeros(self.n)
             for _ in range(self.n):
                 dq = self._step(q, e_pos, e_axis, jac_p, jac_r, free,
-                                k_limit, rcond, damp_r)
+                                k_limit, rcond, damp_r, damp_p, rot[:, 2], priority)
                 blocked = (((q <= self.lo + _LIMIT_EPS) & (dq < 0.0))
                            | ((q >= self.hi - _LIMIT_EPS) & (dq > 0.0))) & free
                 if not blocked.any():

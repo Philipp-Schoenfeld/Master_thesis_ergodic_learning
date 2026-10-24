@@ -71,6 +71,25 @@ Funktionen (`_iteration2`/`_run_batch_logged2`/...) statt eines Laufzeit-
 Parameters auf den bestehenden -- bewusst dupliziert statt den bereits
 genutzten Pointmass-Pfad anzufassen (siehe CLAUDE.md: neue Features als Flag,
 Bestehendes unveraendert).
+
+Vierte opt-in Erweiterung (2026-10-10): zeitabhaengige Zieldichte per
+Footprint-Overlap-Depletion nach TRACE (Zheng et al., arXiv:2608.02304, Gl. 3-4).
+Zustand k sieht statt phi(x) die entwertete Dichte
+
+    phi_k(x) = phi(x) * prod_{j<k} (1 - eta * v(x, x_j)),
+    v(x, x_j) = exp(-||x - x_j||^2 / (2 sigma_fp^2)),
+
+d.h. was frueher in DERSELBEN Bahn schon abgedeckt wurde, zieht spaetere
+Zustaende nicht noch einmal an. Im Stein-Fluss ist das ein zusaetzlicher
+Score-Term grad_x log prod_j(1 - eta v) am Zustand k (frueherer Zustaende als
+Konstanten, geschlossene Form, O(N^2) je Iteration). Der Footprint des
+Punktsensors ist die Position selbst (TRACE: D Punkte entlang der optischen
+Achse); sigma_fp = Sensorradius. Zwei Anpassungen an unsere dichte Bahn
+(201 Punkte statt 10 Waypoints): nur Zustaende mit Abstand > `DEPLETION_GAP`
+Schritten zaehlen als "frueher besucht" (sonst entwertet die Bahn sich an
+ihrer eigenen Nachbarschaft), und es wird nur jeder `DEPLETION_STRIDE`-te
+Zustand als Besuch gezaehlt (eta gilt je Besuch/Waypoint). `depletion_eta=0.0`
+(Default) ist bit-identisch zum bisherigen Verhalten.
 """
 
 import os
@@ -140,6 +159,11 @@ W_OBSTACLE = 2000.0
 #: B-Spline-Basis wie im alten Refiner (`bspline_basis_matrix(nxi, T, 5)`).
 DEGREE = 5
 
+#: Depletion (TRACE Eq. 3-4), see module header: states j < k - GAP, every
+#: STRIDE-th one, count as an earlier visit.
+DEPLETION_GAP = 20
+DEPLETION_STRIDE = 10
+
 _PM = es.PointMassLQR(dt=DT)
 
 
@@ -170,14 +194,32 @@ def _log_target(x, phi, floor, obs_c, obs_r, w_obs):
 _score = jax.grad(_log_target, argnums=0)
 
 
-def _stein_grad(traj, phi, floor, obs_c, obs_r, w_obs, h):
-    """Wie `ergodic_solver._make_stein_grad`, nur mit dem Gitter-Score."""
-    def unit(x1, x2):
-        return (es._kernel(x2, x1, h) * _score(x2, phi, floor, obs_c, obs_r, w_obs)
+def depletion_score(pos, eta, sigma):
+    """(N, 2) -> (N, 2): grad_x log prod_{j<k}(1 - eta*v(x, x_j)) at x = pos[k]
+    (earlier states held constant), TRACE Eq. (3)-(4) with a point footprint:
+    v = exp(-||x - x_j||^2 / (2 sigma^2)). Closed form,
+    eta * v * (x_k - x_j) / (sigma^2 (1 - eta v)) summed over the visits j,
+    i.e. a push AWAY from where the path already was. Exactly 0 for eta = 0."""
+    n = pos.shape[0]
+    d = pos[:, None, :] - pos[None, :, :]                          # (k, j, 2) = x_k - x_j
+    v = jnp.exp(-jnp.sum(d ** 2, axis=-1) / (2.0 * sigma ** 2))
+    k_idx, j_idx = np.arange(n)[:, None], np.arange(n)[None, :]
+    mask = jnp.asarray((j_idx < k_idx - DEPLETION_GAP) & (j_idx % DEPLETION_STRIDE == 0))
+    w = jnp.where(mask, eta * v / (sigma ** 2 * jnp.maximum(1.0 - eta * v, 1e-6)), 0.0)
+    return jnp.sum(w[..., None] * d, axis=1)
+
+
+def _stein_grad(traj, phi, floor, obs_c, obs_r, w_obs, h, dep):
+    """Wie `ergodic_solver._make_stein_grad`, nur mit dem Gitter-Score.
+    `dep` (N, 2): additional per-state score (depletion); zeros = unchanged."""
+    dep = jnp.pad(dep, ((0, 0), (0, traj.shape[1] - dep.shape[1])))   # position block only
+
+    def unit(x1, x2, d2):
+        return (es._kernel(x2, x1, h) * (_score(x2, phi, floor, obs_c, obs_r, w_obs) + d2)
                 + es._d_kernel(x2, x1, h))
 
     def state(x):
-        return jnp.mean(jax.vmap(unit, in_axes=(None, 0))(x, traj), axis=0)
+        return jnp.mean(jax.vmap(unit, in_axes=(None, 0, 0))(x, traj, dep), axis=0)
 
     return jax.vmap(state)(traj)
 
@@ -194,12 +236,14 @@ def _smoothness_grad_pos(pos):
     return g
 
 
-def _iteration(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w):
+def _iteration(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w,
+               dep_eta, dep_sigma):
     """Eine Iteration von Algorithmus 1 bei Sun (= Schleifenkoerper von
     `run_ergodic_coverage`), optional um eine Glattheits-Kraft erweitert
     (`smooth_w`, Default 0.0 reproduziert die alte Iteration exakt)."""
     x_traj, A, B = _PM.linearize_dyn(x0, u)
-    dx = _stein_grad(x_traj, phi, floor, obs_c, obs_r, w_obs, h)
+    dx = _stein_grad(x_traj, phi, floor, obs_c, obs_r, w_obs, h,
+                     depletion_score(x_traj[:, :2], dep_eta, dep_sigma))
     sgrad = _smoothness_grad_pos(x_traj[:, :2])
     dx = dx.at[:, :2].add(-smooth_w * sgrad)
     v, _ = _PM.solve(jnp.zeros(4), A, B, dx)
@@ -212,7 +256,7 @@ def _positions(u, x0):
 
 
 _it_batch = jax.vmap(_iteration,
-                     in_axes=(0, 0, 0, 0, None, None, None, None, None, None))
+                     in_axes=(0, 0, 0, 0, None, None, None, None, None, None, None, None))
 
 
 def _linear_resample_matrix(n_out, n_in):
@@ -230,7 +274,7 @@ def _linear_resample_matrix(n_out, n_in):
 
 @partial(jax.jit, static_argnums=(8,))
 def _run_batch_logged(u0, x0, phi, floor, obs_c, obs_r, w_obs, fit, n_iters,
-                      h=H, step=STEP_SIZE, smooth_w=0.0):
+                      h=H, step=STEP_SIZE, smooth_w=0.0, dep_eta=0.0, dep_sigma=0.06):
     """u0: (C, TSTEPS, 2), x0: (C, 4), phi: (C, R, R), floor: (C,),
     fit: (nxi, TSTEPS+1) lineare Abbildung Positionen -> geloggter Zustand --
     `_fit_matrix` (B-Spline-Fit, `log_space='cps'`) oder
@@ -240,7 +284,8 @@ def _run_batch_logged(u0, x0, phi, floor, obs_c, obs_r, w_obs, fit, n_iters,
     pos = jax.vmap(_positions)
 
     def body(u, _):
-        u = _it_batch(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w)
+        u = _it_batch(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w,
+                         dep_eta, dep_sigma)
         return u, jnp.einsum('ij,cjd->cid', fit, pos(u, x0))
 
     return jax.lax.scan(body, u0, None, length=n_iters)
@@ -248,12 +293,13 @@ def _run_batch_logged(u0, x0, phi, floor, obs_c, obs_r, w_obs, fit, n_iters,
 
 @jax.jit
 def _run_batch_plain(u0, x0, phi, floor, obs_c, obs_r, w_obs, n_iters,
-                     h=H, step=STEP_SIZE, smooth_w=0.0):
+                     h=H, step=STEP_SIZE, smooth_w=0.0, dep_eta=0.0, dep_sigma=0.06):
     """Wie `_run_batch_logged` ohne Log; `n_iters` ist dynamisch, ein Wechsel
     der Iterationszahl (GUI-Regler, SVGD-Sweeps) kompiliert also nicht neu."""
     return jax.lax.fori_loop(
         0, n_iters,
-        lambda _, u: _it_batch(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w),
+        lambda _, u: _it_batch(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w,
+                         dep_eta, dep_sigma),
         u0)
 
 
@@ -265,9 +311,11 @@ def _run_batch_plain(u0, x0, phi, floor, obs_c, obs_r, w_obs, n_iters,
 _PM2 = JerkPenalizedLQR(dt=DT)
 
 
-def _iteration2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w):
+def _iteration2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w,
+                dep_eta, dep_sigma):
     x_traj, A, B = _PM2.linearize_dyn(x0, u)
-    dx = _stein_grad(x_traj, phi, floor, obs_c, obs_r, w_obs, h)
+    dx = _stein_grad(x_traj, phi, floor, obs_c, obs_r, w_obs, h,
+                     depletion_score(x_traj[:, :2], dep_eta, dep_sigma))
     sgrad = _smoothness_grad_pos(x_traj[:, :2])
     dx = dx.at[:, :2].add(-smooth_w * sgrad)
     v, _ = _PM2.solve(jnp.zeros(6), A, B, dx)
@@ -279,16 +327,17 @@ def _positions2(u, x0):
 
 
 _it_batch2 = jax.vmap(_iteration2,
-                      in_axes=(0, 0, 0, 0, None, None, None, None, None, None))
+                      in_axes=(0, 0, 0, 0, None, None, None, None, None, None, None, None))
 
 
 @partial(jax.jit, static_argnums=(8,))
 def _run_batch_logged2(u0, x0, phi, floor, obs_c, obs_r, w_obs, fit, n_iters,
-                       h=H, step=STEP_SIZE, smooth_w=0.0):
+                       h=H, step=STEP_SIZE, smooth_w=0.0, dep_eta=0.0, dep_sigma=0.06):
     pos = jax.vmap(_positions2)
 
     def body(u, _):
-        u = _it_batch2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w)
+        u = _it_batch2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w,
+                         dep_eta, dep_sigma)
         return u, jnp.einsum('ij,cjd->cid', fit, pos(u, x0))
 
     return jax.lax.scan(body, u0, None, length=n_iters)
@@ -296,10 +345,11 @@ def _run_batch_logged2(u0, x0, phi, floor, obs_c, obs_r, w_obs, fit, n_iters,
 
 @jax.jit
 def _run_batch_plain2(u0, x0, phi, floor, obs_c, obs_r, w_obs, n_iters,
-                      h=H, step=STEP_SIZE, smooth_w=0.0):
+                      h=H, step=STEP_SIZE, smooth_w=0.0, dep_eta=0.0, dep_sigma=0.06):
     return jax.lax.fori_loop(
         0, n_iters,
-        lambda _, u: _it_batch2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w),
+        lambda _, u: _it_batch2(u, x0, phi, floor, obs_c, obs_r, w_obs, h, step, smooth_w,
+                         dep_eta, dep_sigma),
         u0)
 
 
@@ -400,7 +450,7 @@ def effective_targets(phis):
 
 def run_batch(curves, phis, starts, n_iters, nxi, record=False, obstacle=None,
               obstacle_weight=20.0, smoothness_weight=0.0, log_space='cps',
-              dynamics='pointmass'):
+              dynamics='pointmass', depletion_eta=0.0, depletion_sigma=0.06):
     """Stapel-Verfeinerung. curves: (C, T, 2); phis: (C, R, R) oder (R, R);
     starts: (C, 2), (2,) oder None.
 
@@ -414,6 +464,8 @@ def run_batch(curves, phis, starts, n_iters, nxi, record=False, obstacle=None,
     `dynamics` ('pointmass', Default, bisheriges Verhalten): 'jerk' nutzt
     `JerkPenalizedLQR` statt `PointMassLQR` (siehe Modulkopf) -- ein dichteres
     Zustands-/Steuerungsmodell, der Rest der Schnittstelle ist identisch.
+    `depletion_eta`/`depletion_sigma` (Default 0.0 = bisheriges Verhalten exakt):
+    TRACE-Depletion der Zieldichte entlang der Bahn, siehe Modulkopf.
     -> dict(final_cps (C,nxi,2), final_pos (C,TSTEPS+1,2), init_cps (C,nxi,2),
             log (C, n_iters, nxi, 2) oder None) -- alles numpy. Gerechnet wird in
             float32 wie in der Datengenerierung."""
@@ -450,10 +502,14 @@ def run_batch(curves, phis, starts, n_iters, nxi, record=False, obstacle=None,
         else (_run_batch_logged, _run_batch_plain, _positions))
     if record:
         u, log = logged_fn(*args, f32(log_fit), int(n_iters),
-                           smooth_w=jnp.float32(smoothness_weight))
+                           smooth_w=jnp.float32(smoothness_weight),
+                           dep_eta=jnp.float32(depletion_eta),
+                           dep_sigma=jnp.float32(depletion_sigma))
     else:
         u, log = plain_fn(*args, jnp.int32(n_iters),
-                          smooth_w=jnp.float32(smoothness_weight)), None
+                          smooth_w=jnp.float32(smoothness_weight),
+                           dep_eta=jnp.float32(depletion_eta),
+                           dep_sigma=jnp.float32(depletion_sigma)), None
     pos = np.asarray(jax.vmap(pos_fn)(u, f32(x0)), dtype=np.float64)
     final_cps = np.einsum('ij,cjd->cid', fit, pos)
     if log is not None:

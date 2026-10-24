@@ -1,0 +1,5 @@
+[mission] 1 shapes: ['A']
+[mission] 1 mission sets x 1 shapes; 30 candidates x 1500 refinement iterations per round; refiner=sun, svgd=mixed, workers=2
+[mission] cfm/eid/none_known round 1: 1 shapes planned, 0/1 at >= 99%, SVGD batch 137 s, 2.4 min
+[mission] cfm/eid/none_known round 2: 1 shapes planned, 0/1 at >= 99%, SVGD batch 94 s, 4.1 min
+[mission] cfm/eid/none_known round 3: 1 shapes planned, 0/1 at >= 99%, SVGD batch 94 s, 5.8 min

@@ -602,7 +602,10 @@ class MissionSet:
         seeds = [task_seed(st.name, self.cond, self.strat, self.method, r, i)
                  for st in active for i in range(n_init)]
         t0 = time.time()
-        out = ctx.bs.run(flat, target, starts_rep, seeds, n_iters, record=True)
+        dep_eta = getattr(a, 'depletion_eta', 0.0)          # budget-matched runner has no such flag
+        dep = ({} if dep_eta <= 0 else
+               dict(depletion_eta=dep_eta, depletion_sigma=getattr(a, 'depletion_sigma', 0.06)))
+        out = ctx.bs.run(flat, target, starts_rep, seeds, n_iters, record=True, **dep)
         if ctx.device != 'cpu':
             torch.cuda.synchronize()
         self.svgd_s += time.time() - t0
@@ -859,6 +862,13 @@ def main():
     ap.add_argument('--n_iters', type=int, default=1500,
                     help='Refinement iterations per candidate (SVGD steps for tsvec, FM-Stein '
                          'iterations for sun).')
+    ap.add_argument('--depletion_eta', type=float, default=0.0,
+                    help='TRACE footprint-overlap depletion (Zheng et al., arXiv:2608.02304, Eq. 3): '
+                         'per-visit discount eta in [0,1) of the target density along the candidate '
+                         'path itself, phi_k = phi * prod_{j<k}(1 - eta*v_jk). 0 = off (default). '
+                         "Only for --refiner sun.")
+    ap.add_argument('--depletion_sigma', type=float, default=0.06,
+                    help='Footprint tolerance sigma_fp of the overlap kernel (default: sensor radius).')
     ap.add_argument('--max_rounds', type=int, default=40,
                     help='Safety cap on the executed length units per mission.')
     ap.add_argument('--coverage_threshold', type=float, default=0.99,

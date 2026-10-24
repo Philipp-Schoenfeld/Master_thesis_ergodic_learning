@@ -1,0 +1,7 @@
+[validate] sun_gmm3     linear_sun_jerk                 164.8s
+[validate] blobs_75_25  linear_sun_jerk                 172.8s
+[validate] uniform      linear_sun_jerk                 169.5s
+[validate] ring         linear_sun_jerk                 166.9s
+[validate] A            linear_sun_jerk                 163.9s
+[validate] organic_30   linear_sun_jerk                 166.9s
+[validate] korean_5     linear_sun_jerk                 148.6s

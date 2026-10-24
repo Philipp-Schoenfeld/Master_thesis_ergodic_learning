@@ -1,0 +1,1268 @@
+{
+ "A": {
+  "cfm_adam_bspline": {
+   "median": {
+    "hellinger": 0.18558937529888475,
+    "low_excess": -0.002661018790215907,
+    "coverage": 0.9303098934942182,
+    "tv_2": 0.018511070031753868,
+    "tv_4": 0.051121652543959145,
+    "tv_8": 0.1314524230752462,
+    "spec_rel_20": 0.00034520695196507993,
+    "ergodic_k10": 0.01615682616829872,
+    "path_len": 3.477921942805789,
+    "accel": 0.003909770720154637
+   },
+   "hell_trace": [
+    0.3411542160224158,
+    0.28098159509184034,
+    0.23141805385728026,
+    0.20598305003012563,
+    0.19077855550483386,
+    0.18558937529888475
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 13.10194206237793,
+   "hell_floor": 0.19729609278855914
+  },
+  "linear_adam_bspline": {
+   "median": {
+    "hellinger": 0.21203811288254243,
+    "low_excess": 0.005151481209784093,
+    "coverage": 0.8967160777630784,
+    "tv_2": 0.026323570031753868,
+    "tv_4": 0.07077393309398608,
+    "tv_8": 0.15081649267797037,
+    "spec_rel_20": 0.0004842336805415255,
+    "ergodic_k10": 0.03999932110309601,
+    "path_len": 3.2184270178910857,
+    "accel": 0.004204402070316249
+   },
+   "hell_trace": [
+    0.7682584014007098,
+    0.7481989195850325,
+    0.509188763468413,
+    0.3057683903556833,
+    0.2273852995452154,
+    0.21203811288254243
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.163082599639893,
+   "hell_floor": 0.19729609278855914
+  },
+  "linear_adam_waypoint": {
+   "median": {
+    "hellinger": 0.129455166779424,
+    "low_excess": 0.012963981209784092,
+    "coverage": 0.9923710784323314,
+    "tv_2": 0.020620479997267738,
+    "tv_4": 0.04170977657645337,
+    "tv_8": 0.10723410365338289,
+    "spec_rel_20": 0.00017563494241785462,
+    "ergodic_k10": 0.0017533872742205858,
+    "path_len": 10.41884852428574,
+    "accel": 4.129377432289182
+   },
+   "hell_trace": [
+    0.7682584014007098,
+    0.7391908071539149,
+    0.4717071004705695,
+    0.21243633377288001,
+    0.1401430213790994,
+    0.129455166779424
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 11.18248963356018,
+   "hell_floor": 0.19729609278855914
+  },
+  "linear_adam_waypoint_smooth": {
+   "median": {
+    "hellinger": 0.179452011329051,
+    "low_excess": 0.005151481209784093,
+    "coverage": 0.9422070701597873,
+    "tv_2": 0.020936659914568112,
+    "tv_4": 0.0551269621769022,
+    "tv_8": 0.12539231649927712,
+    "spec_rel_20": 0.00034794221992072726,
+    "ergodic_k10": 0.022333834320306778,
+    "path_len": 3.846492412059516,
+    "accel": 0.007505987947072579
+   },
+   "hell_trace": [
+    0.7682584014007098,
+    0.7409522795131864,
+    0.454033291378314,
+    0.22565059614470884,
+    0.1919293658381308,
+    0.179452011329051
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 11.160552978515625,
+   "hell_floor": 0.19729609278855914
+  }
+ },
+ "blobs_75_25": {
+  "cfm_adam_bspline": {
+   "median": {
+    "hellinger": 0.18217940969137186,
+    "low_excess": 0.008311068490764795,
+    "coverage": 0.9512145687122062,
+    "tv_2": 0.037369473286063076,
+    "tv_4": 0.0647855717198731,
+    "tv_8": 0.15805996618036586,
+    "spec_rel_20": 0.0004989701339755492,
+    "ergodic_k10": 0.04981423541903496,
+    "path_len": 3.4723629923017203,
+    "accel": 0.0057801642656845065
+   },
+   "hell_trace": [
+    0.3449692536754937,
+    0.3288759328128768,
+    0.2569363140332062,
+    0.20575830800243927,
+    0.1856645799549602,
+    0.18217940969137186
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [
+    [
+     "left half (x < 0.51)",
+     0.7479798300064538,
+     0.734375
+    ]
+   ],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 13.218005657196045,
+   "hell_floor": 0.1849547215421481
+  },
+  "linear_adam_bspline": {
+   "median": {
+    "hellinger": 0.20418593617397549,
+    "low_excess": -0.011220181509235205,
+    "coverage": 0.91950893307994,
+    "tv_2": 0.046874999999999986,
+    "tv_4": 0.06663962298622444,
+    "tv_8": 0.14822869781152254,
+    "spec_rel_20": 0.0005599059140256365,
+    "ergodic_k10": 0.03883581608533859,
+    "path_len": 2.1601130273269535,
+    "accel": 0.0024701567385574386
+   },
+   "hell_trace": [
+    0.8435031951907417,
+    0.7613907834632944,
+    0.5262501912497635,
+    0.3155774788424017,
+    0.22420141336042337,
+    0.20418593617397549
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [
+    [
+     "left half (x < 0.51)",
+     0.7479798300064538,
+     0.7421875
+    ]
+   ],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 9.68898057937622,
+   "hell_floor": 0.1849547215421481
+  },
+  "linear_adam_waypoint": {
+   "median": {
+    "hellinger": 0.15308742696714117,
+    "low_excess": 0.012217318490764795,
+    "coverage": 0.977930766655243,
+    "tv_2": 0.03124999999999996,
+    "tv_4": 0.07105843054707861,
+    "tv_8": 0.11329781675093645,
+    "spec_rel_20": 0.00035638827105837547,
+    "ergodic_k10": 0.004319935105741024,
+    "path_len": 9.129882592550004,
+    "accel": 3.9777602821695384
+   },
+   "hell_trace": [
+    0.8435031951907417,
+    0.7570841905391896,
+    0.5230938611815752,
+    0.23186426964051854,
+    0.16162647132477156,
+    0.15308742696714117
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [
+    [
+     "left half (x < 0.51)",
+     0.7479798300064538,
+     0.7421875
+    ]
+   ],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 11.094300985336304,
+   "hell_floor": 0.1849547215421481
+  },
+  "linear_adam_waypoint_smooth": {
+   "median": {
+    "hellinger": 0.19128784251032538,
+    "low_excess": -0.019032681509235205,
+    "coverage": 0.924680526497076,
+    "tv_2": 0.023437499999999986,
+    "tv_4": 0.05985675178230126,
+    "tv_8": 0.14606232428925667,
+    "spec_rel_20": 0.00045878867749208626,
+    "ergodic_k10": 0.02919435128569603,
+    "path_len": 2.533289558381487,
+    "accel": 0.004405266297337063
+   },
+   "hell_trace": [
+    0.8435031951907417,
+    0.7574466538641071,
+    0.5237789003557243,
+    0.2625624245094783,
+    0.19593257232053343,
+    0.19128784251032538
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [
+    [
+     "left half (x < 0.51)",
+     0.7479798300064538,
+     0.7421875
+    ]
+   ],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.997570514678955,
+   "hell_floor": 0.1849547215421481
+  }
+ },
+ "korean_5": {
+  "cfm_adam_bspline": {
+   "median": {
+    "hellinger": 0.2527347399596797,
+    "low_excess": 0.0465713507886741,
+    "coverage": 0.8554737172762632,
+    "tv_2": 0.020640101855958798,
+    "tv_4": 0.06530456282451136,
+    "tv_8": 0.1903947965248457,
+    "spec_rel_20": 0.0005159922514392695,
+    "ergodic_k10": 0.06605763733386993,
+    "path_len": 3.9111867459420746,
+    "accel": 0.006325543983141517
+   },
+   "hell_trace": [
+    0.4163914057046829,
+    0.3755092613379695,
+    0.3326912545237273,
+    0.2967103527059535,
+    0.26382859880947007,
+    0.2527347399596797
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 7.348045349121094,
+   "hell_floor": 0.23130778950874098
+  },
+  "linear_adam_bspline": {
+   "median": {
+    "hellinger": 0.26881136782501497,
+    "low_excess": 0.0582901007886741,
+    "coverage": 0.8525135211048569,
+    "tv_2": 0.018469677119761357,
+    "tv_4": 0.07352376231096275,
+    "tv_8": 0.22222064454167878,
+    "spec_rel_20": 0.0006641589104210492,
+    "ergodic_k10": 0.12033124268054962,
+    "path_len": 4.339983603504134,
+    "accel": 0.008950682104314434
+   },
+   "hell_trace": [
+    0.7679958827303591,
+    0.7471446639060786,
+    0.6110750111421659,
+    0.3708585522957392,
+    0.29325304107530936,
+    0.26881136782501497
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 7.906436920166016,
+   "hell_floor": 0.23130778950874098
+  },
+  "linear_adam_waypoint": {
+   "median": {
+    "hellinger": 0.154952438398489,
+    "low_excess": 0.0348526007886741,
+    "coverage": 0.9865692919374683,
+    "tv_2": 0.018600255204774457,
+    "tv_4": 0.06677820634026067,
+    "tv_8": 0.12670389467849652,
+    "spec_rel_20": 0.0001793303938345887,
+    "ergodic_k10": 0.0024404083378612995,
+    "path_len": 14.468327162902808,
+    "accel": 6.678066864634376
+   },
+   "hell_trace": [
+    0.7679958827303591,
+    0.7410190289469483,
+    0.5899828908844547,
+    0.2609870039203287,
+    0.1645453509630878,
+    0.154952438398489
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 8.901161670684814,
+   "hell_floor": 0.23130778950874098
+  },
+  "linear_adam_waypoint_smooth": {
+   "median": {
+    "hellinger": 0.22709682736562664,
+    "low_excess": 0.0582901007886741,
+    "coverage": 0.9130833897927264,
+    "tv_2": 0.020592822880238643,
+    "tv_4": 0.06712616124329407,
+    "tv_8": 0.1747076552286409,
+    "spec_rel_20": 0.00046952345043304233,
+    "ergodic_k10": 0.05879056453704834,
+    "path_len": 5.226890582701772,
+    "accel": 0.018550243358311014
+   },
+   "hell_trace": [
+    0.7679958827303591,
+    0.7417077587515716,
+    0.5677569749542026,
+    0.2817206877626214,
+    0.23511074445950594,
+    0.22709682736562664
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 8.812746286392212,
+   "hell_floor": 0.23130778950874098
+  }
+ },
+ "organic_30": {
+  "cfm_adam_bspline": {
+   "median": {
+    "hellinger": 0.1207372274744718,
+    "low_excess": -0.003871928026674577,
+    "coverage": 0.9834590291745964,
+    "tv_2": 0.025777463847156692,
+    "tv_4": 0.04452820667950402,
+    "tv_8": 0.07857106474169981,
+    "spec_rel_20": 0.00028102295714193723,
+    "ergodic_k10": 0.002356909215450287,
+    "path_len": 2.045555149845567,
+    "accel": 0.0013641021932955244
+   },
+   "hell_trace": [
+    0.22704777179767244,
+    0.1894378950566889,
+    0.15024767811843553,
+    0.13728903443450435,
+    0.12611962977786467,
+    0.1207372274744718
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.98442029953003,
+   "hell_floor": 0.13669151634181675
+  },
+  "linear_adam_bspline": {
+   "median": {
+    "hellinger": 0.14502275553314836,
+    "low_excess": -0.003871928026674577,
+    "coverage": 0.9763175016216019,
+    "tv_2": 0.031216243555263035,
+    "tv_4": 0.04378823877214552,
+    "tv_8": 0.09649312593528338,
+    "spec_rel_20": 0.00039157928819286494,
+    "ergodic_k10": 0.012782352045178413,
+    "path_len": 2.0419803755120123,
+    "accel": 0.0016349419388276276
+   },
+   "hell_trace": [
+    0.7522776932357683,
+    0.7218796008049948,
+    0.5169401662936592,
+    0.24463784506837677,
+    0.1611318244952121,
+    0.14502275553314836
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 11.065675973892212,
+   "hell_floor": 0.13669151634181675
+  },
+  "linear_adam_waypoint": {
+   "median": {
+    "hellinger": 0.11141342837802908,
+    "low_excess": 0.011753071973325424,
+    "coverage": 0.9959010737909773,
+    "tv_2": 0.022962181706391846,
+    "tv_4": 0.03656878990830176,
+    "tv_8": 0.08165501858118478,
+    "spec_rel_20": 0.00018119159061155888,
+    "ergodic_k10": 0.0021976246498525143,
+    "path_len": 6.0061991184532895,
+    "accel": 1.9354092720681582
+   },
+   "hell_trace": [
+    0.7517903832261146,
+    0.7124268922171972,
+    0.49383752645028134,
+    0.1770604914841159,
+    0.11249513272561198,
+    0.11141342837802908
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.6299729347229,
+   "hell_floor": 0.13669151634181675
+  },
+  "linear_adam_waypoint_smooth": {
+   "median": {
+    "hellinger": 0.12949225185334035,
+    "low_excess": -0.003871928026674577,
+    "coverage": 0.9831707781726101,
+    "tv_2": 0.03358996384715669,
+    "tv_4": 0.04336383048766953,
+    "tv_8": 0.09284209521393441,
+    "spec_rel_20": 0.0003444715142884592,
+    "ergodic_k10": 0.00945860892534256,
+    "path_len": 2.403093791759389,
+    "accel": 0.0036439833267927213
+   },
+   "hell_trace": [
+    0.7517903832261146,
+    0.7136213974170655,
+    0.491827270652601,
+    0.1808464624888877,
+    0.1342072570084215,
+    0.12949225185334035
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.859386205673218,
+   "hell_floor": 0.13669151634181675
+  }
+ },
+ "ring": {
+  "cfm_adam_bspline": {
+   "median": {
+    "hellinger": 0.19082561747638416,
+    "low_excess": -0.0054001275119190464,
+    "coverage": 0.927613279657775,
+    "tv_2": 0.007812500000000028,
+    "tv_4": 0.05920774990170092,
+    "tv_8": 0.12717204725535275,
+    "spec_rel_20": 0.0003157287620661778,
+    "ergodic_k10": 0.02207285165786743,
+    "path_len": 3.5011722430948913,
+    "accel": 0.0029748764423163376
+   },
+   "hell_trace": [
+    0.33372446098837716,
+    0.27092904557113673,
+    0.24393781259514052,
+    0.2246652601979011,
+    0.20536231316546427,
+    0.19082561747638416
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [
+    [
+     "hole (r < 0.15)",
+     0.00020164803394149015,
+     0.0
+    ]
+   ],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.555602073669434,
+   "hell_floor": 0.21144521164874117
+  },
+  "linear_adam_bspline": {
+   "median": {
+    "hellinger": 0.19796618539746155,
+    "low_excess": 0.018037372488080954,
+    "coverage": 0.9428321412021381,
+    "tv_2": 0.015625000000000028,
+    "tv_4": 0.0699004621251014,
+    "tv_8": 0.13767405652696468,
+    "spec_rel_20": 0.0003957816956633467,
+    "ergodic_k10": 0.06008042395114899,
+    "path_len": 4.893224638472018,
+    "accel": 0.010084742018614645
+   },
+   "hell_trace": [
+    0.8370588190771855,
+    0.8174847750771398,
+    0.5029236278799247,
+    0.3109118760613263,
+    0.2162349760086813,
+    0.19796618539746155
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [
+    [
+     "hole (r < 0.15)",
+     0.00020164803394149015,
+     0.0078125
+    ]
+   ],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.116324424743652,
+   "hell_floor": 0.21144521164874117
+  },
+  "linear_adam_waypoint": {
+   "median": {
+    "hellinger": 0.11803161427658557,
+    "low_excess": -0.0054001275119190464,
+    "coverage": 0.9861499943168778,
+    "tv_2": 0.015624999999999972,
+    "tv_4": 0.05427546212510139,
+    "tv_8": 0.11248183419716062,
+    "spec_rel_20": 0.00012558870787356263,
+    "ergodic_k10": 0.0027118478901684284,
+    "path_len": 13.34841097794148,
+    "accel": 6.021546303088898
+   },
+   "hell_trace": [
+    0.8370588190771855,
+    0.809581048016639,
+    0.3717990758715127,
+    0.19599517030699914,
+    0.13795549175591193,
+    0.11803161427658557
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [
+    [
+     "hole (r < 0.15)",
+     0.00020164803394149015,
+     0.0
+    ]
+   ],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 12.224998235702515,
+   "hell_floor": 0.21144521164874117
+  },
+  "linear_adam_waypoint_smooth": {
+   "median": {
+    "hellinger": 0.20788884353166615,
+    "low_excess": 0.025849872488080954,
+    "coverage": 0.9488730788757267,
+    "tv_2": 0.015625000000000028,
+    "tv_4": 0.06595813135342482,
+    "tv_8": 0.1537882548310921,
+    "spec_rel_20": 0.00039354574961947584,
+    "ergodic_k10": 0.05533238500356674,
+    "path_len": 5.721828116604448,
+    "accel": 0.022325643714805832
+   },
+   "hell_trace": [
+    0.8370588190771855,
+    0.8129061341123338,
+    0.3732858241678874,
+    0.24553401214298518,
+    0.21145574713862558,
+    0.20788884353166615
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [
+    [
+     "hole (r < 0.15)",
+     0.00020164803394149015,
+     0.03125
+    ]
+   ],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 13.509297132492065,
+   "hell_floor": 0.21144521164874117
+  }
+ },
+ "sun_gmm3": {
+  "cfm_adam_bspline": {
+   "median": {
+    "hellinger": 0.24651418273072023,
+    "low_excess": 0.020510026460899607,
+    "coverage": 0.8908757303324164,
+    "tv_2": 0.01562500000000007,
+    "tv_4": 0.10297498090922036,
+    "tv_8": 0.19483202183815299,
+    "spec_rel_20": 0.0005428828472627645,
+    "ergodic_k10": 0.06645897775888443,
+    "path_len": 3.832560011154099,
+    "accel": 0.00664129025820781
+   },
+   "hell_trace": [
+    0.37970400993611514,
+    0.34810928237014216,
+    0.2972158748616415,
+    0.2668888580792407,
+    0.2499054871445701,
+    0.24651418273072023
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.747103214263916,
+   "hell_floor": 0.22232037795648207
+  },
+  "linear_adam_bspline": {
+   "median": {
+    "hellinger": 0.25692866921967883,
+    "low_excess": -0.0029274735391003927,
+    "coverage": 0.8620393978718144,
+    "tv_2": 0.02364085858437849,
+    "tv_4": 0.08747681943153024,
+    "tv_8": 0.19453998826369245,
+    "spec_rel_20": 0.000694988527277701,
+    "ergodic_k10": 0.07887835800647736,
+    "path_len": 3.1914634703800395,
+    "accel": 0.004400528149341144
+   },
+   "hell_trace": [
+    0.7345417697341323,
+    0.6780492440187869,
+    0.4827903236018244,
+    0.3648120030824634,
+    0.27542852723998046,
+    0.25692866921967883
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.874531507492065,
+   "hell_floor": 0.22232037795648207
+  },
+  "linear_adam_waypoint": {
+   "median": {
+    "hellinger": 0.15147063491870189,
+    "low_excess": -0.0029274735391003927,
+    "coverage": 0.9716555924535222,
+    "tv_2": 0.01562500000000007,
+    "tv_4": 0.05434775763260617,
+    "tv_8": 0.1262916395259283,
+    "spec_rel_20": 0.00016870804823007152,
+    "ergodic_k10": 0.002170187421143055,
+    "path_len": 10.368605600821816,
+    "accel": 4.062436152692323
+   },
+   "hell_trace": [
+    0.7345417697341323,
+    0.6745722792355183,
+    0.46977332204216493,
+    0.23784881677234346,
+    0.16519055328123813,
+    0.15147063491870189
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 12.989729404449463,
+   "hell_floor": 0.22232037795648207
+  },
+  "linear_adam_waypoint_smooth": {
+   "median": {
+    "hellinger": 0.22923268432596172,
+    "low_excess": 0.012697526460899607,
+    "coverage": 0.9090617410828989,
+    "tv_2": 0.01603171716875694,
+    "tv_4": 0.08725735438798456,
+    "tv_8": 0.17357811254917094,
+    "spec_rel_20": 0.0004674763078771862,
+    "ergodic_k10": 0.047567348927259445,
+    "path_len": 4.112962685227124,
+    "accel": 0.011327037439480964
+   },
+   "hell_trace": [
+    0.7345417697341323,
+    0.6751389538353647,
+    0.4306220299382202,
+    0.2619695459040776,
+    0.23366943344537508,
+    0.22923268432596172
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 12.2178316116333,
+   "hell_floor": 0.22232037795648207
+  }
+ },
+ "uniform": {
+  "cfm_adam_bspline": {
+   "median": {
+    "hellinger": 0.35452283902606707,
+    "low_excess": 0.0,
+    "coverage": 0.620361328125,
+    "tv_2": 0.015625,
+    "tv_4": 0.078125,
+    "tv_8": 0.296875,
+    "spec_rel_20": 0.0008481376319554368,
+    "ergodic_k10": 0.12758773565292358,
+    "path_len": 5.631636784320146,
+    "accel": 0.008832454976380869
+   },
+   "hell_trace": [
+    0.4801795427732131,
+    0.4393962328841811,
+    0.4037895532781956,
+    0.37939069926443636,
+    0.36259613920087874,
+    0.35452283902606707
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": false
+   },
+   "passed": false,
+   "seconds": 10.849968910217285,
+   "hell_floor": 0.33127689820597683
+  },
+  "linear_adam_bspline": {
+   "median": {
+    "hellinger": 0.37792323581383813,
+    "low_excess": 0.0,
+    "coverage": 0.6103515625,
+    "tv_2": 0.0234375,
+    "tv_4": 0.0859375,
+    "tv_8": 0.3125,
+    "spec_rel_20": 0.0011219064148175481,
+    "ergodic_k10": 0.26598745584487915,
+    "path_len": 5.760899751668378,
+    "accel": 0.012864419769979577
+   },
+   "hell_trace": [
+    0.768381319402262,
+    0.756600810422744,
+    0.6531065063238961,
+    0.440431105126128,
+    0.38550593566639935,
+    0.37792323581383813
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": false
+   },
+   "passed": false,
+   "seconds": 10.987167596817017,
+   "hell_floor": 0.33127689820597683
+  },
+  "linear_adam_waypoint": {
+   "median": {
+    "hellinger": 0.20245927696254024,
+    "low_excess": 0.0,
+    "coverage": 0.9481201171875,
+    "tv_2": 0.0078125,
+    "tv_4": 0.0546875,
+    "tv_8": 0.12890625,
+    "spec_rel_20": 0.00024489870620106595,
+    "ergodic_k10": 0.005164893809705973,
+    "path_len": 17.010106163939216,
+    "accel": 7.033890457868123
+   },
+   "hell_trace": [
+    0.768381319402262,
+    0.7506037636729315,
+    0.6348476944807318,
+    0.2862983920646581,
+    0.2065054912216547,
+    0.20245927696254024
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": true
+   },
+   "passed": true,
+   "seconds": 10.8683340549469,
+   "hell_floor": 0.33127689820597683
+  },
+  "linear_adam_waypoint_smooth": {
+   "median": {
+    "hellinger": 0.3083744607890109,
+    "low_excess": 0.0,
+    "coverage": 0.7197265625,
+    "tv_2": 0.015625,
+    "tv_4": 0.0625,
+    "tv_8": 0.21875,
+    "spec_rel_20": 0.0006392498148319597,
+    "ergodic_k10": 0.1227138489484787,
+    "path_len": 7.360118207737359,
+    "accel": 0.03399132568130223
+   },
+   "hell_trace": [
+    0.768381319402262,
+    0.7553268757354276,
+    0.5780296369138438,
+    0.327083117019047,
+    0.3043859071971078,
+    0.3083744607890109
+   ],
+   "checkpoints": [
+    0,
+    25,
+    100,
+    300,
+    1000,
+    2000
+   ],
+   "regions": [],
+   "checks": {
+    "C1 hellinger": true,
+    "C2 tv_4": true,
+    "C3 low_excess": true,
+    "C4 not worse than init": true,
+    "C5 no late degradation": true,
+    "C6 regions": true,
+    "C7 coverage": false
+   },
+   "passed": false,
+   "seconds": 10.540914297103882,
+   "hell_floor": 0.33127689820597683
+  }
+ }
+}

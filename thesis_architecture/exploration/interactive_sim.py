@@ -46,7 +46,7 @@ os.environ.setdefault('MPLBACKEND', 'TkAgg')
 import matplotlib.pyplot as plt          # noqa: E402
 import matplotlib.colors as mcolors      # noqa: E402
 import matplotlib.patches as mpatches    # noqa: E402
-from matplotlib.widgets import RadioButtons, Slider, Button  # noqa: E402
+from matplotlib.widgets import RadioButtons, Slider, Button, TextBox  # noqa: E402
 
 from mujoco_sim.board import MAX_TIP_SPEED, max_ui_speed  # noqa: E402
 
@@ -90,9 +90,13 @@ LENGTH_UNIT = math.sqrt(2.0)
 #: optimize.py --search voll`, 25 Holdout-Formen, 2 Seeds, 768 Auswertungen
 #: mit SVGD-Verfeinerung / 128 ohne), siehe
 #: `exploration_optimierung/results/bestwerte_beide.json`. In beiden Studien
-#: gewinnt das Level-Set-Modell ('niveau', Schwelle tau); die Variante *mit*
-#: SVGD-Verfeinerung erreicht das niedrigere J (0.258 gegen 0.261 ohne SVGD)
-#: und ist deshalb die Voreinstellung des "Optimal Policy"-Knopfs.
+#: gewinnt global das Level-Set-Modell ('niveau', Schwelle tau); die Variante
+#: *mit* SVGD-Verfeinerung erreicht das niedrigere J (0.258 gegen 0.261 ohne
+#: SVGD). Der "Optimal Policy"-Knopf (`_on_optimal_policy`) nutzt
+#: `mit_svgd` nur, wenn 'niveau' gerade als Phi-Modell ausgewaehlt ist --
+#: fuer ucb/mass/eid gibt es dieses volle Holdout-Ergebnis nicht, dort greift
+#: er stattdessen auf `PARAM_CURVES` (Grid-Search ohne SVGD) je Modell
+#: zurueck.
 OPTIMAL_POLICY = {
     'ohne_svgd': dict(phi_ui='niveau', tau=0.4307, svgd_iters=0, n_exec=6,
                       J=0.2612),
@@ -123,17 +127,35 @@ PARAM_CURVES = {
                (1.4088,0.29508),(1.864,0.28552),(2.4662,0.28943),(3.2631,0.27652),
                (4.3174,0.27649),(5.7123,0.27796),(7.558,0.27702),(10.0,0.27599)],
 }
+#: Default tuning parameter per Phi model: kappa for ucb/eid, w for mass, tau
+#: for niveau (LSE). ucb/mass/niveau: argmin of the grid search in PARAM_CURVES
+#: (ucb 0.4597, mass 0.47, niveau 0.6653); eid: Optuna optimum (kappa 0.608,
+#: `results/optuna/vergleich_optuna_ideal_best.json`) because its grid optimum
+#: (kappa 10) lies outside the slider range. All values are snapped to the
+#: step of the corresponding slider so that state and slider agree.
+PHI_DEFAULTS = {'ucb': 0.5, 'eid': 0.6, 'mass': 0.47, 'niveau': 0.67}
 PARAM_LABEL = {'ucb': 'κ (kappa)', 'eid': 'κ (kappa)', 'mass': 'w', 'niveau': 'τ (tau)'}
 PARAM_LOG_SCALE = {'ucb': True, 'eid': True, 'mass': False, 'niveau': False}
 
 SOLVERS = ['A (Open Loop)', 'B (Length-Unit Rollout)', 'C (Receding Horizon)',
-          'D (Ergodic Debt)']
+          'D (Ergodic Debt)', 'E (5-Round Loop)']
 SOLVER_DESC = {
     'A': 'A — plan once, execute once',
     'B': 'B — plan, drive one length unit, replan (repeat)',
     'C': 'C — receding horizon (belief grows)',
     'D': 'D — plan long, execute short, replan',
+    'E': 'E — 5 rounds: plan, execute fully, update GP, replan (manual kappa per round)',
 }
+
+#: Solver E: number of rounds and the initial per-round kappa values (editable
+#: in the "Solver E" window). Decreasing = explore first, exploit later.
+E_ROUNDS = 5
+E_DEFAULT_KAPPAS = [3.0, 2.0, 1.0, 0.5, 0.2]
+
+#: In eraser mode the "Agent Radius" slider value is split into a smaller
+#: radius for erasing and a larger one for exploring (sensing/revealing).
+ERASER_MODE_ERASE_SCALE = 0.7
+ERASER_MODE_EXPLORE_SCALE = 1.3
 
 INIT_MODES = ['CFM', 'Linear', 'Heuristic', 'Manual']
 INIT_DESC = {
@@ -142,6 +164,34 @@ INIT_DESC = {
     'Heuristic': 'TSP+Serpentine + Gradient Opt.',
     'Manual': 'Draw manually + Gradient Opt.',
 }
+
+#: Die drei SVGD-Nachverfeinerungs-Backends aus `common/svgd_refine.py`
+#: (`SVGD_BACKEND_LABEL_TO_KEY.values() == BACKENDS`), als Radio-Button-
+#: Labels fuer die GUI. Reihenfolge hier legt auch die Radio-Reihenfolge fest.
+SVGD_BACKEND_LABELS = ['Sun (FM-Stein)', 'TSVEC (Adam)', 'Li SE(3) (Precond.)']
+SVGD_BACKEND_LABEL_TO_KEY = {
+    'Sun (FM-Stein)': 'sun',
+    'TSVEC (Adam)': 'tsvec',
+    'Li SE(3) (Precond.)': 'li_se3',
+}
+SVGD_BACKEND_KEY_TO_LABEL = {v: k for k, v in SVGD_BACKEND_LABEL_TO_KEY.items()}
+
+#: Vorgefertigte "wer kennt was"-Startlagen fuer den Prior, als Alternative zu
+#: den zufaellig verstreuten Vormessungen (`N_PRIOR` Punkte). Baut auf
+#: demselben Mechanismus wie das manuelle "Draw Known Area"-Fenster
+#: (`self.custom_prior_mask`, ein (TRUTH_RES,TRUTH_RES)-Bool-Gitter) -- siehe
+#: `_known_area_mask`/`_on_known_area`.
+#: 'half': linke Haelfte (x<0.5) bekannt, rechte unbekannt.
+#: 'quadrant': oben-links- und unten-rechts-Quadrant bekannt, die beiden
+#: anderen unbekannt (Schachbrett-Anordnung -- erzwingt getrennte, nicht
+#: zusammenhaengende unbekannte Bereiche).
+KNOWN_AREA_LABELS = ['Random', 'Half (Left)', 'Quadrant (TL+BR)']
+KNOWN_AREA_LABEL_TO_KEY = {
+    'Random': 'random',
+    'Half (Left)': 'half',
+    'Quadrant (TL+BR)': 'quadrant',
+}
+KNOWN_AREA_KEY_TO_LABEL = {v: k for k, v in KNOWN_AREA_LABEL_TO_KEY.items()}
 
 # Erklaerungstexte fuer die Info-Knoepfe neben den Live-Metriken.
 INFO_TEXT = {
@@ -180,7 +230,40 @@ INFO_TEXT = {
         "Solvers\n\n"
         "A (Open Loop): Plans one long trajectory based on initial knowledge and executes it fully without replanning.\n\n"
         "C (Receding Horizon): Plans a path, executes a small segment, updates the GP belief with new measurements, and replans.\n\n"
-        "D (Ergodic Debt): Like C, but plans against a 'debt' density that subtracts areas already visited, forcing the agent to explore new regions."
+        "D (Ergodic Debt): Like C, but plans against a 'debt' density that subtracts areas already visited, forcing the agent to explore new regions.\n\n"
+        "E (5-Round Loop): Like C with exactly 5 rounds (plan, drive the whole plan, update the GP, replan), but you type the kappa of every round yourself in the 'Solver E' window (press Enter to apply; this replans from round 1). Applies to kappa-based Phi models (ucb, eid, mass); the level-set model (niveau) ignores kappa."
+    ),
+    'svgd_backend': (
+        "SVGD Backend\n\n"
+        "Which solver the 'SVGD Iters' slider drives when it refines the "
+        "network's proposed path against the current target density Phi "
+        "(0 iterations = pass-through, no refinement).\n\n"
+        "Sun (FM-Stein): Sun, Pinosky, Murphey, RSS 2025 -- Stein-variational "
+        "gradient flow combined with LQ flow matching through a point-mass "
+        "dynamics model; the SAME solver core used to generate this "
+        "project's training data (ergodic_solver.py). n_iters counts "
+        "FM-Stein iterations.\n\n"
+        "TSVEC (Adam): this project's original particle SVGD -- a jittered "
+        "swarm pulled toward Phi's Fourier coefficients by plain Adam steps, "
+        "weights from SE3_SVGD/tsvec_2d.py. No dynamics model, no "
+        "preconditioner.\n\n"
+        "Li SE(3) (Precond.): direct reimplementation of the SVGD update in "
+        "Li, Jin, Teng, Gong, Chalvatzaki, 'Stein Variational Ergodic "
+        "Surface Coverage with SE(3) Constraints' (TSVEC), arXiv:2603.09458 "
+        "-- the paper this thesis cites as its downstream-solver reference. "
+        "Same particle swarm as TSVEC (Adam), but the update direction comes "
+        "from a block-diagonal Gauss-Newton preconditioner (Detommaso et "
+        "al. 2018) instead of Adam. Does not yet support obstacles.\n\n"
+        "Known Area (below)\n\n"
+        "Which part of the domain the belief starts with as 'known' "
+        "(observed before round 1), instead of scattered random prior "
+        "points. Random: the usual N_PRIOR random measurements. Half "
+        "(Left): everything with x<0.5 is known, x>0.5 is unknown. "
+        "Quadrant (TL+BR): the top-left and bottom-right quadrants are "
+        "known, top-right and bottom-left are unknown -- two separate, "
+        "non-adjacent unknown regions the agent must find on its own. "
+        "Drawing a custom known area (Define Target window) overrides this "
+        "until 'Random' is picked again."
     ),
 }
 
@@ -241,6 +324,8 @@ class Mission:
         #: Auswertung -- hier nur Runde fuer Runde sichtbar.
         self.policy = None
         self.last_action = None
+        #: Per-round kappa list, only used by solver E.
+        self.kappas = None
 
     def _apply_policy(self, r, n_rounds, mu, sd, visit):
         """Den gelernten Regler fragen und `self.args` danach stellen.
@@ -333,6 +418,8 @@ class Mission:
             return self._rounds_B()
         if self.variant == 'C':
             return self._rounds_C()
+        if self.variant == 'E':
+            return self._rounds_C(n_rounds=len(self.kappas), kappas=self.kappas)
         return self._rounds_D()
 
     def _get_init(self, phi, pos=None):
@@ -549,10 +636,14 @@ class Mission:
                 self._observe(seg)
                 self.driven.append(seg.detach())
 
-    def _rounds_C(self, n_rounds=C_ROUNDS):
+    def _rounds_C(self, n_rounds=C_ROUNDS, kappas=None):
+        """Solver C: plan, drive the whole plan, update the GP, replan.
+        With `kappas` (solver E) round r uses `kappas[r]` instead of the
+        annealing schedule."""
         for r in range(n_rounds):
             with torch.no_grad():
-                kap = kappa_schedule(r, n_rounds, self.args.kappa0, self.args.kappa1)
+                kap = (float(kappas[r]) if kappas is not None else
+                       kappa_schedule(r, n_rounds, self.args.kappa0, self.args.kappa1))
                 mu, sd = self.belief.posterior_grid()
                 if getattr(self.args, 'allknowing_mode', False):
                     phi = self.truth
@@ -668,7 +759,7 @@ def build_args(device, phi_model='ucb', kappa0=3.0, svgd_iters=0, phi_tau=0.25, 
 # Die SVGD-Nachverfeinerung ist nach `common/svgd_refine.py` gezogen, damit die
 # Batch-Suche in `exploration_optimierung/` dieselbe Klasse in Arbeitsprozessen
 # benutzen kann, ohne den Matplotlib-/MuJoCo-Rumpf dieser Datei mitzuladen.
-from common.svgd_refine import SvgdRefiner  # noqa: E402,F401
+from common.svgd_refine import SvgdRefiner, DEFAULT_BACKEND  # noqa: E402,F401
 
 
 # ===========================================================================
@@ -707,7 +798,7 @@ class App:
         self.phi_ui = 'ucb'
         self.phi_view = 'Φ'   # Toggle: 'Φ', 'μ' oder 'σ'
         self.init_mode = 'CFM'  # 'CFM', 'Linear', 'Heuristic', 'Manual'
-        self.kappa = 3.0     # fuer ucb/eid/stretch/mi
+        self.kappa = PHI_DEFAULTS[self.phi_ui]     # fuer ucb/eid/stretch/mi
         
         # State for manual drawing initialization
         self.manual_init_drawn = None
@@ -715,10 +806,21 @@ class App:
         self.is_drawing_manual = False
         self.manual_path = []
         self.manual_line = None
-        self.mass_w = 0.5    # fuer mass -- direkter Anteil, nicht ueber kappa
-        self.niveau_tau = 0.25 # fuer niveau -- Schwellwert tau
+        self.mass_w = PHI_DEFAULTS['mass']    # fuer mass -- direkter Anteil, nicht ueber kappa
+        self.niveau_tau = PHI_DEFAULTS['niveau']  # fuer niveau -- Schwellwert tau
         self.svgd_iters = 0  # 0 = kein SVGD, Regler in der GUI geht bis 1000
-        self.svgd = SvgdRefiner(seed=seed)
+        #: Welcher der drei Verfeinerungs-Loeser (`common/svgd_refine.BACKENDS`)
+        #: gerade aktiv ist -- per Radio-Button umschaltbar (`_on_svgd_backend`).
+        self.svgd_backend = DEFAULT_BACKEND
+        self.svgd = SvgdRefiner(seed=seed, backend=self.svgd_backend)
+        #: Voreingestellte Prior-Kenntnis (`KNOWN_AREA_LABELS`) -- per
+        #: Radio-Button umschaltbar (`_on_known_area`), setzt/loescht dabei
+        #: `self.custom_prior_mask` (siehe `reset()`).
+        self.known_area_mode = 'random'
+        #: Solver E: kappa per round (edited in the "Solver E" window).
+        self.e_kappas = list(E_DEFAULT_KAPPAS)
+        self.fig_sched = None
+        self.e_boxes = []
         #: Gelernter Regler aus `exploration_optimierung/policy/`, per Knopf
         #: zugeschaltet. None = die Regler-Widgets gelten (bisheriges Verhalten).
         self.learned_policy = None
@@ -826,6 +928,10 @@ class App:
                                           edgecolor='#1565C0', alpha=0.22, lw=1.2,
                                           zorder=4)
         self.ax_world.add_patch(self.agent_disk)
+        self.erase_disk = mpatches.Circle((0.5, 0.5), self._erase_radius(), fill=False,
+                                          edgecolor='#D32F2F', lw=1.4, ls='--',
+                                          zorder=5, visible=False)
+        self.ax_world.add_patch(self.erase_disk)
         self.agent_dot, = self.ax_world.plot([0.5], [0.5], 'o', color='#1565C0',
                                              ms=4.5, zorder=5)
 
@@ -1007,6 +1113,7 @@ class App:
         def toggle_eraser(event):
             self.eraser_mode = not self.eraser_mode
             self.b_eraser.label.set_text(f'Eraser Mode: {"ON" if self.eraser_mode else "OFF"}')
+            self._apply_eraser_radii()
             self.fig.canvas.draw_idle()
         self.b_eraser.on_clicked(toggle_eraser)
 
@@ -1037,6 +1144,37 @@ class App:
         ax_open_mj = self.fig.add_axes([btn_x, 0.29, btn_w, 0.026])
         self.b_open_mj = Button(ax_open_mj, 'Open MuJoCo')
         self.b_open_mj.on_clicked(self._on_open_mujoco)
+
+        # SVGD-Backend- und Known-Area-Auswahl, gestapelt in der Luecke
+        # zwischen der Knopf-Spalte und den Reglern (siehe common/
+        # svgd_refine.py fuer die drei Verfahren und KNOWN_AREA_LABELS oben
+        # fuer die Prior-Voreinstellungen).
+        col_x, col_w = 0.545, 0.075
+
+        ax_backend = self.fig.add_axes([col_x, ctrl_bottom, col_w, 0.095])
+        ax_backend.set_title('SVGD Backend', fontsize=8)
+        active_backend_i = SVGD_BACKEND_LABELS.index(
+            SVGD_BACKEND_KEY_TO_LABEL[self.svgd_backend])
+        self.r_svgd_backend = RadioButtons(ax_backend, SVGD_BACKEND_LABELS,
+                                           active=active_backend_i)
+        for lbl in self.r_svgd_backend.labels:
+            lbl.set_fontsize(7)
+        self.r_svgd_backend.on_clicked(self._on_svgd_backend)
+
+        ax_known = self.fig.add_axes([col_x, ctrl_bottom + 0.105, col_w, 0.085])
+        ax_known.set_title('Known Area', fontsize=8)
+        active_known_i = KNOWN_AREA_LABELS.index(
+            KNOWN_AREA_KEY_TO_LABEL[self.known_area_mode])
+        self.r_known_area = RadioButtons(ax_known, KNOWN_AREA_LABELS,
+                                         active=active_known_i)
+        for lbl in self.r_known_area.labels:
+            lbl.set_fontsize(7)
+        self.r_known_area.on_clicked(self._on_known_area)
+
+        self._info_buttons.append(
+            self._make_info_button(col_x + col_w - 0.026,
+                                   ctrl_bottom + 0.105 + 0.085 + 0.02,
+                                   'svgd_backend'))
 
         # Parameterauswertung: J(Parameter)-Kurve des aktuellen Phi-Modells
         # aus der Missionsoptimierung, mit Regler und Live-Trajektorie/-J.
@@ -1081,9 +1219,10 @@ class App:
         self.s_length = Slider(ax_length, 'Target Length', 0.0, 10.0, valinit=self.target_length_ui, valstep=0.1, color='#FF5722')
         self.s_length.on_changed(self._on_target_length)
 
-        # Optimal-Policy-Knopf: uebernimmt Phi-Modell, tau/kappa/w, SVGD-Iters
-        # und Ziellaenge aus der vollen Holdout-Optimierung (siehe
-        # OPTIMAL_POLICY oben).
+        # Optimal-Policy-Knopf: uebernimmt tau/kappa/w, SVGD-Iters und
+        # Ziellaenge aus der Holdout-Optimierung FUER DAS GERADE AUSGEWAEHLTE
+        # Phi-Modell (siehe OPTIMAL_POLICY/PARAM_CURVES oben und
+        # `_on_optimal_policy`) -- wechselt das Phi-Modell selbst nicht.
         ax_optimal = self.fig.add_axes([slider_x, 0.322, slider_w, 0.022])
         self.b_optimal = Button(ax_optimal, '★ Optimal Policy: OFF',
                                 color='#FFD54F', hovercolor='#FFCA28')
@@ -1157,7 +1296,7 @@ class App:
             kappa0 = self.kappa
         args = build_args(self.device, PHI_INTERNAL[self.phi_ui], kappa0,
                           svgd_iters=self.svgd_iters, phi_tau=self.niveau_tau,
-                          sensor_radius=self.sensor_radius_ui)
+                          sensor_radius=self._explore_radius())
         args.obstacle = CompositeObstacle(self.obstacles) if len(self.obstacles) > 0 else None
         args.allknowing_mode = self.allknowing_mode
         if self.solver == 'B':
@@ -1197,6 +1336,7 @@ class App:
         self.mission = Mission(planner, truth, belief, args, self.solver,
                                svgd=self.svgd, nxi_ui=self.nxi_ui)
         self.mission.app = self
+        self.mission.kappas = list(self.e_kappas)
         self.mission.policy = getattr(self, 'learned_policy', None)
         self.gen = self.mission.rounds()
         self.truth_np = truth.detach().cpu().numpy()
@@ -1367,11 +1507,78 @@ class App:
     # ── Widget-Callbacks ─────────────────────────────────────────────────
     def _on_solver(self, label):
         self.solver = label[0]
+        self._sync_schedule_window()
         self.reset(replan=True)
+
+    # ── Solver E: per-round kappa entry window ───────────────────────────
+    def _sync_schedule_window(self):
+        """Show the kappa entry window while solver E is selected."""
+        if self.solver == 'E':
+            if self.fig_sched is None:
+                self._build_schedule_window()
+        elif self.fig_sched is not None:
+            fig, self.fig_sched, self.e_boxes = self.fig_sched, None, []
+            plt.close(fig)
+
+    def _build_schedule_window(self):
+        fig = plt.figure(figsize=(7.0, 2.6), facecolor='white')
+        try:
+            fig.canvas.manager.set_window_title('Solver E')
+        except Exception:  # noqa: BLE001 -- title is cosmetic
+            pass
+        fig.text(0.5, 0.88, 'Solver E — κ per round', ha='center', fontsize=11,
+                 fontweight='bold', color='#1A1A2E')
+        fig.text(0.5, 0.10, 'Press Enter in a field to apply (replans from round 1)',
+                 ha='center', fontsize=8.5, color='#555555')
+        w, gap = 0.15, 0.03
+        x0 = (1.0 - (E_ROUNDS * w + (E_ROUNDS - 1) * gap)) / 2.0
+        self.e_boxes = []
+        for i in range(E_ROUNDS):
+            x = x0 + i * (w + gap)
+            ax = fig.add_axes([x, 0.38, w, 0.2])
+            box = TextBox(ax, '', initial=f'{self.e_kappas[i]:g}')
+            box.on_submit(lambda text, i=i: self._on_e_kappa(i, text))
+            fig.text(x + w / 2, 0.64, f'Round {i + 1}', ha='center', fontsize=9,
+                     color='#1A1A2E')
+            self.e_boxes.append(box)
+        self.fig_sched = fig
+        fig.canvas.mpl_connect('close_event', self._on_schedule_closed)
+        plt.show(block=False)
+
+    def _on_schedule_closed(self, event):
+        self.fig_sched = None
+        self.e_boxes = []
+
+    def _on_e_kappa(self, i, text):
+        try:
+            val = float(text.replace(',', '.'))
+        except ValueError:
+            val = float('nan')
+        if not (0.0 <= val <= 100.0):          # also rejects NaN
+            self._show_e_kappa(i)
+            return
+        if val == self.e_kappas[i]:
+            return
+        self.e_kappas[i] = val
+        self._show_e_kappa(i)
+        if self.solver == 'E':
+            self.reset(replan=True)
+
+    def _show_e_kappa(self, i):
+        box = self.e_boxes[i]
+        box.eventson = False
+        box.set_val(f'{self.e_kappas[i]:g}')
+        box.eventson = True
 
     def _on_phi(self, label):
         self._deactivate_optimal_policy()
         self.phi_ui = label
+        if label == 'mass':
+            self.mass_w = PHI_DEFAULTS[label]
+        elif label == 'niveau':
+            self.niveau_tau = PHI_DEFAULTS[label]
+        else:
+            self.kappa = PHI_DEFAULTS[label]
         self._rebuild_tuning_slider()
         self._update_phi_title()
         self.reset(replan=True)
@@ -1394,14 +1601,69 @@ class App:
         self._deactivate_optimal_policy()
         self.svgd_iters = int(val)
         self.reset(replan=True)
-        
+
+    def _on_svgd_backend(self, label):
+        """Wechselt den Verfeinerungs-Loeser (`common/svgd_refine.BACKENDS`).
+        Baut `self.svgd` neu auf -- `SvgdRefiner` haelt kein Zwischenergebnis,
+        das den Wechsel ueberleben muesste, nur den RNG-Zustand fuer das
+        Jitter der Partikel (hier bewusst mit demselben `seed` neu gestartet,
+        damit ein Backend-Wechsel reproduzierbar bleibt statt vom bisherigen
+        Verbrauch des alten RNG abzuhaengen)."""
+        self.svgd_backend = SVGD_BACKEND_LABEL_TO_KEY[label]
+        self.svgd = SvgdRefiner(seed=self.seed, backend=self.svgd_backend)
+        self.reset(replan=True)
+
+    def _known_area_mask(self, mode):
+        """mode -> (TRUTH_RES,TRUTH_RES)-Bool-Gitter ueber `self.XX`/`self.YY`
+        (gleiche Indizierung wie `self.custom_prior_mask`: Zeile = y, Spalte
+        = x, siehe `reset()`), oder `None` fuer 'random' (dann gilt der
+        bisherige zufaellige Prior)."""
+        if mode == 'half':
+            return self.XX < 0.5
+        if mode == 'quadrant':
+            return (self.XX < 0.5) != (self.YY < 0.5)
+        return None
+
+    def _on_known_area(self, label):
+        """Setzt/loescht `self.custom_prior_mask` auf eine der Voreinstellungen
+        in `KNOWN_AREA_LABELS` -- dieselbe Stelle, die auch das manuelle
+        "Draw Known Area"-Fenster fuellt (`reset()` liest nur
+        `custom_prior_mask`, kennt die Quelle nicht). Manuelles Nachzeichnen
+        danach ueberschreibt diese Wahl wieder, ohne dass der Radio-Button
+        das meldet -- dieselbe Beziehung wie zwischen den beiden schon
+        bisher."""
+        self.known_area_mode = KNOWN_AREA_LABEL_TO_KEY[label]
+        self.custom_prior_mask = self._known_area_mask(self.known_area_mode)
+        self.reset(replan=True)
+
     def _on_nxi(self, val):
         self.nxi_ui = int(val)
         self.reset(replan=True)
 
+    def _explore_radius(self):
+        """Radius within which the agent senses/reveals the target density."""
+        scale = ERASER_MODE_EXPLORE_SCALE if self.eraser_mode else 1.0
+        return self.sensor_radius_ui * scale
+
+    def _erase_radius(self):
+        """Radius within which the eraser removes target density."""
+        return self.sensor_radius_ui * ERASER_MODE_ERASE_SCALE
+
+    def _apply_eraser_radii(self):
+        """Push the current exploration/erase radii into the running mission
+        and the radius circles (used when eraser mode is toggled mid-run)."""
+        r = self._explore_radius()
+        if hasattr(self, 'mission'):
+            self.mission.args.sensor_radius = r
+            self.mission.args.visit_bandwidth = r
+        self.agent_disk.set_radius(r)
+        self.erase_disk.set_radius(self._erase_radius())
+        self.erase_disk.set_visible(self.eraser_mode)
+
     def _on_sensor_radius(self, val):
         self.sensor_radius_ui = float(val)
-        self.agent_disk.set_radius(self.sensor_radius_ui)
+        self.agent_disk.set_radius(self._explore_radius())
+        self.erase_disk.set_radius(self._erase_radius())
         self.reset(replan=True)
 
     def _on_target_length(self, val):
@@ -1420,12 +1682,20 @@ class App:
         self.b_optimal.label.set_text('★ Optimal Policy: OFF')
 
     def _on_optimal_policy(self, event):
-        """Wendet die per Missions-Optimierung ermittelte beste Einstellung an
-        (`exploration_optimierung/optimize.py --search voll`, volle Holdout-
-        Menge von 25 Formen, 768 Auswertungen, siehe OPTIMAL_POLICY oben und
-        `exploration_optimierung/results/bestwerte_beide.json`). Setzt alle
-        betroffenen Widgets programmatisch, ohne deren Callback-Kette mehrfach
-        zu feuern -- `reset()` laeuft am Ende genau einmal.
+        """Wendet die beste bekannte Einstellung fuer das GERADE AUSGEWAEHLTE
+        Phi-Modell an (`self.phi_ui`: ucb/mass/eid/niveau) -- nicht ein fest
+        verdrahtetes Modell. Fuer 'niveau' die volle Holdout-Optimierung MIT
+        SVGD (`exploration_optimierung/optimize.py --search voll`, 25 Formen,
+        768 Auswertungen, siehe OPTIMAL_POLICY['mit_svgd'] oben und
+        `exploration_optimierung/results/bestwerte_beide.json`) -- fuer sie
+        liegt dieses bessere Ergebnis vor. Fuer die anderen drei Modelle gibt
+        es nur die Optuna/Grid-Search OHNE SVGD (`PARAM_CURVES`, 16 Raster-
+        punkte je Modell, `exploration_optimierung/results/
+        suche_ohne_svgd.csv`) -- deren Argmin wird genommen, SVGD-Iters und
+        Ziellaenge wie in OPTIMAL_POLICY['ohne_svgd']. Das Phi-Modell selbst
+        wird nie umgeschaltet. Setzt alle betroffenen Widgets programmatisch,
+        ohne deren Callback-Kette mehrfach zu feuern -- `reset()` laeuft am
+        Ende genau einmal.
 
         Ein erneuter Klick, waehrend die Einstellung noch aktiv ist, schaltet
         sie nur ab (Anzeige OFF) -- die Regler behalten dabei ihre aktuellen
@@ -1438,17 +1708,40 @@ class App:
             self.fig.canvas.draw_idle()
             return
 
-        pol = OPTIMAL_POLICY['mit_svgd']
-        self.phi_ui = pol['phi_ui']
-        self.niveau_tau = pol['tau']
-        self.svgd_iters = pol['svgd_iters']
-        self.target_length_ui = round(pol['n_exec'] * LENGTH_UNIT, 1)
+        model = self.phi_ui
+        if model == 'niveau':
+            pol = OPTIMAL_POLICY['mit_svgd']
+            param_opt, J = pol['tau'], pol['J']
+            svgd_iters = pol['svgd_iters']
+            n_exec = pol['n_exec']
+            source = 'volle Holdout-Optimierung mit SVGD, 25 Formen'
+        else:
+            param_opt, J = min(PARAM_CURVES[model], key=lambda pj: pj[1])
+            svgd_iters = OPTIMAL_POLICY['ohne_svgd']['svgd_iters']
+            n_exec = OPTIMAL_POLICY['ohne_svgd']['n_exec']
+            source = 'Grid-Search ohne SVGD, 16 Rasterpunkte, 25 Formen'
 
-        self.r_phi.eventson = False
-        self.r_phi.set_active(PHI_UI.index(self.phi_ui))
-        self.r_phi.eventson = True
+        # Der Regler fuer das aktuelle Modell (self.s_kappa) ist bereits
+        # richtig gebaut -- kein Modellwechsel noetig. Sein Wertebereich ist
+        # aber nicht fuer jedes Modell so weit wie die Grid-Search-Stuetz-
+        # stellen (bei 'eid' liegt das Grid-Optimum am Rand bei kappa=10,
+        # der Regler geht nur bis 6) -- in diesem Fall wird auf den Regler-
+        # Rand begrenzt und das in der Statuszeile vermerkt.
+        param_val = float(np.clip(param_opt, self.s_kappa.valmin, self.s_kappa.valmax))
+        clamped = abs(param_val - param_opt) > 1e-9
 
-        self._rebuild_tuning_slider()
+        if model == 'mass':
+            self.mass_w = param_val
+        elif model == 'niveau':
+            self.niveau_tau = param_val
+        else:
+            self.kappa = param_val
+        self.svgd_iters = svgd_iters
+        self.target_length_ui = round(n_exec * LENGTH_UNIT, 1)
+
+        self.s_kappa.eventson = False
+        self.s_kappa.set_val(param_val)
+        self.s_kappa.eventson = True
 
         self.s_svgd.eventson = False
         self.s_svgd.set_val(self.svgd_iters)
@@ -1461,10 +1754,12 @@ class App:
         self._update_phi_title()
         self.optimal_policy_active = True
         self.b_optimal.label.set_text('★ Optimal Policy: ON')
+        clamp_note = (f" [Grid-Optimum {param_opt:.4g} liegt ausserhalb des "
+                      f"Reglerbereichs, auf {param_val:.4g} begrenzt]" if clamped else '')
         self.status_txt.set_text(
-            f"Optimal Policy: Φ=niveau, τ={self.niveau_tau:.2f}, "
+            f"Optimal Policy ({model}): {PARAM_LABEL[model]}={param_val:.4g}, "
             f"SVGD={self.svgd_iters}, Ziellänge={self.target_length_ui:.1f} "
-            f"(J={pol['J']:.3f}, volle Holdout-Optimierung)")
+            f"(J={J:.4f}, {source}){clamp_note}")
         self.reset(replan=True)
         self.fig.canvas.draw_idle()
 
@@ -1805,10 +2100,17 @@ class App:
                 return
             self.p_mj = mp.Process(target=run_mujoco_sim, args=(self.agent_info_array, self.shared_truth))
             self.p_mj.start()
+        self._open_knowledge_window()
 
     def _change_shape(self, d):
         self.custom_truth_np = None
-        self.custom_prior_mask = None
+        # Ein handgezeichneter Prior ist formspezifisch gemeint und wird
+        # verworfen; eine Known-Area-Voreinstellung (`known_area_mode`) ist
+        # rein geometrisch (unabhaengig von der Zielform) und bleibt deshalb
+        # ueber den Formwechsel hinweg aktiv -- sonst liefe der Radio-Button
+        # sichtbar auf 'Half'/'Quadrant', obwohl der Prior laengst wieder
+        # zufaellig waere.
+        self.custom_prior_mask = self._known_area_mask(self.known_area_mode)
         self.shape_i = (self.shape_i + d) % len(self.names)
         if self.shared_truth is not None:
             with self.shared_truth.get_lock():
@@ -2244,7 +2546,8 @@ class App:
             elif len(self.driven_np) > 0:
                 pos = self.driven_np[-1]
             with self.agent_info_array.get_lock():
-                self.agent_info_array[:] = [pos[0], pos[1], self.sensor_radius_ui, 1.0 if self.eraser_mode else 0.0]
+                shown_r = self._erase_radius() if self.eraser_mode else self.sensor_radius_ui
+                self.agent_info_array[:] = [pos[0], pos[1], shown_r, 1.0 if self.eraser_mode else 0.0]
 
         if self.busy:
             self._poll_plan()
@@ -2263,7 +2566,7 @@ class App:
                     pts_2d = np.atleast_2d(pts)
                     d2 = ((self.XX[None] - pts_2d[:, 0, None, None]) ** 2
                           + (self.YY[None] - pts_2d[:, 1, None, None]) ** 2)
-                    mask = (d2 <= self.mission.args.sensor_radius ** 2).any(axis=0)
+                    mask = (d2 <= self._erase_radius() ** 2).any(axis=0)
                     np_truth[mask] = 0.0
                     self.truth_np = np_truth.copy()
                 self.custom_truth_np = torch.from_numpy(self.truth_np).float().to(self.device)
@@ -2351,6 +2654,9 @@ class App:
             pos = seg[max(self.play_idx - 1, 0)] if len(seg) else (0.5, 0.5)
             self.agent_disk.center = tuple(pos)
             self.agent_disk.set_radius(self.mission.args.sensor_radius)
+            self.erase_disk.center = tuple(pos)
+            self.erase_disk.set_radius(self._erase_radius())
+            self.erase_disk.set_visible(self.eraser_mode)
             self.agent_dot.set_data([pos[0]], [pos[1]])
 
             phi = self.cur['phi'].detach().cpu().numpy()
@@ -2402,6 +2708,7 @@ class App:
             self._clear_niveau_overlay()
 
         self._update_metrics()
+        self._update_knowledge_window()
         self.fig.canvas.draw_idle()
 
     def _update_metrics(self):
@@ -2442,6 +2749,84 @@ class App:
 
         ig = information_gain(self.belief0, self.mission.belief)
         self.metric_txt['explore'].set_text(f"{ig:.2f}")
+
+    # ── Knowledge window (opens together with MuJoCo) ────────────────────
+    def _build_knowledge_window(self):
+        """Second window with two panels: GP posterior mean and the ground
+        truth revealed so far (black = still unknown)."""
+        fig = plt.figure(figsize=(11.5, 6.0), facecolor='white')
+        try:
+            fig.canvas.manager.set_window_title('Knowledge State')
+        except Exception:  # noqa: BLE001 -- title is cosmetic
+            pass
+        ax_gp = fig.add_axes([0.04, 0.06, 0.44, 0.80])
+        ax_known = fig.add_axes([0.53, 0.06, 0.44, 0.80])
+        for ax in (ax_gp, ax_known):
+            style(ax)
+            ax.grid(False)
+            for s in ax.spines.values():
+                s.set_color('#ccc')
+        ax_gp.set_title('GP belief — posterior mean μ', fontsize=11, color='#1A1A2E')
+        ax_known.set_title('Known ground truth — black = unknown', fontsize=11,
+                           color='#1A1A2E')
+        ax_known.set_facecolor('black')
+
+        self.img_know_gp = ax_gp.imshow(
+            np.zeros((self.GP_RES, self.GP_RES)), origin='lower', extent=[0, 1, 0, 1],
+            cmap=self.cmap, vmin=0, vmax=1, zorder=1)
+        self.img_know_truth = ax_known.imshow(
+            np.zeros((self.TRUTH_RES, self.TRUTH_RES, 4)), origin='lower',
+            extent=[0, 1, 0, 1], zorder=1)
+        self.line_know_gp, = ax_gp.plot([], [], color='#00C853', lw=2.2, alpha=0.95,
+                                        zorder=3)
+        self.line_know_truth, = ax_known.plot([], [], color='#00C853', lw=2.2,
+                                              alpha=0.95, zorder=3)
+        self.scat_know_prior = ax_gp.scatter([], [], s=6, alpha=0.3, color='#444444',
+                                             zorder=2)
+        self.dot_know_gp, = ax_gp.plot([0.5], [0.5], 'o', color='#1565C0', ms=5,
+                                       zorder=5)
+        self.dot_know_truth, = ax_known.plot([0.5], [0.5], 'o', color='#1565C0', ms=5,
+                                             zorder=5)
+        self.fig_know = fig
+        fig.canvas.mpl_connect('close_event', self._on_knowledge_closed)
+        plt.show(block=False)
+        self._update_knowledge_window()
+
+    def _on_knowledge_closed(self, event):
+        self.fig_know = None
+
+    def _open_knowledge_window(self):
+        if getattr(self, 'fig_know', None) is None:
+            self._build_knowledge_window()
+
+    def _update_knowledge_window(self):
+        if getattr(self, 'fig_know', None) is None:
+            return
+
+        mu = self._last_mu
+        if mu is None:
+            mu = np.zeros((self.GP_RES, self.GP_RES))
+        self.img_know_gp.set_data(np.clip(mu, 0.0, 1.0))
+        self.scat_know_prior.set_offsets(self.prior_pts_np)
+
+        known = np.ones_like(self.visible) if self.allknowing_mode else self.visible
+        rgba = self.cmap(np.clip(self.truth_np, 0, 1))
+        rgba[..., 3] = 1.0
+        rgba[~known] = (0.0, 0.0, 0.0, 1.0)
+        self.img_know_truth.set_data(rgba)
+
+        if self.cur is not None:
+            seg = self.cur['seg'].detach().cpu().numpy()
+            path = np.concatenate([self.driven_np, seg[:self.play_idx]], axis=0)
+            pos = seg[max(self.play_idx - 1, 0)] if len(seg) else (0.5, 0.5)
+        else:
+            path = self.driven_np
+            pos = path[-1] if len(path) else (0.5, 0.5)
+        for line in (self.line_know_gp, self.line_know_truth):
+            line.set_data(path[:, 0], path[:, 1])
+        for dot in (self.dot_know_gp, self.dot_know_truth):
+            dot.set_data([pos[0]], [pos[1]])
+        self.fig_know.canvas.draw_idle()
 
 
 def main():

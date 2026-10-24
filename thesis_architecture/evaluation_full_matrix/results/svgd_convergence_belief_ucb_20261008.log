@@ -1,0 +1,47 @@
+[chain] 08.10.2026  9:10:50,24 starting self-test 
+ok  trajectory_log: result unchanged, n+1 states, last == returned curve
+ok  score_states == ExploreExploitErgodic.score
+ok  DB round trip (states re-render to the same curves)
+ok  linear_angle_path stays inside the margin box, centred
+ok  runs_ext round trip: stored + extension states concatenate to n_iters_total+1
+ok  extra metrics: swept mass == reference, Chamfer/diversity sanity, first passage, grid
+ALL OK
+[chain] 08.10.2026  9:10:55,06 self-test passed - starting full run 
+[svgd_conv] 12 shapes: ['A', 'greek_upper_0', 'korean_5', 'digit_5', 'a_lc', 'rand_gmm_10', 'rand_gmm_20', 'rand_ana_poly_10', 'rand_ana_poly_20', 'rand_ana_poly_30', 'rand_gmm_complex_0', 'rand_gmm_complex_10']
+[svgd_conv] block 2/36 (A/half_known/ucb) submitted; 35 runs stored, 40 pending, 0 failed, 1.5 min
+[svgd_conv] block 3/36 (A/ten_samples/ucb) submitted; 126 runs stored, 39 pending, 0 failed, 4.4 min
+[svgd_conv] block 4/36 (greek_upper_0/ground_truth/ucb) submitted; 215 runs stored, 40 pending, 0 failed, 7.3 min
+[svgd_conv] block 5/36 (greek_upper_0/half_known/ucb) submitted; 305 runs stored, 40 pending, 0 failed, 10.2 min
+[svgd_conv] block 6/36 (greek_upper_0/ten_samples/ucb) submitted; 396 runs stored, 39 pending, 0 failed, 13.2 min
+[svgd_conv] block 7/36 (korean_5/ground_truth/ucb) submitted; 485 runs stored, 40 pending, 0 failed, 16.1 min
+[svgd_conv] block 8/36 (korean_5/half_known/ucb) submitted; 575 runs stored, 40 pending, 0 failed, 18.9 min
+[svgd_conv] block 9/36 (korean_5/ten_samples/ucb) submitted; 665 runs stored, 40 pending, 0 failed, 21.7 min
+[svgd_conv] block 10/36 (digit_5/ground_truth/ucb) submitted; 755 runs stored, 40 pending, 0 failed, 24.5 min
+[svgd_conv] block 11/36 (digit_5/half_known/ucb) submitted; 845 runs stored, 40 pending, 0 failed, 27.3 min
+[svgd_conv] block 12/36 (digit_5/ten_samples/ucb) submitted; 935 runs stored, 40 pending, 0 failed, 30.2 min
+[svgd_conv] block 13/36 (a_lc/ground_truth/ucb) submitted; 1025 runs stored, 40 pending, 0 failed, 33.0 min
+[svgd_conv] block 14/36 (a_lc/half_known/ucb) submitted; 1115 runs stored, 40 pending, 0 failed, 35.8 min
+[svgd_conv] block 15/36 (a_lc/ten_samples/ucb) submitted; 1205 runs stored, 40 pending, 0 failed, 38.7 min
+[svgd_conv] block 16/36 (rand_gmm_10/ground_truth/ucb) submitted; 1295 runs stored, 40 pending, 0 failed, 41.7 min
+[svgd_conv] block 17/36 (rand_gmm_10/half_known/ucb) submitted; 1385 runs stored, 40 pending, 0 failed, 44.5 min
+[svgd_conv] block 18/36 (rand_gmm_10/ten_samples/ucb) submitted; 1476 runs stored, 39 pending, 0 failed, 47.4 min
+[svgd_conv] block 19/36 (rand_gmm_20/ground_truth/ucb) submitted; 1565 runs stored, 40 pending, 0 failed, 50.2 min
+[svgd_conv] block 20/36 (rand_gmm_20/half_known/ucb) submitted; 1655 runs stored, 40 pending, 0 failed, 53.1 min
+[svgd_conv] block 21/36 (rand_gmm_20/ten_samples/ucb) submitted; 1745 runs stored, 40 pending, 0 failed, 56.0 min
+[svgd_conv] block 22/36 (rand_ana_poly_10/ground_truth/ucb) submitted; 1835 runs stored, 40 pending, 0 failed, 59.1 min
+[svgd_conv] block 23/36 (rand_ana_poly_10/half_known/ucb) submitted; 1925 runs stored, 40 pending, 0 failed, 62.1 min
+[svgd_conv] block 24/36 (rand_ana_poly_10/ten_samples/ucb) submitted; 2015 runs stored, 40 pending, 0 failed, 65.4 min
+[svgd_conv] block 25/36 (rand_ana_poly_20/ground_truth/ucb) submitted; 2105 runs stored, 40 pending, 0 failed, 68.4 min
+[svgd_conv] block 26/36 (rand_ana_poly_20/half_known/ucb) submitted; 2195 runs stored, 40 pending, 0 failed, 71.4 min
+[svgd_conv] block 27/36 (rand_ana_poly_20/ten_samples/ucb) submitted; 2285 runs stored, 40 pending, 0 failed, 74.5 min
+[svgd_conv] block 28/36 (rand_ana_poly_30/ground_truth/ucb) submitted; 2375 runs stored, 40 pending, 0 failed, 77.6 min
+[svgd_conv] block 29/36 (rand_ana_poly_30/half_known/ucb) submitted; 2465 runs stored, 40 pending, 0 failed, 81.1 min
+[svgd_conv] block 30/36 (rand_ana_poly_30/ten_samples/ucb) submitted; 2555 runs stored, 40 pending, 0 failed, 85.1 min
+[svgd_conv] block 31/36 (rand_gmm_complex_0/ground_truth/ucb) submitted; 2646 runs stored, 39 pending, 0 failed, 89.0 min
+[svgd_conv] block 32/36 (rand_gmm_complex_0/half_known/ucb) submitted; 2735 runs stored, 40 pending, 0 failed, 92.9 min
+[svgd_conv] block 33/36 (rand_gmm_complex_0/ten_samples/ucb) submitted; 2826 runs stored, 39 pending, 0 failed, 97.0 min
+[svgd_conv] block 34/36 (rand_gmm_complex_10/ground_truth/ucb) submitted; 2916 runs stored, 39 pending, 0 failed, 100.9 min
+[svgd_conv] block 35/36 (rand_gmm_complex_10/half_known/ucb) submitted; 3005 runs stored, 40 pending, 0 failed, 104.8 min
+[svgd_conv] block 36/36 (rand_gmm_complex_10/ten_samples/ucb) submitted; 3095 runs stored, 40 pending, 0 failed, 107.8 min
+[svgd_conv] done: 3135 runs stored, 0 failed, 1 blocks already complete, 109.0 min -> C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\evaluation_full_matrix\results\svgd_convergence_belief_ucb_20261008\svgd_convergence.db
+[chain] 08.10.2026 11:00:09,46 full run exited with code 0 

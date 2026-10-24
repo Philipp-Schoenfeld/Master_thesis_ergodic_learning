@@ -17,7 +17,7 @@ else CPU). ~2-3 minutes.   Run:  python test_smoothness_comparison_v2.py
  3. state_codec / smoothness_db round trip at `n_states=2001` (2000
     iterations), the real scale this round targets.
  4. end-to-end `run_smoothness_comparison_v2.py --dry_run` (tiny: 1 shape,
-    3 particles, a few iterations, all 7 variants) + the shared
+    3 particles, a few iterations, all 11 variants) + the shared
     `plot_smoothness_comparison.py` on its output -- both must exit 0.
 """
 import os
@@ -108,7 +108,7 @@ def test_end_to_end_dry_run():
     assert os.path.exists(db_path), out
     conn = sdb.open_db(db_path)
     n = conn.execute("SELECT COUNT(*) FROM runs").fetchone()[0]
-    assert n == 7 * 3, f"expected 21 rows (7 variants x 3 cand), got {n}"
+    assert n == 11 * 3, f"expected 33 rows (11 variants x 3 cand), got {n}"
     out, dt = run_cli(PLOTTER, '--out_tag', out_tag)
     print(f"[test] plot_smoothness_comparison.py: {dt:.1f}s")
     plot_dir = os.path.join(_here, 'results', out_tag, 'plots')

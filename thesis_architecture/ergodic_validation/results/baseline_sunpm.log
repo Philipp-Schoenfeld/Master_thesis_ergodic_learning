@@ -1,0 +1,7 @@
+[validate] sun_gmm3     linear_sun_pointmass            162.1s
+[validate] blobs_75_25  linear_sun_pointmass            168.7s
+[validate] uniform      linear_sun_pointmass            165.0s
+[validate] ring         linear_sun_pointmass            164.8s
+[validate] A            linear_sun_pointmass            160.5s
+[validate] organic_30   linear_sun_pointmass            163.8s
+[validate] korean_5     linear_sun_pointmass            152.5s

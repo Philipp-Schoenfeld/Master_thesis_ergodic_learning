@@ -73,6 +73,14 @@ COND_TITLE = {'ground_truth': 'Ground truth known', 'half_known': 'Half known',
 COND_ORDER = ['ground_truth', 'half_known', 'ten_samples', 'none_known']
 STRAT_ORDER = ['lse', 'ucb', 'eid']
 SHARED = sdb.SHARED
+TARGET_DESC = {'truth': 'true density',
+               'belief': 'knowledge-state belief (strategy target density)'}
+
+
+def target_note(cfg):
+    """Title suffix: what E is measured against and what the solver optimised."""
+    return (f"E against true density; SVGD target: "
+            f"{TARGET_DESC.get(cfg.get('svgd_target', 'belief'), '?')}")
 INK, MUTED, SPINE = '#1A1A2E', '#555555', '#cccccc'
 SUMMARY_ITERS = (0, 10, 25, 100, 250, 500, 1000, 1500, 2000, 3000)
 FIRST_RUN_ITERS = 1000      # marks where the original run ended (extension starts)
@@ -178,7 +186,7 @@ def plot_overview(data, metric, out_path, n_init_note):
     plt.close(fig)
 
 
-def plot_per_shape(data, metric, cond, strat, out_path):
+def plot_per_shape(data, metric, cond, strat, out_path, tnote=''):
     shapes = sorted({s for k, v in data.items() if k[0] == cond and k[1] == strat for s in v})
     if not shapes:
         return
@@ -209,7 +217,7 @@ def plot_per_shape(data, metric, cond, strat, out_path):
         fig.legend(handles, labels, loc='upper center', ncol=len(handles), frameon=False,
                    fontsize=9, labelcolor=INK, bbox_to_anchor=(0.5, 1.0))
     fig.suptitle(f"{COND_TITLE[cond]} -- {STRATEGY_TITLE[strat]} -- {METRICS[metric]} "
-                 f"(mean +- 1 std across initialisations)", fontsize=10, color=INK, y=1.03)
+                 f"(mean +- 1 std across initialisations){tnote}", fontsize=10, color=INK, y=1.03)
     fig.tight_layout()
     fig.savefig(out_path, dpi=120, facecolor='white', bbox_inches='tight')
     plt.close(fig)
@@ -259,7 +267,7 @@ def main():
     sfx = f'_{n_iters}iters' if n_iters > FIRST_RUN_ITERS else ''
     plots = os.path.join(out_dir, 'plots')
     os.makedirs(plots, exist_ok=True)
-    note = f" (n={cfg['n_init']})" if cfg.get('n_init') else ''
+    note = (f" (n={cfg['n_init']})" if cfg.get('n_init') else '') + f"\n{target_note(cfg)}"
     plot_overview(data, args.metric, os.path.join(plots, f'overview_{args.metric}{sfx}.png'), note)
     if not args.no_per_shape:
         shape_dir = os.path.join(plots, f'per_shape{sfx}')
@@ -267,7 +275,8 @@ def main():
         for c in COND_ORDER:
             for st in STRAT_ORDER:
                 plot_per_shape(data, args.metric, c, st,
-                               os.path.join(shape_dir, f'{c}_{st}_{args.metric}.png'))
+                               os.path.join(shape_dir, f'{c}_{st}_{args.metric}.png'),
+                               tnote=f"\n{target_note(cfg)}")
     msfx = '' if args.metric == 'E_total' else f'_{args.metric}'
     write_summary(data, os.path.join(out_dir, f'convergence_summary{msfx}{sfx}.csv'),
                   args.metric)
