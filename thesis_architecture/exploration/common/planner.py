@@ -198,7 +198,14 @@ class ModelPlanner(BasePlanner):
         # Startpunkt-konditionierte Checkpoints tragen `start_cond` und brauchen
         # die andere Architektur. Ohne den Schluessel bleibt alles wie bisher.
         self.start_cond = bool(ck.get('start_cond', False))
-        if self.start_cond:
+        extra_kw = {}
+        if self.start_cond and ck.get('backbone', 'unet') == 'dit':
+            # DiT backbone (`--backbone dit`), same interface as the U-Net.
+            from flow_matching_cond_particles_dit import (
+                ParticleDiTFlowNetwork as ParticleCrossAttnFlowNetwork,
+                generate_particle_trajectories, dit_kwargs)
+            extra_kw = dit_kwargs(ck)
+        elif self.start_cond:
             from flow_matching_cond_particles_start import (
                 ParticleCrossAttnFlowNetwork, generate_particle_trajectories)
         else:
@@ -208,7 +215,7 @@ class ModelPlanner(BasePlanner):
         # `n_particles` gehoert zum Datenlader, nicht zum Netz — der
         # Partikel-Tokenizer arbeitet ueber die Sequenzachse.
         self.model = ParticleCrossAttnFlowNetwork(
-            nxi=ck.get('nxi', nxi), D=ck.get('D', 384)).to(device)
+            nxi=ck.get('nxi', nxi), D=ck.get('D', 384), **extra_kw).to(device)
         self.model.load_state_dict(ck['model_state_dict'])
         self.model.eval()
 

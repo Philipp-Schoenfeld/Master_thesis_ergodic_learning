@@ -75,6 +75,13 @@ VARIANT_COLORS = {
     'linear_adam_bspline':         '#E65100',
     'linear_adam_waypoint':        '#AD1457',
     'linear_adam_waypoint_smooth': '#2E7D32',
+    # waypoint solve, then least-squares B-spline projection (project_waypoint_variants.py)
+    'linear_waypoint_svgd_proj':         '#4A148C',
+    'linear_waypoint_svgd_smooth_proj':  '#00695C',
+    'linear_adam_waypoint_proj':         '#EC407A',
+    'linear_adam_waypoint_smooth_proj':  '#9CCC65',
+    'linear_sun_pointmass_proj':         '#A1887F',
+    'linear_sun_jerk_proj':              '#4DD0E1',
 }
 VARIANT_LABELS = {
     'cfm_only':               'CFM inference only',
@@ -92,6 +99,12 @@ VARIANT_LABELS = {
     'linear_adam_bspline':         'Linear init + Adam-SVGD (B-spline)',
     'linear_adam_waypoint':        'Linear init + Adam-SVGD (waypoints)',
     'linear_adam_waypoint_smooth': 'Linear init + Adam-SVGD + smoothness force (waypoints)',
+    'linear_waypoint_svgd_proj':         'Linear init + TSVEC-SVGD (waypoints -> B-spline projection)',
+    'linear_waypoint_svgd_smooth_proj':  'Linear init + TSVEC-SVGD + smoothness (waypoints -> B-spline projection)',
+    'linear_adam_waypoint_proj':         'Linear init + Adam-SVGD (waypoints -> B-spline projection)',
+    'linear_adam_waypoint_smooth_proj':  'Linear init + Adam-SVGD + smoothness force (waypoints -> B-spline projection)',
+    'linear_sun_pointmass_proj':         'Linear init + Sun flow matching, point mass (waypoints -> B-spline projection)',
+    'linear_sun_jerk_proj':              'Linear init + Sun flow matching, jerk-penalised (waypoints -> B-spline projection)',
 }
 #: distinct dash pattern + linewidth per variant, on top of colour -- several
 #: of these curves land almost exactly on top of each other (e.g. the three
@@ -114,6 +127,9 @@ VARIANT_LINESTYLES = {
     'linear_adam_bspline':         (0, (1, 1)),
     'linear_adam_waypoint':        (0, (5, 2)),
     'linear_adam_waypoint_smooth': (0, (4, 1, 1, 1)),
+    **{v + '_proj': (0, (7, 1.5)) for v in (
+        'linear_waypoint_svgd', 'linear_waypoint_svgd_smooth', 'linear_adam_waypoint',
+        'linear_adam_waypoint_smooth', 'linear_sun_pointmass', 'linear_sun_jerk')},
 }
 VARIANT_LW = {
     'cfm_svgd':                2.0,
@@ -130,6 +146,9 @@ VARIANT_LW = {
     'linear_adam_bspline':         2.6,
     'linear_adam_waypoint':        2.0,
     'linear_adam_waypoint_smooth': 1.6,
+    **{v + '_proj': 2.2 for v in (
+        'linear_waypoint_svgd', 'linear_waypoint_svgd_smooth', 'linear_adam_waypoint',
+        'linear_adam_waypoint_smooth', 'linear_sun_pointmass', 'linear_sun_jerk')},
 }
 
 

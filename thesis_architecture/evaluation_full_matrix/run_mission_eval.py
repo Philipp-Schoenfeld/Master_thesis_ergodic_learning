@@ -115,6 +115,15 @@ STRATEGY_MAP = rsc.STRATEGY_MAP
 #: (`trajectory_to_spectral`), which don't exist under partial belief.
 METHODS = rsc.METHODS + ('ebm', 'heuristic')
 NETWORK_METHODS = rsc.NETWORK_METHODS + ('ebm',)
+#: The --methods default; 'cfm_guided' (the start-conditioned CFM with GP-belief
+#: guidance at inference time, `belief_guidance.py`) is opt-in only. It plans
+#: with the same network and the same seeds as 'cfm', so --guide_weight 0
+#: reproduces 'cfm' exactly.
+DEFAULT_METHODS = METHODS
+METHODS = METHODS + ('cfm_guided',)
+NETWORK_METHODS = NETWORK_METHODS + ('cfm_guided',)
+GUIDE_MODULES = (os.path.join(_here, 'belief_guidance.py'),
+                 os.path.join(_arch, 'flow_matching_cond_particles_start.py'))
 DEFAULT_CONDITIONS = ('half_known', 'ten_samples', 'none_known')
 NXI, N_POINTS, DEGREE, SEED, TRUTH_RES = rsc.NXI, rsc.N_POINTS, rsc.DEGREE, rsc.SEED, rsc.TRUTH_RES
 task_seed = rsc.task_seed
@@ -186,6 +195,9 @@ def result_fingerprint(ctx, cond, strat, method, belief, scfg, kappas):
         d['ak_fit_iters'] = a.ak_fit_iters
     if belief == 'np':
         d['np_ckpt'] = file_id(a.np_ckpt)
+    if method == 'cfm_guided':
+        d['guide'] = dict(weight=a.guide_weight, beta=a.guide_beta, t_start=a.guide_t_start,
+                          pts=a.guide_pts, grid=a.guide_grid, code=ctx.guide_digest)
     blob = json.dumps(d, sort_keys=True, default=str)
     return hashlib.sha256(blob.encode()).hexdigest(), d
 
@@ -332,6 +344,20 @@ def _truth_like(truth, mu):
     return t
 
 
+def plan_guided(planner, particles, n, start, guide, a):
+    """`CfmPlanner.plan` with belief guidance: the same call into the
+    start-conditioned generator, plus the guide (`belief_guidance.py`)."""
+    kw = {}
+    if start is not None and planner.start_cond:
+        kw['start'] = start.to(planner.device).reshape(-1)
+    out = planner._gen(planner.model, particles.to(planner.device), num_samples=n,
+                       nxi=planner.nxi, steps=planner.steps, device=str(planner.device),
+                       cfg_weight=planner.cfg_weight, guide=guide, guide_weight=a.guide_weight,
+                       guide_t_start=a.guide_t_start, **kw)
+    cps = out[0] if isinstance(out, tuple) else out
+    return cps.detach()
+
+
 def belief_rmse_from_mu(mu, truth):
     return float(((mu - _truth_like(truth, mu)) ** 2).mean().sqrt())
 
@@ -394,6 +420,8 @@ class MissionSet:
     def __init__(self, ctx, cond, strat, method, belief='rbf'):
         self.ctx, self.cond, self.strat, self.method = ctx, cond, strat, method
         self.belief = belief
+        # Seeds of the guided CFM are those of 'cfm', so both see the same noise.
+        self.seed_method = 'cfm' if method == 'cfm_guided' else method
         self.tag = f'{method}/{strat}/{cond}'
         # Belief comparison runs keep one result root per belief model (each with
         # the usual shards/ layout); without --beliefs it is ctx.out_dir as before.
@@ -552,14 +580,26 @@ class MissionSet:
         all_parts = torch.cat(clouds, dim=0)
         all_starts = torch.as_tensor(np.repeat(starts, n_init, axis=0), dtype=torch.float32,
                                      device=ctx.device)
+        guides = None
+        if method == 'cfm_guided' and not ctx.args.dry_run:
+            from belief_guidance import SpectralInfoGuide, ShapeGuides
+            a = ctx.args
+            guides = [SpectralInfoGuide(st.belief, st.phi, ctx.ee, ctx.B32, beta=a.guide_beta,
+                                        n_meas=a.guide_pts, grid=a.guide_grid) for st in active]
         total, chunk, out = all_parts.shape[0], ctx.args.cfm_chunk, []
         for c0 in range(0, total, chunk):
             t0 = time.time()
             planner.cfg_weight = self.cfg_weight
-            torch.manual_seed(task_seed(self.cond, self.strat, self.method, 'plan', r, c0))
+            torch.manual_seed(task_seed(self.cond, self.strat, self.seed_method, 'plan', r, c0))
             with torch.no_grad():
-                cps = planner.plan(all_parts[c0:c0 + chunk], n_candidates=min(chunk, total - c0),
-                                   start=all_starts[c0:c0 + chunk])
+                n = min(chunk, total - c0)
+                if guides is None:
+                    cps = planner.plan(all_parts[c0:c0 + chunk], n_candidates=n,
+                                       start=all_starts[c0:c0 + chunk])
+                else:
+                    cps = plan_guided(planner, all_parts[c0:c0 + chunk], n,
+                                      all_starts[c0:c0 + chunk],
+                                      ShapeGuides(guides, n_init, first=c0), ctx.args)
                 out.append(planner.render(cps).detach().cpu())
             self.plan_s += time.time() - t0
             yield None
@@ -599,7 +639,7 @@ class MissionSet:
         phi_k10 = torch.repeat_interleave(torch.stack([ctx.ee.target_coeffs(st.phi) for st in active]),
                                           n_init, dim=0)
         starts_rep = np.repeat(starts, n_init, axis=0)
-        seeds = [task_seed(st.name, self.cond, self.strat, self.method, r, i)
+        seeds = [task_seed(st.name, self.cond, self.strat, self.seed_method, r, i)
                  for st in active for i in range(n_init)]
         t0 = time.time()
         dep_eta = getattr(a, 'depletion_eta', 0.0)          # budget-matched runner has no such flag
@@ -674,7 +714,7 @@ class MissionSet:
         seg = curve if full_execution else trim_to_length(curve, LENGTH_UNIT)
         n_pts = max(8, int(round(PTS_PER_UNIT * path_length(seg) / LENGTH_UNIT)))
         seg = resample_arclength(seg, n_pts)
-        torch.manual_seed(task_seed(st.name, self.cond, self.strat, self.method, 'meas', r))
+        torch.manual_seed(task_seed(st.name, self.cond, self.strat, self.seed_method, 'meas', r))
         pts, vals = measure(seg, st.truth, noise_std=args.noise, sensor_radius=args.sensor_radius)
         pts_t, vals_t = thin(pts, vals, max_points=args.max_obs)
 
@@ -857,7 +897,8 @@ def main():
                     help='Take at most this many validation shapes (default: all 25).')
     ap.add_argument('--conditions', type=str, default=','.join(DEFAULT_CONDITIONS))
     ap.add_argument('--strategies', type=str, default=','.join(STRATEGY_MAP))
-    ap.add_argument('--methods', type=str, default=','.join(METHODS))
+    ap.add_argument('--methods', type=str, default=','.join(DEFAULT_METHODS),
+                    help=f'Comma-separated init methods; known: {",".join(METHODS)}.')
     ap.add_argument('--n_init', type=int, default=30, help='Candidates per plan.')
     ap.add_argument('--n_iters', type=int, default=1500,
                     help='Refinement iterations per candidate (SVGD steps for tsvec, FM-Stein '
@@ -942,6 +983,19 @@ def main():
     ap.add_argument('--np_ckpt', type=str, default=None,
                     help='Neural-process checkpoint (default: newest '
                          'checkpoints/belief_np_date_*_final.pt).')
+    ap.add_argument('--guide_weight', type=float, default=0.5,
+                    help="cfm_guided only: guidance step at t=1 relative to the velocity RMS "
+                         "(quadratic ramp from --guide_t_start). 0 reproduces 'cfm'.")
+    ap.add_argument('--guide_beta', type=float, default=1.0,
+                    help='cfm_guided only: weight of the GP information term (expected '
+                         'reduction of the target-coefficient variance by measuring along the '
+                         'candidate); 0 = pure ergodic guidance towards the planning target.')
+    ap.add_argument('--guide_t_start', type=float, default=0.3,
+                    help='cfm_guided only: flow time from which the guidance acts.')
+    ap.add_argument('--guide_pts', type=int, default=32,
+                    help='cfm_guided only: curve points treated as future measurement locations.')
+    ap.add_argument('--guide_grid', type=int, default=32,
+                    help='cfm_guided only: integration grid of the coefficient covariance.')
     ap.add_argument('--reuse_from', type=str, default=None,
                     help='Comma-separated result roots searched for mission sets with an '
                          'identical fingerprint (same configuration, shapes, checkpoints and '
@@ -983,6 +1037,9 @@ def main():
     if 'np' in beliefs:
         from common.np_belief import latest_np_ckpt
         a.np_ckpt = a.np_ckpt or latest_np_ckpt()
+    if 'cfm_guided' in methods and 'np' in beliefs and a.guide_beta > 0:
+        raise ValueError("cfm_guided with --guide_beta > 0 needs a GP belief (rbf/ak): the "
+                         "neural process has no closed-form posterior covariance")
 
     device = a.device
     labels = [s.strip() for s in a.shapes.split(',')] if a.shapes else None
@@ -994,7 +1051,7 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
 
     planners, ckpt_ids = {}, {}
-    if 'cfm' in methods:
+    if 'cfm' in methods or 'cfm_guided' in methods:
         if a.dry_run:
             planners['cfm'] = DummyPlanner()
         else:
@@ -1004,6 +1061,8 @@ def main():
             planners['cfm'] = PLANNER_BUILDERS[a.representation](a.ckpt or DEFAULT_CKPT, device)
             assert planners['cfm'].nxi == NXI, f"planner nxi={planners['cfm'].nxi}, expected {NXI}"
             assert planners['cfm'].start_cond, "the mission needs a start-conditioned checkpoint"
+        planners['cfm_guided'] = planners['cfm']
+        ckpt_ids['cfm_guided'] = ckpt_ids.get('cfm')
     if 'selfsup' in methods:
         if a.dry_run:
             planners['selfsup'] = DummyPlanner()
@@ -1038,7 +1097,7 @@ def main():
         B64=B_np.astype(np.float64), B32=torch.as_tensor(B_np, dtype=torch.float32, device=device),
         cov_blind=[blind_coverage(t) for t in truths_t], n_uniform_fallback=0, n_short_plans=0,
         phi_k_truth_t=[ee.target_coeffs(t) for t in truths_t], out_dir=out_dir,
-        code_digest=code_digest(), ckpt_ids=ckpt_ids)
+        code_digest=code_digest(), ckpt_ids=ckpt_ids, guide_digest=code_digest(GUIDE_MODULES))
     ctx.phi_k_truth = [p.detach().cpu().numpy() for p in ctx.phi_k_truth_t]
     reuse_roots = ([] if a.reuse_from == 'none' else
                    [r for r in (a.reuse_from or a.out_root).split(',') if r])

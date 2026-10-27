@@ -240,12 +240,29 @@ class StartEmbedding(nn.Module):
 
 
 class ParticleCrossAttnFlowNetwork(nn.Module):
+    """`start_inpaint=True` (opt-in, default off = previous behaviour): control
+    point 0 is not generated but held at the start point along the whole flow
+    (training: x_t[:, 0] = start and no loss on it; sampling: reset after every
+    Euler step). The net then sees the start in its input sequence, next to
+    the control points that have to connect to it, not only through FiLM.
+
+    The flag travels inside the state dict as the buffer `start_inpaint_flag`.
+    A model built with the default constructor picks it up in
+    `load_state_dict` (pre-hook below), so every existing loader
+    (`model_zoo`, `apply_cfm_belief`, `common/planner`) gets the right
+    sampling behaviour without knowing about the flag; old checkpoints carry
+    no such key and load unchanged.
+    """
+
     def __init__(self, nxi: int = 20, nd: int = 2, D: int = 128,
-                 n_heads: int = 8, kernel_size: int = 3):
+                 n_heads: int = 8, kernel_size: int = 3, start_inpaint: bool = False):
         super().__init__()
         self.nxi = nxi
         self.nd  = nd
         self.D   = D
+        if start_inpaint:
+            self.register_buffer('start_inpaint_flag', torch.ones(()))
+        self._register_load_state_dict_pre_hook(self._adopt_inpaint_flag)
 
         self.mpd_layer = MPDLayer(nd=nd, D=D, kernel_size=kernel_size)
         self.pos_emb   = nn.Parameter(torch.randn(1, D, nxi) * 0.02)
@@ -259,6 +276,14 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
 
         self.backbone = UNetBackboneParticles(D=D, n_heads=n_heads, kernel_size=kernel_size)
         self.flow_head = FlowHead(D=D, nd=nd)
+
+    @property
+    def start_inpaint(self) -> bool:
+        return 'start_inpaint_flag' in self._buffers
+
+    def _adopt_inpaint_flag(self, state_dict, prefix, *args):
+        if prefix + 'start_inpaint_flag' in state_dict and not self.start_inpaint:
+            self.register_buffer('start_inpaint_flag', torch.ones((), device=self.pos_emb.device))
 
     def forward(self, x: torch.Tensor, t: torch.Tensor,
                 particles: torch.Tensor,
@@ -311,10 +336,16 @@ def compute_particle_cfm_loss(
     # Bedingung, die zu seiner Zielbahn nicht passt, und lernte, sie zu
     # ignorieren.
     start = x1_batch[:, 0, :].detach()
+    inpaint = getattr(model, 'start_inpaint', False)
+    if inpaint:
+        xt = xt.clone()
+        xt[:, 0, :] = start
     v_t, lambda0 = model(xt, t, particle_batch,
                          cond_drop_mask=cond_drop_mask, start=start)
 
-    loss_cfm = torch.mean((v_t - ut) ** 2)
+    # With inpainting control point 0 is given, not generated: no target for it.
+    loss_cfm = (torch.mean((v_t[:, 1:] - ut[:, 1:]) ** 2) if inpaint
+                else torch.mean((v_t - ut) ** 2))
     total = loss_cfm
     parts = {'cfm': loss_cfm.detach()}
 
@@ -322,6 +353,8 @@ def compute_particle_cfm_loss(
         # Flow matching predicts a velocity, so the endpoint has to be estimated
         # before a trajectory-level metric can be applied to it.
         x1_hat = xt + (1.0 - t_exp) * v_t
+        if inpaint:
+            x1_hat = torch.cat([start[:, None, :].to(x1_hat.dtype), x1_hat[:, 1:]], dim=1)
         loss_erg = ergodic(x1_hat, particle_batch, t)
         total = total + ergodic.weight * loss_erg
         parts['erg'] = loss_erg.detach()
@@ -346,12 +379,22 @@ def generate_particle_trajectories(
     polish_steps: int = 250,
     generator: torch.Generator = None,
     start: torch.Tensor = None,
+    guide=None,
+    guide_weight: float = 0.0,
+    guide_t_start: float = 0.3,
 ) -> tuple:
     """Integrate the flow ODE, optionally repelling the curve from an obstacle.
 
     With `obstacle=None` the behaviour is unchanged. Otherwise a repulsion term
     is added to the velocity at inference time only — the model itself never
     sees the obstacle and is conditioned on the unmodified target density.
+
+    `guide`: optional callable, control points (N, nxi, 2) -> dG/dcps of an
+    objective G to decrease (e.g. `belief_guidance.SpectralInfoGuide`). It is
+    evaluated at the predicted endpoint x + (1 - t) v and subtracted from the
+    velocity from `guide_t_start` on, with the same quadratic ramp as the
+    obstacle term; per candidate the step is `guide_weight * s^2` times the RMS
+    of the velocity, so only the direction of the gradient matters.
     """
     model.eval()
     if particles.ndim == 2:
@@ -381,8 +424,13 @@ def generate_particle_trajectories(
     particle_batch = torch.cat([particles, particles], dim=0)
 
     lambda0_accum = None
+    # Inpainting checkpoints (see ParticleCrossAttnFlowNetwork) were trained with
+    # control point 0 = start at every t, so it is reset before every step.
+    inpaint = start_b is not None and getattr(model, 'start_inpaint', False)
 
     for step in range(steps):
+        if inpaint:
+            x[:, 0, :] = start_b.to(x.dtype)
         t = torch.full((num_samples,), step * dt, device=device)
         t_batch = torch.cat([t, t], dim=0)
         x_batch = torch.cat([x, x], dim=0)
@@ -405,6 +453,15 @@ def generate_particle_trajectories(
                 s = (t_now - obstacle_t_start) / max(1.0 - obstacle_t_start, 1e-8)
                 v = v - (obstacle_weight * s ** 2) * curve_repulsion_grad(
                     x, obstacle, B_basis)
+
+        if guide is not None and guide_weight > 0.0:
+            t_now = step * dt
+            if t_now >= guide_t_start:
+                s = (t_now - guide_t_start) / max(1.0 - guide_t_start, 1e-8)
+                g = guide(x + (1.0 - t_now) * v).to(v.dtype)
+                v_rms = v.pow(2).mean(dim=(1, 2), keepdim=True).sqrt()
+                g_rms = g.pow(2).mean(dim=(1, 2), keepdim=True).sqrt().clamp(min=1e-12)
+                v = v - (guide_weight * s ** 2) * v_rms * g / g_rms
 
         x = x + v * dt
 

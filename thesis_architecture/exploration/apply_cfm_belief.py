@@ -213,6 +213,12 @@ class CfmPlanner:
                 ParticleCrossAttnFlowNetwork, generate_particle_trajectories)
             extra_kw['log_ref'] = ck.get('log_ref', 5.0)
             extra_kw['log_scale'] = ck.get('log_scale', 1.5)
+        elif self.start_cond and ck.get('backbone', 'unet') == 'dit':
+            # DiT backbone (`--backbone dit`), same interface as the U-Net.
+            from flow_matching_cond_particles_dit import (
+                ParticleDiTFlowNetwork as ParticleCrossAttnFlowNetwork,
+                generate_particle_trajectories, dit_kwargs)
+            extra_kw.update(dit_kwargs(ck))
         elif self.start_cond:
             from flow_matching_cond_particles_start import (
                 ParticleCrossAttnFlowNetwork, generate_particle_trajectories)

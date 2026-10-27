@@ -54,6 +54,13 @@ GROUPS = [
     ('Sun flow matching (dynamics)', [
         ('linear_sun_pointmass', 'Linear init, point mass', '^'),
         ('linear_sun_jerk', 'Linear init, jerk-penalised', '^')]),
+    ('Waypoint solve + B-spline projection', [
+        ('linear_waypoint_svgd_proj', 'TSVEC, waypoints', 'X'),
+        ('linear_waypoint_svgd_smooth_proj', 'TSVEC, waypoints + smoothness', 'X'),
+        ('linear_adam_waypoint_proj', 'Adam, waypoints', 'X'),
+        ('linear_adam_waypoint_smooth_proj', 'Adam, waypoints + smoothness', 'X'),
+        ('linear_sun_pointmass_proj', 'Sun, point mass', 'X'),
+        ('linear_sun_jerk_proj', 'Sun, jerk-penalised', 'X')]),
 ]
 #: variants whose initialisation comes from the CFM network: drawn bold everywhere
 CFM_VARIANTS = {'cfm_only', 'cfm_bspline_svgd', 'cfm_adam_bspline'}
@@ -97,10 +104,13 @@ def style(ax):
 
 def render(out_tag, vals, n_shapes, with_conv):
     """Draw one overview version and return its path."""
-    flat = [(g, v, lab, mk) for g, items in GROUPS for v, lab, mk in items]
+    # only variants present in this run (older runs lack the projection group)
+    flat = [(g, v, lab, mk) for g, items in GROUPS for v, lab, mk in items
+            if (v, 'ergodic_final_mean') in vals]
     if with_conv:
         conv = np.load(os.path.join(_here, 'results', out_tag, 'convergence.npz'))
         c_variants = list(conv['variants'])
+        flat = [f for f in flat if f[1] in c_variants]
         n90 = {v: np.nanmedian(conv['n90'][:, c_variants.index(v)]) if not np.isnan(
             conv['n90'][:, c_variants.index(v)]).all() else np.nan for v in c_variants}
 
@@ -154,7 +164,8 @@ def render(out_tag, vals, n_shapes, with_conv):
         'cfm_adam_bspline': (-11, 7), 'linear_adam_bspline': (11, -13),
         'linear_adam_waypoint': (11, 6), 'linear_adam_waypoint_smooth': (-11, -12),
         'linear_sun_pointmass': (11, 6), 'linear_sun_jerk': (-11, 10)}
-    prefix = {'CFM': '', 'TSVEC-SVGD': 'TSVEC: ', 'Adam-SVGD': 'Adam: ', 'Sun flow matching (dynamics)': 'Sun: '}
+    prefix = {'CFM': '', 'TSVEC-SVGD': 'TSVEC: ', 'Adam-SVGD': 'Adam: ', 'Sun flow matching (dynamics)': 'Sun: ',
+              'Waypoint solve + B-spline projection': 'Proj. '}
     for (g, v, lab, mk), (x, y) in zip(flat, pts):
         dx, dy = offsets.get(v, (8, 4))
         ax.annotate(prefix[g] + lab, (x, y), xytext=(dx, dy), textcoords='offset points',
@@ -164,6 +175,9 @@ def render(out_tag, vals, n_shapes, with_conv):
     handles = [plt.Line2D([], [], marker=m, ls='', color='#888888', markersize=8, label=n)
                for n, m in (('CFM only', 'D'), ('TSVEC-SVGD', 'o'), ('Adam-SVGD', 's'),
                             ('Sun flow matching', '^'))]
+    if any(g == 'Waypoint solve + B-spline projection' for g, _, _, _ in flat):
+        handles.append(plt.Line2D([], [], marker='X', ls='', color='#888888', markersize=8,
+                                  label='Waypoint solve + B-spline projection'))
     ax.legend(handles=handles, loc='upper right', fontsize=8, frameon=False, title='Solver family',
               title_fontsize=8)
 

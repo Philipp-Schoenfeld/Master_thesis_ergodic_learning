@@ -72,6 +72,12 @@ def load_model(ckpt_path, device):
             length_freq_mode=meta['length_freqs']).to(device)
         kind = 'flow'
         module = 'flow_matching_cond_particles_length'
+    elif start_cond and ckpt.get('backbone', 'unet') == 'dit':
+        # Same interface, DiT backbone instead of the U-Net (`--backbone dit`).
+        from flow_matching_cond_particles_dit import ParticleDiTFlowNetwork, dit_kwargs
+        model = ParticleDiTFlowNetwork(nxi=nxi, nd=nd, D=D, **dit_kwargs(ckpt)).to(device)
+        kind = 'flow'
+        module = 'flow_matching_cond_particles_dit'
     elif start_cond:
         from flow_matching_cond_particles_start import ParticleCrossAttnFlowNetwork
         model = ParticleCrossAttnFlowNetwork(nxi=nxi, nd=nd, D=D).to(device)

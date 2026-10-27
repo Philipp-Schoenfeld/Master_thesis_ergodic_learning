@@ -144,10 +144,24 @@ def sample_particles(density_grids, shape_indices, N, device, threshold=1e-5, mo
 # Dataset loader
 # ===========================================================================
 
-def _load_shapes(nxi, grid_res=128):
+def _load_shapes(nxi, grid_res=128, target_cps=False):
+    """`target_cps`: use the DB's exact B-spline `control_points` column
+    (written by `generate_dataset_adam_svgd.py`) as targets instead of `nxi`
+    waypoints subsampled from the dense trajectory. The subsampled waypoints
+    are only an approximation -- rendered as control points they give a
+    smoothed, shrunken copy of the solver's curve."""
     conn = sqlite3.connect(_DB_PATH)
     cur  = conn.cursor()
-    cur.execute("SELECT trajectory, shape_name, split, density_params FROM ergodic_pairs WHERE split IN ('train', 'val') ORDER BY id ASC")
+    if target_cps:
+        cols = {r[1] for r in cur.execute("PRAGMA table_info(ergodic_pairs)")}
+        if 'control_points' not in cols:
+            raise SystemExit(f"--target_cps: {_DB_PATH} has no control_points column")
+        db_nxi = {r[0] for r in cur.execute("SELECT DISTINCT nxi FROM ergodic_pairs")}
+        if db_nxi != {nxi}:
+            raise SystemExit(f"--target_cps: DB control points have nxi={sorted(db_nxi)}, --nxi={nxi}")
+        cur.execute("SELECT control_points, shape_name, split, density_params FROM ergodic_pairs WHERE split IN ('train', 'val') ORDER BY id ASC")
+    else:
+        cur.execute("SELECT trajectory, shape_name, split, density_params FROM ergodic_pairs WHERE split IN ('train', 'val') ORDER BY id ASC")
     rows = cur.fetchall()
     conn.close()
 
@@ -157,16 +171,23 @@ def _load_shapes(nxi, grid_res=128):
     val_densities = {}
     
     print(f"  Precomputing {grid_res}x{grid_res} density grids for all shapes (this takes a moment)...")
+    # Several rows can share one density (e.g. several start points per density
+    # in the Adam-SVGD DB): evaluate each density once. Every row still gets
+    # its own copy, as before.
+    grid_cache = {}
     for blob, label, split, density_params_str in rows:
         xy = np.frombuffer(blob, dtype=np.float32).reshape(-1, 2)
         idx = np.linspace(0, len(xy) - 1, nxi).astype(int)
-        
-        params = json.loads(density_params_str)
-        # We don't need gx, gy for this
-        d_map, _, _ = pdf_on_grid(params, resolution=grid_res)
-        # Normalize strictly to max=1.0 for consistency
-        if d_map.max() > 0:
-            d_map /= d_map.max()
+
+        if density_params_str not in grid_cache:
+            params = json.loads(density_params_str)
+            # We don't need gx, gy for this
+            d_map, _, _ = pdf_on_grid(params, resolution=grid_res)
+            # Normalize strictly to max=1.0 for consistency
+            if d_map.max() > 0:
+                d_map /= d_map.max()
+            grid_cache[density_params_str] = d_map
+        d_map = grid_cache[density_params_str].copy()
             
         if split == 'val':
             key = label if label not in val_shapes else f"{label}#{len(val_shapes)}"
@@ -226,6 +247,23 @@ def _build_dataset(train_shapes, train_densities, holdout_shapes, holdout_densit
 # Training
 # ===========================================================================
 
+def _atomic_save(obj, path):
+    """torch.save to a temp file, then rename: an interrupted save (signal, SIGKILL after the
+    120 s grace) can never leave a truncated file under `path`, which would replace the last
+    good checkpoint of the same name and pass checkpoint_rotation's size check."""
+    tmp = path + '.tmp'
+    torch.save(obj, tmp)
+    os.replace(tmp, path)
+
+
+def _backbone_meta(args):
+    """Checkpoint keys of the backbone; U-Net runs keep their old dicts (no keys)."""
+    if getattr(args, 'backbone', 'unet') != 'dit':
+        return {}
+    return {'backbone': 'dit', 'dit_depth': args.dit_depth, 'dit_heads': args.dit_heads,
+            'dit_mlp_ratio': args.dit_mlp_ratio}
+
+
 def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     os.makedirs(os.path.dirname(args.save_model) or '.', exist_ok=True)
     stem = os.path.splitext(args.save_model)[0]
@@ -247,9 +285,12 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     ckpt_dict['db'] = _DB_PATH
     ckpt_dict['n_flat'] = getattr(args, 'n_flat', 0)
     ckpt_dict['start_cond'] = True
+    ckpt_dict['target_cps'] = getattr(args, 'target_cps', False)
+    ckpt_dict['start_inpaint'] = getattr(args, 'start_inpaint', False)
+    ckpt_dict.update(_backbone_meta(args))
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt_dict['wandb_id'] = wandb.run.id
-    torch.save(ckpt_dict, path)
+    _atomic_save(ckpt_dict, path)
     nach_zwischenstand(stem, args.run_str, path,
                        behalten=getattr(args, "keep_checkpoints", 1))
     return path
@@ -351,7 +392,11 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, ho
 
     import signal
     class TerminateInterrupt(Exception): pass
-    def _sigterm_handler(signum, frame): raise TerminateInterrupt()
+    def _sigterm_handler(signum, frame):
+        # Slurm sends more than one SIGTERM (scavenger preemption: the --signal one, then
+        # its own); a second one must not interrupt the emergency save below.
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        raise TerminateInterrupt()
     signal.signal(signal.SIGTERM, _sigterm_handler)
 
     from tqdm import tqdm
@@ -564,6 +609,13 @@ def run(args):
     # Always generate a fresh timestamp; run_str is always fully rebuilt
     if not hasattr(args, 'timestamp'):
         args.timestamp = datetime.now().strftime("date_%m_%d_%Hh%Mmin")
+        # A resumed run keeps the timestamp of its checkpoint, so it stays the same run
+        # for checkpoint_rotation (otherwise every requeue/resume leaves the previous
+        # _ep####.pt behind).
+        import re
+        m = re.search(r'date_\d{2}_\d{2}_\d{2}h\d{2}min', os.path.basename(args.resume or ''))
+        if m:
+            args.timestamp = m.group(0)
     args.run_str = f"flow_matching_particle_ergodic_{args.timestamp}_nxi{args.nxi}_D{args.D}_N{args.n_particles}_C{args.copies_per_char}_flip{args.p_flip}_START"
     # Wie viele der flachen Formen (Sockel, weichgezeichnet, breite Moden,
     # Konturen) im Datensatz stecken. Sie fuehren die Trainingsverteilung an
@@ -583,6 +635,13 @@ def run(args):
     # Eigener Marker je Lauf. Ohne ihn greifen zwei gleichzeitig laufende Jobs
     # mit demselben Glob auf die Checkpoints des jeweils anderen zu — der lange
     # Lauf wuerde vom Stand des kurzen fortsetzen.
+    # Both markers only appear with their opt-in flag, older names stay as they were.
+    if args.target_cps:
+        args.run_str += "_CPS"
+    if args.start_inpaint:
+        args.run_str += "_INPAINT"
+    if args.backbone == 'dit':
+        args.run_str += f"_DIT-d{args.dit_depth}-h{args.dit_heads}"
     if getattr(args, 'tag', None):
         args.run_str += f"_{args.tag}"
     # Distinct marker for runs that use the ergodic coverage term in the loss, so
@@ -610,7 +669,8 @@ def run(args):
     print(f"  CFG: p_drop={args.p_drop}  cfg_weight={args.cfg_weight}")
     print(f"{'=' * 70}")
 
-    train_shapes, holdout_shapes, train_densities, holdout_densities = _load_shapes(args.nxi, grid_res=128)
+    train_shapes, holdout_shapes, train_densities, holdout_densities = _load_shapes(
+        args.nxi, grid_res=128, target_cps=args.target_cps)
     print(f"  Loaded {len(train_shapes)} train shapes and {len(holdout_shapes)} val shapes from DB")
 
     x1, shape_indices, density_grids_stack, holdout_particles = _build_dataset(
@@ -622,9 +682,17 @@ def run(args):
 
     print(f"  Training: {len(train_shapes)} shapes, {x1.shape[0]} samples")
 
-    model = ParticleCrossAttnFlowNetwork(
-        nxi=args.nxi, nd=args.nd, D=args.D,
-    ).to(device)
+    if args.backbone == 'dit':
+        from flow_matching_cond_particles_dit import ParticleDiTFlowNetwork
+        model = ParticleDiTFlowNetwork(
+            nxi=args.nxi, nd=args.nd, D=args.D, depth=args.dit_depth,
+            n_heads=args.dit_heads, mlp_ratio=args.dit_mlp_ratio,
+            start_inpaint=args.start_inpaint,
+        ).to(device)
+    else:
+        model = ParticleCrossAttnFlowNetwork(
+            nxi=args.nxi, nd=args.nd, D=args.D, start_inpaint=args.start_inpaint,
+        ).to(device)
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"  Model params: {params:,}\n")
 
@@ -676,7 +744,7 @@ def run(args):
         stem = os.path.splitext(save_path)[0]
         final_save_path = f"{stem}_{args.run_str}_final.pt"
         
-        torch.save({
+        _atomic_save({
             'model_state_dict': model.state_dict(),
             'nxi': args.nxi, 'nd': args.nd, 'D': args.D, 'n_particles': args.n_particles,
             'epochs': args.epochs, 'lr': args.lr, 'sample_mode': args.sample_mode,
@@ -695,6 +763,9 @@ def run(args):
             'erg_t_power': getattr(args, 'erg_t_power', 0.0),
             'db': _DB_PATH,
             'n_flat': getattr(args, 'n_flat', 0),
+            'target_cps': args.target_cps,
+            'start_inpaint': args.start_inpaint,
+            **_backbone_meta(args),
         }, final_save_path)
         print(f"  Checkpoint saved -> {final_save_path}")
         # Nach dem Endstand bleibt nur das `_final`: die Zwischenstaende
@@ -815,6 +886,22 @@ def parse_args():
                    help='Wie viele Checkpoints eines Laufs behalten werden. '
                         'Vorgabe 1: beim Speichern eines neuen Standes werden '
                         'aeltere desselben Laufs entfernt.')
+    p.add_argument('--target_cps', action='store_true', default=False,
+                   help='Train on the exact B-spline control points of the DB '
+                        '(control_points column, generate_dataset_adam_svgd.py) '
+                        'instead of waypoints subsampled from the trajectory. '
+                        'Run name gets _CPS.')
+    p.add_argument('--start_inpaint', action='store_true', default=False,
+                   help='Hold control point 0 at the start point along the whole '
+                        'flow (training and sampling) instead of generating it. '
+                        'Run name gets _INPAINT.')
+    p.add_argument('--backbone', type=str, default='unet', choices=['unet', 'dit'],
+                   help='unet (default, unchanged) or dit: Diffusion Transformer with '
+                        'adaLN-Zero (flow_matching_cond_particles_dit.py), hidden size '
+                        '--D. Run name gets _DIT-d<depth>-h<heads>.')
+    p.add_argument('--dit_depth', type=int, default=12, help='DiT blocks (DiT-S: 12).')
+    p.add_argument('--dit_heads', type=int, default=6, help='DiT attention heads (DiT-S: 6).')
+    p.add_argument('--dit_mlp_ratio', type=float, default=4.0, help='DiT MLP width / hidden size.')
     p.add_argument('--db', type=str, default=None,
                    help='Pfad zur Datensatz-Datenbank. Vorgabe ist '
                         'ergodic_dataset_start.db im Generator-Verzeichnis.')

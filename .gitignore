@@ -76,3 +76,5 @@ thesis_architecture/evaluation_full_matrix/results/svgd_convergence_belief_ucb_2
 thesis_architecture/teacher_study/results/*/metrics.csv
 thesis_architecture/teacher_study/results/calib_A/
 thesis_architecture/teacher_study/results/pilot_*/finals/
+# LM teacher DB (178 MB, over the GitHub limit)
+thesis_architecture/ergodic_dataset_generator/ergodic_dataset_lm_nxi25.db

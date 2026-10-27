@@ -93,7 +93,7 @@ def main():
         print(f"[merge] {tag}: merged")
     present = {r[0] for r in conn.execute("SELECT DISTINCT variant FROM runs")}
     if first_cfg is not None:
-        first_cfg['variants'] = [v for v in VARIANTS if v in present]
+        first_cfg['variants'] = [v for v in VARIANTS if v in present] + sorted(present - set(VARIANTS))
         sdb.set_meta(conn, 'config', first_cfg)
         conn.commit()
     for variant, n in conn.execute("SELECT variant, COUNT(*) FROM runs GROUP BY variant ORDER BY variant"):

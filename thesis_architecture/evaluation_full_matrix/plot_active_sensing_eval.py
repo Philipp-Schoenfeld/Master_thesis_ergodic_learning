@@ -41,10 +41,10 @@ import mission_db as mdb          # noqa: E402
 _here = os.path.dirname(os.path.abspath(__file__))
 
 BELIEFS = ('rbf', 'ak', 'np')
-METHODS = ('cfm', 'linear', 'selfsup')
+METHODS = ('cfm', 'cfm_guided', 'linear', 'selfsup')
 BELIEF_LABEL = {'rbf': 'RBF-GP', 'ak': 'Attentive-Kernel GP', 'np': 'Neural process'}
-METHOD_LABEL = {'cfm': 'CFM (start-conditioned)', 'linear': 'Linear init',
-                'selfsup': 'Self-supervised'}
+METHOD_LABEL = {'cfm': 'CFM (start-conditioned)', 'cfm_guided': 'CFM + belief guidance (test)',
+                'linear': 'Linear init', 'selfsup': 'Self-supervised'}
 COND_LABEL = {'none_known': 'no prior knowledge', 'ten_samples': 'ten prior samples'}
 # Categorical slots 1-3 of the dataviz reference palette (validated, light mode);
 # markers are the secondary encoding (aqua is below 3:1 contrast on white).

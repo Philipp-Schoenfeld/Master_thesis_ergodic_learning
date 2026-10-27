@@ -51,7 +51,8 @@ def main():
     shapes, variants = cfg['shapes'], cfg['variants']
 
     flat = [(g, v, lab, mk) for g, items in GROUPS for v, lab, mk in items if v in variants]
-    prefix = {'CFM': '', 'TSVEC-SVGD': 'TSVEC: ', 'Adam-SVGD': 'Adam: ', 'Sun flow matching (dynamics)': 'Sun: '}
+    prefix = {'CFM': '', 'TSVEC-SVGD': 'TSVEC: ', 'Adam-SVGD': 'Adam: ', 'Sun flow matching (dynamics)': 'Sun: ',
+              'Waypoint solve + B-spline projection': 'Proj. '}
 
     curves = {}
     for g, v, lab, mk in flat:
