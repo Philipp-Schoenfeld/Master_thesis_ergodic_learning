@@ -1,0 +1,14 @@
+{
+ "label": "dit-l630",
+ "ckpt": "/home/stud_schonfeld/Master_thesis/thesis_architecture/checkpoints/cond_particles_crossattn_flow_matching_particle_ergodic_date_10_28_08h23min_nxi25_D384_N256_C25_flip0.0_START_FLAT2400_CPS_INPAINT_DIT-d12-h6_LAMERG50_ERGLOSS-SINKHORN-w630-blur0.05-tp2_final.pt",
+ "backbone": "dit",
+ "lambda_erg": 630.0,
+ "epoch": 179,
+ "n_params": 39955010,
+ "start_inpaint": true,
+ "dit_depth": 12,
+ "dit_heads": 6,
+ "D": 384,
+ "host": "gn09",
+ "gpu": "NVIDIA RTX A5000"
+}

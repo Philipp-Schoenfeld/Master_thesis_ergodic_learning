@@ -1,0 +1,14 @@
+{
+ "label": "unet-l1300-600ep",
+ "ckpt": "/home/stud_schonfeld/Master_thesis/thesis_architecture/checkpoints/cond_particles_crossattn_flow_matching_particle_ergodic_date_10_24_21h47min_nxi25_D384_N256_C25_flip0.0_START_FLAT2400_CPS_INPAINT_LMTEACHER_ERGLOSS-SINKHORN-w1300-blur0.05-tp2_final.pt",
+ "backbone": "unet",
+ "lambda_erg": 1300.0,
+ "epoch": 599,
+ "n_params": 87494210,
+ "start_inpaint": true,
+ "dit_depth": null,
+ "dit_heads": null,
+ "D": 384,
+ "host": "gn03",
+ "gpu": "NVIDIA GeForce RTX 3090"
+}
