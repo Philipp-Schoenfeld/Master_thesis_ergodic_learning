@@ -255,7 +255,8 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
     """
 
     def __init__(self, nxi: int = 20, nd: int = 2, D: int = 128,
-                 n_heads: int = 8, kernel_size: int = 3, start_inpaint: bool = False):
+                 n_heads: int = 8, kernel_size: int = 3, start_inpaint: bool = False,
+                 diffusion_pred: str = None):
         super().__init__()
         self.nxi = nxi
         self.nd  = nd
@@ -263,6 +264,13 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
         if start_inpaint:
             self.register_buffer('start_inpaint_flag', torch.ones(()))
         self._register_load_state_dict_pre_hook(self._adopt_inpaint_flag)
+        # Diffusion objective (diffusion_cond_particles_start.py): same mechanism as
+        # start_inpaint -- a buffer, adopted on load, so every loader samples correctly.
+        if diffusion_pred is not None:
+            from diffusion_cond_particles_start import PRED_CODES
+            self.register_buffer('diffusion_pred_code',
+                                 torch.tensor(float(PRED_CODES[diffusion_pred])))
+        self._register_load_state_dict_pre_hook(self._adopt_diffusion_flag)
 
         self.mpd_layer = MPDLayer(nd=nd, D=D, kernel_size=kernel_size)
         self.pos_emb   = nn.Parameter(torch.randn(1, D, nxi) * 0.02)
@@ -284,6 +292,18 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
     def _adopt_inpaint_flag(self, state_dict, prefix, *args):
         if prefix + 'start_inpaint_flag' in state_dict and not self.start_inpaint:
             self.register_buffer('start_inpaint_flag', torch.ones((), device=self.pos_emb.device))
+
+    @property
+    def diffusion_pred(self):
+        """None for CFM, else the diffusion prediction target ('v', 'eps', 'x0')."""
+        if 'diffusion_pred_code' not in self._buffers:
+            return None
+        from diffusion_cond_particles_start import PRED_NAMES
+        return PRED_NAMES[int(round(self.diffusion_pred_code.item()))]
+
+    def _adopt_diffusion_flag(self, state_dict, prefix, *args):
+        if prefix + 'diffusion_pred_code' in state_dict and self.diffusion_pred is None:
+            self.register_buffer('diffusion_pred_code', torch.zeros((), device=self.pos_emb.device))
 
     def forward(self, x: torch.Tensor, t: torch.Tensor,
                 particles: torch.Tensor,
@@ -382,6 +402,7 @@ def generate_particle_trajectories(
     guide=None,
     guide_weight: float = 0.0,
     guide_t_start: float = 0.3,
+    eta: float = None,
 ) -> tuple:
     """Integrate the flow ODE, optionally repelling the curve from an obstacle.
 
@@ -395,7 +416,18 @@ def generate_particle_trajectories(
     velocity from `guide_t_start` on, with the same quadratic ramp as the
     obstacle term; per candidate the step is `guide_weight * s^2` times the RMS
     of the velocity, so only the direction of the gradient matters.
+
+    Diffusion checkpoints (`model.diffusion_pred` set) are sampled by
+    `diffusion_cond_particles_start.generate_particle_trajectories_diffusion`
+    instead; `eta` (default 1.0 = DDPM) only applies there.
     """
+    if getattr(model, 'diffusion_pred', None) is not None:
+        from diffusion_cond_particles_start import generate_particle_trajectories_diffusion
+        return generate_particle_trajectories_diffusion(
+            model, particles, num_samples=num_samples, nxi=nxi, nd=nd, steps=steps,
+            device=device, cfg_weight=cfg_weight, generator=generator, start=start,
+            eta=1.0 if eta is None else eta, obstacle=obstacle, guide=guide,
+            guide_weight=guide_weight)
     model.eval()
     if particles.ndim == 2:
         particles = particles.unsqueeze(0)

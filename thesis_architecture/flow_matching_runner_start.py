@@ -34,6 +34,7 @@ from flow_matching_cond_particles_start import (
 )
 
 sys.path.append(os.path.join(_here, 'ergodic_dataset_generator'))
+from diffusion_cond_particles_start import compute_particle_diffusion_loss
 from shape_library import pdf_on_grid
 from checkpoint_rotation import nach_zwischenstand, nach_endstand
 
@@ -264,6 +265,14 @@ def _backbone_meta(args):
             'dit_mlp_ratio': args.dit_mlp_ratio}
 
 
+def _objective_meta(args):
+    """Checkpoint keys of the training objective; CFM runs keep their old dicts (no keys)."""
+    if getattr(args, 'objective', 'cfm') != 'diffusion':
+        return {}
+    return {'objective': 'diffusion', 'diff_pred': args.diff_pred,
+            'diff_schedule': 'cosine-vp', 'diff_eta': args.diff_eta}
+
+
 def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     os.makedirs(os.path.dirname(args.save_model) or '.', exist_ok=True)
     stem = os.path.splitext(args.save_model)[0]
@@ -288,6 +297,7 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
     ckpt_dict['target_cps'] = getattr(args, 'target_cps', False)
     ckpt_dict['start_inpaint'] = getattr(args, 'start_inpaint', False)
     ckpt_dict.update(_backbone_meta(args))
+    ckpt_dict.update(_objective_meta(args))
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt_dict['wandb_id'] = wandb.run.id
     _atomic_save(ckpt_dict, path)
@@ -389,6 +399,12 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, ho
         scheduler.load_state_dict(ckpt['scheduler_state_dict'])
         start_epoch = ckpt['epoch'] + 1
         print(f"  Resumed from epoch {start_epoch} (loss={ckpt['loss']:.5f})")
+        # The diffusion buffer is adopted from the checkpoint on load, so a resume with the
+        # wrong --objective / --diff_pred would otherwise train on with the wrong loss.
+        want = args.diff_pred if getattr(args, 'objective', 'cfm') == 'diffusion' else None
+        if getattr(model, 'diffusion_pred', None) != want:
+            raise SystemExit(f"Checkpoint objective (diffusion_pred={model.diffusion_pred}) "
+                             f"does not match --objective/--diff_pred ({want})")
 
     import signal
     class TerminateInterrupt(Exception): pass
@@ -449,7 +465,8 @@ def train(model, x1_clean, shape_indices, density_grids_stack, loss_fn, args, ho
             if ep % 10 == 0 or ep == args.epochs - 1:
                 post = {'loss': f"{avg:.5f}", 'lr': f"{lr_now:.2e}"}
                 if 'erg' in avg_parts:
-                    post['cfm'] = f"{avg_parts['cfm']:.5f}"
+                    main = 'diff' if 'diff' in avg_parts else 'cfm'
+                    post[main] = f"{avg_parts[main]:.5f}"
                     post['erg'] = f"{avg_parts['erg']:.2e}"
                 pbar.set_postfix(**post)
 
@@ -573,7 +590,7 @@ def visualise_set(model, shapes_dict, particles_dict, densities_dict, title_pref
             num_samples=args.n_gen, nxi=args.nxi, nd=args.nd,
             steps=args.steps, device=str(device),
             cfg_weight=args.cfg_weight,
-            start=start_t,
+            start=start_t, eta=getattr(args, 'diff_eta', None),
         )
         gen = gen.cpu().numpy()
         _draw_traj(ax, base, gen, parts, d_map, f"'{lbl}'",
@@ -642,6 +659,8 @@ def run(args):
         args.run_str += "_INPAINT"
     if args.backbone == 'dit':
         args.run_str += f"_DIT-d{args.dit_depth}-h{args.dit_heads}"
+    if args.objective == 'diffusion':
+        args.run_str += f"_DIFF-{args.diff_pred}"
     if getattr(args, 'tag', None):
         args.run_str += f"_{args.tag}"
     # Distinct marker for runs that use the ergodic coverage term in the loss, so
@@ -663,7 +682,7 @@ def run(args):
         torch.backends.cudnn.benchmark = True
 
     print(f"\n{'=' * 70}")
-    print(f"  Particle Cross-Attention Flow Matching")
+    print(f"  Particle Cross-Attention {'Diffusion (' + args.diff_pred + '-pred, cosine VP)' if args.objective == 'diffusion' else 'Flow Matching'}")
     print(f"  device={device}  nxi={args.nxi}  D={args.D}  n_particles={args.n_particles}")
     print(f"  epochs={args.epochs}  sample_mode={args.sample_mode}")
     print(f"  CFG: p_drop={args.p_drop}  cfg_weight={args.cfg_weight}")
@@ -692,6 +711,7 @@ def run(args):
     else:
         model = ParticleCrossAttnFlowNetwork(
             nxi=args.nxi, nd=args.nd, D=args.D, start_inpaint=args.start_inpaint,
+            diffusion_pred=args.diff_pred if args.objective == 'diffusion' else None,
         ).to(device)
     params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"  Model params: {params:,}\n")
@@ -733,7 +753,9 @@ def run(args):
                     id=resume_id,
                     resume="allow" if resume_id else None
                 )
-        train(model, x1, shape_indices, density_grids_stack, compute_particle_cfm_loss, args,
+        loss_fn = (compute_particle_diffusion_loss if args.objective == 'diffusion'
+                   else compute_particle_cfm_loss)
+        train(model, x1, shape_indices, density_grids_stack, loss_fn, args,
               holdout_shapes=holdout_shapes, holdout_particles=holdout_particles, holdout_densities=holdout_densities)
         print("  Training complete!")
         if args.use_wandb and _WANDB_OK:
@@ -766,6 +788,7 @@ def run(args):
             'target_cps': args.target_cps,
             'start_inpaint': args.start_inpaint,
             **_backbone_meta(args),
+            **_objective_meta(args),
         }, final_save_path)
         print(f"  Checkpoint saved -> {final_save_path}")
         # Nach dem Endstand bleibt nur das `_final`: die Zwischenstaende
@@ -902,6 +925,14 @@ def parse_args():
     p.add_argument('--dit_depth', type=int, default=12, help='DiT blocks (DiT-S: 12).')
     p.add_argument('--dit_heads', type=int, default=6, help='DiT attention heads (DiT-S: 6).')
     p.add_argument('--dit_mlp_ratio', type=float, default=4.0, help='DiT MLP width / hidden size.')
+    p.add_argument('--objective', type=str, default='cfm', choices=['cfm', 'diffusion'],
+                   help='cfm (default, unchanged) or diffusion: cosine-VP diffusion on the same '
+                        'U-Net (diffusion_cond_particles_start.py). Run name gets _DIFF-<pred>.')
+    p.add_argument('--diff_pred', type=str, default='v', choices=['v', 'eps', 'x0'],
+                   help='Diffusion prediction target (v: Salimans & Ho 2022; eps: DDPM/MPD).')
+    p.add_argument('--diff_eta', type=float, default=1.0,
+                   help='Diffusion sampler: 1.0 DDPM ancestral, 0.0 deterministic DDIM '
+                        '(sampling only, the training is the same).')
     p.add_argument('--db', type=str, default=None,
                    help='Pfad zur Datensatz-Datenbank. Vorgabe ist '
                         'ergodic_dataset_start.db im Generator-Verzeichnis.')
@@ -910,6 +941,8 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    if args.objective == 'diffusion' and args.backbone != 'unet':
+        raise SystemExit('--objective diffusion is only wired up for --backbone unet')
     if getattr(args, 'db', None):
         _DB_PATH = args.db if os.path.isabs(args.db) else os.path.join(
             _here, 'ergodic_dataset_generator', args.db)

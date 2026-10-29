@@ -28,6 +28,8 @@
 #   sbatch -J lam630 run_job_start_lm_lambda.bash 630 ERG50
 #   sbatch -J lam1890 run_job_start_lm_lambda.bash 1890 ERG75
 #   (reference:  sbatch -J lam1300 run_job_start_lm_lambda.bash 1300 ERG67)
+#   (no ErgLoss: sbatch -J lam0 run_job_start_lm_lambda.bash 0 ERG0  -- the run name then has no
+#    ERGLOSS part, hence the globs below end in `*final.pt` / `*ep[0-9]*.pt`)
 
 LAMBDA=${1:?lambda_erg}
 TAG=${2:?tag, e.g. ERG25}
@@ -44,8 +46,8 @@ ARGS="--nxi 25 --D 384 --n_particles 256 --copies_per_char ${COPIES} --p_flip 0.
       --target_cps --start_inpaint --tag LAM${TAG} --keep_checkpoints 1 \
       --db ergodic_dataset_lm_nxi25.db --use_wandb"
 
-FINAL_DONE=$(ls checkpoints/*_START_*_CPS_INPAINT_LAM${TAG}_*_final.pt 2>/dev/null | head -1)
-LATEST=$(ls -t checkpoints/*_START_*_CPS_INPAINT_LAM${TAG}_*_ep*.pt 2>/dev/null | head -1)
+FINAL_DONE=$(ls checkpoints/*_START_*_CPS_INPAINT_LAM${TAG}_*final.pt 2>/dev/null | head -1)
+LATEST=$(ls -t checkpoints/*_START_*_CPS_INPAINT_LAM${TAG}_*ep[0-9]*.pt 2>/dev/null | head -1)
 
 echo "Node: $(hostname)  GPU: $(nvidia-smi --query-gpu=name --format=csv,noheader)  lambda_erg=${LAMBDA} tag=${TAG}  start: $(date)"
 if [ -f "$FINAL_DONE" ]; then
