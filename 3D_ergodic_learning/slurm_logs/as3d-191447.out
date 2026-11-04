@@ -1,0 +1,89 @@
+=== smoke pass Wed Nov  4 11:05:28 CET 2026 ===
+3 missions per cell: val_form=1, val_flaeche=1, val_beides=1
+loaded DiT-S, refined DB: {'epoch': 150, 'loss': 1.1848448898513986, 'params': 39.972393, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+loaded DiT-S, old DB: {'epoch': 150, 'loss': 1.3839879526597698, 'params': 39.972393, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+loaded DiT-B 750 ep, old DB: {'epoch': 750, 'loss': 1.1429859799582784, 'params': 159.423561, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+loaded U-Net D512 750 ep, old DB: {'epoch': 750, 'loss': 1.3672855176576755, 'params': 155.775881, 'backbone': 'unet', 'lambda_erg': 630.0, 'inpaint': True}
+  [DiT-S, refined DB / none_known] round 0: 3 missions, plan+refine 12 s, mean swept 0.945, mean E_truth 4.502e-03
+  [DiT-S, refined DB / none_known] round 1: 2 missions, plan+refine 0 s, mean swept 0.988, mean E_truth 2.152e-03
+done DiT-S_refined_DB__none_known in 0.2 min
+  [DiT-S, old DB / none_known] round 0: 3 missions, plan+refine 0 s, mean swept 0.889, mean E_truth 4.923e-03
+  [DiT-S, old DB / none_known] round 1: 3 missions, plan+refine 0 s, mean swept 0.985, mean E_truth 2.468e-03
+done DiT-S_old_DB__none_known in 0.0 min
+  [DiT-B 750 ep, old DB / none_known] round 0: 3 missions, plan+refine 1 s, mean swept 0.926, mean E_truth 3.789e-03
+  [DiT-B 750 ep, old DB / none_known] round 1: 3 missions, plan+refine 1 s, mean swept 0.988, mean E_truth 1.397e-03
+done DiT-B_750_ep_old_DB__none_known in 0.0 min
+  [U-Net D512 750 ep, old DB / none_known] round 0: 3 missions, plan+refine 1 s, mean swept 0.906, mean E_truth 4.633e-03
+  [U-Net D512 750 ep, old DB / none_known] round 1: 3 missions, plan+refine 1 s, mean swept 0.983, mean E_truth 1.897e-03
+done U-Net_D512_750_ep_old_DB__none_known in 0.0 min
+  [linear / none_known] round 0: 3 missions, plan+refine 0 s, mean swept 0.632, mean E_truth 1.225e-02
+  [linear / none_known] round 1: 3 missions, plan+refine 0 s, mean swept 0.857, mean E_truth 9.286e-03
+done linear__none_known in 0.0 min
+=== full pass Wed Nov  4 11:06:28 CET 2026 ===
+27 missions per cell: val_form=9, val_flaeche=9, val_beides=9
+loaded DiT-S, refined DB: {'epoch': 150, 'loss': 1.1848448898513986, 'params': 39.972393, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+loaded DiT-S, old DB: {'epoch': 150, 'loss': 1.3839879526597698, 'params': 39.972393, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+loaded DiT-B 750 ep, old DB: {'epoch': 750, 'loss': 1.1429859799582784, 'params': 159.423561, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+loaded U-Net D512 750 ep, old DB: {'epoch': 750, 'loss': 1.3672855176576755, 'params': 155.775881, 'backbone': 'unet', 'lambda_erg': 630.0, 'inpaint': True}
+  [DiT-S, refined DB / none_known] round 0: 27 missions, plan+refine 139 s, mean swept 0.952, mean E_truth 3.824e-03
+  [DiT-S, refined DB / none_known] round 1: 18 missions, plan+refine 87 s, mean swept 0.986, mean E_truth 2.334e-03
+  [DiT-S, refined DB / none_known] round 2: 10 missions, plan+refine 48 s, mean swept 0.994, mean E_truth 1.971e-03
+  [DiT-S, refined DB / none_known] round 3: 3 missions, plan+refine 15 s, mean swept 0.995, mean E_truth 1.950e-03
+  [DiT-S, refined DB / none_known] round 4: 2 missions, plan+refine 11 s, mean swept 0.995, mean E_truth 1.937e-03
+done DiT-S_refined_DB__none_known in 5.0 min
+  [DiT-S, refined DB / ten_samples] round 0: 27 missions, plan+refine 131 s, mean swept 0.939, mean E_truth 3.226e-03
+  [DiT-S, refined DB / ten_samples] round 1: 22 missions, plan+refine 108 s, mean swept 0.989, mean E_truth 2.329e-03
+  [DiT-S, refined DB / ten_samples] round 2: 9 missions, plan+refine 44 s, mean swept 0.995, mean E_truth 2.086e-03
+  [DiT-S, refined DB / ten_samples] round 3: 3 missions, plan+refine 16 s, mean swept 0.996, mean E_truth 2.106e-03
+  [DiT-S, refined DB / ten_samples] round 4: 1 missions, plan+refine 6 s, mean swept 0.997, mean E_truth 2.106e-03
+done DiT-S_refined_DB__ten_samples in 5.1 min
+  [DiT-S, old DB / none_known] round 0: 27 missions, plan+refine 131 s, mean swept 0.918, mean E_truth 3.958e-03
+  [DiT-S, old DB / none_known] round 1: 23 missions, plan+refine 112 s, mean swept 0.977, mean E_truth 1.945e-03
+  [DiT-S, old DB / none_known] round 2: 14 missions, plan+refine 69 s, mean swept 0.992, mean E_truth 1.536e-03
+  [DiT-S, old DB / none_known] round 3: 7 missions, plan+refine 34 s, mean swept 0.994, mean E_truth 1.457e-03
+  [DiT-S, old DB / none_known] round 4: 3 missions, plan+refine 16 s, mean swept 0.994, mean E_truth 1.495e-03
+done DiT-S_old_DB__none_known in 6.1 min
+  [DiT-S, old DB / ten_samples] round 0: 27 missions, plan+refine 131 s, mean swept 0.913, mean E_truth 3.392e-03
+  [DiT-S, old DB / ten_samples] round 1: 25 missions, plan+refine 122 s, mean swept 0.975, mean E_truth 2.108e-03
+  [DiT-S, old DB / ten_samples] round 2: 15 missions, plan+refine 73 s, mean swept 0.991, mean E_truth 1.431e-03
+  [DiT-S, old DB / ten_samples] round 3: 8 missions, plan+refine 39 s, mean swept 0.995, mean E_truth 1.393e-03
+  [DiT-S, old DB / ten_samples] round 4: 1 missions, plan+refine 6 s, mean swept 0.995, mean E_truth 1.393e-03
+done DiT-S_old_DB__ten_samples in 6.2 min
+  [DiT-B 750 ep, old DB / none_known] round 0: 27 missions, plan+refine 348 s, mean swept 0.931, mean E_truth 3.921e-03
+  [DiT-B 750 ep, old DB / none_known] round 1: 20 missions, plan+refine 258 s, mean swept 0.984, mean E_truth 2.001e-03
+  [DiT-B 750 ep, old DB / none_known] round 2: 13 missions, plan+refine 168 s, mean swept 0.991, mean E_truth 1.894e-03
+  [DiT-B 750 ep, old DB / none_known] round 3: 6 missions, plan+refine 78 s, mean swept 0.992, mean E_truth 1.921e-03
+  [DiT-B 750 ep, old DB / none_known] round 4: 6 missions, plan+refine 78 s, mean swept 0.995, mean E_truth 1.870e-03
+done DiT-B_750_ep_old_DB__none_known in 15.6 min
+  [DiT-B 750 ep, old DB / ten_samples] round 0: 27 missions, plan+refine 348 s, mean swept 0.915, mean E_truth 3.409e-03
+  [DiT-B 750 ep, old DB / ten_samples] round 1: 23 missions, plan+refine 297 s, mean swept 0.977, mean E_truth 2.257e-03
+  [DiT-B 750 ep, old DB / ten_samples] round 2: 15 missions, plan+refine 193 s, mean swept 0.991, mean E_truth 1.697e-03
+  [DiT-B 750 ep, old DB / ten_samples] round 3: 7 missions, plan+refine 90 s, mean swept 0.994, mean E_truth 1.624e-03
+  [DiT-B 750 ep, old DB / ten_samples] round 4: 6 missions, plan+refine 78 s, mean swept 0.995, mean E_truth 1.590e-03
+done DiT-B_750_ep_old_DB__ten_samples in 16.8 min
+  [U-Net D512 750 ep, old DB / none_known] round 0: 27 missions, plan+refine 467 s, mean swept 0.919, mean E_truth 3.964e-03
+  [U-Net D512 750 ep, old DB / none_known] round 1: 23 missions, plan+refine 401 s, mean swept 0.976, mean E_truth 2.015e-03
+  [U-Net D512 750 ep, old DB / none_known] round 2: 14 missions, plan+refine 244 s, mean swept 0.991, mean E_truth 1.597e-03
+  [U-Net D512 750 ep, old DB / none_known] round 3: 6 missions, plan+refine 105 s, mean swept 0.993, mean E_truth 1.547e-03
+  [U-Net D512 750 ep, old DB / none_known] round 4: 5 missions, plan+refine 88 s, mean swept 0.996, mean E_truth 1.495e-03
+done U-Net_D512_750_ep_old_DB__none_known in 21.8 min
+  [U-Net D512 750 ep, old DB / ten_samples] round 0: 27 missions, plan+refine 469 s, mean swept 0.915, mean E_truth 3.318e-03
+  [U-Net D512 750 ep, old DB / ten_samples] round 1: 25 missions, plan+refine 435 s, mean swept 0.975, mean E_truth 1.741e-03
+  [U-Net D512 750 ep, old DB / ten_samples] round 2: 17 missions, plan+refine 296 s, mean swept 0.991, mean E_truth 1.439e-03
+  [U-Net D512 750 ep, old DB / ten_samples] round 3: 6 missions, plan+refine 105 s, mean swept 0.993, mean E_truth 1.463e-03
+  [U-Net D512 750 ep, old DB / ten_samples] round 4: 5 missions, plan+refine 88 s, mean swept 0.994, mean E_truth 1.476e-03
+done U-Net_D512_750_ep_old_DB__ten_samples in 23.2 min
+  [linear / none_known] round 0: 27 missions, plan+refine 35 s, mean swept 0.814, mean E_truth 4.772e-03
+  [linear / none_known] round 1: 26 missions, plan+refine 35 s, mean swept 0.931, mean E_truth 3.395e-03
+  [linear / none_known] round 2: 19 missions, plan+refine 26 s, mean swept 0.973, mean E_truth 2.697e-03
+  [linear / none_known] round 3: 15 missions, plan+refine 21 s, mean swept 0.991, mean E_truth 2.308e-03
+  [linear / none_known] round 4: 6 missions, plan+refine 9 s, mean swept 0.993, mean E_truth 2.220e-03
+done linear__none_known in 2.1 min
+  [linear / ten_samples] round 0: 27 missions, plan+refine 35 s, mean swept 0.816, mean E_truth 4.343e-03
+  [linear / ten_samples] round 1: 25 missions, plan+refine 34 s, mean swept 0.936, mean E_truth 2.750e-03
+  [linear / ten_samples] round 2: 17 missions, plan+refine 23 s, mean swept 0.980, mean E_truth 2.217e-03
+  [linear / ten_samples] round 3: 10 missions, plan+refine 13 s, mean swept 0.989, mean E_truth 2.137e-03
+  [linear / ten_samples] round 4: 8 missions, plan+refine 11 s, mean swept 0.993, mean E_truth 2.098e-03
+done linear__ten_samples in 2.0 min
+wrote report.md, curves.png, rounds_to_reach.png, examples.png to results/active_sensing_3d
+end: Wed Nov  4 12:51:57 CET 2026

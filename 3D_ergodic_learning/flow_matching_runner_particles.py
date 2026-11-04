@@ -114,7 +114,16 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
         'standoff_band': args.standoff_band, 'mu_thresh': args.mu_thresh,
         'erg_pts': args.erg_pts, 'erg_t_power': args.erg_t_power,
         'dim': 3,
+        'erg_metric': getattr(args, 'erg_metric', 'fourier'),
+        'sinkhorn_blur': getattr(args, 'sinkhorn_blur', None),
+        'target_cps': getattr(args, 'target_cps', False),
+        'start_inpaint': getattr(args, 'start_inpaint', False),
+        'p_drop': args.p_drop,
     }
+    # Backbone keys only for DiT runs, so U-Net checkpoints keep their old dict.
+    if getattr(args, 'backbone', 'unet') == 'dit':
+        ckpt.update(backbone='dit', dit_depth=args.dit_depth,
+                    dit_heads=args.dit_heads, dit_mlp_ratio=args.dit_mlp_ratio)
     if getattr(args, 'use_wandb', False) and _WANDB_OK and wandb.run is not None:
         ckpt['wandb_id'] = wandb.run.id
     ckpt['db3d'] = getattr(args, 'db3d', None)
@@ -306,6 +315,9 @@ def train(model, x1_clean, shape_indices, volumes, loss_fn, args,
             weight=args.lambda_erg, t_power=args.erg_t_power,
             weighted_target=(args.sample_mode == 'uniform'), nd=args.nd,
             ergodic_on=args.erg_on, mu_thresh=args.mu_thresh,
+            metric=getattr(args, 'erg_metric', 'fourier'),
+            sinkhorn_blur=getattr(args, 'sinkhorn_blur', 0.05),
+            sinkhorn_scaling=getattr(args, 'sinkhorn_scaling', 0.5),
         ).to(x1_clean.device)
         print(f"  Ergodic loss term active: {ergodic.extra_repr()}")
 
@@ -368,7 +380,11 @@ def train(model, x1_clean, shape_indices, volumes, loss_fn, args,
 
     import signal
     class TerminateInterrupt(Exception): pass
-    def _sigterm(signum, frame): raise TerminateInterrupt()
+    def _sigterm(signum, frame):
+        # Slurm can send more than one SIGTERM (the --signal one, then its own at
+        # the limit); a second one must not interrupt the emergency save below.
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        raise TerminateInterrupt()
     signal.signal(signal.SIGTERM, _sigterm)
 
     from tqdm import tqdm
@@ -505,10 +521,22 @@ def run_surfaces(args, device):
 
     from data_surfaces import ziehgewichte, mix_parsen, ALLE_SPLITS
 
+    if args.start_inpaint and not args.start_cond:
+        raise SystemExit("--start_inpaint needs --start_cond: the held control "
+                         "point is the start point, and the sampler only knows "
+                         "it for start-conditioned models.")
+
     eintraege = load_surface_db(args.db3d, nxi=args.nxi, surfaces=args.surfaces,
                                 splits=tuple(args.db_splits),
                                 max_jump=args.max_jump, max_miss=args.max_miss,
-                                n_train_shapes=args.n_train_shapes)
+                                n_train_shapes=args.n_train_shapes,
+                                target_cps=args.target_cps,
+                                deg=args.bspline_deg)
+    if args.target_cps:
+        rm = np.array([e['fit_rmse'] for e in eintraege])
+        print(f"  --target_cps: LSQ control points, position RMSE of the fit "
+              f"median {np.median(rm):.4f}, p90 {np.percentile(rm, 90):.4f}, "
+              f"max {rm.max():.4f}")
     train_e = [e for e in eintraege if e['split'] == 'train']
     # Alles, was nicht 'train' heisst, ist Holdout — die Datenbank kennt jetzt
     # drei davon (unbekannte Dichte, unbekannte Geometrie, beides). Ein festes
@@ -627,11 +655,22 @@ def run_surfaces(args, device):
                  for l, e in zip(hold_lbls, viz_e)}
     args._start_map = start_map
 
-    model = ParticleCrossAttnFlowNetwork(
-        nxi=args.nxi, nd=args.nd, D=args.D, predict_orientation=True,
-        start_cond=args.start_cond).to(device)
+    if args.backbone == 'dit':
+        from flow_matching_cond_particles_dit import ParticleDiTFlowNetwork
+        model = ParticleDiTFlowNetwork(
+            nxi=args.nxi, nd=args.nd, D=args.D, depth=args.dit_depth,
+            n_heads=args.dit_heads, mlp_ratio=args.dit_mlp_ratio,
+            predict_orientation=True, start_cond=args.start_cond,
+            start_inpaint=args.start_inpaint).to(device)
+    else:
+        model = ParticleCrossAttnFlowNetwork(
+            nxi=args.nxi, nd=args.nd, D=args.D, predict_orientation=True,
+            start_cond=args.start_cond,
+            start_inpaint=args.start_inpaint).to(device)
     print(f"  Modellparameter: {sum(p.numel() for p in model.parameters()):,}"
-          f"{'  (mit Startpunkt-Konditionierung)' if args.start_cond else ''}\n")
+          f"  (backbone={args.backbone})"
+          f"{'  (mit Startpunkt-Konditionierung)' if args.start_cond else ''}"
+          f"{'  (start inpainting)' if args.start_inpaint else ''}\n")
 
     if args.init_model:
         if args.resume:
@@ -651,9 +690,19 @@ def run_surfaces(args, device):
         # Einstellungen: `_start_map` etwa ist ein dict von CUDA-Tensoren, das
         # in einer Laufkonfiguration nichts zu suchen hat. Der Filter haelt das
         # allgemein heraus, nicht nur diesen einen Fall.
+        # A chain link that resumes continues the W&B run of the first link
+        # (id stored in the checkpoint) instead of opening a new one each time.
+        resume_id = None
+        if args.resume and os.path.isfile(args.resume):
+            try:
+                resume_id = torch.load(args.resume, map_location='cpu',
+                                       weights_only=True).get('wandb_id')
+            except Exception:
+                pass
         wandb.init(project="flow3d-surfaces", name=args.run_name or args.run_str,
                    config={k: v for k, v in vars(args).items()
-                           if not k.startswith('_')})
+                           if not k.startswith('_')},
+                   id=resume_id, resume="allow" if resume_id else None)
 
     train(model, x1, shape_indices, None, compute_particle_cfm_loss, args,
           holdout=(hold_lbls, traj_map, part_map, vol_map),
@@ -684,6 +733,14 @@ def run(args):
         # mit und ohne Startpunkt-Konditionierung dieselben Checkpoints und
         # setzen einander fort.
         args.run_str += f"_START-pd{args.p_drop_start:g}"
+    # Same markers as the 2D start runner (_CPS, _INPAINT, _DIT-d..-h..); with
+    # the flags off the name stays exactly the old one.
+    if getattr(args, 'target_cps', False):
+        args.run_str += "_CPS"
+    if getattr(args, 'start_inpaint', False):
+        args.run_str += "_INPAINT"
+    if getattr(args, 'backbone', 'unet') == 'dit':
+        args.run_str += f"_DIT-d{args.dit_depth}-h{args.dit_heads}"
     if getattr(args, 'mix', None):
         args.run_str += "_MIX-" + "+".join(sorted(args.mix))
     if getattr(args, 'warmup_epochs', 0) > 0:
@@ -693,7 +750,11 @@ def run(args):
     if args.orientation:
         args.run_str += f"_SE3-{args.frame_mode}"
     if args.lambda_erg > 0.0:
-        args.run_str += f"_ERGLOSS-w{args.lambda_erg:g}-K{args.erg_K}-tp{args.erg_t_power:g}"
+        if getattr(args, 'erg_metric', 'fourier') == 'sinkhorn':
+            args.run_str += (f"_ERGLOSS-SINKHORN-w{args.lambda_erg:g}"
+                             f"-blur{args.sinkhorn_blur:g}-tp{args.erg_t_power:g}")
+        else:
+            args.run_str += f"_ERGLOSS-w{args.lambda_erg:g}-K{args.erg_K}-tp{args.erg_t_power:g}"
         if args.erg_on != 'position':
             args.run_str += f"-on{args.erg_on}"
     if args.lambda_ori > 0.0:
@@ -926,6 +987,33 @@ def parse_args():
                    help="Where coverage is scored. 'footprint' follows the "
                         "sensor beam and is the only setting under which "
                         "orientation affects coverage at all.")
+    p.add_argument('--erg_metric', type=str, default='fourier',
+                   choices=['fourier', 'sinkhorn'],
+                   help="Discrepancy of the ergodic term. 'fourier' (default) is "
+                        "the K^3 spectral metric of all earlier 3D runs; "
+                        "'sinkhorn' the debiased Sinkhorn divergence of the 2D "
+                        "lambda runs (no basis truncation, needs geomloss).")
+    p.add_argument('--sinkhorn_blur', type=float, default=0.05,
+                   help='Entropic length scale in domain widths (sinkhorn only).')
+    p.add_argument('--sinkhorn_scaling', type=float, default=0.5,
+                   help='Epsilon-annealing density (sinkhorn only).')
+
+    # ── Targets, start and backbone (2D start runner, ported Oct 2026) ───────
+    p.add_argument('--target_cps', action='store_true', default=False,
+                   help='Targets are B-spline control points least-squares '
+                        'fitted to the whole stored path (start held), instead '
+                        'of nxi points picked from it with linspace.')
+    p.add_argument('--start_inpaint', action='store_true', default=False,
+                   help='Hold the position of control point 0 at the start '
+                        'along the whole flow (no position loss on it). Needs '
+                        '--start_cond.')
+    p.add_argument('--backbone', type=str, default='unet', choices=['unet', 'dit'],
+                   help="'unet' (default): the 1D U-Net of all earlier runs; "
+                        "'dit': Diffusion Transformer with adaLN-Zero and "
+                        "particle cross-attention (flow_matching_cond_particles_dit.py).")
+    p.add_argument('--dit_depth', type=int, default=12)
+    p.add_argument('--dit_heads', type=int, default=6)
+    p.add_argument('--dit_mlp_ratio', type=float, default=4.0)
 
     # ── Stufe 3: orientation as an objective rather than an imitation target ──
     p.add_argument('--lambda_ori', type=float, default=0.0,

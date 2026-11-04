@@ -1,0 +1,108 @@
+Node: gn10  GPU: NVIDIA RTX A5000, 24564 MiB  start: Fri Oct 30 09:46:06 CET 2026
+=== 0: test suites ===
+[ok]   der erste Kontrollpunkt ist der geforderte Startpunkt max |diff| = 0.00e+00
+
+All checks passed.
+[ok]   cp0 equals the start (200 points)                          
+
+All checks passed.
+=== 1: s/step and memory of the candidate sizes (batch 256) ===
+device: NVIDIA RTX A5000
+4000 entries, batch 256
+unet-D384        87.7M  0.748 s/step (median of 30)  peak   8.4 GiB  | cfm 0.559 cfm_rot 2.604 erg 2.79e-03 ori 33.71
+unet-D512       155.8M  1.017 s/step (median of 30)  peak  11.3 GiB  | cfm 0.652 cfm_rot 2.959 erg 4.03e-03 ori 47.48
+dit-D384-d12     40.0M  0.255 s/step (median of 30)  peak   7.9 GiB  | cfm 1.029 cfm_rot 2.238 erg 1.89e-02 ori 229.83
+dit-D512-d12     71.0M  0.327 s/step (median of 30)  peak   9.3 GiB  | cfm 1.036 cfm_rot 2.530 erg 1.73e-02 ori 235.95
+dit-D512-d16     94.1M  0.402 s/step (median of 30)  peak  11.8 GiB  | cfm 1.021 cfm_rot 2.210 erg 1.90e-02 ori 223.76
+dit-D768-d12    159.4M  0.515 s/step (median of 30)  peak  14.0 GiB  | cfm 1.035 cfm_rot 2.439 erg 1.77e-02 ori 230.69
+=== 2a: U-Net, full DB, SIGTERM 3 min after training started ===
+
+==========================================================================
+  3D Particle Cross-Attention Flow Matching
+  device=cuda  nxi=25  nd=3  D=384
+  particles=512  grid=64^3
+  plane z=0.5  slab sigma=0.05
+  rotation=SO(3)
+  CFG: p_drop=0.1  cfg_weight=2.0
+==========================================================================
+  --target_cps: LSQ control points, position RMSE of the fit median 0.0185, p90 0.0450, max 0.1094
+  83789 Trainings- und 9430 Holdout-Eintraege ueber 200 Flaechen
+  Trainingsgruppen: baugruppe=10028, buchstabe=11694, ebene=4800, extern=2630, organismus=17757, primitiv=16138, superquadrik=11318, wort=9424
+  Holdout-Splits:   val_beides=506, val_flaeche=508, val_form=8416
+  Mischverhaeltnis je Zug: baugruppe=13%, buchstabe=12%, ebene=12%, extern=12%, organismus=12%, primitiv=12%, superquadrik=13%, wort=13%  (davon ebene_flach 6.3%)
+  Trainingstensor: (83789, 25, 9)  Epochenlaenge 83789
+  Partikelstapel:  (83789, 512, 4) (686 MB angeheftet auf der CPU)
+  Modellparameter: 87,660,201  (backbone=unet)  (mit Startpunkt-Konditionierung)  (start inpainting)
+
+  Ergodic loss term active: metric=sinkhorn, blur=0.05, scaling=0.5, nd=3, on=footprint, weight=630.0, t_power=2.0
+  Orientation loss term active: weight=0.012, t_power=2.0, w_point=0.1, w_standoff=300.0, w_angsmooth=2.0, standoff=0.12+-0.03
+training started: Fri Oct 30 09:51:29 CET 2026
+sending SIGTERM to step 186004.0: Fri Oct 30 09:54:29 CET 2026
+
+  [!] Training interrupted at epoch 1. Saving emergency state...
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_test3dunet_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_emergency_ep0001.png
+exit code 0  Fri Oct 30 09:55:23 CET 2026
+-rw-rw-r-- 1 stud_schonfeld stud_schonfeld 1052344076 Oct 30 09:54 checkpoints/lm3d_flow3d_particle_ergodic_test3dunet_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0001.pt
+=== 2b: resume from checkpoints/lm3d_flow3d_particle_ergodic_test3dunet_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0001.pt (reduced set) ===
+
+==========================================================================
+  3D Particle Cross-Attention Flow Matching
+  device=cuda  nxi=25  nd=3  D=384
+  particles=512  grid=64^3
+  plane z=0.5  slab sigma=0.05
+  rotation=SO(3)
+  CFG: p_drop=0.1  cfg_weight=2.0
+==========================================================================
+  --target_cps: LSQ control points, position RMSE of the fit median 0.0188, p90 0.0446, max 0.1094
+  964 Trainings- und 9430 Holdout-Eintraege ueber 200 Flaechen
+  Trainingsgruppen: baugruppe=120, buchstabe=134, ebene=50, extern=35, organismus=189, primitiv=182, superquadrik=133, wort=121
+  Holdout-Splits:   val_beides=506, val_flaeche=508, val_form=8416
+  Mischverhaeltnis je Zug: baugruppe=12%, buchstabe=13%, ebene=12%, extern=13%, organismus=13%, primitiv=12%, superquadrik=13%, wort=12%  (davon ebene_flach 6.3%)
+  Trainingstensor: (964, 25, 9)  Epochenlaenge 964
+  Partikelstapel:  (964, 512, 4) (8 MB angeheftet auf der CPU)
+  Modellparameter: 87,660,201  (backbone=unet)  (mit Startpunkt-Konditionierung)  (start inpainting)
+
+  Ergodic loss term active: metric=sinkhorn, blur=0.05, scaling=0.5, nd=3, on=footprint, weight=630.0, t_power=2.0
+  Orientation loss term active: weight=0.012, t_power=2.0, w_point=0.1, w_standoff=300.0, w_angsmooth=2.0, standoff=0.12+-0.03
+  Resumed from epoch 1 (loss=0.00000)
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_test3dunet_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0001.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_test3dunet_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0002.png
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_test3dunet_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_holdout.png
+
+Fertig.
+exit code 0  Fri Oct 30 09:58:19 CET 2026
+-rw-rw-r-- 1 stud_schonfeld stud_schonfeld 1052345740 Oct 30 09:57 checkpoints/lm3d_flow3d_particle_ergodic_test3dunet_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0002.pt
+=== 3: DiT, full DB, one epoch ===
+
+==========================================================================
+  3D Particle Cross-Attention Flow Matching
+  device=cuda  nxi=25  nd=3  D=512
+  particles=512  grid=64^3
+  plane z=0.5  slab sigma=0.05
+  rotation=SO(3)
+  CFG: p_drop=0.1  cfg_weight=2.0
+==========================================================================
+  --target_cps: LSQ control points, position RMSE of the fit median 0.0185, p90 0.0450, max 0.1094
+  83789 Trainings- und 9430 Holdout-Eintraege ueber 200 Flaechen
+  Trainingsgruppen: baugruppe=10028, buchstabe=11694, ebene=4800, extern=2630, organismus=17757, primitiv=16138, superquadrik=11318, wort=9424
+  Holdout-Splits:   val_beides=506, val_flaeche=508, val_form=8416
+  Mischverhaeltnis je Zug: baugruppe=13%, buchstabe=12%, ebene=12%, extern=12%, organismus=12%, primitiv=12%, superquadrik=13%, wort=13%  (davon ebene_flach 6.3%)
+  Trainingstensor: (83789, 25, 9)  Epochenlaenge 83789
+  Partikelstapel:  (83789, 512, 4) (686 MB angeheftet auf der CPU)
+  Modellparameter: 94,070,153  (backbone=dit)  (mit Startpunkt-Konditionierung)  (start inpainting)
+
+  Ergodic loss term active: metric=sinkhorn, blur=0.05, scaling=0.5, nd=3, on=footprint, weight=630.0, t_power=2.0
+  Orientation loss term active: weight=0.012, t_power=2.0, w_point=0.1, w_standoff=300.0, w_angsmooth=2.0, standoff=0.12+-0.03
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_test3ddit_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d16-h8_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0001.png
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_test3ddit_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d16-h8_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_holdout.png
+
+Fertig.
+exit code 0  Fri Oct 30 10:03:25 CET 2026
+-rw-rw-r-- 1 stud_schonfeld stud_schonfeld 1129707137 Oct 30 10:02 checkpoints/lm3d_flow3d_particle_ergodic_test3ddit_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d16-h8_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0001.pt
+lm3d_flow3d_particle_ergodic_test3dunet_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0002.pt
+   {'backbone': None, 'dit_depth': None, 'dit_heads': None, 'D': 384, 'start_cond': True, 'start_inpaint': True, 'target_cps': True, 'erg_metric': 'sinkhorn', 'lambda_erg': 630.0, 'epoch': 1, 'loss': 3.0002849102020264}
+   params: 87.7M  start_inpaint_flag in state dict: True
+lm3d_flow3d_particle_ergodic_test3ddit_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d16-h8_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0001.pt
+   {'backbone': 'dit', 'dit_depth': 16, 'dit_heads': 8, 'D': 512, 'start_cond': True, 'start_inpaint': True, 'target_cps': True, 'erg_metric': 'sinkhorn', 'lambda_erg': 630.0, 'epoch': 0, 'loss': 6.650536590959968}
+   params: 94.1M  start_inpaint_flag in state dict: True
+PASS  end: Fri Oct 30 10:03:42 CET 2026

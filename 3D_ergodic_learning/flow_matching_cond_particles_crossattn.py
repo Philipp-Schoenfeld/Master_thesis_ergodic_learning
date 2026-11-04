@@ -300,6 +300,18 @@ class MPDLayer(nn.Module):
         return self.norm(h.permute(0, 2, 1)).permute(0, 2, 1)
 
 
+def _adopt_inpaint_flag(module, state_dict, prefix, *args):
+    """load_state_dict pre-hook: take over `start_inpaint_flag` from a checkpoint.
+
+    Shared by the U-Net and the DiT (flow_matching_cond_particles_dit.py), so a
+    model built with the default constructor samples an inpainting checkpoint
+    with the start held; old checkpoints carry no such key and load unchanged.
+    """
+    if prefix + 'start_inpaint_flag' in state_dict and not module.start_inpaint:
+        dev = next(module.parameters()).device
+        module.register_buffer('start_inpaint_flag', torch.ones((), device=dev))
+
+
 class ParticleCrossAttnFlowNetwork(nn.Module):
     """Flow-matching network over positions, optionally over orientation too.
 
@@ -311,18 +323,29 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
     (position, 6D rotation) in R^(3+6). That the 6D block is a plain vector
     space is what keeps the linear CFM interpolation and the MSE objective
     valid — see `orientation.py`.
+
+    `start_inpaint=True` (opt-in, default off = previous behaviour), as in the
+    2D start net: the *position* of control point 0 is not generated but held at
+    the start point along the whole flow (training: x_t[:, 0, :nd] = start and no
+    position loss on it; sampling: reset before every Euler step). Its rotation
+    channels are still generated. The flag travels in the state dict as the
+    buffer `start_inpaint_flag` and is adopted on load, so any loader samples
+    an inpainting checkpoint correctly without knowing about the flag.
     """
 
     def __init__(self, nxi: int = 25, nd: int = ND, D: int = 128,
                  n_heads: int = 8, kernel_size: int = 3,
                  predict_orientation: bool = False,
-                 start_cond: bool = False):
+                 start_cond: bool = False, start_inpaint: bool = False):
         super().__init__()
         self.nxi = nxi
         self.nd  = nd
         self.D   = D
         self.predict_orientation = predict_orientation
         self.start_cond = start_cond
+        if start_inpaint:
+            self.register_buffer('start_inpaint_flag', torch.ones(()))
+        self._register_load_state_dict_pre_hook(_adopt_inpaint_flag, with_module=True)
         # The sequence input carries position and, if enabled, the 6D rotation.
         self.in_dim = nd + (6 if predict_orientation else 0)
 
@@ -350,6 +373,10 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
         if start_cond:
             self.start_emb = StartEmbedding(D=D, nd=nd, n_freq=8)
             self.null_start_token = nn.Parameter(torch.zeros(1, D))
+
+    @property
+    def start_inpaint(self) -> bool:
+        return 'start_inpaint_flag' in self._buffers
 
     def forward(self, x: torch.Tensor, t: torch.Tensor,
                 particles: torch.Tensor,
@@ -391,6 +418,13 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
         return v_t, v_rot
 
 
+def _pin_start(x, start, nd):
+    """Copy of x (B, nxi, C) with the position block of control point 0 set to
+    start (B, nd); out of place, so the autograd graph of x stays intact."""
+    first = torch.cat([start[:, None, :].to(x.dtype), x[:, :1, nd:]], dim=-1)
+    return torch.cat([first, x[:, 1:]], dim=1)
+
+
 def compute_particle_cfm_loss(
     model: nn.Module,
     x1_batch: torch.Tensor,
@@ -426,14 +460,24 @@ def compute_particle_cfm_loss(
         if p_drop_start > 0.0:
             start_drop = (torch.rand(B, device=device) < p_drop_start)
 
+    nd = model.nd
+    # With inpainting the position of control point 0 is given, not generated:
+    # it sits at the start in x_t at every t and gets no position target.
+    inpaint = getattr(model, 'start_inpaint', False)
+    if inpaint:
+        xt = xt.clone()
+        xt[:, 0, :nd] = x1_batch[:, 0, :nd]
+
     v_pos, v_rot = model(xt, t, particle_batch, cond_drop_mask=cond_drop_mask,
                          start=start, start_drop_mask=start_drop)
     v_t = v_pos if v_rot is None else torch.cat([v_pos, v_rot], dim=-1)
 
     # Position and orientation are reported separately: they live on different
     # scales, and a single number cannot show which of the two is still moving.
-    nd = model.nd
-    loss_pos = torch.mean((v_t[..., :nd] - ut[..., :nd]) ** 2)
+    if inpaint:
+        loss_pos = torch.mean((v_t[:, 1:, :nd] - ut[:, 1:, :nd]) ** 2)
+    else:
+        loss_pos = torch.mean((v_t[..., :nd] - ut[..., :nd]) ** 2)
     total = loss_pos
     parts = {'cfm': loss_pos.detach()}
     if v_rot is not None:
@@ -453,6 +497,8 @@ def compute_particle_cfm_loss(
         # Flow matching predicts a velocity, so the endpoint has to be estimated
         # before a trajectory-level objective can be applied to it.
         x1_hat = xt + (1.0 - t_exp) * v_t
+        if inpaint:
+            x1_hat = _pin_start(x1_hat, x1_batch[:, 0, :nd], nd)
         rot_hat = x1_hat[..., nd:] if v_rot is not None else None
 
         # One surface for both terms: building it is a cdist over the particle
@@ -559,7 +605,13 @@ def generate_particle_trajectories(
             start_drop_batch = torch.ones(2 * num_samples, dtype=torch.bool,
                                           device=device)
 
+    # Inpainting checkpoints were trained with the position of control point 0
+    # held at the start for every t, so it is reset before every step.
+    inpaint = start_b is not None and getattr(model, 'start_inpaint', False)
+
     for step in range(steps):
+        if inpaint:
+            x[:, 0, :nd] = start_b.to(x.dtype)
         t = torch.full((num_samples,), step * dt, device=device)
         t_batch = torch.cat([t, t], dim=0)
         x_batch = torch.cat([x, x], dim=0)
@@ -597,7 +649,7 @@ def generate_particle_trajectories(
                                      B_basis, max_iters=polish_steps)
         x = torch.cat([pos, x[..., nd:]], dim=-1) if x.shape[-1] > nd else pos
 
-    if start_b is not None and not drop_start:
+    if start_b is not None and (not drop_start or inpaint):
         # Die Bedingung *erfuellen* statt sie nur zu lernen: bei einem
         # geklemmten B-Spline ist der erste Kontrollpunkt der Kurvenanfang, also
         # wird er auf den Startpunkt gesetzt. Nur der Ortsblock — der

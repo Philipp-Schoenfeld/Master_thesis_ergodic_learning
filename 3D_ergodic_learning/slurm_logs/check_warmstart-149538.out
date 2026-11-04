@@ -1,0 +1,37 @@
+
+Warmstart-Pruefung  (Geraet: cuda)
+  Checkpoint: flaechen200_flow3d_particle_ergodic_flaechen200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_MIX-ebene=0.25_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0111.pt
+  Datenbank:  ergodic_dataset_3d.db  Splits ['train']
+  Zielfunktion des geladenen Laufs: erg_on=footprint, lambda_erg=100, erg_K=6, w_cfm_rot=0.5, lambda_ori=0.012
+
+  Warmstart aus flaechen200_flow3d_particle_ergodic_flaechen200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_MIX-ebene=0.25_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0111.pt (Epoche 110, Verlust 0.85174)
+  neu initialisiert: nichts
+  82415 Eintraege geladen
+    10/150  laufendes Mittel 0.95720  (3 s)
+    20/150  laufendes Mittel 0.95567  (4 s)
+    30/150  laufendes Mittel 0.94582  (4 s)
+    40/150  laufendes Mittel 0.95488  (5 s)
+    50/150  laufendes Mittel 0.95852  (5 s)
+    60/150  laufendes Mittel 0.96307  (6 s)
+    70/150  laufendes Mittel 0.95261  (6 s)
+    80/150  laufendes Mittel 0.96020  (7 s)
+    90/150  laufendes Mittel 0.96073  (7 s)
+    100/150  laufendes Mittel 0.94440  (8 s)
+    110/150  laufendes Mittel 0.94277  (8 s)
+    120/150  laufendes Mittel 0.93732  (9 s)
+    130/150  laufendes Mittel 0.93588  (10 s)
+    140/150  laufendes Mittel 0.93904  (10 s)
+    150/150  laufendes Mittel 0.93299  (11 s)
+
+  Verlust ueber 150 Stapel: Mittel 0.93299  sd 0.24349  Standardfehler 0.01988
+  Endverlust des geladenen Laufs: 0.85174
+  Abweichung 0.08125  =  4.07 Standardfehler  =  9.54 %
+  Zulaessiges Band: 0.05110  (das groessere aus 2.5 x Standardfehler und 6 %)
+
+  FEHLGESCHLAGEN — das warmgestartete Netz rechnet nicht das,
+  was der geladene Lauf zuletzt gerechnet hat. Bevor darauf 22 h
+  Rechenzeit gesetzt werden, gehoert das geklaert:
+    - passt die Zielfunktion (erg_on, erg_K, w_cfm_rot) wirklich
+      zu der des Checkpoints?
+    - passt die Datenbank (Augmentierung, Flaechen) dazu?
+    - meldet --init_model fehlende Schluessel ausser start_emb.*?

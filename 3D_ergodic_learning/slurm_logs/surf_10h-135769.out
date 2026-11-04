@@ -1,0 +1,22 @@
+Knoten:     dgx-station
+Startzeit:  Tue Aug 25 22:31:35 CEST 2026
+Tesla V100-DGXS-32GB, 32768 MiB
+Fortsetzung ab: surf_flow3d_particle_ergodic_surfA_10h_nxi25_D384_N512_R64_C30_flip0.0_SURF_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2_ep0017.pt
+
+==========================================================================
+  3D Particle Cross-Attention Flow Matching
+  device=cuda  nxi=25  nd=3  D=384
+  particles=512  grid=64^3
+  plane z=0.5  slab sigma=0.05
+  rotation=SO(3)
+  CFG: p_drop=0.1  cfg_weight=2.0
+==========================================================================
+  5250 Trainings- und 175 Holdout-Eintraege
+  Oberflaechen: bunny, ebene_diagonal, ebene_flach, ebene_gekippt, ei, kugel, wuerfel
+  Trainingstensor: (157500, 25, 9)  Partikelstapel: (5250, 512, 4) (43 MB auf der GPU)
+  Modellparameter: 87,493,161
+
+  Ergodic loss term active: K=6 (216 modes), nd=3, on=position, weight=100.0, t_power=2.0
+  Resumed from epoch 17 (loss=0.67107)
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_surfA_10h_nxi25_D384_N512_R64_C30_flip0.0_SURF_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2_ep0020.png
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_surfA_10h_nxi25_D384_N512_R64_C30_flip0.0_SURF_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2_ep0030.png

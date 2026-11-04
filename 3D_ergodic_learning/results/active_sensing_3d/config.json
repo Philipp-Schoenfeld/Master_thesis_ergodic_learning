@@ -1,0 +1,46 @@
+{
+ "args": {
+  "db3d": "ergodic_dataset_3d_lm.db",
+  "models": [
+   "DiT-S, refined DB=checkpoints/dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.pt",
+   "DiT-S, old DB=checkpoints/dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.pt",
+   "DiT-B 750 ep, old DB=checkpoints/lm3d_flow3d_particle_ergodic_lm630dit_nxi25_D768_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h12_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt",
+   "U-Net D512 750 ep, old DB=checkpoints/lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt"
+  ],
+  "methods": [
+   "DiT-S, refined DB",
+   "DiT-S, old DB",
+   "DiT-B 750 ep, old DB",
+   "U-Net D512 750 ep, old DB",
+   "linear"
+  ],
+  "conditions": [
+   "none_known",
+   "ten_samples"
+  ],
+  "splits": [
+   "val_form",
+   "val_flaeche",
+   "val_beides"
+  ],
+  "per_split": 9,
+  "rounds": 5,
+  "reach": 0.99,
+  "n_cand": 30,
+  "steps": 100,
+  "cfg_weight": 2.0,
+  "refine_iters": 150,
+  "refine_lr": 0.002,
+  "chunk": 300,
+  "kappa0": 1.0,
+  "kappa1": 0.05,
+  "gp_noise": 0.05,
+  "gp_lengthscale": 0.1,
+  "r_sense": 0.06,
+  "r_cov": 0.06,
+  "lin_len": 6.5,
+  "seed": 0,
+  "out_dir": "results/active_sensing_3d",
+  "device": null
+ }
+}

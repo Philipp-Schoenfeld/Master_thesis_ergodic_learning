@@ -27,6 +27,14 @@ from the 2D version:
 Cost note: at K = 8 this is 512 modes in 3D rather than 64 in 2D. The basis is
 evaluated on `pts` curve samples per trajectory, so the term costs 8x more than
 its 2D counterpart at the same K — worth knowing when picking `--erg_K`.
+
+Since October 2026 the debiased Sinkhorn divergence is available behind
+`metric='sinkhorn'`, ported from `thesis_architecture/ergodic_metric.py` (see
+there, and Sun, Pinosky & Murphey 2025, arXiv:2504.17872, for why it replaces
+the truncated basis). In 3D the argument is stronger still: K = 6 already costs
+216 modes and resolves only ~1/6 of the unit cube, while Sinkhorn has no
+truncation and its cost does not grow with the dimension. The default stays
+`fourier`, so nothing changes unless the flag is set.
 """
 
 import numpy as np
@@ -73,8 +81,40 @@ def target_coeffs_from_particles(particles, k_idx, weighted=True, nd=ND):
     return (Fk * w).sum(dim=1) / w.sum(dim=1).clamp(min=1e-8)
 
 
+def sinkhorn_error(curve, particles, loss_fn, weighted=True, nd=ND, eps=1e-8):
+    """Debiased Sinkhorn divergence between the path and the target cloud.
+
+    curve:     (B, T, nd) rendered trajectory points (or beam footprints)
+    particles: (B, N, nd + 1) conditioning cloud, (x, y, z, mu)
+    loss_fn:   a `geomloss.SamplesLoss`
+    -> (B,)
+
+    Same construction as the 2D version: the path carries uniform weights 1/T
+    (the empirical measure the ergodic metric time-averages over), the target
+    carries mu-normalised weights, because with `sample_mode='uniform'` mu is an
+    importance weight and dropping it would score coverage of the support
+    instead of the density.
+    """
+    B, T, _ = curve.shape
+    N = particles.shape[1]
+    a = curve.new_full((B, T), 1.0 / T)
+    if weighted:
+        w = particles[..., nd].clamp(min=0.0)
+        b = w / w.sum(dim=1, keepdim=True).clamp(min=eps)
+    else:
+        b = curve.new_full((B, N), 1.0 / N)
+    # geomloss reshapes with .view(), which fails on non-contiguous inputs.
+    return loss_fn(a.contiguous(), curve.contiguous(),
+                   b.contiguous(), particles[..., :nd].contiguous())
+
+
 class ErgodicLoss(nn.Module):
-    """Weighted spectral coverage error, ready to add to the flow-matching loss.
+    """Coverage error, ready to add to the flow-matching loss.
+
+    `metric='fourier'` (default) is the weighted spectral distance on the K^3
+    cosine basis; `metric='sinkhorn'` the debiased Sinkhorn divergence (no basis,
+    see module docstring). Both are scored on the position or, with
+    `ergodic_on='footprint'`, where the sensor beam lands.
 
     Args:
         nxi:     number of control points
@@ -88,14 +128,32 @@ class ErgodicLoss(nn.Module):
         t_power: exponent of the t-ramp; 0 disables the ramp
         weighted_target: see `target_coeffs_from_particles`
         nd:      coordinate dimension (3 here)
+        metric:  'fourier' | 'sinkhorn'
+        sinkhorn_blur: entropic length scale in domain widths (sinkhorn only);
+                 0.05 as in the 2D runs.
+        sinkhorn_scaling: epsilon-annealing density; 0.5 as in 2D (gradient
+                 within 0.16 % of 0.9 at 6x lower cost, test_sinkhorn_metric.py).
     """
 
     def __init__(self, nxi=25, K=8, pts=128, deg=5, weight=1.0, t_power=2.0,
                  weighted_target=True, nd=ND, lambda_exponent=LAMBDA_EXPONENT,
-                 ergodic_on='position', mu_thresh=0.5, sensor_axis_index=2):
+                 ergodic_on='position', mu_thresh=0.5, sensor_axis_index=2,
+                 metric='fourier', sinkhorn_blur=0.05, sinkhorn_p=2,
+                 sinkhorn_scaling=0.5):
         super().__init__()
         if ergodic_on not in ('position', 'footprint'):
             raise ValueError(f"unknown ergodic_on: {ergodic_on}")
+        if metric not in ('fourier', 'sinkhorn'):
+            raise ValueError(f"unknown metric: {metric}")
+        self.metric = metric
+        self.sinkhorn_blur, self.sinkhorn_scaling = sinkhorn_blur, sinkhorn_scaling
+        self._sinkhorn = None
+        if metric == 'sinkhorn':
+            # Imported lazily so a pure-Fourier run needs no extra dependency.
+            from geomloss import SamplesLoss
+            self._sinkhorn = SamplesLoss(
+                loss='sinkhorn', p=sinkhorn_p, blur=sinkhorn_blur,
+                scaling=sinkhorn_scaling, debias=True, backend='tensorized')
         self.K, self.weight, self.t_power = K, weight, t_power
         self.weighted_target = weighted_target
         self.nd = nd
@@ -110,6 +168,11 @@ class ErgodicLoss(nn.Module):
             bspline_basis_matrix(nxi, pts, deg)))
 
     def extra_repr(self):
+        if self.metric == 'sinkhorn':
+            return (f"metric=sinkhorn, blur={self.sinkhorn_blur}, "
+                    f"scaling={self.sinkhorn_scaling}, nd={self.nd}, "
+                    f"on={self.ergodic_on}, "
+                    f"weight={self.weight}, t_power={self.t_power}")
         return (f"K={self.K} ({self.K ** self.nd} modes), nd={self.nd}, "
                 f"on={self.ergodic_on}, "
                 f"weight={self.weight}, t_power={self.t_power}")
@@ -141,6 +204,10 @@ class ErgodicLoss(nn.Module):
             a = sensor_axis(rot6d_to_matrix(r6), self.sensor_axis_index)
             surf = surface or ParticleSurface(particles.float(), self.mu_thresh)
             curve = surf.footprint(curve, a)
+
+        if self.metric == 'sinkhorn':
+            return sinkhorn_error(curve, particles.float(), self._sinkhorn,
+                                  self.weighted_target, self.nd)
 
         c = trajectory_coeffs(curve, self.k_idx)
         phi = target_coeffs_from_particles(particles.float(), self.k_idx,

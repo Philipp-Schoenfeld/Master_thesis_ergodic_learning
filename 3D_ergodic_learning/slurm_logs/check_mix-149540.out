@@ -1,0 +1,11 @@
+  Warmstart aus flaechen200_flow3d_particle_ergodic_flaechen200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_MIX-ebene=0.25_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0111.pt (Epoche 110, Verlust 0.85174)
+  neu initialisiert: nichts
+Checkpoint-Verlust: 0.8517387061385635
+82415 Eintraege geladen
+Gruppen: {'ebene': 4800, 'primitiv': 15854, 'extern': 2830, 'buchstabe': 11309, 'organismus': 17511, 'baugruppe': 9979, 'superquadrik': 11166, 'wort': 8966}
+
+UNGEWICHTET (uniform): Mittel 0.96020  sd 0.26730  SE 0.02988  Abweichung von 0.85174: 0.10846 = 12.73%  (7s)
+
+GEWICHTET (mix ebene=0.25): Mittel 0.86105  sd 0.21969  SE 0.02456  Abweichung von 0.85174: 0.00931 = 1.09%  (4s)
+
+=> Ungewichtet 12.73% Abweichung, gewichtet 1.09% Abweichung.

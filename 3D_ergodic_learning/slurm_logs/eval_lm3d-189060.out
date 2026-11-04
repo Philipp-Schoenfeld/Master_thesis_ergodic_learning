@@ -1,0 +1,114 @@
+DiT:  checkpoints/lm3d_flow3d_particle_ergodic_lm630dit_nxi25_D768_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h12_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+UNet: checkpoints/lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+Old:  checkpoints/nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0300.pt
+=== smoke pass ===
+9 holdout entries: val_form=3, val_flaeche=3, val_beides=3
+
+=== DiT-B (lambda 630): lm3d_flow3d_particle_ergodic_lm630dit_nxi25_D768_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h12_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+  {'epoch': 750, 'loss': 1.1429859799582784, 'params': 159.423561, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+
+=== U-Net D512 (lambda 630): lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+  {'epoch': 750, 'loss': 1.3672855176576755, 'params': 155.775881, 'backbone': 'unet', 'lambda_erg': 630.0, 'inpaint': True}
+
+=== U-Net D384 nooffset200 (lambda 100): nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0300.pt
+  {'epoch': 300, 'loss': 0.8279557253155753, 'params': 87.660201, 'backbone': 'unet', 'lambda_erg': 100.0, 'inpaint': False}
+
+| split | model | sinkhorn | fourier | standoff | pointing | cp_rmse | start_err | path_len |
+|---|---|---|---|---|---|---|---|---|
+| all | DB teacher | 0.003747 | 0.01171 | 0.0802 | 85.49 | 0 | 0 | 7.98 |
+| all | DiT-B (lambda 630) | 0.002319 | 0.006077 | 0.05241 | 53.66 | 0.4136 | 0 | 7.27 |
+| all | U-Net D512 (lambda 630) | 0.002458 | 0.005934 | 0.05303 | 56.54 | 0.3954 | 0 | 6.65 |
+| all | U-Net D384 nooffset200 (lambda 100) | 0.002926 | 0.005407 | 0.06623 | 67.03 | 0.3737 | 0 | 3.31 |
+| val_form | DB teacher | 0.005446 | 0.01739 | 0.07216 | 84.32 | 0 | 0 | 7.1 |
+| val_form | DiT-B (lambda 630) | 0.002957 | 0.00836 | 0.05106 | 58.57 | 0.3885 | 0 | 7.03 |
+| val_form | U-Net D512 (lambda 630) | 0.003179 | 0.007529 | 0.0539 | 61.55 | 0.3637 | 0 | 6.36 |
+| val_form | U-Net D384 nooffset200 (lambda 100) | 0.003471 | 0.007188 | 0.0637 | 71.99 | 0.3268 | 0 | 3.32 |
+| val_flaeche | DB teacher | 0.001878 | 0.00568 | 0.08277 | 84.37 | 0 | 0 | 7.51 |
+| val_flaeche | DiT-B (lambda 630) | 0.002476 | 0.006942 | 0.0556 | 56.48 | 0.3909 | 0 | 6.53 |
+| val_flaeche | U-Net D512 (lambda 630) | 0.002085 | 0.006765 | 0.05153 | 57.5 | 0.3728 | 0 | 5.84 |
+| val_flaeche | U-Net D384 nooffset200 (lambda 100) | 0.00261 | 0.004813 | 0.07214 | 62.73 | 0.3793 | 0 | 2.92 |
+| val_beides | DB teacher | 0.003917 | 0.01208 | 0.08566 | 87.77 | 0 | 0 | 9.32 |
+| val_beides | DiT-B (lambda 630) | 0.001524 | 0.002929 | 0.05057 | 45.91 | 0.4616 | 0 | 8.25 |
+| val_beides | U-Net D512 (lambda 630) | 0.00211 | 0.003509 | 0.05365 | 50.57 | 0.4497 | 0 | 7.77 |
+| val_beides | U-Net D384 nooffset200 (lambda 100) | 0.002698 | 0.00422 | 0.06284 | 66.37 | 0.415 | 0 | 3.67 |
+  Saved -> results/lm3d_compare_smoke/examples_val_form.png
+  Saved -> results/lm3d_compare_smoke/examples_val_flaeche.png
+  Saved -> results/lm3d_compare_smoke/examples_val_beides.png
+  Saved -> results/lm3d_compare_smoke/examples_best_for_first.png
+  Saved -> results/lm3d_compare_smoke/examples_worst_for_first.png
+
+plots + tables in results/lm3d_compare_smoke
+=== full pass ===
+300 holdout entries: val_form=100, val_flaeche=100, val_beides=100
+
+=== DiT-B (lambda 630): lm3d_flow3d_particle_ergodic_lm630dit_nxi25_D768_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h12_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+  {'epoch': 750, 'loss': 1.1429859799582784, 'params': 159.423561, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+  25/300  sinkhorn so far 1.625e-03
+  50/300  sinkhorn so far 2.085e-03
+  75/300  sinkhorn so far 1.801e-03
+  100/300  sinkhorn so far 1.566e-03
+  125/300  sinkhorn so far 1.482e-03
+  150/300  sinkhorn so far 1.546e-03
+  175/300  sinkhorn so far 1.546e-03
+  200/300  sinkhorn so far 1.455e-03
+  225/300  sinkhorn so far 1.494e-03
+  250/300  sinkhorn so far 1.567e-03
+  275/300  sinkhorn so far 1.626e-03
+  300/300  sinkhorn so far 1.620e-03
+
+=== U-Net D512 (lambda 630): lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+  {'epoch': 750, 'loss': 1.3672855176576755, 'params': 155.775881, 'backbone': 'unet', 'lambda_erg': 630.0, 'inpaint': True}
+  25/300  sinkhorn so far 1.935e-03
+  50/300  sinkhorn so far 2.380e-03
+  75/300  sinkhorn so far 2.060e-03
+  100/300  sinkhorn so far 1.776e-03
+  125/300  sinkhorn so far 1.683e-03
+  150/300  sinkhorn so far 1.776e-03
+  175/300  sinkhorn so far 1.762e-03
+  200/300  sinkhorn so far 1.659e-03
+  225/300  sinkhorn so far 1.711e-03
+  250/300  sinkhorn so far 1.776e-03
+  275/300  sinkhorn so far 1.826e-03
+  300/300  sinkhorn so far 1.805e-03
+
+=== U-Net D384 nooffset200 (lambda 100): nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0300.pt
+  {'epoch': 300, 'loss': 0.8279557253155753, 'params': 87.660201, 'backbone': 'unet', 'lambda_erg': 100.0, 'inpaint': False}
+  25/300  sinkhorn so far 2.636e-03
+  50/300  sinkhorn so far 3.552e-03
+  75/300  sinkhorn so far 3.157e-03
+  100/300  sinkhorn so far 2.716e-03
+  125/300  sinkhorn so far 2.558e-03
+  150/300  sinkhorn so far 2.723e-03
+  175/300  sinkhorn so far 2.718e-03
+  200/300  sinkhorn so far 2.549e-03
+  225/300  sinkhorn so far 2.607e-03
+  250/300  sinkhorn so far 2.723e-03
+  275/300  sinkhorn so far 2.829e-03
+  300/300  sinkhorn so far 2.801e-03
+
+| split | model | sinkhorn | fourier | standoff | pointing | cp_rmse | start_err | path_len |
+|---|---|---|---|---|---|---|---|---|
+| all | DB teacher | 0.004025 | 0.01172 | 0.08483 | 86.06 | 0 | 0 | 6.89 |
+| all | DiT-B (lambda 630) | 0.00162 | 0.004082 | 0.07467 | 69.07 | 0.3681 | 0 | 6.57 |
+| all | U-Net D512 (lambda 630) | 0.001805 | 0.003863 | 0.07008 | 66.16 | 0.376 | 0 | 6.52 |
+| all | U-Net D384 nooffset200 (lambda 100) | 0.002801 | 0.004651 | 0.07514 | 72.29 | 0.3502 | 0 | 3.23 |
+| val_form | DB teacher | 0.005191 | 0.0137 | 0.085 | 86.22 | 0 | 0 | 7.7 |
+| val_form | DiT-B (lambda 630) | 0.00195 | 0.004587 | 0.07258 | 71.22 | 0.3971 | 0 | 7.41 |
+| val_form | U-Net D512 (lambda 630) | 0.002099 | 0.003971 | 0.06848 | 68.11 | 0.4063 | 0 | 7.19 |
+| val_form | U-Net D384 nooffset200 (lambda 100) | 0.003306 | 0.005171 | 0.07271 | 72.24 | 0.3773 | 0 | 3.5 |
+| val_flaeche | DB teacher | 0.00325 | 0.01024 | 0.08621 | 86.17 | 0 | 0 | 6.29 |
+| val_flaeche | DiT-B (lambda 630) | 0.001344 | 0.003454 | 0.07687 | 66.87 | 0.35 | 0 | 6.03 |
+| val_flaeche | U-Net D512 (lambda 630) | 0.001541 | 0.003477 | 0.0716 | 63.67 | 0.3542 | 0 | 6.01 |
+| val_flaeche | U-Net D384 nooffset200 (lambda 100) | 0.002382 | 0.004089 | 0.07735 | 72.03 | 0.3302 | 0 | 3 |
+| val_beides | DB teacher | 0.003633 | 0.01122 | 0.08328 | 85.78 | 0 | 0 | 6.68 |
+| val_beides | DiT-B (lambda 630) | 0.001566 | 0.004204 | 0.07458 | 69.14 | 0.3572 | 0 | 6.27 |
+| val_beides | U-Net D512 (lambda 630) | 0.001776 | 0.004142 | 0.07015 | 66.7 | 0.3674 | 0 | 6.35 |
+| val_beides | U-Net D384 nooffset200 (lambda 100) | 0.002716 | 0.004692 | 0.07536 | 72.59 | 0.3431 | 0 | 3.18 |
+  Saved -> results/lm3d_compare/examples_val_form.png
+  Saved -> results/lm3d_compare/examples_val_flaeche.png
+  Saved -> results/lm3d_compare/examples_val_beides.png
+  Saved -> results/lm3d_compare/examples_best_for_first.png
+  Saved -> results/lm3d_compare/examples_worst_for_first.png
+
+plots + tables in results/lm3d_compare
+end: Mon Nov  2 13:16:10 CET 2026

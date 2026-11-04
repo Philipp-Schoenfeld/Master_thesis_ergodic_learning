@@ -1,0 +1,9 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+WARNING:2026-10-30 09:47:14,990:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+WARNING:2026-10-30 09:50:43,040:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Training:   0%|          | 0/2 [00:00<?, ?ep/s][2026-10-30T09:54:29.517] error: *** STEP 186004.0 ON gn10 CANCELLED AT 2026-10-30T09:54:29 DUE to SIGNAL Terminated ***
+Training:   0%|          | 0/2 [03:05<?, ?ep/s]
+WARNING:2026-10-30 09:55:54,746:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Training:   0%|          | 0/1 [00:00<?, ?ep/s]Training:   0%|          | 0/1 [00:06<?, ?ep/s, cfm=0.28959, erg=2.17e-03, loss=3.00028, lr=5.50e-05, pt=9.29, so=57.79]Training: 100%|██████████| 1/1 [00:58<00:00, 58.17s/ep, cfm=0.28959, erg=2.17e-03, loss=3.00028, lr=5.50e-05, pt=9.29, so=57.79]Training: 100%|██████████| 1/1 [00:58<00:00, 58.18s/ep, cfm=0.28959, erg=2.17e-03, loss=3.00028, lr=5.50e-05, pt=9.29, so=57.79]
+WARNING:2026-10-30 09:58:50,989:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Training:   0%|          | 0/1 [00:00<?, ?ep/s]Training:   0%|          | 0/1 [02:13<?, ?ep/s, cfm=0.53187, erg=6.49e-03, loss=6.65054, lr=1.00e-05, pt=11.56, so=678.74]Training: 100%|██████████| 1/1 [03:02<00:00, 182.08s/ep, cfm=0.53187, erg=6.49e-03, loss=6.65054, lr=1.00e-05, pt=11.56, so=678.74]Training: 100%|██████████| 1/1 [03:02<00:00, 182.08s/ep, cfm=0.53187, erg=6.49e-03, loss=6.65054, lr=1.00e-05, pt=11.56, so=678.74]

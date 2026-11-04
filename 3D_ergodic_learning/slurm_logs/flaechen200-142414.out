@@ -1,0 +1,151 @@
+=== Kaltstart: Testsuite ===
+
+=== 3D port sanity checks ===
+
+[ok]   3D basis on z=0 equals 2D basis (k3=0 slice)         max |diff| = 0.00e+00
+[ok]   same at z=0.5 (the plane the DB is lifted to)        max |diff| = 0.00e+00
+[ok]   Lambda exponent is -(d+1)/2 = -2.0 in 3D             -2.0
+[ok]   Lambda matches (1+|k|^2)^exponent                    
+[ok]   K^3 modes, not K^2                                   27 modes at K=3
+[ok]   CFM net forward + loss                               loss=1.6120
+[ok]   CFM generation shape                                 (2, 25, 3)
+[ok]   selfsup loss with K=2 candidates                     E=413.06
+[ok]   selfsup generation shape                             (4, 25, 3)
+[ok]   no orientation output when the head is off           
+[ok]   selfsup orientation output shape                     (4, 25, 6)
+[ok]   CFM loss splits position and rotation                pos=1.399 rot=1.150
+[ok]   CFM generation returns positions and 6D              (2, 25, 3) / (2, 25, 6)
+[ok]   energy returns per-sample vector                     (3,)
+[ok]   energy has 3 terms without obstacle                  
+[ok]   analytic grad matches autograd                       max |diff| = 7.92e-13
+[ok]   finite differences match                             max |diff| = 8.75e-12
+[ok]   chain rule B^T g equals autograd                     max |diff| = 1.09e-12
+[ok]   polish clears: x-axis through centre                 0.1170 -> 0.00e+00
+[ok]   polish clears: space diagonal                        0.1149 -> 0.00e+00
+[ok]   polish clears: yz diagonal                           0.1158 -> 0.00e+00
+[ok]   2D lift adds a constant z                            z=0.5
+[ok]   z-rotation keeps planar data planar                  max z spread = 0.00e+00
+[ok]   particle mu is preserved                             
+[ok]   --rot_full does tilt out of plane                    max z spread = 0.126
+[ok]   planarity ~ 0 for a flat circle                      0.00e+00
+[ok]   planarity > 0 for a helix                            0.0916
+
+--- orientation (Stufe 0 / 1 / 2) ---
+
+[ok]   6D -> rotation is orthonormal                        max |R^T R - I| = 9.35e-15
+[ok]   6D -> rotation has det +1                            
+[ok]   matrix -> 6D -> matrix round trip                    max |diff| = 9.28e-15
+[ok]   identity encoding decodes to I                       
+[ok]   OrientationHead starts at identity                   max |diff| = 0.00e+00
+[ok]   geodesic angle matches the known rotation            0.700000 vs 0.7
+[ok]   RMF frames are orthonormal                           
+[ok]   RMF body-z is the tangent                            
+[ok]   RMF has no twist on a straight line                  drift = 0.00e+00
+[ok]   look-at body-z equals the target direction           max |diff| = 2.22e-16
+[ok]   distance above the slab is about the height          0.252 vs ~0.30
+[ok]   direction from above points down                     dz = -1.000
+[ok]   distance inside the slab is zero                     
+[ok]   pointing term is 0 for a perfectly aimed frame       0.00e+00
+[ok]   pointing term is 2 per point when reversed           6.000
+[ok]   pointing error in degrees agrees                     
+[ok]   standoff is free inside the band                     
+[ok]   standoff grows outside the band                      0.1125
+[ok]   angular smoothness is 0 for a constant frame         
+[ok]   footprint moves when the sensor tilts                shift = 0.356
+[ok]   SE3Energy without orientation equals ErgodicEnergy   max |diff| = 0.00e+00
+[ok]   SE3Energy adds the three orientation terms           ['angsmooth', 'boundary', 'ergodic', 'point', 'smooth', 'standoff']
+[ok]   SE3Energy total is finite                            
+[ok]   ergodic_on='footprint' changes the coverage term     max |diff| = 37.503
+[ok]   augmented state keeps its 9 channels                 torch.Size([4, 25, 9])
+[ok]   rotated frames stay orthonormal                      
+[ok]   z-rotation leaves the body-z axis alone              max |diff| = 0.00e+00
+[ok]   identical frames report ~zero angle                  max 0.00e+00 rad
+[ok]   geodesic_angle gradient is finite at identical frames 
+[ok]   rot_path_length gradient is finite at identical frames 
+[ok]   angular_smoothness_term gradient is finite at identical frames 
+[ok]   a real angle is still exact                          error 7.15e-08 rad
+
+--- orientation rendering ---
+
+[ok]   draw_frames(R=None) draws nothing                    
+[ok]   arrows reach the canvas                              51 orange px
+[ok]   arrow direction follows R (up vs down differ)        mean row 106.5 vs 115.7
+[ok]   axis= selects a different column of R                
+[ok]   n_arrows controls arrow count                        12 px vs 193 px
+[ok]   curve shorter than n_arrows does not raise           
+[ok]   arrows sit along the curve, not elsewhere            curve x[28,218] arrows x[88,146]
+[ok]   panel(gen_R=...) adds arrows over the full panel     40 px orange only with gen_R
+[ok]   panel(gen_R=None) adds none the other way round      
+[ok]   panel rendering is deterministic                     
+
+--- Stufe 3: orientation as a CFM objective ---
+
+[ok]   ParticleSurface distance is exact                    0.3000
+[ok]   ParticleSurface direction points at the occupied particle [0.0, 0.0, 1.0]
+[ok]   mu_thresh gates which particles count                loose 0.087 vs strict 0.779
+[ok]   ParticleSurface is differentiable in the query point 
+[ok]   OrientationLoss returns its three terms              ['angsmooth', 'point', 'standoff']
+[ok]   OrientationLoss value is finite                      13.7540
+[ok]   gradient reaches the position block                  8.524e+00
+[ok]   gradient reaches the rotation block                  6.985e-02
+[ok]   pointing at the surface beats pointing away          0.617 vs 12.183
+[ok]   standoff is free inside the band                     cost 0.00e+00
+[ok]   standoff charges outside the band                    cost 138.7
+[ok]   ergodic_on='position' ignores orientation entirely   identical, as it must be
+[ok]   ergodic_on='footprint' makes coverage depend on orientation 0.1249 vs 0.1146
+[ok]   footprint without rot6d is refused, not silently wrong 
+[ok]   footprint coverage is differentiable in the rotation |grad|max 4.130e-03
+[ok]   default call is unchanged by the new arguments       3.099921 vs 3.099921
+[ok]   no orientation term appears by default               ['cfm', 'cfm_rot']
+[ok]   orientation term is added and logged per component   ['ori', 'ori_angsmooth', 'ori_point', 'ori_standoff']
+[ok]   adding the orientation term changes the loss         3.0999 -> 428.4464
+[ok]   w_cfm_rot=0 drops the imitation term                 3.0999 -> 1.4675
+
+--- erweiterte Flaechenliste ---
+
+[--]   Koerper wasserdicht                                  uebersprungen, es fehlt: trimesh, open3d
+[--]   Buchstaben-Volumen                                   uebersprungen, es fehlt: trimesh, open3d
+[--]   erweiterte Flaechenliste                             uebersprungen, es fehlt: trimesh, open3d
+[--]   Blickrichtungen normiert                             uebersprungen, es fehlt: trimesh, open3d
+
+--- Startpunkt-Konditionierung und Warmstart ---
+
+[ok]   Warmstart: nur start_emb.* und null_start_token fehlen 6 fehlend, 0 unerwartet
+[ok]   mit Startpunkt identisch zum warmgestarteten Netz    max |diff| = 0.000e+00
+[ok]   start=None ist der alte Aufruf, Zeichen fuer Zeichen identisch
+[ok]   abgeworfener Startpunkt ebenfalls neutral            identisch
+[ok]   der Startpunkt-Kopf bekommt Gradient (nicht tot)     max |grad| = 4.315e-03
+[ok]   nach einem Schritt aendert der Startpunkt das Feld   max |diff| = 1.788e-06
+[ok]   generate faechert (1, nd) auf num_samples auf        (4, 25, 3)
+[ok]   der erste Kontrollpunkt ist der geforderte Startpunkt max |diff| = 0.00e+00
+
+All checks passed.
+
+=== Kaltstart: Warmstart-Pruefung ===
+
+Warmstart-Pruefung  (Geraet: cuda)
+  Checkpoint: startfl_flow3d_particle_ergodic_startfl22_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_MIX-ebene=0.25_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0250.pt
+  Datenbank:  ergodic_dataset_3d_alt.db  Splits ['train']
+  Zielfunktion des geladenen Laufs: erg_on=position, lambda_erg=100, erg_K=6, w_cfm_rot=1, kein Orientierungsterm
+
+  Warmstart aus startfl_flow3d_particle_ergodic_startfl22_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_MIX-ebene=0.25_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0250.pt (Epoche 249, Verlust 0.92568)
+  neu initialisiert: nichts
+  5250 Eintraege geladen
+    10/40  laufendes Mittel 2.17165  (2 s)
+    20/40  laufendes Mittel 2.15429  (3 s)
+    30/40  laufendes Mittel 2.15910  (3 s)
+    40/40  laufendes Mittel 2.12730  (4 s)
+
+  Verlust ueber 40 Stapel: Mittel 2.12730  sd 0.25802  Standardfehler 0.04080
+  Endverlust des geladenen Laufs: 0.92568
+  Abweichung 1.20163  =  29.08 Standardfehler  =  129.81 %
+  Zulaessiges Band: 0.10329  (das groessere aus 2.5 x Standardfehler und 6 %)
+
+  FEHLGESCHLAGEN — das warmgestartete Netz rechnet nicht das,
+  was der geladene Lauf zuletzt gerechnet hat. Bevor darauf 22 h
+  Rechenzeit gesetzt werden, gehoert das geklaert:
+    - passt die Zielfunktion (erg_on, erg_K, w_cfm_rot) wirklich
+      zu der des Checkpoints?
+    - passt die Datenbank (Augmentierung, Flaechen) dazu?
+    - meldet --init_model fehlende Schluessel ausser start_emb.*?
+Warmstart-Pruefung fehlgeschlagen — Abbruch.

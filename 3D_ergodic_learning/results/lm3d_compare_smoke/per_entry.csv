@@ -1,0 +1,37 @@
+name,split,surface,gruppe,model,sinkhorn,fourier,standoff,pointing,cp_rmse,start_err,path_len
+flat_val_blur_2#unk0@s1,val_beides,ziffer_1,buchstabe,DB teacher,0.00326678,0.00839742,0.0874797,88.6041,0,0,9.99315
+flat_val_broad_2#unk0,val_beides,ziffer_5,buchstabe,DB teacher,0.00605286,0.0169098,0.0704392,85.4508,0,0,11.7849
+rand_ana_poly_complex_0,val_beides,bg_bogen_var,baugruppe,DB teacher,0.00243033,0.0109236,0.0990726,89.2497,0,0,6.19653
+flat_ring_56,val_flaeche,organismus_38,organismus,DB teacher,0.00367174,0.00981373,0.0738957,85.99,0,0,7.52016
+rand_gmm_13#unk0@s2,val_flaeche,wort_vita,wort,DB teacher,0.000511088,0.00148217,0.097253,83.8178,0,0,10.285
+flat_ped_138#unk0,val_flaeche,wort_vita,wort,DB teacher,0.00145065,0.005745,0.0771479,83.2925,0,0,4.72848
+organic_10#unk0@s2,val_form,tropfen,primitiv,DB teacher,0.00382712,0.00946289,0.0721729,86.3414,0,0,5.9138
+rand_gmm_10#unk0@s1,val_form,sq_dreikant_lang,superquadrik,DB teacher,0.00363532,0.0145927,0.0779316,81.6698,0,0,6.75093
+rand_gmm_complex_0@s1,val_form,sq_linse,superquadrik,DB teacher,0.00887572,0.0281051,0.0663832,84.9619,0,0,8.63974
+flat_val_blur_2#unk0@s1,val_beides,ziffer_1,buchstabe,DiT-B (lambda 630),0.0014275,0.0025647,0.0574589,41.63,0.48457,0,10.3438
+flat_val_broad_2#unk0,val_beides,ziffer_5,buchstabe,DiT-B (lambda 630),0.00219113,0.00277132,0.0520325,67.6585,0.494088,0,8.45526
+rand_ana_poly_complex_0,val_beides,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000953634,0.00344986,0.0422116,28.4436,0.406098,0,5.95514
+flat_ring_56,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00533161,0.0150324,0.0650491,64.7104,0.392975,0,7.43238
+rand_gmm_13#unk0@s2,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.000892017,0.00188624,0.0555517,44.0888,0.443933,0,6.74364
+flat_ped_138#unk0,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.00120441,0.00390602,0.046208,60.6556,0.335735,0,5.42132
+organic_10#unk0@s2,val_form,tropfen,primitiv,DiT-B (lambda 630),0.0038362,0.00968677,0.051833,59.7861,0.386318,0,7.72679
+rand_gmm_10#unk0@s1,val_form,sq_dreikant_lang,superquadrik,DiT-B (lambda 630),0.00142547,0.00338858,0.0553912,52.761,0.332381,0,5.91235
+rand_gmm_complex_0@s1,val_form,sq_linse,superquadrik,DiT-B (lambda 630),0.00360959,0.012004,0.0459546,63.1681,0.446727,0,7.46523
+flat_val_blur_2#unk0@s1,val_beides,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00223661,0.0038974,0.0626468,52.5753,0.498579,0,10.7188
+flat_val_broad_2#unk0,val_beides,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00308344,0.00445619,0.0400954,58.0183,0.446467,0,7.36167
+rand_ana_poly_complex_0,val_beides,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00100964,0.00217347,0.0582016,41.1201,0.404104,0,5.2239
+flat_ring_56,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00403923,0.0129979,0.0583661,70.8923,0.374972,0,7.131
+rand_gmm_13#unk0@s2,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.00100218,0.00189151,0.0500799,38.354,0.409373,0,5.32185
+flat_ped_138#unk0,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.00121287,0.00540704,0.0461401,63.2425,0.334013,0,5.05629
+organic_10#unk0@s2,val_form,tropfen,primitiv,U-Net D512 (lambda 630),0.00247755,0.00545027,0.0492107,60.181,0.367424,0,6.209
+rand_gmm_10#unk0@s1,val_form,sq_dreikant_lang,superquadrik,U-Net D512 (lambda 630),0.00141495,0.00359172,0.0605479,57.1598,0.323996,0,6.19173
+rand_gmm_complex_0@s1,val_form,sq_linse,superquadrik,U-Net D512 (lambda 630),0.00564363,0.0135446,0.0519483,67.3044,0.399707,0,6.67338
+flat_val_blur_2#unk0@s1,val_beides,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00365928,0.00545067,0.0695404,65.4838,0.426185,0,4.12344
+flat_val_broad_2#unk0,val_beides,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.0030299,0.00395441,0.0577119,83.1126,0.45056,0,4.01046
+rand_ana_poly_complex_0,val_beides,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.0014059,0.00325408,0.0612738,50.5181,0.368171,0,2.88976
+flat_ring_56,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00563063,0.00897928,0.0862255,75.0224,0.418479,0,2.65938
+rand_gmm_13#unk0@s2,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.000957021,0.00163033,0.0702199,53.0508,0.406866,0,2.69987
+flat_ped_138#unk0,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00124273,0.00383046,0.0599728,60.1169,0.31265,0,3.40324
+organic_10#unk0@s2,val_form,tropfen,primitiv,U-Net D384 nooffset200 (lambda 100),0.00380782,0.00790572,0.0650847,69.278,0.309648,0,3.24782
+rand_gmm_10#unk0@s1,val_form,sq_dreikant_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00163396,0.00359271,0.0661305,62.2257,0.294931,0,3.40365
+rand_gmm_complex_0@s1,val_form,sq_linse,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00497031,0.0100643,0.0598838,84.4642,0.375867,0,3.31835

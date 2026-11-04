@@ -1,0 +1,82 @@
+Node: gn03  GPU: NVIDIA GeForce RTX 3090, 24576 MiB
+backbone=unet  epochs=750  save_every=18  viz_every=75  start: Fri Oct 30 10:09:07 CET 2026
+=== Cold start: test suites ===
+Starting from scratch
+
+==========================================================================
+  3D Particle Cross-Attention Flow Matching
+  device=cuda  nxi=25  nd=3  D=512
+  particles=512  grid=64^3
+  plane z=0.5  slab sigma=0.05
+  rotation=SO(3)
+  CFG: p_drop=0.1  cfg_weight=2.0
+==========================================================================
+  --target_cps: LSQ control points, position RMSE of the fit median 0.0185, p90 0.0450, max 0.1094
+  83789 Trainings- und 9430 Holdout-Eintraege ueber 200 Flaechen
+  Trainingsgruppen: baugruppe=10028, buchstabe=11694, ebene=4800, extern=2630, organismus=17757, primitiv=16138, superquadrik=11318, wort=9424
+  Holdout-Splits:   val_beides=506, val_flaeche=508, val_form=8416
+  Mischverhaeltnis je Zug: baugruppe=13%, buchstabe=12%, ebene=12%, extern=12%, organismus=12%, primitiv=12%, superquadrik=13%, wort=13%  (davon ebene_flach 6.3%)
+  Trainingstensor: (83789, 25, 9)  Epochenlaenge 83789
+  Partikelstapel:  (83789, 512, 4) (686 MB auf der GPU)
+  Modellparameter: 155,775,881  (backbone=unet)  (mit Startpunkt-Konditionierung)  (start inpainting)
+
+  Ergodic loss term active: metric=sinkhorn, blur=0.05, scaling=0.5, nd=3, on=footprint, weight=630.0, t_power=2.0
+  Orientation loss term active: weight=0.012, t_power=2.0, w_point=0.1, w_standoff=300.0, w_angsmooth=2.0, standoff=0.12+-0.03
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0018.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0036.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0054.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0075.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0072.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0090.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0108.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0126.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0144.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0162.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0180.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0198.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0225.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0216.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0234.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0252.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0270.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0300.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0288.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0306.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0324.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0342.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0375.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0360.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0378.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0396.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0414.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0432.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0450.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0450.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0468.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0486.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0504.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0525.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0522.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0540.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0558.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0576.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0600.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0594.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0612.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0630.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0648.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0675.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0666.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0684.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0702.pt
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0720.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.png
+  alter Stand entfernt: lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0738.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_holdout.png
+
+Fertig.
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mflow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5[0m at: [34mhttps://wandb.ai/philipp-k-schoenfeld-tu-darmstadt/flow3d-surfaces/runs/uhg57b9r[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20261030_101014-uhg57b9r/logs[0m
+end: Mon Nov  2 02:34:08 CET 2026

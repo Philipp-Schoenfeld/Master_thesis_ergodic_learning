@@ -36,10 +36,51 @@ def _spalten(con):
     return {r[1] for r in con.execute('PRAGMA table_info(ergodic_pairs_3d)')}
 
 
+def _cps_fitter(npts, nxi, deg):
+    """Least-squares maps from npts curve points to nxi clamped control points.
+
+    -> (M_free, b0, M_all): the position fit keeps control point 0 at the start
+    (a clamped spline begins exactly there), so cps[1:] = M_free @ (P - b0 * p0);
+    the rotation channels are fitted without constraint, cps = M_all @ R.
+    """
+    from obstacles import bspline_basis_matrix
+    B = bspline_basis_matrix(nxi, npts, deg).astype(np.float64)
+    return np.linalg.pinv(B[:, 1:]), B[:, :1], np.linalg.pinv(B)
+
+
+def fit_control_points(pos, rot, start, nxi=25, deg=5, _cache={}):
+    """(npts, 3), (npts, 6), (3,) -> control points (nxi, 9) float32 and the
+    RMS position residual of the rendered fit against the stored points."""
+    npts = len(pos)
+    key = (npts, nxi, deg)
+    if key not in _cache:
+        _cache[key] = _cps_fitter(npts, nxi, deg)
+    M_free, b0, M_all = _cache[key]
+    p0 = start.astype(np.float64)
+    cp_pos = np.concatenate([p0[None], M_free @ (pos - b0 * p0[None])], axis=0)
+    cp_rot = M_all @ rot.astype(np.float64)
+    from obstacles import bspline_basis_matrix
+    B = bspline_basis_matrix(nxi, npts, deg)
+    rmse = float(np.sqrt(((B @ cp_pos - pos) ** 2).sum(-1).mean()))
+    return np.concatenate([cp_pos, cp_rot], axis=-1).astype(np.float32), rmse
+
+
 def load_surface_db(db_path=DEFAULT_DB, nxi=25, surfaces=None,
                     splits=ALLE_SPLITS, max_jump=None, max_miss=None,
-                    n_train_shapes=None):
+                    n_train_shapes=None, target_cps=False, deg=5,
+                    keep_path=False):
     """Eintraege der projizierten Datenbank.
+
+    `target_cps` (opt-in, default off = previous behaviour): the targets are
+    B-spline control points fitted by least squares to the *whole* stored path
+    (`fit_control_points`, start held), instead of `nxi` points picked from it
+    with linspace. Rendered as control points, the picked points give a
+    smoothed, shrunken copy of the path -- the same reason the 2D runs moved to
+    `--target_cps` on the LM teacher DB. Entries then also carry `fit_rmse`.
+
+    `keep_path` (opt-in): entries also carry the full stored path as
+    `path_pos` (n, 3) and `path_rot6` (n, 6), for the DB diagnostics and the
+    refinement in `refine_db3d.py`.
 
     -> Liste von dicts mit `name`, `split`, `surface`, `gruppe`, `x1` (nxi, 9),
        `parts` (N, 4) und `start` (3,).
@@ -94,12 +135,19 @@ def load_surface_db(db_path=DEFAULT_DB, nxi=25, surfaces=None,
         # verlassen.
         start = (np.frombuffer(bst, dtype=np.float32).copy() if bst is not None
                  else pos[0].copy())
+        extra = {}
+        if keep_path:
+            extra['path_pos'], extra['path_rot6'] = pos.copy(), rot.copy()
+        if target_cps:
+            x1, extra['fit_rmse'] = fit_control_points(pos, rot, start, nxi, deg)
+        else:
+            x1 = np.concatenate([pos[idx], rot[idx]], axis=-1).astype(np.float32)
         out.append(dict(
             id=rid, name=nm, split=sp, surface=sf, gruppe=grp,
             n_particles=npar,
-            x1=np.concatenate([pos[idx], rot[idx]], axis=-1).astype(np.float32),
+            x1=x1,
             parts=np.frombuffer(bpa, dtype=np.float32).reshape(npar, 4).copy(),
-            start=start.astype(np.float32)))
+            start=start.astype(np.float32), **extra))
     con.close()
     return out
 

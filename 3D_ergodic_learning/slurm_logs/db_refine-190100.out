@@ -1,0 +1,445 @@
+Node: gn05  GPU: NVIDIA GeForce RTX 3090, 24576 MiB  start: Tue Nov  3 13:27:39 CET 2026
+=== gate: tests ===
+
+All checks passed.
+
+All checks passed.
+=== gate: smoke pass on real entries ===
+64 entries loaded in 40 s
+0 already refined, 64 to do
+  64/64  117.3 ms/entry  ETA 0 min  | batch median Sinkhorn 2.93e-03 -> 1.41e-03  standoff 0.101  pointing 13.2 deg
+filter: dropped 2 of 16 train entries (Sinkhorn > 2.055e-02 = p98, or |standoff - 0.12| > 0.06)
+# DB refinement report
+
+Medians. erg = Sinkhorn footprint error; so / pt = standoff / pointing against a local PCA plane (surface_metrics.py); len = control-polygon length. 0 = projected teacher (on the surface), off = moved 0.12 along the normal, 1 = refined.
+
+| subset | n | erg0 | erg_off | erg1 | so0 | so1 | pt0 [deg] | pt1 [deg] | len0 | len1 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| all | 62 | 2.848e-03 | 3.168e-03 | 1.404e-03 | 0.007 | 0.102 | 9.1 | 13.6 | 6.82 | 7.86 |
+| train | 14 | 3.615e-03 | 3.611e-03 | 1.528e-03 | 0.007 | 0.100 | 11.1 | 13.3 | 6.97 | 7.83 |
+| val_beides | 16 | 2.405e-03 | 3.125e-03 | 1.293e-03 | 0.007 | 0.099 | 8.5 | 13.0 | 6.76 | 7.51 |
+| val_flaeche | 16 | 1.960e-03 | 1.923e-03 | 9.232e-04 | 0.005 | 0.103 | 4.9 | 9.5 | 5.44 | 6.44 |
+| val_form | 16 | 4.358e-03 | 4.006e-03 | 1.895e-03 | 0.008 | 0.099 | 12.9 | 15.0 | 7.46 | 8.36 |
+| group baugruppe | 8 | 2.258e-03 | 2.314e-03 | 1.080e-03 | 0.008 | 0.098 | 10.1 | 15.2 | 7.85 | 9.27 |
+| group buchstabe | 9 | 4.144e-03 | 4.021e-03 | 2.375e-03 | 0.014 | 0.082 | 18.4 | 22.0 | 9.95 | 10.83 |
+| group extern | 1 | 5.323e-03 | 8.111e-03 | 4.647e-03 | 0.016 | 0.061 | 32.4 | 36.6 | 8.87 | 9.88 |
+| group organismus | 11 | 4.571e-03 | 4.083e-03 | 1.827e-03 | 0.006 | 0.105 | 4.2 | 9.4 | 6.59 | 8.04 |
+| group primitiv | 17 | 3.750e-03 | 2.599e-03 | 1.746e-03 | 0.004 | 0.106 | 5.7 | 9.6 | 5.33 | 6.49 |
+| group superquadrik | 6 | 1.182e-03 | 1.479e-03 | 6.561e-04 | 0.005 | 0.100 | 9.2 | 12.8 | 5.33 | 6.21 |
+| group wort | 10 | 1.416e-03 | 2.264e-03 | 9.825e-04 | 0.008 | 0.072 | 30.7 | 31.0 | 6.24 | 7.01 |
+
+Filter: `{"filter_pct": 98.0, "erg_threshold": 0.020548564381897446, "max_so_dev": 0.06, "dropped": 2, "train_before": 16, "train_after": 14}`
+done in 1.6 min -> results/db_smoke/smoke.db
+40 entries: train=16, val_beides=8, val_flaeche=8, val_form=8
+  40/40
+# DB diagnosis (phase 0)
+
+Medians of the Sinkhorn error (columns floor..refined) and of the PCA-plane standoff / pointing. See the docstring of diagnose_db3d.py for the columns.
+
+| subset | n | floor | cps_pos | cps_foot | dense_pos | off_foot | refined | so_teacher | pt_teacher | so_refined | pt_refined |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| all | 40 | 6.993e-04 | 2.587e-03 | 3.069e-03 | 2.363e-03 | 3.529e-03 | 1.520e-03 | 0.006 | 9.075 | 0.101 | 14.025 |
+| train | 16 | 9.504e-04 | 2.587e-03 | 4.199e-03 | 2.363e-03 | 3.963e-03 | 1.812e-03 | 0.007 | 11.062 | 0.100 | 13.282 |
+| val_beides | 8 | 3.382e-04 | 1.762e-03 | 1.603e-03 | 1.581e-03 | 2.714e-03 | 1.090e-03 | 0.007 | 9.022 | 0.095 | 16.237 |
+| val_flaeche | 8 | 7.138e-04 | 2.964e-03 | 3.408e-03 | 2.991e-03 | 3.330e-03 | 1.396e-03 | 0.005 | 5.870 | 0.103 | 10.598 |
+| val_form | 8 | 8.489e-04 | 3.169e-03 | 3.364e-03 | 2.950e-03 | 3.045e-03 | 1.616e-03 | 0.007 | 11.326 | 0.103 | 14.025 |
+| group baugruppe | 6 | 4.374e-04 | 1.087e-03 | 1.580e-03 | 1.188e-03 | 1.861e-03 | 9.349e-04 | 0.008 | 10.107 | 0.098 | 15.108 |
+| group buchstabe | 5 | 7.345e-04 | 2.443e-03 | 3.084e-03 | 1.988e-03 | 4.001e-03 | 1.710e-03 | 0.014 | 19.346 | 0.082 | 21.863 |
+| group extern | 2 | 1.114e-03 | 6.873e-03 | 4.765e-03 | 6.850e-03 | 8.173e-03 | 4.610e-03 | 0.018 | 27.708 | 0.059 | 33.785 |
+| group organismus | 8 | 1.115e-03 | 3.241e-03 | 4.273e-03 | 3.232e-03 | 4.082e-03 | 1.800e-03 | 0.006 | 4.207 | 0.107 | 9.382 |
+| group primitiv | 10 | 6.553e-04 | 3.683e-03 | 6.705e-03 | 3.829e-03 | 6.918e-03 | 4.020e-03 | 0.005 | 7.463 | 0.106 | 10.073 |
+| group superquadrik | 4 | 7.509e-04 | 1.585e-03 | 1.704e-03 | 1.537e-03 | 1.911e-03 | 7.698e-04 | 0.005 | 6.327 | 0.107 | 9.779 |
+| group wort | 5 | 2.530e-04 | 1.199e-03 | 1.018e-03 | 1.260e-03 | 2.166e-03 | 7.843e-04 | 0.008 | 32.916 | 0.082 | 32.408 |
+-> results/db_smoke/diagnose
+=== phase 0: diagnosis  Tue Nov  3 13:31:12 CET 2026 ===
+3200 entries: train=2000, val_beides=400, val_flaeche=400, val_form=400
+  512/3200
+  1024/3200
+  1536/3200
+  2048/3200
+  2560/3200
+  3072/3200
+  3200/3200
+# DB diagnosis (phase 0)
+
+Medians of the Sinkhorn error (columns floor..refined) and of the PCA-plane standoff / pointing. See the docstring of diagnose_db3d.py for the columns.
+
+| subset | n | floor | cps_pos | cps_foot | dense_pos | off_foot | refined | so_teacher | pt_teacher | so_refined | pt_refined |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| all | 3200 | 7.244e-04 | 2.377e-03 | 3.389e-03 | 2.322e-03 | 3.329e-03 | 2.723e-04 | 0.006 | 7.950 | 0.107 | 24.353 |
+| train | 2000 | 7.921e-04 | 2.561e-03 | 3.698e-03 | 2.512e-03 | 3.568e-03 | 3.193e-04 | 0.006 | 7.826 | 0.105 | 25.511 |
+| val_beides | 400 | 5.606e-04 | 1.809e-03 | 2.427e-03 | 1.799e-03 | 2.573e-03 | 1.392e-04 | 0.006 | 7.987 | 0.110 | 21.426 |
+| val_flaeche | 400 | 5.139e-04 | 1.684e-03 | 2.575e-03 | 1.655e-03 | 2.569e-03 | 1.437e-04 | 0.006 | 7.891 | 0.110 | 22.664 |
+| val_form | 400 | 7.731e-04 | 2.490e-03 | 3.365e-03 | 2.394e-03 | 3.332e-03 | 3.035e-04 | 0.006 | 8.674 | 0.106 | 24.400 |
+| group baugruppe | 404 | 6.955e-04 | 2.612e-03 | 3.137e-03 | 2.497e-03 | 3.550e-03 | 2.841e-04 | 0.009 | 11.786 | 0.103 | 26.943 |
+| group buchstabe | 441 | 9.529e-04 | 4.127e-03 | 4.326e-03 | 3.996e-03 | 4.771e-03 | 5.049e-04 | 0.012 | 16.282 | 0.090 | 32.662 |
+| group ebene | 147 | 4.958e-04 | 3.053e-04 | 1.440e-03 | 3.032e-04 | 5.133e-04 | 1.118e-04 | 0.000 | 0.001 | 0.136 | 15.992 |
+| group extern | 74 | 8.414e-04 | 4.836e-03 | 4.390e-03 | 4.391e-03 | 5.279e-03 | 5.308e-04 | 0.012 | 19.617 | 0.081 | 36.093 |
+| group organismus | 667 | 9.738e-04 | 2.770e-03 | 4.066e-03 | 2.745e-03 | 3.831e-03 | 4.190e-04 | 0.005 | 4.191 | 0.116 | 23.354 |
+| group primitiv | 615 | 7.452e-04 | 2.096e-03 | 3.534e-03 | 2.082e-03 | 3.091e-03 | 2.568e-04 | 0.005 | 6.202 | 0.116 | 21.756 |
+| group superquadrik | 474 | 5.319e-04 | 1.540e-03 | 2.623e-03 | 1.546e-03 | 2.253e-03 | 1.577e-04 | 0.004 | 7.137 | 0.117 | 20.223 |
+| group wort | 378 | 3.199e-04 | 1.283e-03 | 1.146e-03 | 1.258e-03 | 2.387e-03 | 9.269e-05 | 0.008 | 32.034 | 0.091 | 25.206 |
+-> results/db_diagnose
+=== phase 1-3: refinement, standoff 0.12, filter  Tue Nov  3 13:37:08 CET 2026 ===
+93219 entries loaded in 40 s
+0 already refined, 93219 to do
+  512/93219  105.9 ms/entry  ETA 164 min  | batch median Sinkhorn 2.14e-03 -> 1.67e-04  standoff 0.135  pointing 16.6 deg
+  1024/93219  98.8 ms/entry  ETA 152 min  | batch median Sinkhorn 2.29e-03 -> 2.20e-04  standoff 0.134  pointing 16.7 deg
+  1536/93219  96.3 ms/entry  ETA 147 min  | batch median Sinkhorn 1.87e-03 -> 1.33e-04  standoff 0.134  pointing 17.0 deg
+  2048/93219  95.0 ms/entry  ETA 144 min  | batch median Sinkhorn 1.70e-03 -> 1.06e-04  standoff 0.136  pointing 15.6 deg
+  2560/93219  94.3 ms/entry  ETA 142 min  | batch median Sinkhorn 1.20e-03 -> 5.75e-05  standoff 0.139  pointing 13.2 deg
+  3072/93219  93.8 ms/entry  ETA 141 min  | batch median Sinkhorn 1.29e-03 -> 6.78e-05  standoff 0.138  pointing 13.7 deg
+  3584/93219  93.4 ms/entry  ETA 140 min  | batch median Sinkhorn 1.42e-03 -> 8.45e-05  standoff 0.137  pointing 14.6 deg
+  4096/93219  93.1 ms/entry  ETA 138 min  | batch median Sinkhorn 1.43e-03 -> 9.12e-05  standoff 0.136  pointing 14.7 deg
+  4608/93219  92.9 ms/entry  ETA 137 min  | batch median Sinkhorn 1.94e-03 -> 1.59e-04  standoff 0.134  pointing 17.0 deg
+  5120/93219  92.8 ms/entry  ETA 136 min  | batch median Sinkhorn 1.77e-03 -> 1.53e-04  standoff 0.134  pointing 16.7 deg
+  5632/93219  92.7 ms/entry  ETA 135 min  | batch median Sinkhorn 4.03e-03 -> 3.29e-04  standoff 0.121  pointing 23.0 deg
+  6144/93219  93.2 ms/entry  ETA 135 min  | batch median Sinkhorn 7.40e-03 -> 8.01e-04  standoff 0.108  pointing 29.4 deg
+  6656/93219  93.6 ms/entry  ETA 135 min  | batch median Sinkhorn 4.87e-03 -> 3.12e-04  standoff 0.114  pointing 24.5 deg
+  7168/93219  93.4 ms/entry  ETA 134 min  | batch median Sinkhorn 3.73e-03 -> 4.45e-04  standoff 0.098  pointing 28.6 deg
+  7680/93219  93.3 ms/entry  ETA 133 min  | batch median Sinkhorn 4.43e-03 -> 4.91e-04  standoff 0.109  pointing 27.1 deg
+  8192/93219  93.2 ms/entry  ETA 132 min  | batch median Sinkhorn 7.00e-03 -> 4.32e-04  standoff 0.109  pointing 25.2 deg
+  8704/93219  93.1 ms/entry  ETA 131 min  | batch median Sinkhorn 3.80e-03 -> 3.18e-04  standoff 0.104  pointing 26.2 deg
+  9216/93219  93.1 ms/entry  ETA 130 min  | batch median Sinkhorn 2.98e-03 -> 2.70e-04  standoff 0.115  pointing 20.6 deg
+  9728/93219  93.0 ms/entry  ETA 129 min  | batch median Sinkhorn 3.29e-03 -> 2.23e-04  standoff 0.114  pointing 21.4 deg
+  10240/93219  92.9 ms/entry  ETA 129 min  | batch median Sinkhorn 5.60e-03 -> 5.32e-04  standoff 0.108  pointing 26.8 deg
+  10752/93219  92.9 ms/entry  ETA 128 min  | batch median Sinkhorn 5.25e-03 -> 7.20e-04  standoff 0.108  pointing 27.6 deg
+  11264/93219  92.8 ms/entry  ETA 127 min  | batch median Sinkhorn 6.52e-03 -> 9.34e-04  standoff 0.107  pointing 28.8 deg
+  11776/93219  92.7 ms/entry  ETA 126 min  | batch median Sinkhorn 6.03e-03 -> 5.93e-04  standoff 0.108  pointing 27.3 deg
+  12288/93219  92.6 ms/entry  ETA 125 min  | batch median Sinkhorn 3.57e-03 -> 2.91e-04  standoff 0.116  pointing 22.1 deg
+  12800/93219  92.6 ms/entry  ETA 124 min  | batch median Sinkhorn 2.90e-03 -> 1.72e-04  standoff 0.117  pointing 19.5 deg
+  13312/93219  92.5 ms/entry  ETA 123 min  | batch median Sinkhorn 3.29e-03 -> 2.38e-04  standoff 0.119  pointing 20.2 deg
+  13824/93219  92.5 ms/entry  ETA 122 min  | batch median Sinkhorn 2.44e-03 -> 1.25e-04  standoff 0.117  pointing 18.6 deg
+  14336/93219  92.4 ms/entry  ETA 122 min  | batch median Sinkhorn 6.88e-03 -> 5.26e-04  standoff 0.103  pointing 30.5 deg
+  14848/93219  92.4 ms/entry  ETA 121 min  | batch median Sinkhorn 4.91e-03 -> 2.69e-04  standoff 0.100  pointing 29.0 deg
+  15360/93219  92.3 ms/entry  ETA 120 min  | batch median Sinkhorn 3.67e-03 -> 1.70e-04  standoff 0.113  pointing 22.1 deg
+  15872/93219  92.3 ms/entry  ETA 119 min  | batch median Sinkhorn 3.70e-03 -> 1.70e-04  standoff 0.115  pointing 21.9 deg
+  16384/93219  92.3 ms/entry  ETA 118 min  | batch median Sinkhorn 5.25e-03 -> 2.92e-04  standoff 0.115  pointing 23.1 deg
+  16896/93219  92.2 ms/entry  ETA 117 min  | batch median Sinkhorn 5.08e-03 -> 4.96e-04  standoff 0.108  pointing 25.9 deg
+  17408/93219  92.2 ms/entry  ETA 117 min  | batch median Sinkhorn 3.04e-03 -> 1.89e-04  standoff 0.115  pointing 21.0 deg
+  17920/93219  92.2 ms/entry  ETA 116 min  | batch median Sinkhorn 3.60e-03 -> 3.02e-04  standoff 0.112  pointing 23.8 deg
+  18432/93219  92.2 ms/entry  ETA 115 min  | batch median Sinkhorn 7.41e-03 -> 9.97e-04  standoff 0.096  pointing 35.0 deg
+  18944/93219  92.1 ms/entry  ETA 114 min  | batch median Sinkhorn 5.30e-03 -> 2.68e-04  standoff 0.101  pointing 28.6 deg
+  19456/93219  92.1 ms/entry  ETA 113 min  | batch median Sinkhorn 3.09e-03 -> 1.57e-04  standoff 0.123  pointing 18.5 deg
+  19968/93219  92.1 ms/entry  ETA 112 min  | batch median Sinkhorn 3.43e-03 -> 3.73e-04  standoff 0.105  pointing 25.0 deg
+  20480/93219  92.1 ms/entry  ETA 112 min  | batch median Sinkhorn 2.71e-03 -> 1.39e-04  standoff 0.120  pointing 18.7 deg
+  20992/93219  92.1 ms/entry  ETA 111 min  | batch median Sinkhorn 1.97e-02 -> 1.52e-03  standoff 0.095  pointing 38.8 deg
+  21504/93219  92.0 ms/entry  ETA 110 min  | batch median Sinkhorn 5.02e-03 -> 4.22e-04  standoff 0.111  pointing 24.9 deg
+  22016/93219  92.0 ms/entry  ETA 109 min  | batch median Sinkhorn 8.21e-03 -> 5.93e-04  standoff 0.101  pointing 29.3 deg
+  22528/93219  92.0 ms/entry  ETA 108 min  | batch median Sinkhorn 3.60e-03 -> 3.23e-04  standoff 0.117  pointing 21.8 deg
+  23040/93219  92.0 ms/entry  ETA 108 min  | batch median Sinkhorn 3.44e-03 -> 3.30e-04  standoff 0.117  pointing 21.7 deg
+  23552/93219  92.0 ms/entry  ETA 107 min  | batch median Sinkhorn 2.91e-03 -> 9.75e-05  standoff 0.123  pointing 16.4 deg
+  24064/93219  92.0 ms/entry  ETA 106 min  | batch median Sinkhorn 4.26e-03 -> 4.53e-04  standoff 0.088  pointing 32.8 deg
+  24576/93219  91.9 ms/entry  ETA 105 min  | batch median Sinkhorn 6.92e-03 -> 6.63e-04  standoff 0.083  pointing 36.8 deg
+  25088/93219  91.9 ms/entry  ETA 104 min  | batch median Sinkhorn 3.36e-03 -> 4.39e-04  standoff 0.105  pointing 26.7 deg
+  25600/93219  91.9 ms/entry  ETA 104 min  | batch median Sinkhorn 7.14e-03 -> 7.03e-04  standoff 0.093  pointing 32.4 deg
+  26112/93219  91.9 ms/entry  ETA 103 min  | batch median Sinkhorn 3.12e-03 -> 5.54e-04  standoff 0.088  pointing 33.5 deg
+  26624/93219  91.9 ms/entry  ETA 102 min  | batch median Sinkhorn 4.85e-03 -> 4.74e-04  standoff 0.089  pointing 33.0 deg
+  27136/93219  91.9 ms/entry  ETA 101 min  | batch median Sinkhorn 3.99e-03 -> 6.33e-04  standoff 0.085  pointing 34.3 deg
+  27648/93219  91.9 ms/entry  ETA 100 min  | batch median Sinkhorn 4.04e-03 -> 5.35e-04  standoff 0.096  pointing 29.9 deg
+  28160/93219  91.9 ms/entry  ETA 100 min  | batch median Sinkhorn 3.88e-03 -> 1.40e-04  standoff 0.105  pointing 24.3 deg
+  28672/93219  91.9 ms/entry  ETA 99 min  | batch median Sinkhorn 2.34e-03 -> 1.37e-04  standoff 0.105  pointing 24.7 deg
+  29184/93219  91.9 ms/entry  ETA 98 min  | batch median Sinkhorn 8.43e-03 -> 5.54e-04  standoff 0.087  pointing 35.8 deg
+  29696/93219  91.9 ms/entry  ETA 97 min  | batch median Sinkhorn 5.11e-03 -> 3.74e-04  standoff 0.092  pointing 31.5 deg
+  30208/93219  91.9 ms/entry  ETA 97 min  | batch median Sinkhorn 5.59e-03 -> 7.81e-04  standoff 0.081  pointing 36.4 deg
+  30720/93219  91.9 ms/entry  ETA 96 min  | batch median Sinkhorn 5.10e-03 -> 6.99e-04  standoff 0.091  pointing 32.6 deg
+  31232/93219  91.9 ms/entry  ETA 95 min  | batch median Sinkhorn 4.46e-03 -> 4.64e-04  standoff 0.094  pointing 31.7 deg
+  31744/93219  91.9 ms/entry  ETA 94 min  | batch median Sinkhorn 9.67e-03 -> 5.17e-04  standoff 0.090  pointing 34.2 deg
+  32256/93219  91.9 ms/entry  ETA 93 min  | batch median Sinkhorn 3.40e-03 -> 5.03e-04  standoff 0.097  pointing 29.6 deg
+  32768/93219  91.9 ms/entry  ETA 93 min  | batch median Sinkhorn 1.15e-02 -> 5.91e-04  standoff 0.084  pointing 38.3 deg
+  33280/93219  91.9 ms/entry  ETA 92 min  | batch median Sinkhorn 6.01e-03 -> 4.73e-04  standoff 0.088  pointing 32.7 deg
+  33792/93219  91.9 ms/entry  ETA 91 min  | batch median Sinkhorn 3.78e-03 -> 4.84e-04  standoff 0.098  pointing 29.4 deg
+  34304/93219  91.9 ms/entry  ETA 90 min  | batch median Sinkhorn 3.36e-03 -> 3.81e-04  standoff 0.095  pointing 29.8 deg
+  34816/93219  91.9 ms/entry  ETA 89 min  | batch median Sinkhorn 3.10e-03 -> 4.10e-04  standoff 0.082  pointing 31.8 deg
+  35328/93219  91.9 ms/entry  ETA 89 min  | batch median Sinkhorn 1.45e-02 -> 7.49e-04  standoff 0.079  pointing 44.3 deg
+  35840/93219  91.9 ms/entry  ETA 88 min  | batch median Sinkhorn 4.14e-03 -> 4.19e-04  standoff 0.093  pointing 30.6 deg
+  36352/93219  91.9 ms/entry  ETA 87 min  | batch median Sinkhorn 3.95e-03 -> 5.18e-04  standoff 0.090  pointing 32.6 deg
+  36864/93219  91.9 ms/entry  ETA 86 min  | batch median Sinkhorn 3.94e-03 -> 4.17e-04  standoff 0.116  pointing 23.2 deg
+  37376/93219  91.9 ms/entry  ETA 85 min  | batch median Sinkhorn 3.89e-03 -> 3.75e-04  standoff 0.117  pointing 22.7 deg
+  37888/93219  91.8 ms/entry  ETA 85 min  | batch median Sinkhorn 4.52e-03 -> 4.68e-04  standoff 0.114  pointing 24.7 deg
+  38400/93219  91.8 ms/entry  ETA 84 min  | batch median Sinkhorn 4.19e-03 -> 4.05e-04  standoff 0.116  pointing 23.2 deg
+  38912/93219  91.8 ms/entry  ETA 83 min  | batch median Sinkhorn 4.40e-03 -> 4.52e-04  standoff 0.114  pointing 24.6 deg
+  39424/93219  91.8 ms/entry  ETA 82 min  | batch median Sinkhorn 4.56e-03 -> 4.66e-04  standoff 0.115  pointing 24.6 deg
+  39936/93219  91.8 ms/entry  ETA 82 min  | batch median Sinkhorn 3.98e-03 -> 4.16e-04  standoff 0.116  pointing 23.2 deg
+  40448/93219  91.8 ms/entry  ETA 81 min  | batch median Sinkhorn 3.25e-03 -> 2.74e-04  standoff 0.119  pointing 20.8 deg
+  40960/93219  91.8 ms/entry  ETA 80 min  | batch median Sinkhorn 4.30e-03 -> 3.79e-04  standoff 0.116  pointing 23.1 deg
+  41472/93219  91.8 ms/entry  ETA 79 min  | batch median Sinkhorn 4.38e-03 -> 4.77e-04  standoff 0.114  pointing 24.6 deg
+  41984/93219  91.8 ms/entry  ETA 78 min  | batch median Sinkhorn 3.36e-03 -> 3.40e-04  standoff 0.118  pointing 21.8 deg
+  42496/93219  91.8 ms/entry  ETA 78 min  | batch median Sinkhorn 3.87e-03 -> 3.58e-04  standoff 0.116  pointing 22.7 deg
+  43008/93219  91.8 ms/entry  ETA 77 min  | batch median Sinkhorn 4.60e-03 -> 4.78e-04  standoff 0.114  pointing 24.6 deg
+  43520/93219  91.7 ms/entry  ETA 76 min  | batch median Sinkhorn 4.27e-03 -> 4.86e-04  standoff 0.116  pointing 23.7 deg
+  44032/93219  91.7 ms/entry  ETA 75 min  | batch median Sinkhorn 4.44e-03 -> 4.73e-04  standoff 0.114  pointing 24.0 deg
+  44544/93219  91.7 ms/entry  ETA 74 min  | batch median Sinkhorn 4.06e-03 -> 4.53e-04  standoff 0.115  pointing 23.7 deg
+  45056/93219  91.7 ms/entry  ETA 74 min  | batch median Sinkhorn 4.40e-03 -> 4.52e-04  standoff 0.115  pointing 23.9 deg
+  45568/93219  91.7 ms/entry  ETA 73 min  | batch median Sinkhorn 4.44e-03 -> 4.44e-04  standoff 0.116  pointing 23.6 deg
+  46080/93219  91.7 ms/entry  ETA 72 min  | batch median Sinkhorn 4.56e-03 -> 5.04e-04  standoff 0.113  pointing 25.2 deg
+  46592/93219  91.7 ms/entry  ETA 71 min  | batch median Sinkhorn 4.54e-03 -> 4.75e-04  standoff 0.114  pointing 24.9 deg
+  47104/93219  91.7 ms/entry  ETA 70 min  | batch median Sinkhorn 4.32e-03 -> 4.38e-04  standoff 0.115  pointing 23.8 deg
+  47616/93219  91.7 ms/entry  ETA 70 min  | batch median Sinkhorn 4.30e-03 -> 4.47e-04  standoff 0.115  pointing 24.7 deg
+  48128/93219  91.7 ms/entry  ETA 69 min  | batch median Sinkhorn 3.77e-03 -> 3.82e-04  standoff 0.116  pointing 23.1 deg
+  48640/93219  91.7 ms/entry  ETA 68 min  | batch median Sinkhorn 3.76e-03 -> 3.83e-04  standoff 0.116  pointing 22.9 deg
+  49152/93219  91.7 ms/entry  ETA 67 min  | batch median Sinkhorn 4.25e-03 -> 4.40e-04  standoff 0.114  pointing 24.0 deg
+  49664/93219  91.7 ms/entry  ETA 67 min  | batch median Sinkhorn 4.79e-03 -> 4.97e-04  standoff 0.112  pointing 25.6 deg
+  50176/93219  91.7 ms/entry  ETA 66 min  | batch median Sinkhorn 4.13e-03 -> 4.31e-04  standoff 0.116  pointing 23.7 deg
+  50688/93219  91.7 ms/entry  ETA 65 min  | batch median Sinkhorn 3.89e-03 -> 3.93e-04  standoff 0.116  pointing 22.9 deg
+  51200/93219  91.7 ms/entry  ETA 64 min  | batch median Sinkhorn 4.09e-03 -> 3.76e-04  standoff 0.115  pointing 24.1 deg
+  51712/93219  91.6 ms/entry  ETA 63 min  | batch median Sinkhorn 4.44e-03 -> 4.91e-04  standoff 0.114  pointing 24.1 deg
+  52224/93219  91.6 ms/entry  ETA 63 min  | batch median Sinkhorn 3.25e-03 -> 3.14e-04  standoff 0.118  pointing 21.3 deg
+  52736/93219  91.6 ms/entry  ETA 62 min  | batch median Sinkhorn 4.17e-03 -> 4.24e-04  standoff 0.115  pointing 23.8 deg
+  53248/93219  91.6 ms/entry  ETA 61 min  | batch median Sinkhorn 3.52e-03 -> 3.69e-04  standoff 0.116  pointing 23.0 deg
+  53760/93219  91.6 ms/entry  ETA 60 min  | batch median Sinkhorn 4.20e-03 -> 4.79e-04  standoff 0.116  pointing 23.7 deg
+  54272/93219  91.6 ms/entry  ETA 59 min  | batch median Sinkhorn 4.25e-03 -> 4.50e-04  standoff 0.116  pointing 23.3 deg
+  54784/93219  91.6 ms/entry  ETA 59 min  | batch median Sinkhorn 4.06e-03 -> 4.49e-04  standoff 0.115  pointing 23.6 deg
+  55296/93219  91.6 ms/entry  ETA 58 min  | batch median Sinkhorn 3.55e-03 -> 3.80e-04  standoff 0.117  pointing 22.5 deg
+  55808/93219  91.6 ms/entry  ETA 57 min  | batch median Sinkhorn 4.22e-03 -> 4.56e-04  standoff 0.114  pointing 24.6 deg
+  56320/93219  91.6 ms/entry  ETA 56 min  | batch median Sinkhorn 6.15e-03 -> 5.74e-04  standoff 0.089  pointing 33.6 deg
+  56832/93219  91.6 ms/entry  ETA 56 min  | batch median Sinkhorn 5.41e-03 -> 6.61e-04  standoff 0.090  pointing 32.1 deg
+  57344/93219  91.6 ms/entry  ETA 55 min  | batch median Sinkhorn 5.90e-03 -> 5.42e-04  standoff 0.106  pointing 27.4 deg
+  57856/93219  91.6 ms/entry  ETA 54 min  | batch median Sinkhorn 2.92e-03 -> 1.64e-04  standoff 0.115  pointing 20.0 deg
+  58368/93219  91.6 ms/entry  ETA 53 min  | batch median Sinkhorn 2.97e-03 -> 2.00e-04  standoff 0.103  pointing 23.7 deg
+  58880/93219  91.6 ms/entry  ETA 52 min  | batch median Sinkhorn 2.56e-03 -> 2.01e-04  standoff 0.105  pointing 25.8 deg
+  59392/93219  91.6 ms/entry  ETA 52 min  | batch median Sinkhorn 1.69e-02 -> 1.56e-03  standoff 0.079  pointing 44.2 deg
+  59904/93219  91.6 ms/entry  ETA 51 min  | batch median Sinkhorn 2.83e-03 -> 2.86e-04  standoff 0.085  pointing 34.5 deg
+  60416/93219  91.6 ms/entry  ETA 50 min  | batch median Sinkhorn 1.04e-02 -> 9.59e-04  standoff 0.097  pointing 34.0 deg
+  60928/93219  91.6 ms/entry  ETA 49 min  | batch median Sinkhorn 4.02e-03 -> 3.39e-04  standoff 0.103  pointing 26.6 deg
+  61440/93219  91.6 ms/entry  ETA 49 min  | batch median Sinkhorn 2.24e-03 -> 1.99e-04  standoff 0.108  pointing 22.8 deg
+  61952/93219  91.6 ms/entry  ETA 48 min  | batch median Sinkhorn 4.22e-03 -> 4.07e-04  standoff 0.101  pointing 28.0 deg
+  62464/93219  91.6 ms/entry  ETA 47 min  | batch median Sinkhorn 3.88e-03 -> 5.16e-04  standoff 0.086  pointing 34.7 deg
+  62976/93219  91.6 ms/entry  ETA 46 min  | batch median Sinkhorn 5.73e-03 -> 6.72e-04  standoff 0.092  pointing 31.2 deg
+  63488/93219  91.6 ms/entry  ETA 45 min  | batch median Sinkhorn 4.09e-03 -> 3.63e-04  standoff 0.116  pointing 22.6 deg
+  64000/93219  91.6 ms/entry  ETA 45 min  | batch median Sinkhorn 6.21e-03 -> 2.58e-04  standoff 0.120  pointing 18.4 deg
+  64512/93219  91.6 ms/entry  ETA 44 min  | batch median Sinkhorn 2.58e-03 -> 2.29e-04  standoff 0.114  pointing 21.3 deg
+  65024/93219  91.6 ms/entry  ETA 43 min  | batch median Sinkhorn 2.10e-02 -> 1.63e-03  standoff 0.082  pointing 44.9 deg
+  65536/93219  91.6 ms/entry  ETA 42 min  | batch median Sinkhorn 1.14e-03 -> 1.11e-04  standoff 0.079  pointing 37.3 deg
+  66048/93219  91.6 ms/entry  ETA 41 min  | batch median Sinkhorn 3.95e-03 -> 5.60e-04  standoff 0.100  pointing 29.1 deg
+  66560/93219  91.6 ms/entry  ETA 41 min  | batch median Sinkhorn 6.09e-03 -> 6.09e-04  standoff 0.096  pointing 31.3 deg
+  67072/93219  91.6 ms/entry  ETA 40 min  | batch median Sinkhorn 2.22e-03 -> 3.58e-04  standoff 0.091  pointing 32.9 deg
+  67584/93219  91.6 ms/entry  ETA 39 min  | batch median Sinkhorn 1.05e-02 -> 6.22e-04  standoff 0.104  pointing 30.8 deg
+  68096/93219  91.6 ms/entry  ETA 38 min  | batch median Sinkhorn 3.42e-03 -> 2.85e-04  standoff 0.115  pointing 22.0 deg
+  68608/93219  91.6 ms/entry  ETA 38 min  | batch median Sinkhorn 4.61e-03 -> 4.21e-04  standoff 0.115  pointing 23.2 deg
+  69120/93219  91.6 ms/entry  ETA 37 min  | batch median Sinkhorn 3.72e-03 -> 1.92e-04  standoff 0.119  pointing 20.2 deg
+  69632/93219  91.6 ms/entry  ETA 36 min  | batch median Sinkhorn 4.24e-03 -> 4.02e-04  standoff 0.115  pointing 23.6 deg
+  70144/93219  91.6 ms/entry  ETA 35 min  | batch median Sinkhorn 4.77e-03 -> 1.71e-04  standoff 0.115  pointing 21.3 deg
+  70656/93219  91.6 ms/entry  ETA 34 min  | batch median Sinkhorn 6.07e-03 -> 6.30e-04  standoff 0.109  pointing 27.7 deg
+  71168/93219  91.6 ms/entry  ETA 34 min  | batch median Sinkhorn 3.01e-03 -> 2.30e-04  standoff 0.118  pointing 20.7 deg
+  71680/93219  91.6 ms/entry  ETA 33 min  | batch median Sinkhorn 3.46e-03 -> 3.32e-04  standoff 0.118  pointing 21.8 deg
+  72192/93219  91.6 ms/entry  ETA 32 min  | batch median Sinkhorn 2.27e-03 -> 9.73e-05  standoff 0.124  pointing 16.8 deg
+  72704/93219  91.6 ms/entry  ETA 31 min  | batch median Sinkhorn 2.61e-03 -> 1.08e-04  standoff 0.115  pointing 19.2 deg
+  73216/93219  91.6 ms/entry  ETA 31 min  | batch median Sinkhorn 1.26e-03 -> 4.53e-05  standoff 0.117  pointing 17.0 deg
+  73728/93219  91.6 ms/entry  ETA 30 min  | batch median Sinkhorn 4.13e-03 -> 3.07e-04  standoff 0.116  pointing 22.1 deg
+  74240/93219  91.6 ms/entry  ETA 29 min  | batch median Sinkhorn 2.61e-03 -> 1.05e-04  standoff 0.122  pointing 17.1 deg
+  74752/93219  91.6 ms/entry  ETA 28 min  | batch median Sinkhorn 3.48e-03 -> 2.23e-04  standoff 0.116  pointing 20.5 deg
+  75264/93219  91.6 ms/entry  ETA 27 min  | batch median Sinkhorn 1.67e-03 -> 7.43e-05  standoff 0.118  pointing 16.5 deg
+  75776/93219  91.6 ms/entry  ETA 27 min  | batch median Sinkhorn 5.37e-03 -> 5.72e-04  standoff 0.097  pointing 33.8 deg
+  76288/93219  91.6 ms/entry  ETA 26 min  | batch median Sinkhorn 3.22e-03 -> 2.36e-04  standoff 0.098  pointing 30.9 deg
+  76800/93219  91.6 ms/entry  ETA 25 min  | batch median Sinkhorn 2.60e-03 -> 2.33e-04  standoff 0.122  pointing 19.7 deg
+  77312/93219  91.6 ms/entry  ETA 24 min  | batch median Sinkhorn 1.37e-03 -> 8.75e-05  standoff 0.122  pointing 17.6 deg
+  77824/93219  91.6 ms/entry  ETA 23 min  | batch median Sinkhorn 7.93e-03 -> 7.83e-04  standoff 0.090  pointing 37.7 deg
+  78336/93219  91.6 ms/entry  ETA 23 min  | batch median Sinkhorn 2.67e-03 -> 2.43e-04  standoff 0.101  pointing 29.5 deg
+  78848/93219  91.6 ms/entry  ETA 22 min  | batch median Sinkhorn 4.06e-03 -> 3.20e-04  standoff 0.115  pointing 22.1 deg
+  79360/93219  91.5 ms/entry  ETA 21 min  | batch median Sinkhorn 2.28e-03 -> 2.48e-04  standoff 0.121  pointing 17.1 deg
+  79872/93219  91.5 ms/entry  ETA 20 min  | batch median Sinkhorn 1.72e-03 -> 1.66e-04  standoff 0.085  pointing 27.3 deg
+  80384/93219  91.5 ms/entry  ETA 20 min  | batch median Sinkhorn 5.78e-04 -> 5.31e-05  standoff 0.092  pointing 22.6 deg
+  80896/93219  91.5 ms/entry  ETA 19 min  | batch median Sinkhorn 1.85e-03 -> 1.03e-04  standoff 0.081  pointing 33.3 deg
+  81408/93219  91.5 ms/entry  ETA 18 min  | batch median Sinkhorn 3.75e-03 -> 1.49e-04  standoff 0.088  pointing 28.4 deg
+  81920/93219  91.5 ms/entry  ETA 17 min  | batch median Sinkhorn 1.10e-03 -> 8.06e-05  standoff 0.092  pointing 21.4 deg
+  82432/93219  91.5 ms/entry  ETA 16 min  | batch median Sinkhorn 9.14e-04 -> 7.96e-05  standoff 0.089  pointing 26.2 deg
+  82944/93219  91.5 ms/entry  ETA 16 min  | batch median Sinkhorn 8.95e-04 -> 6.10e-05  standoff 0.097  pointing 18.7 deg
+  83456/93219  91.5 ms/entry  ETA 15 min  | batch median Sinkhorn 9.45e-04 -> 7.23e-05  standoff 0.090  pointing 25.3 deg
+  83968/93219  91.5 ms/entry  ETA 14 min  | batch median Sinkhorn 9.56e-03 -> 1.46e-04  standoff 0.090  pointing 31.4 deg
+  84480/93219  91.5 ms/entry  ETA 13 min  | batch median Sinkhorn 2.50e-03 -> 1.95e-04  standoff 0.075  pointing 35.5 deg
+  84992/93219  91.5 ms/entry  ETA 13 min  | batch median Sinkhorn 7.98e-04 -> 5.39e-05  standoff 0.094  pointing 24.0 deg
+  85504/93219  91.5 ms/entry  ETA 12 min  | batch median Sinkhorn 6.26e-04 -> 4.59e-05  standoff 0.095  pointing 21.5 deg
+  86016/93219  91.5 ms/entry  ETA 11 min  | batch median Sinkhorn 7.14e-04 -> 5.90e-05  standoff 0.091  pointing 25.4 deg
+  86528/93219  91.5 ms/entry  ETA 10 min  | batch median Sinkhorn 1.18e-03 -> 6.44e-05  standoff 0.092  pointing 25.7 deg
+  87040/93219  91.5 ms/entry  ETA 9 min  | batch median Sinkhorn 1.15e-03 -> 9.38e-05  standoff 0.089  pointing 27.0 deg
+  87552/93219  91.5 ms/entry  ETA 9 min  | batch median Sinkhorn 9.88e-04 -> 7.57e-05  standoff 0.091  pointing 24.0 deg
+  88064/93219  91.5 ms/entry  ETA 8 min  | batch median Sinkhorn 6.34e-04 -> 5.65e-05  standoff 0.091  pointing 25.1 deg
+  88576/93219  91.5 ms/entry  ETA 7 min  | batch median Sinkhorn 1.17e-03 -> 8.41e-05  standoff 0.088  pointing 27.6 deg
+  89088/93219  91.5 ms/entry  ETA 6 min  | batch median Sinkhorn 1.24e-03 -> 8.63e-05  standoff 0.093  pointing 24.0 deg
+  89600/93219  91.5 ms/entry  ETA 6 min  | batch median Sinkhorn 3.96e-03 -> 7.97e-05  standoff 0.095  pointing 25.5 deg
+  90112/93219  91.5 ms/entry  ETA 5 min  | batch median Sinkhorn 4.75e-03 -> 4.50e-04  standoff 0.079  pointing 37.8 deg
+  90624/93219  91.5 ms/entry  ETA 4 min  | batch median Sinkhorn 5.20e-03 -> 7.42e-04  standoff 0.067  pointing 40.5 deg
+  91136/93219  91.5 ms/entry  ETA 3 min  | batch median Sinkhorn 2.71e-03 -> 1.81e-04  standoff 0.105  pointing 23.4 deg
+  91648/93219  91.5 ms/entry  ETA 2 min  | batch median Sinkhorn 3.02e-03 -> 2.93e-04  standoff 0.106  pointing 24.7 deg
+  92160/93219  91.5 ms/entry  ETA 2 min  | batch median Sinkhorn 6.98e-03 -> 7.36e-04  standoff 0.078  pointing 36.1 deg
+  92672/93219  91.5 ms/entry  ETA 1 min  | batch median Sinkhorn 3.41e-03 -> 2.73e-04  standoff 0.108  pointing 26.0 deg
+  93184/93219  91.5 ms/entry  ETA 0 min  | batch median Sinkhorn 1.71e-03 -> 9.45e-05  standoff 0.111  pointing 20.2 deg
+  93219/93219  91.5 ms/entry  ETA 0 min  | batch median Sinkhorn 7.46e-03 -> 2.79e-04  standoff 0.075  pointing 35.0 deg
+filter: dropped 2654 of 83789 train entries (Sinkhorn > 1.512e-03 = p98, or |standoff - 0.12| > 0.06)
+# DB refinement report
+
+Medians. erg = Sinkhorn footprint error; so / pt = standoff / pointing against a local PCA plane (surface_metrics.py); len = control-polygon length. 0 = projected teacher (on the surface), off = moved 0.12 along the normal, 1 = refined.
+
+| subset | n | erg0 | erg_off | erg1 | so0 | so1 | pt0 [deg] | pt1 [deg] | len0 | len1 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| all | 90565 | 3.579e-03 | 3.504e-03 | 2.917e-04 | 0.006 | 0.106 | 7.8 | 25.2 | 6.68 | 9.21 |
+| train | 81135 | 3.607e-03 | 3.517e-03 | 2.946e-04 | 0.006 | 0.106 | 7.8 | 25.2 | 6.67 | 9.20 |
+| val_beides | 506 | 2.414e-03 | 2.599e-03 | 1.386e-04 | 0.006 | 0.110 | 8.1 | 21.3 | 6.32 | 8.82 |
+| val_flaeche | 508 | 2.608e-03 | 2.582e-03 | 1.418e-04 | 0.006 | 0.110 | 7.8 | 22.5 | 6.13 | 8.39 |
+| val_form | 8416 | 3.403e-03 | 3.449e-03 | 2.857e-04 | 0.006 | 0.107 | 8.1 | 24.8 | 6.78 | 9.35 |
+| group baugruppe | 10295 | 3.985e-03 | 4.121e-03 | 3.593e-04 | 0.009 | 0.099 | 12.5 | 28.8 | 7.91 | 10.62 |
+| group buchstabe | 12614 | 4.313e-03 | 4.820e-03 | 5.008e-04 | 0.012 | 0.091 | 16.0 | 32.1 | 9.74 | 12.44 |
+| group ebene | 5280 | 1.668e-03 | 5.393e-04 | 1.011e-04 | 0.000 | 0.136 | 0.0 | 15.5 | 4.60 | 5.16 |
+| group extern | 2628 | 4.210e-03 | 4.883e-03 | 4.735e-04 | 0.011 | 0.087 | 18.6 | 33.7 | 7.90 | 10.85 |
+| group organismus | 19591 | 4.115e-03 | 3.775e-03 | 4.170e-04 | 0.005 | 0.116 | 4.1 | 23.6 | 6.37 | 9.05 |
+| group primitiv | 17212 | 4.091e-03 | 3.516e-03 | 3.114e-04 | 0.006 | 0.113 | 7.6 | 23.5 | 6.99 | 9.45 |
+| group superquadrik | 12563 | 3.327e-03 | 2.961e-03 | 2.175e-04 | 0.005 | 0.115 | 6.7 | 22.1 | 6.12 | 8.30 |
+| group wort | 10382 | 1.077e-03 | 2.297e-03 | 7.955e-05 | 0.008 | 0.091 | 33.5 | 25.5 | 5.89 | 8.13 |
+
+Filter: `{"filter_pct": 98.0, "erg_threshold": 0.0015122296568006296, "max_so_dev": 0.06, "dropped": 2654, "train_before": 83789, "train_after": 81135}`
+done in 149.8 min -> ergodic_dataset_3d_lm_ref.db
+=== phase 4: DiT-S on the old and the refined DB  Tue Nov  3 16:07:04 CET 2026 ===
+
+==========================================================================
+  3D Particle Cross-Attention Flow Matching
+  device=cuda  nxi=25  nd=3  D=384
+  particles=512  grid=64^3
+  plane z=0.5  slab sigma=0.05
+  rotation=SO(3)
+  CFG: p_drop=0.1  cfg_weight=2.0
+==========================================================================
+  --target_cps: LSQ control points, position RMSE of the fit median 0.0185, p90 0.0450, max 0.1094
+  83789 Trainings- und 9430 Holdout-Eintraege ueber 200 Flaechen
+  Trainingsgruppen: baugruppe=10028, buchstabe=11694, ebene=4800, extern=2630, organismus=17757, primitiv=16138, superquadrik=11318, wort=9424
+  Holdout-Splits:   val_beides=506, val_flaeche=508, val_form=8416
+  Mischverhaeltnis je Zug: baugruppe=13%, buchstabe=12%, ebene=12%, extern=12%, organismus=12%, primitiv=12%, superquadrik=13%, wort=13%  (davon ebene_flach 6.3%)
+  Trainingstensor: (83789, 25, 9)  Epochenlaenge 83789
+  Partikelstapel:  (83789, 512, 4) (686 MB auf der GPU)
+  Modellparameter: 39,972,393  (backbone=dit)  (mit Startpunkt-Konditionierung)  (start inpainting)
+
+  Ergodic loss term active: metric=sinkhorn, blur=0.05, scaling=0.5, nd=3, on=footprint, weight=630.0, t_power=2.0
+  Orientation loss term active: weight=0.012, t_power=2.0, w_point=0.1, w_standoff=300.0, w_angsmooth=2.0, standoff=0.12+-0.03
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0015.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0030.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0050.png
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0045.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0060.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0075.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0100.png
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0090.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0105.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0120.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0135.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.png
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_holdout.png
+
+Fertig.
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mflow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5[0m at: [34mhttps://wandb.ai/philipp-k-schoenfeld-tu-darmstadt/flow3d-surfaces/runs/qp96efpv[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20261103_160805-qp96efpv/logs[0m
+
+==========================================================================
+  3D Particle Cross-Attention Flow Matching
+  device=cuda  nxi=25  nd=3  D=384
+  particles=512  grid=64^3
+  plane z=0.5  slab sigma=0.05
+  rotation=SO(3)
+  CFG: p_drop=0.1  cfg_weight=2.0
+==========================================================================
+  --target_cps: LSQ control points, position RMSE of the fit median 0.0000, p90 0.0000, max 0.0000
+  81135 Trainings- und 9430 Holdout-Eintraege ueber 200 Flaechen
+  Trainingsgruppen: baugruppe=9140, buchstabe=11281, ebene=4800, extern=2365, organismus=17623, primitiv=15397, superquadrik=11234, wort=9295
+  Holdout-Splits:   val_beides=506, val_flaeche=508, val_form=8416
+  Mischverhaeltnis je Zug: baugruppe=12%, buchstabe=13%, ebene=12%, extern=13%, organismus=12%, primitiv=13%, superquadrik=12%, wort=13%  (davon ebene_flach 6.2%)
+  Trainingstensor: (81135, 25, 9)  Epochenlaenge 81135
+  Partikelstapel:  (81135, 512, 4) (665 MB auf der GPU)
+  Modellparameter: 39,972,393  (backbone=dit)  (mit Startpunkt-Konditionierung)  (start inpainting)
+
+  Ergodic loss term active: metric=sinkhorn, blur=0.05, scaling=0.5, nd=3, on=footprint, weight=630.0, t_power=2.0
+  Orientation loss term active: weight=0.012, t_power=2.0, w_point=0.1, w_standoff=300.0, w_angsmooth=2.0, standoff=0.12+-0.03
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0015.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0030.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0050.png
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0045.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0060.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0075.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0100.png
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0090.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0105.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0120.pt
+  alter Stand entfernt: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0135.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.png
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_holdout.png
+
+Fertig.
+[1;34mwandb[0m: 
+[1;34mwandb[0m: 🚀 View run [33mflow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5[0m at: [34mhttps://wandb.ai/philipp-k-schoenfeld-tu-darmstadt/flow3d-surfaces/runs/h5u8tvua[0m
+[1;34mwandb[0m: Find logs at: [1;35mwandb/run-20261103_191055-h5u8tvua/logs[0m
+=== phase 4: holdout comparison  Tue Nov  3 22:07:10 CET 2026 ===
+old: checkpoints/dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.pt
+ref: checkpoints/dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.pt
+big: checkpoints/lm3d_flow3d_particle_ergodic_lm630dit_nxi25_D768_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h12_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+300 holdout entries: val_form=100, val_flaeche=100, val_beides=100
+
+=== DiT-S, refined DB: dbcmp_flow3d_particle_ergodic_dbcmpref_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.pt
+  {'epoch': 150, 'loss': 1.1848448898513986, 'params': 39.972393, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+  25/300  sinkhorn so far 6.350e-04
+  50/300  sinkhorn so far 8.158e-04
+  75/300  sinkhorn so far 7.109e-04
+  100/300  sinkhorn so far 6.312e-04
+  125/300  sinkhorn so far 5.760e-04
+  150/300  sinkhorn so far 6.372e-04
+  175/300  sinkhorn so far 6.358e-04
+  200/300  sinkhorn so far 5.976e-04
+  225/300  sinkhorn so far 6.249e-04
+  250/300  sinkhorn so far 6.616e-04
+  275/300  sinkhorn so far 6.839e-04
+  300/300  sinkhorn so far 6.852e-04
+
+=== DiT-S, old DB: dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.pt
+  {'epoch': 150, 'loss': 1.3839879526597698, 'params': 39.972393, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+  25/300  sinkhorn so far 1.396e-03
+  50/300  sinkhorn so far 1.801e-03
+  75/300  sinkhorn so far 1.588e-03
+  100/300  sinkhorn so far 1.374e-03
+  125/300  sinkhorn so far 1.297e-03
+  150/300  sinkhorn so far 1.348e-03
+  175/300  sinkhorn so far 1.345e-03
+  200/300  sinkhorn so far 1.275e-03
+  225/300  sinkhorn so far 1.312e-03
+  250/300  sinkhorn so far 1.359e-03
+  275/300  sinkhorn so far 1.408e-03
+  300/300  sinkhorn so far 1.395e-03
+
+=== DiT-B 750 ep, old DB: lm3d_flow3d_particle_ergodic_lm630dit_nxi25_D768_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h12_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+  {'epoch': 750, 'loss': 1.1429859799582784, 'params': 159.423561, 'backbone': 'dit', 'lambda_erg': 630.0, 'inpaint': True}
+  25/300  sinkhorn so far 1.625e-03
+  50/300  sinkhorn so far 2.085e-03
+  75/300  sinkhorn so far 1.801e-03
+  100/300  sinkhorn so far 1.566e-03
+  125/300  sinkhorn so far 1.482e-03
+  150/300  sinkhorn so far 1.546e-03
+  175/300  sinkhorn so far 1.546e-03
+  200/300  sinkhorn so far 1.455e-03
+  225/300  sinkhorn so far 1.494e-03
+  250/300  sinkhorn so far 1.567e-03
+  275/300  sinkhorn so far 1.626e-03
+  300/300  sinkhorn so far 1.620e-03
+
+| split | model | sinkhorn | fourier | standoff | pointing | standoff_pca | pointing_pca | cp_rmse | start_err | path_len |
+|---|---|---|---|---|---|---|---|---|---|---|
+| all | DB teacher | 0.004025 | 0.01172 | 0.08483 | 86.06 | 0.1129 | 11.07 | 0 | 0 | 6.89 |
+| all | DiT-S, refined DB | 0.0006852 | 0.000575 | 0.02346 | 36.86 | 0.03053 | 26.28 | 0.4337 | 0 | 9.31 |
+| all | DiT-S, old DB | 0.001395 | 0.003025 | 0.07348 | 67.62 | 0.09996 | 23.57 | 0.3784 | 0 | 6.7 |
+| all | DiT-B 750 ep, old DB | 0.00162 | 0.004082 | 0.07467 | 69.07 | 0.1022 | 18.71 | 0.3681 | 0 | 6.57 |
+| val_form | DB teacher | 0.005191 | 0.0137 | 0.085 | 86.22 | 0.1119 | 13.02 | 0 | 0 | 7.7 |
+| val_form | DiT-S, refined DB | 0.0008605 | 0.0006745 | 0.02644 | 40.73 | 0.03425 | 29.16 | 0.4618 | 0 | 10.1 |
+| val_form | DiT-S, old DB | 0.001636 | 0.003202 | 0.07127 | 69.43 | 0.09861 | 25.85 | 0.4117 | 0 | 7.5 |
+| val_form | DiT-B 750 ep, old DB | 0.00195 | 0.004587 | 0.07258 | 71.22 | 0.1008 | 20.71 | 0.3971 | 0 | 7.41 |
+| val_flaeche | DB teacher | 0.00325 | 0.01024 | 0.08621 | 86.17 | 0.1134 | 9.873 | 0 | 0 | 6.29 |
+| val_flaeche | DiT-S, refined DB | 0.000564 | 0.0004623 | 0.02125 | 34.1 | 0.0284 | 24.6 | 0.4135 | 0 | 8.6 |
+| val_flaeche | DiT-S, old DB | 0.001175 | 0.002563 | 0.07558 | 65.18 | 0.1001 | 22.69 | 0.3573 | 0 | 6.11 |
+| val_flaeche | DiT-B 750 ep, old DB | 0.001344 | 0.003454 | 0.07687 | 66.87 | 0.1029 | 17.68 | 0.35 | 0 | 6.03 |
+| val_beides | DB teacher | 0.003633 | 0.01122 | 0.08328 | 85.78 | 0.1133 | 10.33 | 0 | 0 | 6.68 |
+| val_beides | DiT-S, refined DB | 0.0006312 | 0.0005881 | 0.02269 | 35.74 | 0.02892 | 25.07 | 0.426 | 0 | 9.27 |
+| val_beides | DiT-S, old DB | 0.001374 | 0.00331 | 0.07357 | 68.25 | 0.1012 | 22.16 | 0.3663 | 0 | 6.49 |
+| val_beides | DiT-B 750 ep, old DB | 0.001566 | 0.004204 | 0.07458 | 69.14 | 0.1028 | 17.74 | 0.3572 | 0 | 6.27 |
+  Saved -> results/dbcmp_compare/examples_val_form.png
+  Saved -> results/dbcmp_compare/examples_val_flaeche.png
+  Saved -> results/dbcmp_compare/examples_val_beides.png
+  Saved -> results/dbcmp_compare/examples_best_for_first.png
+  Saved -> results/dbcmp_compare/examples_worst_for_first.png
+
+plots + tables in results/dbcmp_compare
+end: Tue Nov  3 22:27:38 CET 2026

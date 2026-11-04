@@ -1,0 +1,10 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+wandb: [wandb.login()] Loaded credentials for https://api.wandb.ai from /home/stud_schonfeld/.netrc.
+wandb: W&B API key is configured. Use `wandb login --relogin` to force relogin
+wandb: Tracking run with wandb version 0.28.1
+wandb: Run data is saved locally in /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/wandb/run-20260912_031225-l4vd8b00
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5
+wandb: ⭐️ View project at https://wandb.ai/philipp-k-schoenfeld-tu-darmstadt/flow3d-surfaces
+wandb: 🚀 View run at https://wandb.ai/philipp-k-schoenfeld-tu-darmstadt/flow3d-surfaces/runs/l4vd8b00
+WARNING:2026-09-12 03:12:37,963:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.

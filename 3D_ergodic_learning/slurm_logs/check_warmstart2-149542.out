@@ -1,0 +1,25 @@
+
+Warmstart-Pruefung  (Geraet: cuda)
+  Checkpoint: flaechen200_flow3d_particle_ergodic_flaechen200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_MIX-ebene=0.25_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0111.pt
+  Datenbank:  ergodic_dataset_3d.db  Splits ['train']
+  Zielfunktion des geladenen Laufs: erg_on=footprint, lambda_erg=100, erg_K=6, w_cfm_rot=0.5, lambda_ori=0.012
+
+  Warmstart aus flaechen200_flow3d_particle_ergodic_flaechen200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_MIX-ebene=0.25_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0111.pt (Epoche 110, Verlust 0.85174)
+  neu initialisiert: nichts
+  82415 Eintraege geladen
+  Ziehgewichte: {'ebene': 0.25} (ebene_flach_anteil=0.5)
+    10/80  laufendes Mittel 0.93940  (3 s)
+    20/80  laufendes Mittel 0.89725  (4 s)
+    30/80  laufendes Mittel 0.86829  (4 s)
+    40/80  laufendes Mittel 0.86689  (5 s)
+    50/80  laufendes Mittel 0.88987  (5 s)
+    60/80  laufendes Mittel 0.87216  (6 s)
+    70/80  laufendes Mittel 0.87378  (6 s)
+    80/80  laufendes Mittel 0.87830  (7 s)
+
+  Verlust ueber 80 Stapel: Mittel 0.87830  sd 0.21984  Standardfehler 0.02458
+  Endverlust des geladenen Laufs: 0.85174
+  Abweichung 0.02656  =  1.07 Standardfehler  =  3.12 %
+  Zulaessiges Band: 0.06183  (das groessere aus 2.5 x Standardfehler und 6 %)
+
+  BESTANDEN — die Gewichte sind geladen, und der Startpunkt-Kopf traegt nichts bei.

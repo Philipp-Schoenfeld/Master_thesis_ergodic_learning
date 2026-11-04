@@ -1,0 +1,31 @@
+Setze fort von: checkpoints/nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0028.pt
+
+=== Training: 200 Flaechen ohne Offset, eigenstaendig, volle Epochen ===
+Tesla V100-DGXS-32GB, 32768 MiB
+
+
+==========================================================================
+  3D Particle Cross-Attention Flow Matching
+  device=cuda  nxi=25  nd=3  D=384
+  particles=512  grid=64^3
+  plane z=0.5  slab sigma=0.05
+  rotation=SO(3)
+  CFG: p_drop=0.1  cfg_weight=2.0
+==========================================================================
+  82108 Trainings- und 9434 Holdout-Eintraege ueber 200 Flaechen
+  Trainingsgruppen: baugruppe=9978, buchstabe=11309, ebene=4800, extern=2524, organismus=17511, primitiv=15854, superquadrik=11166, wort=8966
+  Holdout-Splits:   val_beides=508, val_flaeche=478, val_form=8448
+  Mischverhaeltnis je Zug: baugruppe=13%, buchstabe=13%, ebene=12%, extern=12%, organismus=12%, primitiv=13%, superquadrik=13%, wort=12%  (davon ebene_flach 6.2%)
+  Trainingstensor: (82108, 25, 9)  Epochenlaenge 82108
+  Partikelstapel:  (82108, 512, 4) (673 MB angeheftet auf der CPU)
+  Modellparameter: 87,660,201  (mit Startpunkt-Konditionierung)
+
+  Ergodic loss term active: K=6 (216 modes), nd=3, on=footprint, weight=100.0, t_power=2.0
+  Orientation loss term active: weight=0.012, t_power=2.0, w_point=0.1, w_standoff=300.0, w_angsmooth=2.0, standoff=0.12+-0.03
+  Resumed from epoch 28 (loss=0.88962)
+  alter Stand entfernt: nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0028.pt
+  alter Stand entfernt: nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0030.pt
+  Saved -> /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/viz/flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0040.png
+
+  [!] Training interrupted at epoch 42. Saving emergency state...
+  alter Stand entfernt: nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0040.pt

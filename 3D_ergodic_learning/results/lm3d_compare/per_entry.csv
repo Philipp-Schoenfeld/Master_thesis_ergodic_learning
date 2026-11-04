@@ -1,0 +1,1201 @@
+name,split,surface,gruppe,model,sinkhorn,fourier,standoff,pointing,cp_rmse,start_err,path_len
+flat_val_broad_0@s2,val_beides,kapsel,primitiv,DB teacher,0.00295617,0.00712128,0.0805949,82.3457,0,0,4.7609
+flat_val_broad_2@s1,val_beides,kapsel,primitiv,DB teacher,0.00172854,0.00345455,0.0811756,84.3391,0,0,5.80542
+organic_20#unk0,val_beides,kapsel,primitiv,DB teacher,0.00126659,0.00617922,0.0912009,86.2587,0,0,4.12422
+flat_val_ped_1#unk0@s2,val_beides,kapsel,primitiv,DB teacher,0.00116817,0.00336624,0.0925314,87.4739,0,0,4.43826
+flat_val_ring_2#unk0@s1,val_beides,kapsel,primitiv,DB teacher,0.00265226,0.00978782,0.0963809,86.7329,0,0,3.95664
+flat_val_ring_0#unk0,val_beides,kapsel,primitiv,DB teacher,0.00210892,0.00813334,0.0801415,85.8255,0,0,5.08455
+flat_val_ring_1#unk0,val_beides,kapsel,primitiv,DB teacher,0.0023129,0.00955874,0.0943371,85.2171,0,0,5.12911
+rand_ana_poly_complex_20,val_beides,halbkugel,primitiv,DB teacher,0.000196153,0.000961005,0.106392,90.0014,0,0,3.88061
+rand_ana_poly_30,val_beides,halbkugel,primitiv,DB teacher,0.000990418,0.00302154,0.104828,89.5669,0,0,4.16187
+flat_val_blur_2@s1,val_beides,halbkugel,primitiv,DB teacher,0.00182077,0.00612423,0.103817,91.944,0,0,6.94055
+flat_val_blur_2#unk0,val_beides,halbkugel,primitiv,DB teacher,0.00306552,0.00639867,0.0933721,90.7087,0,0,5.46369
+cjk_0@s2,val_beides,halbkugel,primitiv,DB teacher,0.00131246,0.00642172,0.0796969,88.0706,0,0,4.68799
+rand_gmm_complex_10#unk0,val_beides,halbkugel,primitiv,DB teacher,0.00623584,0.027657,0.0742878,88.5465,0,0,4.56048
+rand_gmm_complex_30#unk0,val_beides,halbkugel,primitiv,DB teacher,0.00499023,0.0197558,0.0688716,86.9258,0,0,7.15086
+flat_val_ring_1#unk0@s1,val_beides,halbkugel,primitiv,DB teacher,0.00433854,0.0136921,0.0815743,87.6941,0,0,6.60263
+rand_ana_poly_10#unk0,val_beides,halbkugel,primitiv,DB teacher,0.00284863,0.00742504,0.0770582,85.8528,0,0,4.71659
+greek_upper_0#unk0@s2,val_beides,halbkugel,primitiv,DB teacher,0.00285205,0.00847332,0.0744425,85.2147,0,0,5.33185
+flat_val_ring_1,val_beides,halbkugel,primitiv,DB teacher,0.00547834,0.0132876,0.0818308,86.3087,0,0,6.83631
+flat_val_broad_1@s1,val_beides,halbkugel,primitiv,DB teacher,0.00368841,0.00933942,0.0695538,85.1516,0,0,6.29893
+flat_val_blur_1#unk0@s1,val_beides,halbkugel,primitiv,DB teacher,0.00624139,0.0217108,0.0730539,84.4025,0,0,7.24444
+flat_val_blur_1#unk0,val_beides,ziffer_1,buchstabe,DB teacher,0.00839808,0.0212731,0.065432,82.228,0,0,11.4778
+flat_val_ring_1@s2,val_beides,ziffer_1,buchstabe,DB teacher,0.00428583,0.0118079,0.066136,79.4755,0,0,10.4002
+flat_val_ring_0@s2,val_beides,ziffer_1,buchstabe,DB teacher,0.00351859,0.00627472,0.0981422,90.3994,0,0,13.0387
+flat_val_blur_2#unk0@s1,val_beides,ziffer_1,buchstabe,DB teacher,0.00326678,0.00839742,0.0874797,88.6041,0,0,9.99315
+cjk_20@s1,val_beides,ziffer_1,buchstabe,DB teacher,0.00528382,0.020379,0.084528,85.0094,0,0,8.83157
+rand_gmm_complex_10#unk0,val_beides,ziffer_5,buchstabe,DB teacher,0.00867808,0.0179324,0.0852408,91.3547,0,0,7.48566
+rand_gmm_complex_20@s1,val_beides,ziffer_5,buchstabe,DB teacher,0.00387307,0.00872561,0.0515762,88.0896,0,0,8.92428
+korean_5#unk0@s2,val_beides,ziffer_5,buchstabe,DB teacher,0.0031398,0.00458124,0.0748956,80.6284,0,0,8.54236
+flat_val_broad_2#unk0,val_beides,ziffer_5,buchstabe,DB teacher,0.00605286,0.0169098,0.0704392,85.4508,0,0,11.7849
+rand_gmm_10#unk0@s1,val_beides,ziffer_5,buchstabe,DB teacher,0.00442422,0.00877345,0.07732,83.3022,0,0,8.26017
+rand_ana_poly_complex_10@s2,val_beides,ziffer_5,buchstabe,DB teacher,0.0112713,0.033226,0.0957395,89.8056,0,0,7.37621
+greek_upper_0#unk0,val_beides,ziffer_5,buchstabe,DB teacher,0.00911086,0.0247547,0.065589,88.1439,0,0,10.7949
+flat_val_blur_1,val_beides,organismus_00,organismus,DB teacher,0.00957999,0.0229577,0.102451,80.6588,0,0,7.2134
+flat_val_ring_0#unk0,val_beides,organismus_00,organismus,DB teacher,0.00499397,0.013013,0.0675204,82.1307,0,0,6.51225
+rand_gmm_10#unk0@s2,val_beides,organismus_00,organismus,DB teacher,0.00397723,0.014556,0.0719114,87.9463,0,0,5.87086
+flat_val_blur_1#unk0@s2,val_beides,organismus_00,organismus,DB teacher,0.00614996,0.016917,0.0731551,83.423,0,0,7.64037
+cjk_0#unk0@s2,val_beides,organismus_00,organismus,DB teacher,0.0036486,0.00913959,0.0770724,86.534,0,0,6.92036
+flat_val_ped_1@s1,val_beides,organismus_00,organismus,DB teacher,0.00406783,0.00976378,0.0760942,85.9067,0,0,6.34486
+rand_ana_poly_complex_0#unk0@s1,val_beides,organismus_00,organismus,DB teacher,0.00330767,0.00891303,0.0863713,88.194,0,0,5.84705
+rand_gmm_20@s2,val_beides,organismus_00,organismus,DB teacher,0.00437498,0.0126727,0.0695167,85.5473,0,0,6.40128
+flat_val_ring_1@s1,val_beides,organismus_00,organismus,DB teacher,0.00480047,0.0103817,0.0742267,84.2681,0,0,8.90039
+flat_val_blur_1,val_beides,organismus_00,organismus,DB teacher,0.0100763,0.0230641,0.103066,80.4696,0,0,7.14932
+korean_5@s2,val_beides,organismus_00,organismus,DB teacher,0.00290774,0.00712797,0.074977,83.3051,0,0,7.37294
+flat_val_blur_0#unk0,val_beides,organismus_00,organismus,DB teacher,0.00492321,0.0165032,0.0710467,87.1056,0,0,6.64803
+organic_10#unk0,val_beides,organismus_00,organismus,DB teacher,0.00639761,0.0184684,0.0785705,84.7859,0,0,7.79403
+cjk_20@s1,val_beides,organismus_00,organismus,DB teacher,0.00288642,0.00620692,0.0884871,85.3516,0,0,5.98204
+flat_val_broad_2#unk0,val_beides,organismus_38,organismus,DB teacher,0.0118422,0.0413706,0.0681324,78.869,0,0,6.55408
+organic_30#unk0@s2,val_beides,organismus_38,organismus,DB teacher,0.0026161,0.0103445,0.0866597,86.7051,0,0,4.78211
+flat_val_broad_0#unk0@s2,val_beides,organismus_38,organismus,DB teacher,0.00970807,0.0379251,0.0574033,81.519,0,0,7.60833
+rand_gmm_10#unk0@s1,val_beides,organismus_38,organismus,DB teacher,0.00460815,0.018167,0.0693519,86.1327,0,0,5.21538
+flat_val_blur_1,val_beides,organismus_38,organismus,DB teacher,0.0102044,0.0228142,0.106868,79.5063,0,0,7.05388
+rand_gmm_complex_30,val_beides,organismus_38,organismus,DB teacher,0.00522392,0.0132656,0.0706736,85.6949,0,0,5.6651
+rand_gmm_complex_20@s2,val_beides,organismus_38,organismus,DB teacher,0.00569281,0.0153692,0.054745,82.6321,0,0,7.50401
+organic_0#unk0@s1,val_beides,organismus_38,organismus,DB teacher,0.00373389,0.0119036,0.0777804,87.088,0,0,6.32453
+flat_val_ped_1#unk0,val_beides,organismus_38,organismus,DB teacher,0.00416684,0.0133045,0.0706814,85.1195,0,0,8.4784
+flat_val_ring_2#unk0@s2,val_beides,bg_hantel_var,baugruppe,DB teacher,0.00215069,0.00915048,0.0987209,87.1875,0,0,5.78345
+rand_gmm_complex_30,val_beides,bg_hantel_var,baugruppe,DB teacher,0.000956291,0.00183542,0.0829305,81.9284,0,0,7.61621
+rand_gmm_10#unk0@s1,val_beides,bg_hantel_var,baugruppe,DB teacher,0.000701095,0.00169699,0.0932232,80.7491,0,0,6.57415
+organic_20#unk0,val_beides,bg_hantel_var,baugruppe,DB teacher,0.00110582,0.00315223,0.0819596,84.5186,0,0,6.57783
+flat_val_broad_2@s1,val_beides,bg_hantel_var,baugruppe,DB teacher,0.00102489,0.00188085,0.0767567,80.7864,0,0,6.77113
+rand_ana_poly_20#unk0@s2,val_beides,bg_hantel_var,baugruppe,DB teacher,0.00195684,0.00642252,0.0840581,80.0582,0,0,7.06806
+flat_val_broad_2,val_beides,bg_hantel_var,baugruppe,DB teacher,0.00115102,0.00264257,0.0850531,82.6045,0,0,9.92729
+flat_val_ring_0@s2,val_beides,bg_hantel_var,baugruppe,DB teacher,0.00105166,0.0020817,0.10534,87.1406,0,0,5.51596
+rand_ana_poly_complex_0,val_beides,bg_bogen_var,baugruppe,DB teacher,0.00243033,0.0109236,0.0990726,89.2497,0,0,6.19653
+a_lc@s2,val_beides,bg_bogen_var,baugruppe,DB teacher,0.00163774,0.00535661,0.0991463,86.8279,0,0,8.97631
+flat_val_blur_0@s2,val_beides,bg_bogen_var,baugruppe,DB teacher,0.00234156,0.00652862,0.0965973,87.4925,0,0,8.76157
+rand_ana_poly_complex_10#unk0@s1,val_beides,bg_bogen_var,baugruppe,DB teacher,0.00177343,0.00517253,0.0821712,81.7022,0,0,7.4556
+flat_val_broad_1#unk0@s2,val_beides,bg_bogen_var,baugruppe,DB teacher,0.00231769,0.00863244,0.0604545,78.3946,0,0,6.78487
+flat_val_blur_2#unk0,val_beides,bg_bogen_var,baugruppe,DB teacher,0.00106202,0.00130018,0.0985878,89.7805,0,0,4.32425
+rand_ana_poly_complex_30@s1,val_beides,bg_bogen_var,baugruppe,DB teacher,0.00110978,0.00302004,0.100593,89.1001,0,0,3.29772
+cjk_10@s2,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00309732,0.0129095,0.0989638,88.7526,0,0,5.29852
+greek_upper_0#unk0,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00215317,0.00757749,0.08552,84.4021,0,0,6.17294
+rand_gmm_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00170425,0.00749622,0.0743617,85.2886,0,0,6.12524
+flat_val_ring_1@s1,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00178456,0.00571588,0.0834755,86.8781,0,0,8.85792
+rand_gmm_10@s2,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00365988,0.0151585,0.0714914,82.878,0,0,8.42182
+organic_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00177848,0.00604038,0.0816783,83.4929,0,0,4.76214
+rand_gmm_10@s1,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00245492,0.00684783,0.0742127,85.3304,0,0,4.97443
+flat_val_broad_2#unk0,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00520697,0.018712,0.0583699,84.6882,0,0,4.80086
+flat_val_blur_1#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.0032246,0.00706406,0.0794664,88.3423,0,0,6.0545
+rand_gmm_complex_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,DB teacher,0.00180721,0.00624907,0.0785852,88.152,0,0,4.45347
+organic_10#unk0@s1,val_beides,sq_fass_lang,superquadrik,DB teacher,0.00161489,0.00208611,0.0868063,91.9921,0,0,6.7827
+flat_val_blur_1#unk0@s1,val_beides,sq_fass_lang,superquadrik,DB teacher,0.00336415,0.00940714,0.0720808,88.1401,0,0,7.30555
+flat_val_ring_0#unk0,val_beides,sq_fass_lang,superquadrik,DB teacher,0.00198099,0.00377433,0.0887536,88.6709,0,0,5.86519
+flat_val_ped_1@s1,val_beides,sq_fass_lang,superquadrik,DB teacher,0.00124873,0.00361936,0.0928356,89.5772,0,0,8.87496
+organic_30#unk0@s1,val_beides,sq_fass_lang,superquadrik,DB teacher,0.000872738,0.00606868,0.094329,90.9187,0,0,4.38836
+digit_5#unk0@s1,val_beides,sq_fass_lang,superquadrik,DB teacher,0.00133099,0.00762915,0.0847597,90.4556,0,0,4.32621
+organic_10#unk0,val_beides,sq_fass_lang,superquadrik,DB teacher,0.00108234,0.0063054,0.0891185,87.4273,0,0,5.65899
+organic_0#unk0@s2,val_beides,wort_vita,wort,DB teacher,0.000963342,0.00466955,0.0839949,82.8572,0,0,5.9865
+flat_val_blur_2@s1,val_beides,wort_vita,wort,DB teacher,0.000581553,0.00119235,0.10044,89.4413,0,0,5.52615
+rand_ana_poly_complex_20#unk0,val_beides,wort_vita,wort,DB teacher,0.000970907,0.00468249,0.0969141,83.5166,0,0,4.58712
+rand_ana_poly_complex_0@s1,val_beides,wort_vita,wort,DB teacher,0.000617583,0.0025116,0.103228,91.1168,0,0,3.98224
+cjk_20#unk0@s2,val_beides,wort_vita,wort,DB teacher,0.000787098,0.00241154,0.0918459,86.8936,0,0,4.81194
+rand_gmm_complex_30#unk0@s1,val_beides,wort_vita,wort,DB teacher,0.00102713,0.00343575,0.0985515,83.1372,0,0,5.48214
+rand_ana_poly_complex_0@s2,val_beides,wort_vita,wort,DB teacher,0.00337307,0.0157368,0.105947,83.5792,0,0,6.40818
+organic_10@s1,val_beides,wort_vita,wort,DB teacher,0.000956074,0.00390368,0.101622,81.9758,0,0,5.23852
+rand_gmm_20,val_beides,wort_ias,wort,DB teacher,0.00140364,0.00475,0.0671356,90.1163,0,0,4.52979
+flat_val_blur_2@s1,val_beides,wort_ias,wort,DB teacher,0.00820628,0.0329105,0.0918293,87.1448,0,0,12.2699
+rand_ana_poly_20#unk0,val_beides,wort_ias,wort,DB teacher,0.00834212,0.0378996,0.0771589,81.5905,0,0,6.43026
+rand_gmm_10#unk0@s1,val_beides,wort_ias,wort,DB teacher,0.00447979,0.0160289,0.0693067,87.7026,0,0,11.5391
+greek_upper_0,val_beides,wort_ias,wort,DB teacher,0.0109906,0.0403099,0.0961095,86.5378,0,0,6.32297
+rand_ana_poly_complex_42,val_flaeche,kapsel,primitiv,DB teacher,0.000338398,0.00180351,0.109056,88.6596,0,0,3.81386
+korean_10@s2,val_flaeche,kapsel,primitiv,DB teacher,0.000432933,0.00139025,0.104304,88.4749,0,0,3.87016
+flat_ped_111#unk0@s1,val_flaeche,kapsel,primitiv,DB teacher,0.00126259,0.00389041,0.0882107,86.4614,0,0,4.56353
+rand_gmm_155#unk0@s2,val_flaeche,kapsel,primitiv,DB teacher,0.00124366,0.00267507,0.0878317,86.8184,0,0,4.61613
+rand_ana_poly_complex_28#unk0@s2,val_flaeche,kapsel,primitiv,DB teacher,0.00211055,0.00850752,0.0735733,82.8682,0,0,3.88297
+flat_ped_80#unk0@s2,val_flaeche,kapsel,primitiv,DB teacher,0.000941592,0.0019041,0.096239,85.4988,0,0,4.6506
+korean_24#unk0@s1,val_flaeche,kapsel,primitiv,DB teacher,0.00156711,0.00500805,0.0824176,85.9887,0,0,4.43485
+rand_gmm_complex_44@s2,val_flaeche,kapsel,primitiv,DB teacher,0.00709804,0.0299363,0.0811676,69.2341,0,0,3.95784
+rand_gmm_170#unk0@s1,val_flaeche,kapsel,primitiv,DB teacher,0.00145197,0.00619982,0.0951919,86.6043,0,0,4.95788
+rand_ana_poly_47@s1,val_flaeche,kapsel,primitiv,DB teacher,0.000735483,0.00473045,0.113371,89.8509,0,0,1.24847
+rand_gmm_173#unk0@s2,val_flaeche,kapsel,primitiv,DB teacher,0.00121889,0.0041571,0.0924846,85.3315,0,0,4.68894
+flat_blur_10#unk0@s1,val_flaeche,kapsel,primitiv,DB teacher,0.0026229,0.00870654,0.0741269,81.4171,0,0,5.15485
+cjk_40,val_flaeche,halbkugel,primitiv,DB teacher,0.00136742,0.007608,0.0791568,89.7282,0,0,5.31926
+greek_upper_7,val_flaeche,halbkugel,primitiv,DB teacher,0.00138863,0.00782215,0.080413,90.0004,0,0,3.88128
+rand_ana_poly_119@s2,val_flaeche,halbkugel,primitiv,DB teacher,0.000459851,0.00155618,0.106614,89.7456,0,0,3.7114
+rand_ana_poly_118#unk0@s1,val_flaeche,halbkugel,primitiv,DB teacher,0.00224962,0.0102078,0.0811423,89.155,0,0,5.69297
+flat_blur_17#unk0@s2,val_flaeche,halbkugel,primitiv,DB teacher,0.00974396,0.0362523,0.0683659,79.5101,0,0,6.23336
+rand_gmm_complex_43,val_flaeche,halbkugel,primitiv,DB teacher,0.0141251,0.0397748,0.0984255,78.4331,0,0,7.7436
+greek_lower_21@s1,val_flaeche,halbkugel,primitiv,DB teacher,0.000638414,0.00214327,0.105777,88.878,0,0,3.95058
+cjk_19#unk0@s2,val_flaeche,halbkugel,primitiv,DB teacher,0.00498692,0.0131213,0.0787061,85.3164,0,0,5.80898
+rand_ana_poly_153@s1,val_flaeche,halbkugel,primitiv,DB teacher,0.000328954,0.00129351,0.108957,89.5197,0,0,2.36914
+rand_ana_poly_137@s1,val_flaeche,halbkugel,primitiv,DB teacher,0.000190203,0.000870417,0.109158,88.965,0,0,2.34631
+rand_ana_poly_complex_62#unk0@s1,val_flaeche,ziffer_1,buchstabe,DB teacher,0.00302672,0.016175,0.0762063,88.8706,0,0,7.25303
+korean_19@s1,val_flaeche,ziffer_1,buchstabe,DB teacher,0.00116117,0.00196816,0.0921996,89.5979,0,0,5.50603
+rand_ana_poly_164@s1,val_flaeche,ziffer_1,buchstabe,DB teacher,0.000279908,0.000565159,0.109157,88.1875,0,0,2.72624
+rand_gmm_95,val_flaeche,ziffer_1,buchstabe,DB teacher,0.00280278,0.00914148,0.0736135,80.8448,0,0,7.96513
+rand_ana_poly_complex_42@s2,val_flaeche,ziffer_1,buchstabe,DB teacher,0.000627298,0.0016767,0.101829,86.7288,0,0,4.92766
+rand_gmm_complex_39#unk0,val_flaeche,ziffer_1,buchstabe,DB teacher,0.00492014,0.0160166,0.0621698,79.3645,0,0,10.5793
+rand_ana_poly_94#unk0,val_flaeche,ziffer_1,buchstabe,DB teacher,0.00266735,0.00706527,0.0831363,92.8539,0,0,9.4018
+flat_ped_118@s1,val_flaeche,ziffer_1,buchstabe,DB teacher,0.00280061,0.00647914,0.0678491,80.5236,0,0,10.4003
+rand_gmm_140@s1,val_flaeche,ziffer_1,buchstabe,DB teacher,0.00895498,0.0310071,0.0837613,96.8822,0,0,7.13772
+rand_ana_poly_79#unk0@s2,val_flaeche,ziffer_1,buchstabe,DB teacher,0.00374661,0.0100977,0.0774686,86.4235,0,0,9.12466
+rand_gmm_complex_25@s1,val_flaeche,ziffer_5,buchstabe,DB teacher,0.00354866,0.00447133,0.0727807,89.7543,0,0,10.0061
+rand_gmm_complex_21,val_flaeche,ziffer_5,buchstabe,DB teacher,0.00522058,0.0129585,0.0698913,87.3101,0,0,7.4654
+cjk_61#unk0@s1,val_flaeche,ziffer_5,buchstabe,DB teacher,0.00358333,0.00478808,0.0639233,83.3935,0,0,8.83678
+flat_broad_17@s2,val_flaeche,ziffer_5,buchstabe,DB teacher,0.00644964,0.0160188,0.0708171,84.1132,0,0,10.132
+rand_ana_poly_complex_63@s1,val_flaeche,ziffer_5,buchstabe,DB teacher,0.0192538,0.0639749,0.107181,90.4165,0,0,3.2307
+rand_ana_poly_54@s2,val_flaeche,ziffer_5,buchstabe,DB teacher,0.0132745,0.0463071,0.101068,89.8046,0,0,5.50362
+flat_blur_3#unk0@s1,val_flaeche,ziffer_5,buchstabe,DB teacher,0.00298763,0.00430417,0.0806587,92.4748,0,0,14.1769
+flat_blur_30@s2,val_flaeche,ziffer_5,buchstabe,DB teacher,0.0062696,0.0164,0.0842603,93.7025,0,0,8.71984
+flat_ped_98@s1,val_flaeche,organismus_00,organismus,DB teacher,0.00373026,0.0105663,0.0976678,91.4369,0,0,8.45492
+korean_15#unk0@s2,val_flaeche,organismus_00,organismus,DB teacher,0.0029174,0.0100601,0.091034,88.0568,0,0,6.01986
+flat_blur_45#unk0@s1,val_flaeche,organismus_00,organismus,DB teacher,0.00426027,0.0104947,0.0932506,87.3885,0,0,6.54643
+rand_gmm_124#unk0@s1,val_flaeche,organismus_00,organismus,DB teacher,0.00407554,0.0147182,0.0841323,85.6738,0,0,5.90942
+organic_6#unk0,val_flaeche,organismus_00,organismus,DB teacher,0.00424713,0.011105,0.0646773,84.1984,0,0,7.56199
+rand_ana_poly_complex_6#unk0@s1,val_flaeche,organismus_00,organismus,DB teacher,0.00330559,0.0134916,0.0973693,89.6937,0,0,5.73147
+rand_gmm_161#unk0@s2,val_flaeche,organismus_00,organismus,DB teacher,0.00426784,0.0167945,0.0913945,87.8844,0,0,5.96591
+flat_ped_37@s1,val_flaeche,organismus_00,organismus,DB teacher,0.00486448,0.0130818,0.0979805,90.0368,0,0,7.8623
+rand_gmm_73@s2,val_flaeche,organismus_00,organismus,DB teacher,0.00815564,0.0181023,0.102034,82.8624,0,0,6.70318
+flat_ped_142@s2,val_flaeche,organismus_00,organismus,DB teacher,0.00540147,0.0128449,0.0799117,83.8502,0,0,8.98903
+flat_broad_49#unk0,val_flaeche,organismus_00,organismus,DB teacher,0.00352475,0.0101021,0.0830875,85.9997,0,0,6.79278
+flat_ped_39@s1,val_flaeche,organismus_38,organismus,DB teacher,0.0106305,0.0279854,0.0772799,79.7749,0,0,9.22206
+flat_ped_54#unk0@s2,val_flaeche,organismus_38,organismus,DB teacher,0.00483154,0.0122713,0.0822493,86.5626,0,0,6.46859
+z_lc@s1,val_flaeche,organismus_38,organismus,DB teacher,0.000433454,0.000994847,0.105203,88.5938,0,0,3.19015
+rand_ana_poly_19,val_flaeche,organismus_38,organismus,DB teacher,0.000232628,0.00139779,0.11105,88.4702,0,0,2.23637
+rand_gmm_110@s1,val_flaeche,organismus_38,organismus,DB teacher,0.0040501,0.00891589,0.0816045,86.5408,0,0,6.95581
+flat_ring_56,val_flaeche,organismus_38,organismus,DB teacher,0.00367174,0.00981373,0.0738957,85.99,0,0,7.52016
+rand_gmm_85@s1,val_flaeche,organismus_38,organismus,DB teacher,0.00472778,0.0111845,0.0790882,84.9414,0,0,7.12561
+organic_32#unk0@s1,val_flaeche,organismus_38,organismus,DB teacher,0.00681686,0.0213512,0.0526288,84.3982,0,0,7.58415
+rand_gmm_complex_25#unk0,val_flaeche,organismus_38,organismus,DB teacher,0.00385922,0.0127675,0.0779036,86.3361,0,0,6.84209
+flat_blur_37#unk0@s2,val_flaeche,organismus_38,organismus,DB teacher,0.00244992,0.00646712,0.0772459,85.3736,0,0,6.13505
+flat_ped_94#unk0@s1,val_flaeche,organismus_38,organismus,DB teacher,0.00463734,0.016633,0.0753886,86.4094,0,0,5.95883
+rand_ana_poly_146#unk0@s2,val_flaeche,bg_hantel_var,baugruppe,DB teacher,0.00162841,0.00282866,0.0786786,81.3386,0,0,6.6955
+rand_gmm_130@s1,val_flaeche,bg_hantel_var,baugruppe,DB teacher,0.0017087,0.00312036,0.0726889,75.7647,0,0,5.92205
+flat_ped_49#unk0,val_flaeche,bg_hantel_var,baugruppe,DB teacher,0.00111514,0.00205592,0.0851191,86.2922,0,0,5.01636
+rand_gmm_63#unk0,val_flaeche,bg_hantel_var,baugruppe,DB teacher,0.000964487,0.00355452,0.0753739,79.1221,0,0,6.26134
+flat_ped_51#unk0,val_flaeche,bg_hantel_var,baugruppe,DB teacher,0.00101663,0.00228207,0.0856781,88.2964,0,0,3.72461
+rand_gmm_complex_31@s2,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.00302601,0.0122333,0.0943224,84.6395,0,0,7.28234
+rand_ana_poly_complex_11@s1,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.0026649,0.00913312,0.0940621,86.7016,0,0,7.65567
+flat_broad_66#unk0,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.00360099,0.0117377,0.0578499,77.4688,0,0,12.1484
+cjk_60@s1,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.00601153,0.0249205,0.0839784,87.1411,0,0,6.48498
+rand_gmm_105#unk0@s2,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.0023214,0.00763596,0.0925803,84.6984,0,0,9.95332
+flat_ring_58@s1,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.0027545,0.00822063,0.101061,91.0468,0,0,9.17362
+flat_blur_33#unk0,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.00113887,0.00361844,0.089376,86.8898,0,0,6.37458
+cjk_14#unk0@s1,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.00107528,0.00295837,0.0945584,87.8271,0,0,6.07663
+rand_gmm_50,val_flaeche,bg_bogen_var,baugruppe,DB teacher,0.00181974,0.00603293,0.0699949,82.2392,0,0,4.01532
+rand_ana_poly_107#unk0@s1,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.00207123,0.0072202,0.0740923,89.0398,0,0,5.35206
+rand_gmm_123#unk0@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.00307966,0.0122156,0.0612459,80.1568,0,0,6.8721
+flat_blur_33@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.00197852,0.0046386,0.0896855,84.0168,0,0,7.11634
+greek_lower_8#unk0@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.0022771,0.00972578,0.0813038,80.8613,0,0,5.62434
+organic_48#unk0@s1,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.00170101,0.00626107,0.084909,87.3962,0,0,5.15565
+flat_ped_110@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.001484,0.0040355,0.102387,91.6515,0,0,6.00644
+flat_broad_4@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.00204039,0.00474306,0.0742668,85.534,0,0,7.02686
+flat_ped_30,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.00198305,0.00635345,0.0934632,89.9572,0,0,4.89406
+rand_ana_poly_105,val_flaeche,sq_kreuzquer_lang,superquadrik,DB teacher,0.000543269,0.00242165,0.108708,89.1571,0,0,3.36522
+rand_ana_poly_44#unk0,val_flaeche,sq_fass_lang,superquadrik,DB teacher,0.00753812,0.0219448,0.0961204,86.559,0,0,2.71343
+rand_ana_poly_59#unk0@s1,val_flaeche,sq_fass_lang,superquadrik,DB teacher,0.000727647,0.00249431,0.0921695,90.8096,0,0,5.69776
+p_lc@s1,val_flaeche,sq_fass_lang,superquadrik,DB teacher,0.000606821,0.00331603,0.106322,92.1537,0,0,4.09591
+rand_gmm_149#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,DB teacher,0.00111059,0.00784767,0.0882222,88.4515,0,0,4.10151
+rand_gmm_complex_16#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,DB teacher,0.00153758,0.00975298,0.0824242,92.2768,0,0,4.79392
+flat_ped_116#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,DB teacher,0.00105523,0.00644037,0.0995387,89.4905,0,0,4.92633
+flat_ring_5#unk0@s1,val_flaeche,wort_vita,wort,DB teacher,0.000803304,0.00296165,0.0835959,88.181,0,0,6.0206
+flat_ped_32@s2,val_flaeche,wort_vita,wort,DB teacher,0.00122335,0.00367436,0.0940817,77.1289,0,0,5.52806
+rand_gmm_44#unk0,val_flaeche,wort_vita,wort,DB teacher,0.00129296,0.00350804,0.0815641,86.6022,0,0,7.40328
+rand_gmm_13#unk0@s2,val_flaeche,wort_vita,wort,DB teacher,0.000511088,0.00148217,0.097253,83.8178,0,0,10.285
+rand_ana_poly_146#unk0@s1,val_flaeche,wort_vita,wort,DB teacher,0.0031203,0.0123547,0.0863883,79.5621,0,0,5.62383
+flat_ped_58@s2,val_flaeche,wort_vita,wort,DB teacher,0.00260893,0.00693467,0.0798282,76.2738,0,0,11.071
+flat_ped_138#unk0,val_flaeche,wort_vita,wort,DB teacher,0.00145065,0.005745,0.0771479,83.2925,0,0,4.72848
+flat_ped_33@s1,val_flaeche,wort_ias,wort,DB teacher,0.00574454,0.0223352,0.0651914,86.3382,0,0,10.3255
+korean_1#unk0,val_flaeche,wort_ias,wort,DB teacher,0.00450777,0.0150261,0.077485,90.4885,0,0,8.18038
+rand_ana_poly_complex_0#unk0@s2,val_form,ebene_gekippt,ebene,DB teacher,0.00105046,0.00405854,0.0881067,89.9997,0,0,4.51133
+rand_ana_poly_20,val_form,ebene_fib_2,ebene,DB teacher,0.000135594,0.000563927,0.110541,90.0006,0,0,2.12262
+organic_10#unk0@s1,val_form,ebene_fib_3,ebene,DB teacher,0.0011542,0.00622613,0.0823554,90,0,0,4.2435
+rand_gmm_complex_20,val_form,wuerfel,primitiv,DB teacher,0.0194861,0.0377222,0.0739288,84.0287,0,0,11.2675
+organic_0#unk0@s2,val_form,kegel,primitiv,DB teacher,0.00412832,0.00993442,0.073973,92.6903,0,0,6.68247
+rand_ana_poly_complex_10#unk0@s2,val_form,oktaeder,primitiv,DB teacher,0.00529733,0.0270671,0.0917384,84.7567,0,0,7.52999
+cjk_0,val_form,kuboktaeder,primitiv,DB teacher,0.00705906,0.0148683,0.0596026,86.8463,0,0,11.078
+rand_ana_poly_30@s1,val_form,quader,primitiv,DB teacher,0.000674108,0.00198218,0.104944,88.9997,0,0,4.96969
+flat_val_broad_1@s2,val_form,spat,primitiv,DB teacher,0.00336311,0.00642413,0.092548,88.3052,0,0,11.7252
+organic_30@s1,val_form,spat,primitiv,DB teacher,0.000951122,0.00195811,0.109314,92.7479,0,0,2.87442
+rand_gmm_complex_20@s2,val_form,spat,primitiv,DB teacher,0.00319185,0.00962348,0.0734111,88.756,0,0,7.51003
+flat_val_broad_1#unk0@s1,val_form,spat,primitiv,DB teacher,0.00343645,0.00678038,0.0873946,90.6106,0,0,5.33742
+organic_10@s2,val_form,dreiecksplatte,primitiv,DB teacher,0.000370947,0.00141387,0.104836,88.4129,0,0,4.44839
+flat_val_ped_0@s2,val_form,keil,primitiv,DB teacher,0.00477242,0.00899166,0.0925135,87.5818,0,0,8.35728
+digit_5@s1,val_form,antiprisma,primitiv,DB teacher,0.00209716,0.00967429,0.090202,87.3516,0,0,5.33468
+flat_val_ped_0#unk0,val_form,trapezoeder,primitiv,DB teacher,0.00414759,0.0150517,0.0708868,84.4008,0,0,6.44192
+flat_val_blur_1#unk0@s2,val_form,trapezoeder,primitiv,DB teacher,0.00556247,0.0155469,0.0630909,81.7135,0,0,6.58322
+rand_ana_poly_complex_20#unk0@s1,val_form,hohlzylinder,primitiv,DB teacher,0.00677736,0.0172728,0.0740113,86.3928,0,0,12.9601
+flat_val_ped_0#unk0,val_form,ellipsoid,primitiv,DB teacher,0.00316417,0.0114966,0.0943476,86.9642,0,0,4.36385
+flat_val_ring_1,val_form,hyperboloid,primitiv,DB teacher,0.00280708,0.00533963,0.0745035,85.3192,0,0,11.3887
+organic_10#unk0@s2,val_form,tropfen,primitiv,DB teacher,0.00382712,0.00946289,0.0721729,86.3414,0,0,5.9138
+organic_0#unk0,val_form,buchstabe_a,buchstabe,DB teacher,0.00489512,0.0109255,0.0726019,85.1681,0,0,9.90433
+rand_gmm_complex_0@s1,val_form,buchstabe_b,buchstabe,DB teacher,0.00438971,0.0111422,0.0646706,88.3169,0,0,12.8866
+flat_val_broad_2#unk0,val_form,buchstabe_d,buchstabe,DB teacher,0.0268223,0.0754299,0.159011,93.1875,0,0,9.80323
+rand_ana_poly_complex_30#unk0@s1,val_form,buchstabe_e,buchstabe,DB teacher,0.0029454,0.00328369,0.0600655,91.7645,0,0,16.5627
+a_lc#unk0@s2,val_form,buchstabe_g,buchstabe,DB teacher,0.003848,0.00653661,0.0595084,88.8686,0,0,7.4989
+flat_val_ped_0#unk0@s1,val_form,buchstabe_g,buchstabe,DB teacher,0.00270437,0.00323305,0.056323,84.757,0,0,13.553
+cjk_0#unk0,val_form,buchstabe_g,buchstabe,DB teacher,0.00403018,0.00900354,0.0740894,86.1029,0,0,11.345
+rand_gmm_10#unk0,val_form,buchstabe_h,buchstabe,DB teacher,0.00294003,0.00535705,0.057459,84.7808,0,0,13.0836
+organic_30@s1,val_form,buchstabe_i,buchstabe,DB teacher,0.000429039,0.00141393,0.10959,90.1709,0,0,3.0567
+flat_val_ring_2@s1,val_form,buchstabe_m,buchstabe,DB teacher,0.00339759,0.0067273,0.0706985,82.8657,0,0,12.6781
+rand_gmm_20@s1,val_form,buchstabe_n,buchstabe,DB teacher,0.00727961,0.016823,0.0695447,78.2421,0,0,12.6562
+flat_val_blur_1#unk0,val_form,buchstabe_p,buchstabe,DB teacher,0.00866305,0.0252279,0.0692868,77.3805,0,0,7.42763
+rand_gmm_10#unk0@s2,val_form,buchstabe_s,buchstabe,DB teacher,0.00532749,0.0129909,0.0845831,83.5461,0,0,7.53206
+rand_ana_poly_complex_20#unk0@s2,val_form,buchstabe_t,buchstabe,DB teacher,0.00100864,0.00478626,0.0908255,88.1496,0,0,5.16554
+cjk_10,val_form,buchstabe_v,buchstabe,DB teacher,0.00727734,0.0297936,0.0926108,87.968,0,0,7.88665
+flat_val_blur_2#unk0@s2,val_form,buchstabe_x,buchstabe,DB teacher,0.0221786,0.0350227,0.0799837,87.9443,0,0,16.0011
+flat_val_blur_0#unk0,val_form,buchstabe_x,buchstabe,DB teacher,0.0166995,0.0235322,0.0622822,89.7443,0,0,16.032
+cjk_0@s1,val_form,buchstabe_y,buchstabe,DB teacher,0.00516112,0.0139573,0.0709549,82.9331,0,0,8.47907
+rand_gmm_complex_0,val_form,buchstabe_y,buchstabe,DB teacher,0.00549055,0.0119883,0.0785044,84.5285,0,0,8.92716
+organic_30#unk0,val_form,buchstabe_y,buchstabe,DB teacher,0.00211029,0.00663315,0.082838,83.3427,0,0,7.05909
+cjk_20@s1,val_form,organismus_02,organismus,DB teacher,0.00269729,0.00695802,0.0918971,87.6884,0,0,5.59021
+flat_val_broad_1#unk0,val_form,organismus_05,organismus,DB teacher,0.00731118,0.0225547,0.0533424,83.3603,0,0,7.08844
+greek_upper_0#unk0@s2,val_form,organismus_05,organismus,DB teacher,0.00452826,0.0142072,0.0807499,85.7355,0,0,5.88509
+greek_upper_0#unk0,val_form,organismus_09,organismus,DB teacher,0.0056204,0.0174288,0.0689221,83.321,0,0,6.18318
+organic_20,val_form,organismus_09,organismus,DB teacher,0.00127304,0.00398371,0.102496,89.1633,0,0,3.52168
+korean_5,val_form,organismus_12,organismus,DB teacher,0.00422164,0.0172086,0.0635083,83.767,0,0,6.15394
+organic_0#unk0@s1,val_form,organismus_12,organismus,DB teacher,0.00385231,0.0119556,0.0755848,85.8701,0,0,6.58955
+flat_val_ped_2@s2,val_form,organismus_18,organismus,DB teacher,0.0124985,0.0298937,0.103772,78.7336,0,0,8.00786
+korean_5,val_form,organismus_18,organismus,DB teacher,0.00252314,0.00918905,0.0753174,84.1839,0,0,6.20089
+rand_ana_poly_complex_0#unk0,val_form,organismus_19,organismus,DB teacher,0.0040419,0.0128489,0.0824177,85.349,0,0,6.80747
+rand_gmm_10@s2,val_form,organismus_19,organismus,DB teacher,0.00535201,0.0141199,0.061609,85.3361,0,0,7.39998
+rand_gmm_complex_20@s2,val_form,organismus_20,organismus,DB teacher,0.0139383,0.0468998,0.0847511,77.371,0,0,7.10603
+a_lc,val_form,organismus_22,organismus,DB teacher,0.000387365,0.0016362,0.102655,89.0031,0,0,3.21956
+flat_val_blur_0@s2,val_form,organismus_23,organismus,DB teacher,0.00363368,0.009904,0.0913413,87.999,0,0,7.02739
+rand_gmm_complex_0,val_form,organismus_25,organismus,DB teacher,0.00885022,0.026975,0.0704508,80.5237,0,0,5.71387
+flat_val_ped_2@s2,val_form,organismus_26,organismus,DB teacher,0.0160976,0.0392258,0.0948248,79.5134,0,0,8.56699
+rand_gmm_20#unk0@s2,val_form,organismus_28,organismus,DB teacher,0.00405065,0.0115346,0.0762056,85.626,0,0,5.01735
+flat_val_broad_2,val_form,organismus_29,organismus,DB teacher,0.00547111,0.0118544,0.0874132,83.667,0,0,9.94275
+rand_ana_poly_30#unk0@s1,val_form,organismus_37,organismus,DB teacher,0.00225399,0.0080952,0.0736161,85.5257,0,0,5.52871
+rand_ana_poly_complex_30@s1,val_form,bg_lochkreuz,baugruppe,DB teacher,0.00288722,0.00653131,0.0963623,88.9832,0,0,8.25606
+flat_val_ring_2#unk0,val_form,bg_facette,baugruppe,DB teacher,0.00683447,0.0265821,0.0916723,83.9944,0,0,8.59188
+flat_val_broad_1,val_form,bg_facette,baugruppe,DB teacher,0.0084729,0.0179158,0.0841086,80.6648,0,0,10.7043
+flat_val_ped_2#unk0,val_form,bg_becher,baugruppe,DB teacher,0.0142473,0.0398924,0.0622716,81.0551,0,0,13.6324
+cjk_0,val_form,bg_kreuzstern,baugruppe,DB teacher,0.000590337,0.000934582,0.0806304,83.4054,0,0,11.3347
+flat_val_blur_2#unk0@s1,val_form,bg_kerbe,baugruppe,DB teacher,0.0131342,0.022094,0.0740759,84.8506,0,0,10.787
+rand_gmm_10#unk0@s2,val_form,bg_kapselring,baugruppe,DB teacher,0.00376592,0.0104535,0.0698803,86.0957,0,0,9.21889
+greek_upper_0@s1,val_form,bg_lochkreuz_var,baugruppe,DB teacher,0.00561242,0.0149693,0.0974527,89.2403,0,0,6.1575
+rand_ana_poly_complex_20#unk0@s1,val_form,bg_dorn_var,baugruppe,DB teacher,0.0102197,0.0146332,0.099257,89.9984,0,0,2.1778
+flat_val_blur_1#unk0@s2,val_form,bg_kreuzstern_var,baugruppe,DB teacher,0.000777075,0.000826562,0.0842576,80.2172,0,0,7.06708
+cjk_20,val_form,bg_zahnrad_var,baugruppe,DB teacher,0.00109076,0.00245137,0.0879451,87.0911,0,0,6.10658
+greek_upper_0,val_form,bg_zahnrad_var,baugruppe,DB teacher,0.000689553,0.00206593,0.0987315,90.9547,0,0,7.48588
+rand_ana_poly_complex_20@s1,val_form,sq_spindel,superquadrik,DB teacher,0.00137397,0.00456406,0.105026,86.8392,0,0,4.83561
+rand_ana_poly_complex_10@s2,val_form,sq_dreikant,superquadrik,DB teacher,0.00119615,0.0029116,0.0952445,85.9726,0,0,5.3865
+rand_gmm_20#unk0,val_form,sq_dreikant,superquadrik,DB teacher,0.00544639,0.015305,0.0731715,86.8748,0,0,6.39631
+rand_gmm_complex_10@s2,val_form,sq_dreikant,superquadrik,DB teacher,0.0168813,0.0591988,0.152502,77.6656,0,0,7.12911
+rand_gmm_10#unk0@s1,val_form,sq_dreikant_lang,superquadrik,DB teacher,0.00363532,0.0145927,0.0779316,81.6698,0,0,6.75093
+rand_gmm_complex_10@s2,val_form,sq_oktaederrund,superquadrik,DB teacher,0.01642,0.0522459,0.133615,71.2664,0,0,7.97063
+flat_val_broad_2@s2,val_form,sq_oktaederrund,superquadrik,DB teacher,0.00568318,0.0105443,0.0734854,85.591,0,0,9.3365
+rand_gmm_complex_0@s1,val_form,sq_linse,superquadrik,DB teacher,0.00887572,0.0281051,0.0663832,84.9619,0,0,8.63974
+rand_ana_poly_complex_0#unk0@s2,val_form,sq_flachstern,superquadrik,DB teacher,0.00123746,0.0039418,0.0954328,90.0384,0,0,4.67096
+flat_val_ped_0,val_form,sq_flachstern,superquadrik,DB teacher,0.00491299,0.0164608,0.0761513,87.9175,0,0,7.84095
+rand_gmm_complex_30#unk0@s2,val_form,sq_flachstern_lang,superquadrik,DB teacher,0.000974788,0.00470538,0.0990239,88.9711,0,0,4.46361
+flat_val_blur_2#unk0@s2,val_form,sq_nadelkasten,superquadrik,DB teacher,0.00613456,0.00928635,0.0855734,91.1457,0,0,11.2536
+flat_val_blur_0,val_form,sq_nadelkasten,superquadrik,DB teacher,0.00945041,0.0198588,0.091859,89.3465,0,0,11.4008
+flat_val_broad_2#unk0@s1,val_form,sq_nadelkasten,superquadrik,DB teacher,0.00910411,0.00939164,0.0713838,92.4868,0,0,9.05099
+rand_ana_poly_complex_0@s1,val_form,wort_se3,wort,DB teacher,0.000709281,0.00270302,0.099637,89.4525,0,0,5.06069
+flat_val_ped_1@s2,val_form,wort_gmm,wort,DB teacher,0.000701108,0.00196828,0.0921699,95.4365,0,0,5.79202
+rand_gmm_20@s1,val_form,wort_gmm,wort,DB teacher,0.000898781,0.0041663,0.0777879,97.5437,0,0,5.32303
+flat_val_broad_1#unk0@s1,val_form,wort_svgd,wort,DB teacher,0.000878823,0.00478702,0.0802236,87.0644,0,0,3.29713
+flat_val_blur_1#unk0@s2,val_form,wort_flow,wort,DB teacher,0.00217539,0.00618968,0.0895288,92.7763,0,0,4.24255
+flat_val_broad_2,val_form,wort_kappa,wort,DB teacher,0.000392388,0.000678606,0.0953619,80.0337,0,0,6.62583
+rand_ana_poly_complex_10@s1,val_form,wort_kappa,wort,DB teacher,0.000984973,0.00371149,0.103615,85.8061,0,0,6.52259
+flat_val_ped_1@s2,val_form,wort_kappa,wort,DB teacher,0.000522023,0.00169607,0.0949587,77.8918,0,0,9.27497
+greek_upper_0@s1,val_form,wort_adam,wort,DB teacher,0.00113018,0.00505849,0.104207,91.1077,0,0,4.79256
+organic_0#unk0@s1,val_form,wort_adam,wort,DB teacher,0.000844601,0.00359923,0.103432,98.9117,0,0,3.181
+flat_val_ped_1@s1,val_form,wort_adam,wort,DB teacher,0.00102019,0.00306531,0.0892695,87.553,0,0,6.59989
+rand_ana_poly_10#unk0,val_form,wort_coeff,wort,DB teacher,0.00640303,0.031518,0.0955211,77.4756,0,0,7.66205
+cjk_20,val_form,extern_armadillo,extern,DB teacher,0.00366807,0.00881621,0.082909,87.6798,0,0,9.21439
+rand_gmm_complex_0#unk0,val_form,extern_helm,extern,DB teacher,0.00945615,0.029426,0.0774485,81.8745,0,0,10.9128
+flat_val_broad_0@s2,val_beides,kapsel,primitiv,DiT-B (lambda 630),0.00168482,0.00420412,0.0644642,70.0351,0.247498,0,5.02592
+flat_val_broad_2@s1,val_beides,kapsel,primitiv,DiT-B (lambda 630),0.00142721,0.00391549,0.0754241,75.9599,0.294877,0,5.66679
+organic_20#unk0,val_beides,kapsel,primitiv,DiT-B (lambda 630),0.000799964,0.00335545,0.0831749,58.6942,0.261702,0,4.48933
+flat_val_ped_1#unk0@s2,val_beides,kapsel,primitiv,DiT-B (lambda 630),0.00134923,0.00442576,0.079134,63.9443,0.28854,0,5.04019
+flat_val_ring_2#unk0@s1,val_beides,kapsel,primitiv,DiT-B (lambda 630),0.00131974,0.00369929,0.0878269,66.4674,0.314994,0,5.66636
+flat_val_ring_0#unk0,val_beides,kapsel,primitiv,DiT-B (lambda 630),0.00135315,0.00352634,0.0720574,69.3818,0.292,0,4.59901
+flat_val_ring_1#unk0,val_beides,kapsel,primitiv,DiT-B (lambda 630),0.00114456,0.00291764,0.086062,68.4072,0.259965,0,4.77364
+rand_ana_poly_complex_20,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.000439583,0.00140205,0.0982095,60.4257,0.200025,0,3.56084
+rand_ana_poly_30,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.000659177,0.00162103,0.0994692,59.8037,0.321609,0,3.5972
+flat_val_blur_2@s1,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00121863,0.0028245,0.0964799,85.5358,0.412223,0,6.68257
+flat_val_blur_2#unk0,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00156867,0.0040472,0.0833996,82.2346,0.354251,0,6.20661
+cjk_0@s2,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00102078,0.00403548,0.0770959,69.4988,0.288214,0,5.74881
+rand_gmm_complex_10#unk0,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00356612,0.0174954,0.0638795,80.0072,0.33655,0,6.04946
+rand_gmm_complex_30#unk0,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00207416,0.0058393,0.0676017,71.6207,0.374045,0,5.33424
+flat_val_ring_1#unk0@s1,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00250687,0.00846445,0.0710876,79.6434,0.348086,0,6.63981
+rand_ana_poly_10#unk0,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00175853,0.00461508,0.0754828,67.6009,0.30512,0,5.83657
+greek_upper_0#unk0@s2,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00148919,0.00414485,0.0713023,72.897,0.326357,0,4.90272
+flat_val_ring_1,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.0025259,0.00707624,0.0645504,77.8496,0.389168,0,6.06839
+flat_val_broad_1@s1,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.00214114,0.00573188,0.0671536,80.7024,0.347855,0,6.25348
+flat_val_blur_1#unk0@s1,val_beides,halbkugel,primitiv,DiT-B (lambda 630),0.0029228,0.00935602,0.0585626,77.2442,0.379538,0,6.68542
+flat_val_blur_1#unk0,val_beides,ziffer_1,buchstabe,DiT-B (lambda 630),0.00206833,0.00422166,0.0502858,72.4588,0.498771,0,7.31573
+flat_val_ring_1@s2,val_beides,ziffer_1,buchstabe,DiT-B (lambda 630),0.00200452,0.0047174,0.0583461,65.5065,0.465324,0,9.57613
+flat_val_ring_0@s2,val_beides,ziffer_1,buchstabe,DiT-B (lambda 630),0.00124179,0.00239411,0.0893299,60.8229,0.497605,0,9.23913
+flat_val_blur_2#unk0@s1,val_beides,ziffer_1,buchstabe,DiT-B (lambda 630),0.00129541,0.00158196,0.0835601,65.3758,0.486036,0,9.43195
+cjk_20@s1,val_beides,ziffer_1,buchstabe,DiT-B (lambda 630),0.00103569,0.00153058,0.0789867,63.3447,0.365551,0,6.43783
+rand_gmm_complex_10#unk0,val_beides,ziffer_5,buchstabe,DiT-B (lambda 630),0.00226848,0.00345844,0.0483866,85.7626,0.419086,0,8.99207
+rand_gmm_complex_20@s1,val_beides,ziffer_5,buchstabe,DiT-B (lambda 630),0.00174188,0.0021256,0.050026,89.1383,0.488601,0,11.1283
+korean_5#unk0@s2,val_beides,ziffer_5,buchstabe,DiT-B (lambda 630),0.00146116,0.00196634,0.0687398,70.8398,0.437496,0,11.4108
+flat_val_broad_2#unk0,val_beides,ziffer_5,buchstabe,DiT-B (lambda 630),0.00180401,0.00228133,0.0615516,74.6053,0.53838,0,9.07109
+rand_gmm_10#unk0@s1,val_beides,ziffer_5,buchstabe,DiT-B (lambda 630),0.00141208,0.00222759,0.0661423,69.3955,0.437127,0,8.29256
+rand_ana_poly_complex_10@s2,val_beides,ziffer_5,buchstabe,DiT-B (lambda 630),0.00143477,0.00236786,0.0780358,65.8211,0.427001,0,8.44456
+greek_upper_0#unk0,val_beides,ziffer_5,buchstabe,DiT-B (lambda 630),0.00313817,0.00801623,0.0524785,73.7313,0.510323,0,8.5265
+flat_val_blur_1,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00369908,0.00798936,0.0787002,74.0141,0.466488,0,6.9927
+flat_val_ring_0#unk0,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00288908,0.00791198,0.0605176,72.8052,0.378501,0,6.69617
+rand_gmm_10#unk0@s2,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00234779,0.00737296,0.0605738,71.1304,0.368488,0,6.29802
+flat_val_blur_1#unk0@s2,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00297635,0.00765726,0.0645397,78.3359,0.414395,0,7.33753
+cjk_0#unk0@s2,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00209726,0.00444792,0.0726528,70.1486,0.428948,0,6.98799
+flat_val_ped_1@s1,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00272691,0.00648342,0.0640594,77.8918,0.389816,0,6.0049
+rand_ana_poly_complex_0#unk0@s1,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00149121,0.0033399,0.0793381,69.1176,0.379136,0,5.97293
+rand_gmm_20@s2,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00301646,0.00793727,0.066611,68.3529,0.347938,0,5.91788
+flat_val_ring_1@s1,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00308565,0.00673658,0.059024,78.4021,0.376772,0,7.16578
+flat_val_blur_1,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00320746,0.00688279,0.0672596,78.9625,0.436265,0,7.18004
+korean_5@s2,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00162807,0.00431149,0.0709063,67.8089,0.260749,0,5.66762
+flat_val_blur_0#unk0,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00291487,0.00802202,0.0715975,74.3112,0.406157,0,7.15473
+organic_10#unk0,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00359533,0.00959948,0.0644098,75.2392,0.361225,0,6.2229
+cjk_20@s1,val_beides,organismus_00,organismus,DiT-B (lambda 630),0.00172549,0.0042459,0.0749254,68.0239,0.394346,0,7.16666
+flat_val_broad_2#unk0,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00414665,0.0132602,0.0521091,77.4732,0.40273,0,7.75065
+organic_30#unk0@s2,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00134451,0.00470155,0.077888,64.347,0.303541,0,5.08263
+flat_val_broad_0#unk0@s2,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00455419,0.0163031,0.0485967,71.5885,0.369555,0,7.61183
+rand_gmm_10#unk0@s1,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00293662,0.0111465,0.0605443,79.7843,0.335536,0,6.27229
+flat_val_blur_1,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00330979,0.00722238,0.070545,79.1414,0.397846,0,6.99114
+rand_gmm_complex_30,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00275845,0.0066536,0.0613925,75.0348,0.42741,0,6.02828
+rand_gmm_complex_20@s2,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00360144,0.00931937,0.053363,75.6224,0.397177,0,7.13445
+organic_0#unk0@s1,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00211089,0.00582292,0.0733693,77.6588,0.349227,0,6.47265
+flat_val_ped_1#unk0,val_beides,organismus_38,organismus,DiT-B (lambda 630),0.00260752,0.007837,0.0629153,73.2671,0.359622,0,6.9191
+flat_val_ring_2#unk0@s2,val_beides,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.00101041,0.00382544,0.0886946,64.6538,0.32793,0,5.79108
+rand_gmm_complex_30,val_beides,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000807321,0.00140599,0.0814673,66.4438,0.410937,0,6.06595
+rand_gmm_10#unk0@s1,val_beides,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.00047325,0.00105441,0.0903495,70.9835,0.307619,0,6.98663
+organic_20#unk0,val_beides,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000786877,0.00320271,0.06851,67.7844,0.32861,0,4.55844
+flat_val_broad_2@s1,val_beides,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000912335,0.00237559,0.0722423,74.2082,0.431951,0,7.39795
+rand_ana_poly_20#unk0@s2,val_beides,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000865325,0.00276893,0.066144,71.297,0.297129,0,5.21287
+flat_val_broad_2,val_beides,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000760289,0.00188617,0.0748415,73.3581,0.399377,0,6.33424
+flat_val_ring_0@s2,val_beides,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.00063659,0.00112909,0.0976799,67.7903,0.310266,0,6.94552
+rand_ana_poly_complex_0,val_beides,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000486313,0.00131787,0.091871,47.3229,0.376508,0,5.84412
+a_lc@s2,val_beides,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000370363,0.000750343,0.0866232,38.876,0.465541,0,6.20724
+flat_val_blur_0@s2,val_beides,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000763878,0.00112475,0.0881403,59.102,0.500424,0,7.42112
+rand_ana_poly_complex_10#unk0@s1,val_beides,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000906661,0.00163525,0.0793181,70.9307,0.406651,0,5.12188
+flat_val_broad_1#unk0@s2,val_beides,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.00155508,0.00559796,0.0546791,71.0613,0.355834,0,6.02925
+flat_val_blur_2#unk0,val_beides,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000687911,0.000977033,0.0881187,64.7812,0.265002,0,5.80319
+rand_ana_poly_complex_30@s1,val_beides,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000493908,0.00100307,0.0970328,54.8283,0.309433,0,3.98921
+cjk_10@s2,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.000717538,0.00130658,0.0857044,44.3393,0.341092,0,5.56318
+greek_upper_0#unk0,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.000971203,0.0026212,0.0792712,59.9328,0.281757,0,6.04419
+rand_gmm_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.0009579,0.00347639,0.0719987,65.3195,0.351419,0,5.64777
+flat_val_ring_1@s1,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00100063,0.00204995,0.0795739,64.1747,0.398734,0,7.26459
+rand_gmm_10@s2,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00130039,0.00347673,0.0698623,60.6257,0.402291,0,5.67067
+organic_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00110117,0.0032577,0.0692188,64.1378,0.40152,0,6.88648
+rand_gmm_10@s1,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00143875,0.00382754,0.0692007,66.9977,0.291041,0,5.85693
+flat_val_broad_2#unk0,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.0025829,0.00938237,0.0525479,74.7783,0.331418,0,6.26825
+flat_val_blur_1#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00167242,0.00437777,0.0654249,64.6984,0.313888,0,5.31211
+rand_gmm_complex_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00119655,0.0032303,0.0733766,64.9706,0.322921,0,5.80147
+organic_10#unk0@s1,val_beides,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000856977,0.00274397,0.0795839,66.5043,0.283205,0,4.75533
+flat_val_blur_1#unk0@s1,val_beides,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.00129954,0.00481309,0.0681365,76.7982,0.309812,0,4.0313
+flat_val_ring_0#unk0,val_beides,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000987405,0.00209744,0.085108,66.2502,0.308774,0,4.17896
+flat_val_ped_1@s1,val_beides,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000688153,0.00165153,0.0881423,62.3557,0.328621,0,5.2453
+organic_30#unk0@s1,val_beides,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000359097,0.00129759,0.0906988,56.5877,0.283434,0,4.62407
+digit_5#unk0@s1,val_beides,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000621195,0.00293757,0.0826677,60.8692,0.253635,0,4.88069
+organic_10#unk0,val_beides,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000554364,0.00238383,0.0857491,62.8448,0.268396,0,4.20708
+organic_0#unk0@s2,val_beides,wort_vita,wort,DiT-B (lambda 630),0.000427053,0.00136294,0.0801063,66.8539,0.278317,0,4.45736
+flat_val_blur_2@s1,val_beides,wort_vita,wort,DiT-B (lambda 630),0.000268369,0.000418254,0.095755,55.3705,0.274435,0,5.27106
+rand_ana_poly_complex_20#unk0,val_beides,wort_vita,wort,DiT-B (lambda 630),0.000321558,0.000683258,0.0811429,61.2227,0.258557,0,4.77165
+rand_ana_poly_complex_0@s1,val_beides,wort_vita,wort,DiT-B (lambda 630),0.000277688,0.000511822,0.0953687,65.9343,0.221218,0,4.25268
+cjk_20#unk0@s2,val_beides,wort_vita,wort,DiT-B (lambda 630),0.000382717,0.00083336,0.0842764,66.5704,0.246318,0,5.07003
+rand_gmm_complex_30#unk0@s1,val_beides,wort_vita,wort,DiT-B (lambda 630),0.000368155,0.000810693,0.0923903,68.6357,0.31159,0,4.94951
+rand_ana_poly_complex_0@s2,val_beides,wort_vita,wort,DiT-B (lambda 630),0.000509473,0.00180262,0.0946577,61.2767,0.305596,0,3.78617
+organic_10@s1,val_beides,wort_vita,wort,DiT-B (lambda 630),0.00087872,0.00344146,0.0889337,61.6102,0.245514,0,4.73703
+rand_gmm_20,val_beides,wort_ias,wort,DiT-B (lambda 630),0.00121064,0.00397815,0.0617269,80.3209,0.288441,0,6.2392
+flat_val_blur_2@s1,val_beides,wort_ias,wort,DiT-B (lambda 630),0.000834056,0.00121298,0.0911449,70.48,0.520403,0,10.0044
+rand_ana_poly_20#unk0,val_beides,wort_ias,wort,DiT-B (lambda 630),0.000655948,0.00112173,0.0794289,76.7674,0.353315,0,7.69965
+rand_gmm_10#unk0@s1,val_beides,wort_ias,wort,DiT-B (lambda 630),0.00112758,0.00236902,0.0650515,80.689,0.444166,0,8.04899
+greek_upper_0,val_beides,wort_ias,wort,DiT-B (lambda 630),0.00082905,0.00202981,0.0816591,59.0849,0.343981,0,6.01496
+rand_ana_poly_complex_42,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.000193175,0.000576931,0.100642,53.1113,0.312774,0,2.47004
+korean_10@s2,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.000478968,0.00127658,0.096166,61.0958,0.261319,0,3.59753
+flat_ped_111#unk0@s1,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00140557,0.00387066,0.0853304,65.7313,0.308169,0,5.24096
+rand_gmm_155#unk0@s2,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00106696,0.00256362,0.0801219,63.876,0.27557,0,4.77332
+rand_ana_poly_complex_28#unk0@s2,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00167504,0.00719093,0.0665862,62.0733,0.214988,0,4.15509
+flat_ped_80#unk0@s2,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.000829376,0.00202215,0.0880379,62.3646,0.279564,0,4.87024
+korean_24#unk0@s1,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00137433,0.00628864,0.0740524,73.8259,0.268943,0,4.57665
+rand_gmm_complex_44@s2,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00151268,0.00523471,0.0534952,69.205,0.303798,0,4.65652
+rand_gmm_170#unk0@s1,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00060372,0.00165087,0.0933425,71.4531,0.311997,0,4.45282
+rand_ana_poly_47@s1,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00013229,0.000419643,0.0986595,27.789,0.317274,0,1.38088
+rand_gmm_173#unk0@s2,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00072925,0.00199363,0.0850141,67.7339,0.331602,0,4.14094
+flat_blur_10#unk0@s1,val_flaeche,kapsel,primitiv,DiT-B (lambda 630),0.00165422,0.00457073,0.0700863,69.9592,0.333957,0,4.73056
+cjk_40,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.00118328,0.00531401,0.0749303,68.4018,0.313426,0,5.91434
+greek_upper_7,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.000860225,0.00345932,0.0801794,60.1804,0.29653,0,4.49417
+rand_ana_poly_119@s2,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.000697031,0.00138532,0.0954828,58.6413,0.223271,0,4.50011
+rand_ana_poly_118#unk0@s1,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.00183547,0.00665304,0.0760576,73.446,0.329644,0,5.62534
+flat_blur_17#unk0@s2,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.00405052,0.0155219,0.0469695,80.9686,0.373517,0,6.97811
+rand_gmm_complex_43,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.00273622,0.00848669,0.0595107,78.0231,0.420925,0,6.21045
+greek_lower_21@s1,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.000382894,0.000859427,0.0979413,53.9303,0.304975,0,4.81115
+cjk_19#unk0@s2,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.0025818,0.00888527,0.0666093,79.9689,0.384063,0,6.08833
+rand_ana_poly_153@s1,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.000216793,0.000628412,0.102702,52.8723,0.227079,0,2.3615
+rand_ana_poly_137@s1,val_flaeche,halbkugel,primitiv,DiT-B (lambda 630),0.000196071,0.000745136,0.100879,48.7771,0.139862,0,3.10925
+rand_ana_poly_complex_62#unk0@s1,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.00104824,0.0024095,0.0707251,61.5381,0.374827,0,6.13057
+korean_19@s1,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.000867255,0.00191772,0.0780661,58.9526,0.357465,0,7.2831
+rand_ana_poly_164@s1,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.00033543,0.000892487,0.0955819,38.3859,0.119849,0,2.09182
+rand_gmm_95,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.00127371,0.00261652,0.0589502,64.3272,0.348468,0,8.44522
+rand_ana_poly_complex_42@s2,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.000804937,0.00128116,0.0833264,57.6194,0.249037,0,5.69001
+rand_gmm_complex_39#unk0,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.00118037,0.00279605,0.0571805,72.8104,0.514068,0,8.38787
+rand_ana_poly_94#unk0,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.00106214,0.00170155,0.0745993,69.3175,0.45661,0,9.35948
+flat_ped_118@s1,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.001948,0.003379,0.0617341,73.9594,0.458951,0,8.21828
+rand_gmm_140@s1,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.00168162,0.00208366,0.0650617,91.6828,0.357728,0,6.7014
+rand_ana_poly_79#unk0@s2,val_flaeche,ziffer_1,buchstabe,DiT-B (lambda 630),0.00155451,0.00208858,0.0614799,78.1712,0.41796,0,7.18589
+rand_gmm_complex_25@s1,val_flaeche,ziffer_5,buchstabe,DiT-B (lambda 630),0.00173713,0.00209901,0.0632536,82.2816,0.45731,0,10.4422
+rand_gmm_complex_21,val_flaeche,ziffer_5,buchstabe,DiT-B (lambda 630),0.00193602,0.00361389,0.050125,87.3648,0.370424,0,8.34054
+cjk_61#unk0@s1,val_flaeche,ziffer_5,buchstabe,DiT-B (lambda 630),0.00204548,0.00253316,0.0561597,78.6076,0.479803,0,11.5098
+flat_broad_17@s2,val_flaeche,ziffer_5,buchstabe,DiT-B (lambda 630),0.00196656,0.00310267,0.0628139,77.3777,0.456943,0,8.64684
+rand_ana_poly_complex_63@s1,val_flaeche,ziffer_5,buchstabe,DiT-B (lambda 630),0.0033598,0.010808,0.0723177,77.3112,0.24101,0,5.28935
+rand_ana_poly_54@s2,val_flaeche,ziffer_5,buchstabe,DiT-B (lambda 630),0.000873679,0.00125685,0.0760203,51.8828,0.463042,0,5.06801
+flat_blur_3#unk0@s1,val_flaeche,ziffer_5,buchstabe,DiT-B (lambda 630),0.00227004,0.00513906,0.0620897,68.4935,0.505798,0,8.71957
+flat_blur_30@s2,val_flaeche,ziffer_5,buchstabe,DiT-B (lambda 630),0.00248534,0.004474,0.0762786,73.8557,0.466564,0,8.79216
+flat_ped_98@s1,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.0017343,0.00293342,0.0962804,69.1939,0.45811,0,9.33144
+korean_15#unk0@s2,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00100026,0.00171684,0.0895062,63.5395,0.30162,0,6.11174
+flat_blur_45#unk0@s1,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00249575,0.00615474,0.0782033,80.2498,0.394749,0,6.96092
+rand_gmm_124#unk0@s1,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00243462,0.00707933,0.0690634,74.8833,0.384887,0,7.12714
+organic_6#unk0,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00261022,0.00583461,0.0667857,74.4428,0.41764,0,6.69243
+rand_ana_poly_complex_6#unk0@s1,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.000734623,0.00130803,0.0948532,60.8748,0.329587,0,5.38355
+rand_gmm_161#unk0@s2,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00196697,0.00480754,0.083513,70.9473,0.347106,0,6.44293
+flat_ped_37@s1,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00174319,0.00249962,0.097005,81.074,0.438714,0,8.58834
+rand_gmm_73@s2,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00285914,0.00689225,0.0754315,79.7656,0.312839,0,6.55656
+flat_ped_142@s2,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00288954,0.00563068,0.0672169,82.1176,0.458078,0,8.22926
+flat_broad_49#unk0,val_flaeche,organismus_00,organismus,DiT-B (lambda 630),0.00196714,0.00472787,0.0782334,73.5016,0.349942,0,6.20973
+flat_ped_39@s1,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00435558,0.00960077,0.0549433,76.6135,0.444952,0,8.21505
+flat_ped_54#unk0@s2,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00304856,0.00818411,0.0705049,80.8823,0.413384,0,7.9355
+z_lc@s1,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.000301647,0.000628602,0.10072,55.5944,0.158869,0,3.54476
+rand_ana_poly_19,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),8.81678e-05,0.000183062,0.10292,38.8241,0.101788,0,2.50938
+rand_gmm_110@s1,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00233323,0.00561097,0.0709104,77.5214,0.358961,0,6.95382
+flat_ring_56,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00247621,0.00626572,0.0626326,79.9594,0.388478,0,7.1486
+rand_gmm_85@s1,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00274894,0.00698055,0.0644494,74.6614,0.406274,0,6.01609
+organic_32#unk0@s1,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00380863,0.01161,0.0521758,74.1004,0.38688,0,7.49693
+rand_gmm_complex_25#unk0,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00258666,0.00698246,0.0662949,73.918,0.379722,0,6.35655
+flat_blur_37#unk0@s2,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00194855,0.00487095,0.0731731,68.6058,0.349127,0,6.15436
+flat_ped_94#unk0@s1,val_flaeche,organismus_38,organismus,DiT-B (lambda 630),0.00251985,0.00649398,0.0730833,73.9324,0.366837,0,6.90453
+rand_ana_poly_146#unk0@s2,val_flaeche,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000901891,0.00237263,0.0610751,70.9549,0.333625,0,5.70741
+rand_gmm_130@s1,val_flaeche,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000933116,0.00288792,0.0611565,70.9882,0.298183,0,5.26781
+flat_ped_49#unk0,val_flaeche,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000977832,0.00342916,0.0822144,66.5036,0.367589,0,5.95277
+rand_gmm_63#unk0,val_flaeche,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000632694,0.00206114,0.06556,66.7177,0.327896,0,6.98729
+flat_ped_51#unk0,val_flaeche,bg_hantel_var,baugruppe,DiT-B (lambda 630),0.000772967,0.00205784,0.0763545,70.155,0.22911,0,4.82601
+rand_gmm_complex_31@s2,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000700774,0.00159453,0.0862836,59.3199,0.426691,0,6.59319
+rand_ana_poly_complex_11@s1,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000369755,0.000792038,0.0958767,45.7933,0.361925,0,5.01923
+flat_broad_66#unk0,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.0015273,0.00435391,0.0533996,63.0408,0.511686,0,7.01521
+cjk_60@s1,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000865183,0.00207995,0.0782801,63.6909,0.495763,0,6.25938
+rand_gmm_105#unk0@s2,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000479477,0.000787239,0.090919,56.8344,0.477851,0,6.06254
+flat_ring_58@s1,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000883602,0.00115389,0.0962525,60.4128,0.481373,0,8.0019
+flat_blur_33#unk0,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000643517,0.000897334,0.0911202,60.5052,0.437824,0,8.21383
+cjk_14#unk0@s1,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.000750531,0.00107461,0.0904024,72.3238,0.33264,0,6.90995
+rand_gmm_50,val_flaeche,bg_bogen_var,baugruppe,DiT-B (lambda 630),0.00142499,0.00388081,0.0675829,77.6648,0.325835,0,5.39586
+rand_ana_poly_107#unk0@s1,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.000860154,0.00254928,0.0732051,65.7508,0.274191,0,5.11675
+rand_gmm_123#unk0@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00170925,0.00440077,0.0560179,64.5605,0.338755,0,5.82911
+flat_blur_33@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00100703,0.00211854,0.0783627,61.287,0.372687,0,6.27641
+greek_lower_8#unk0@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.00104773,0.00325099,0.0735359,55.1485,0.258979,0,4.71436
+organic_48#unk0@s1,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.000850713,0.00302862,0.0773155,66.989,0.336593,0,5.6372
+flat_ped_110@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.000690489,0.0012076,0.0960456,65.3845,0.381067,0,7.61015
+flat_broad_4@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.001171,0.00283753,0.0713131,67.5361,0.416404,0,6.91582
+flat_ped_30,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.000707367,0.00143226,0.0825282,62.9761,0.310005,0,6.69416
+rand_ana_poly_105,val_flaeche,sq_kreuzquer_lang,superquadrik,DiT-B (lambda 630),0.000168738,0.000391828,0.101775,45.9636,0.275212,0,3.28493
+rand_ana_poly_44#unk0,val_flaeche,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.00132455,0.00553093,0.0644476,73.5127,0.217933,0,3.28526
+rand_ana_poly_59#unk0@s1,val_flaeche,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000716226,0.00251785,0.0836078,66.4522,0.31221,0,4.35974
+p_lc@s1,val_flaeche,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000260664,0.000812087,0.0975643,52.5785,0.239259,0,3.15025
+rand_gmm_149#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000374387,0.00143432,0.088839,55.2675,0.279108,0,4.20073
+rand_gmm_complex_16#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.00059331,0.00260849,0.0831693,62.6958,0.29044,0,4.68099
+flat_ped_116#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,DiT-B (lambda 630),0.000331775,0.00104584,0.097626,49.1272,0.340019,0,4.29408
+flat_ring_5#unk0@s1,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.000432194,0.000978476,0.0784069,65.8191,0.319338,0,4.92657
+flat_ped_32@s2,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.000363741,0.000589936,0.0876985,60.0341,0.334062,0,5.75929
+rand_gmm_44#unk0,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.000663437,0.00177649,0.0779474,72.3703,0.348964,0,5.30135
+rand_gmm_13#unk0@s2,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.000535577,0.00158769,0.0882043,62.2888,0.451428,0,6.04327
+rand_ana_poly_146#unk0@s1,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.000914215,0.00310205,0.0764839,60.5846,0.320081,0,4.78556
+flat_ped_58@s2,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.000526077,0.000800362,0.067231,67.9959,0.418082,0,5.16381
+flat_ped_138#unk0,val_flaeche,wort_vita,wort,DiT-B (lambda 630),0.00166477,0.00689751,0.0645316,69.2358,0.3056,0,5.50699
+flat_ped_33@s1,val_flaeche,wort_ias,wort,DiT-B (lambda 630),0.00116102,0.00289637,0.0521038,71.6556,0.4549,0,9.7617
+korean_1#unk0,val_flaeche,wort_ias,wort,DiT-B (lambda 630),0.000954187,0.00137612,0.0656783,83.9579,0.419845,0,9.44052
+rand_ana_poly_complex_0#unk0@s2,val_form,ebene_gekippt,ebene,DiT-B (lambda 630),0.000891575,0.0028629,0.0838107,68.2768,0.298275,0,5.38396
+rand_ana_poly_20,val_form,ebene_fib_2,ebene,DiT-B (lambda 630),0.000164536,0.000394701,0.100805,43.8244,0.141987,0,2.55392
+organic_10#unk0@s1,val_form,ebene_fib_3,ebene,DiT-B (lambda 630),0.000630371,0.00257088,0.0803776,62.2535,0.307914,0,4.7094
+rand_gmm_complex_20,val_form,wuerfel,primitiv,DiT-B (lambda 630),0.00678582,0.0116196,0.0598246,85.8144,0.611768,0,12.268
+organic_0#unk0@s2,val_form,kegel,primitiv,DiT-B (lambda 630),0.00167549,0.00526121,0.0708148,76.1453,0.403146,0,6.74813
+rand_ana_poly_complex_10#unk0@s2,val_form,oktaeder,primitiv,DiT-B (lambda 630),0.00108015,0.00338154,0.0858458,68.9957,0.378876,0,8.32084
+cjk_0,val_form,kuboktaeder,primitiv,DiT-B (lambda 630),0.00415945,0.00785195,0.0497134,75.9012,0.526295,0,9.90493
+rand_ana_poly_30@s1,val_form,quader,primitiv,DiT-B (lambda 630),0.000380104,0.000696769,0.0976584,50.8181,0.241131,0,4.40417
+flat_val_broad_1@s2,val_form,spat,primitiv,DiT-B (lambda 630),0.00158273,0.00449895,0.07639,70.8632,0.468737,0,9.92182
+organic_30@s1,val_form,spat,primitiv,DiT-B (lambda 630),0.000243333,0.000595554,0.101543,42.722,0.169549,0,3.05219
+rand_gmm_complex_20@s2,val_form,spat,primitiv,DiT-B (lambda 630),0.00159179,0.00447558,0.0660293,73.4641,0.417508,0,7.01498
+flat_val_broad_1#unk0@s1,val_form,spat,primitiv,DiT-B (lambda 630),0.00144422,0.00361505,0.0788276,76.3426,0.284684,0,6.4555
+organic_10@s2,val_form,dreiecksplatte,primitiv,DiT-B (lambda 630),0.000318498,0.000904452,0.0969389,54.8321,0.260277,0,3.51398
+flat_val_ped_0@s2,val_form,keil,primitiv,DiT-B (lambda 630),0.00184545,0.00481443,0.0801424,71.5773,0.425569,0,7.65838
+digit_5@s1,val_form,antiprisma,primitiv,DiT-B (lambda 630),0.00092714,0.00343868,0.0826467,65.4265,0.393564,0,6.17651
+flat_val_ped_0#unk0,val_form,trapezoeder,primitiv,DiT-B (lambda 630),0.00237857,0.00938109,0.060989,72.3213,0.324752,0,7.82118
+flat_val_blur_1#unk0@s2,val_form,trapezoeder,primitiv,DiT-B (lambda 630),0.00208598,0.00749951,0.0543611,80.6053,0.354878,0,6.46195
+rand_ana_poly_complex_20#unk0@s1,val_form,hohlzylinder,primitiv,DiT-B (lambda 630),0.00182723,0.00228754,0.0675685,68.3585,0.603293,0,13.2853
+flat_val_ped_0#unk0,val_form,ellipsoid,primitiv,DiT-B (lambda 630),0.000969619,0.00244231,0.084966,70.5461,0.285177,0,5.07071
+flat_val_ring_1,val_form,hyperboloid,primitiv,DiT-B (lambda 630),0.00208059,0.0054006,0.0656722,72.6039,0.503849,0,9.44146
+organic_10#unk0@s2,val_form,tropfen,primitiv,DiT-B (lambda 630),0.00227893,0.00614641,0.0629163,75.0161,0.383189,0,6.13974
+organic_0#unk0,val_form,buchstabe_a,buchstabe,DiT-B (lambda 630),0.00165664,0.00305932,0.0572866,76.0391,0.499404,0,10.3529
+rand_gmm_complex_0@s1,val_form,buchstabe_b,buchstabe,DiT-B (lambda 630),0.00300433,0.00598164,0.0499567,83.1691,0.485527,0,10.8233
+flat_val_broad_2#unk0,val_form,buchstabe_d,buchstabe,DiT-B (lambda 630),0.00338761,0.00803839,0.0746408,102.18,0.472337,0,11.1555
+rand_ana_poly_complex_30#unk0@s1,val_form,buchstabe_e,buchstabe,DiT-B (lambda 630),0.00183281,0.00179641,0.0552278,75.7394,0.628159,0,11.064
+a_lc#unk0@s2,val_form,buchstabe_g,buchstabe,DiT-B (lambda 630),0.00221435,0.00356065,0.0580019,75.8755,0.432884,0,11.172
+flat_val_ped_0#unk0@s1,val_form,buchstabe_g,buchstabe,DiT-B (lambda 630),0.00213814,0.00344292,0.0533597,78.8861,0.567476,0,12.26
+cjk_0#unk0,val_form,buchstabe_g,buchstabe,DiT-B (lambda 630),0.00200196,0.00306561,0.0666827,72.9203,0.600004,0,10.9067
+rand_gmm_10#unk0,val_form,buchstabe_h,buchstabe,DiT-B (lambda 630),0.00209553,0.00434618,0.049716,75.3504,0.565382,0,11.4748
+organic_30@s1,val_form,buchstabe_i,buchstabe,DiT-B (lambda 630),0.000152669,0.000249116,0.0997862,38.251,0.169739,0,2.26412
+flat_val_ring_2@s1,val_form,buchstabe_m,buchstabe,DiT-B (lambda 630),0.00272206,0.00484914,0.059613,75.3492,0.524656,0,12.5637
+rand_gmm_20@s1,val_form,buchstabe_n,buchstabe,DiT-B (lambda 630),0.0028509,0.00409812,0.0531089,75.3743,0.507512,0,11.546
+flat_val_blur_1#unk0,val_form,buchstabe_p,buchstabe,DiT-B (lambda 630),0.00377759,0.00884345,0.0591965,73.5097,0.501516,0,11.143
+rand_gmm_10#unk0@s2,val_form,buchstabe_s,buchstabe,DiT-B (lambda 630),0.00137453,0.00213452,0.0736485,68.9137,0.453359,0,9.87467
+rand_ana_poly_complex_20#unk0@s2,val_form,buchstabe_t,buchstabe,DiT-B (lambda 630),0.00133246,0.00485012,0.0707506,48.7702,0.284161,0,5.24477
+cjk_10,val_form,buchstabe_v,buchstabe,DiT-B (lambda 630),0.00193393,0.00520435,0.0855038,70.0423,0.426438,0,9.48576
+flat_val_blur_2#unk0@s2,val_form,buchstabe_x,buchstabe,DiT-B (lambda 630),0.00333107,0.00489092,0.0601794,84.0241,0.733084,0,13.0043
+flat_val_blur_0#unk0,val_form,buchstabe_x,buchstabe,DiT-B (lambda 630),0.00346242,0.00459191,0.058018,73.038,0.646346,0,11.4411
+cjk_0@s1,val_form,buchstabe_y,buchstabe,DiT-B (lambda 630),0.00179899,0.00503419,0.0650858,74.5147,0.435754,0,6.98169
+rand_gmm_complex_0,val_form,buchstabe_y,buchstabe,DiT-B (lambda 630),0.00226085,0.00530152,0.0655724,72.9932,0.494978,0,9.45061
+organic_30#unk0,val_form,buchstabe_y,buchstabe,DiT-B (lambda 630),0.00137032,0.00360146,0.0689618,64.5171,0.319498,0,6.46269
+cjk_20@s1,val_form,organismus_02,organismus,DiT-B (lambda 630),0.00133281,0.00263964,0.0815197,57.9179,0.339958,0,6.67527
+flat_val_broad_1#unk0,val_form,organismus_05,organismus,DiT-B (lambda 630),0.00436282,0.0130075,0.0490555,76.3632,0.406847,0,7.12162
+greek_upper_0#unk0@s2,val_form,organismus_05,organismus,DiT-B (lambda 630),0.00223734,0.00567047,0.0670019,73.2998,0.336095,0,6.89099
+greek_upper_0#unk0,val_form,organismus_09,organismus,DiT-B (lambda 630),0.00319798,0.00910822,0.0607268,80.5319,0.351801,0,6.19052
+organic_20,val_form,organismus_09,organismus,DiT-B (lambda 630),0.000596281,0.00147493,0.0953092,62.0295,0.320114,0,4.89781
+korean_5,val_form,organismus_12,organismus,DiT-B (lambda 630),0.00187184,0.00605412,0.0636692,68.4236,0.391959,0,6.30068
+organic_0#unk0@s1,val_form,organismus_12,organismus,DiT-B (lambda 630),0.00202596,0.00548678,0.067833,75.5561,0.355642,0,6.48649
+flat_val_ped_2@s2,val_form,organismus_18,organismus,DiT-B (lambda 630),0.00356248,0.00911553,0.0527895,80.8798,0.418378,0,8.52914
+korean_5,val_form,organismus_18,organismus,DiT-B (lambda 630),0.00162006,0.0046205,0.0732491,67.8524,0.39665,0,5.80879
+rand_ana_poly_complex_0#unk0,val_form,organismus_19,organismus,DiT-B (lambda 630),0.00229981,0.00597059,0.0749494,67.5364,0.326861,0,5.97485
+rand_gmm_10@s2,val_form,organismus_19,organismus,DiT-B (lambda 630),0.00299703,0.00771665,0.0566881,72.4069,0.451249,0,6.61577
+rand_gmm_complex_20@s2,val_form,organismus_20,organismus,DiT-B (lambda 630),0.00402455,0.0118049,0.0434326,85.4637,0.399312,0,8.08899
+a_lc,val_form,organismus_22,organismus,DiT-B (lambda 630),0.000255865,0.0008749,0.0977598,57.8661,0.211058,0,3.39877
+flat_val_blur_0@s2,val_form,organismus_23,organismus,DiT-B (lambda 630),0.00182665,0.00377945,0.085673,82.8676,0.510943,0,7.66492
+rand_gmm_complex_0,val_form,organismus_25,organismus,DiT-B (lambda 630),0.00452238,0.0136928,0.0547361,74.1153,0.462087,0,6.73201
+flat_val_ped_2@s2,val_form,organismus_26,organismus,DiT-B (lambda 630),0.00384538,0.00930098,0.0524453,85.0974,0.39583,0,7.8431
+rand_gmm_20#unk0@s2,val_form,organismus_28,organismus,DiT-B (lambda 630),0.00263818,0.00878095,0.066928,77.4535,0.296162,0,5.77319
+flat_val_broad_2,val_form,organismus_29,organismus,DiT-B (lambda 630),0.00303949,0.00638846,0.0676668,88.8184,0.381036,0,7.67359
+rand_ana_poly_30#unk0@s1,val_form,organismus_37,organismus,DiT-B (lambda 630),0.00138319,0.00422844,0.072688,72.5934,0.341004,0,5.07537
+rand_ana_poly_complex_30@s1,val_form,bg_lochkreuz,baugruppe,DiT-B (lambda 630),0.00174801,0.0026451,0.0810218,66.2562,0.328592,0,6.53534
+flat_val_ring_2#unk0,val_form,bg_facette,baugruppe,DiT-B (lambda 630),0.00309401,0.00942848,0.0798517,76.2471,0.434482,0,10.0193
+flat_val_broad_1,val_form,bg_facette,baugruppe,DiT-B (lambda 630),0.00343479,0.00804914,0.0626702,78.0568,0.473093,0,8.91894
+flat_val_ped_2#unk0,val_form,bg_becher,baugruppe,DiT-B (lambda 630),0.00637224,0.0135932,0.0496269,78.2416,0.621646,0,10.9176
+cjk_0,val_form,bg_kreuzstern,baugruppe,DiT-B (lambda 630),0.000547643,0.00141094,0.0730436,67.24,0.397083,0,8.1221
+flat_val_blur_2#unk0@s1,val_form,bg_kerbe,baugruppe,DiT-B (lambda 630),0.00339079,0.00603884,0.069737,80.466,0.481127,0,10.2114
+rand_gmm_10#unk0@s2,val_form,bg_kapselring,baugruppe,DiT-B (lambda 630),0.00144232,0.00278477,0.0663356,66.2394,0.501576,0,9.27643
+greek_upper_0@s1,val_form,bg_lochkreuz_var,baugruppe,DiT-B (lambda 630),0.00120196,0.00183608,0.0854845,70.4695,0.377614,0,8.98272
+rand_ana_poly_complex_20#unk0@s1,val_form,bg_dorn_var,baugruppe,DiT-B (lambda 630),0.000899396,0.00244684,0.075029,77.4115,0.175442,0,2.6134
+flat_val_blur_1#unk0@s2,val_form,bg_kreuzstern_var,baugruppe,DiT-B (lambda 630),0.000470994,0.00051573,0.0779472,62.8805,0.356799,0,9.49887
+cjk_20,val_form,bg_zahnrad_var,baugruppe,DiT-B (lambda 630),0.00115441,0.00217381,0.0816423,61.8052,0.312061,0,5.9075
+greek_upper_0,val_form,bg_zahnrad_var,baugruppe,DiT-B (lambda 630),0.000605182,0.00158032,0.088993,60.304,0.318282,0,4.9743
+rand_ana_poly_complex_20@s1,val_form,sq_spindel,superquadrik,DiT-B (lambda 630),0.000870746,0.00230867,0.0920573,50.6216,0.31305,0,5.32277
+rand_ana_poly_complex_10@s2,val_form,sq_dreikant,superquadrik,DiT-B (lambda 630),0.000851362,0.00152927,0.0931747,63.2005,0.379615,0,6.0203
+rand_gmm_20#unk0,val_form,sq_dreikant,superquadrik,DiT-B (lambda 630),0.00249223,0.00633545,0.0684943,74.2019,0.433896,0,6.88132
+rand_gmm_complex_10@s2,val_form,sq_dreikant,superquadrik,DiT-B (lambda 630),0.00272131,0.00804739,0.0803718,81.1637,0.377276,0,6.18329
+rand_gmm_10#unk0@s1,val_form,sq_dreikant_lang,superquadrik,DiT-B (lambda 630),0.00131875,0.00501569,0.0690303,68.5146,0.311535,0,5.88014
+rand_gmm_complex_10@s2,val_form,sq_oktaederrund,superquadrik,DiT-B (lambda 630),0.00431419,0.013272,0.0631487,88.8049,0.368728,0,8.29362
+flat_val_broad_2@s2,val_form,sq_oktaederrund,superquadrik,DiT-B (lambda 630),0.00307698,0.00514,0.0649897,79.7933,0.416765,0,7.65058
+rand_gmm_complex_0@s1,val_form,sq_linse,superquadrik,DiT-B (lambda 630),0.00340635,0.0114814,0.0569141,73.4245,0.396974,0,6.91064
+rand_ana_poly_complex_0#unk0@s2,val_form,sq_flachstern,superquadrik,DiT-B (lambda 630),0.000908151,0.00395062,0.0872128,64.7234,0.296415,0,5.41773
+flat_val_ped_0,val_form,sq_flachstern,superquadrik,DiT-B (lambda 630),0.00181071,0.00488263,0.0699188,59.2747,0.401703,0,7.92808
+rand_gmm_complex_30#unk0@s2,val_form,sq_flachstern_lang,superquadrik,DiT-B (lambda 630),0.00115898,0.00493149,0.0910808,63.6874,0.294043,0,4.93983
+flat_val_blur_2#unk0@s2,val_form,sq_nadelkasten,superquadrik,DiT-B (lambda 630),0.00242417,0.00227627,0.0695459,73.8957,0.540891,0,11.7775
+flat_val_blur_0,val_form,sq_nadelkasten,superquadrik,DiT-B (lambda 630),0.00276884,0.00204379,0.0707329,73.0562,0.5104,0,10.226
+flat_val_broad_2#unk0@s1,val_form,sq_nadelkasten,superquadrik,DiT-B (lambda 630),0.00320054,0.00412565,0.0451298,89.0768,0.492987,0,8.07403
+rand_ana_poly_complex_0@s1,val_form,wort_se3,wort,DiT-B (lambda 630),0.000406679,0.00078439,0.0916026,66.9385,0.243632,0,5.23099
+flat_val_ped_1@s2,val_form,wort_gmm,wort,DiT-B (lambda 630),0.000409551,0.000789129,0.0838451,76.3659,0.345398,0,5.29229
+rand_gmm_20@s1,val_form,wort_gmm,wort,DiT-B (lambda 630),0.000583562,0.00174325,0.0782828,79.2136,0.294552,0,4.64893
+flat_val_broad_1#unk0@s1,val_form,wort_svgd,wort,DiT-B (lambda 630),0.000486647,0.00188408,0.0795232,76.5324,0.364997,0,5.74741
+flat_val_blur_1#unk0@s2,val_form,wort_flow,wort,DiT-B (lambda 630),0.000502588,0.00145787,0.0806568,81.237,0.290391,0,4.79774
+flat_val_broad_2,val_form,wort_kappa,wort,DiT-B (lambda 630),0.000294208,0.00060482,0.0948252,58.541,0.259507,0,5.12981
+rand_ana_poly_complex_10@s1,val_form,wort_kappa,wort,DiT-B (lambda 630),0.000273032,0.000904657,0.095758,62.0218,0.367761,0,4.7709
+flat_val_ped_1@s2,val_form,wort_kappa,wort,DiT-B (lambda 630),0.000179552,0.000422233,0.0917132,68.0837,0.43739,0,4.87693
+greek_upper_0@s1,val_form,wort_adam,wort,DiT-B (lambda 630),0.000375232,0.00116348,0.0921269,53.9418,0.321947,0,4.4448
+organic_0#unk0@s1,val_form,wort_adam,wort,DiT-B (lambda 630),0.000418499,0.000941474,0.085251,64.9301,0.256125,0,3.26386
+flat_val_ped_1@s1,val_form,wort_adam,wort,DiT-B (lambda 630),0.000468975,0.000585842,0.0776314,75.7531,0.283412,0,4.03648
+rand_ana_poly_10#unk0,val_form,wort_coeff,wort,DiT-B (lambda 630),0.00046229,0.00180835,0.0859887,69.038,0.402427,0,5.50187
+cjk_20,val_form,extern_armadillo,extern,DiT-B (lambda 630),0.00277838,0.00395145,0.0657406,67.6292,0.461775,0,8.92607
+rand_gmm_complex_0#unk0,val_form,extern_helm,extern,DiT-B (lambda 630),0.00395729,0.00706113,0.0657085,79.4502,0.442017,0,8.33172
+flat_val_broad_0@s2,val_beides,kapsel,primitiv,U-Net D512 (lambda 630),0.00216925,0.00508946,0.0542891,62.9184,0.285542,0,5.79579
+flat_val_broad_2@s1,val_beides,kapsel,primitiv,U-Net D512 (lambda 630),0.00144283,0.003155,0.0707342,67.6444,0.355838,0,7.1451
+organic_20#unk0,val_beides,kapsel,primitiv,U-Net D512 (lambda 630),0.00105785,0.00339095,0.0819351,51.1341,0.231353,0,4.2695
+flat_val_ped_1#unk0@s2,val_beides,kapsel,primitiv,U-Net D512 (lambda 630),0.00163382,0.00420247,0.0712721,58.457,0.303794,0,5.66993
+flat_val_ring_2#unk0@s1,val_beides,kapsel,primitiv,U-Net D512 (lambda 630),0.00146874,0.00285168,0.0792883,57.2745,0.313491,0,4.83224
+flat_val_ring_0#unk0,val_beides,kapsel,primitiv,U-Net D512 (lambda 630),0.0016483,0.00481154,0.071473,72.2425,0.325621,0,4.44485
+flat_val_ring_1#unk0,val_beides,kapsel,primitiv,U-Net D512 (lambda 630),0.00109697,0.00228956,0.0800885,57.2599,0.284541,0,4.90398
+rand_ana_poly_complex_20,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.000729838,0.00159487,0.0966691,57.0966,0.209297,0,2.94676
+rand_ana_poly_30,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00118883,0.00198279,0.0910816,50.1186,0.298386,0,3.59264
+flat_val_blur_2@s1,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.000972363,0.00126265,0.0998579,69.5357,0.426202,0,7.60991
+flat_val_blur_2#unk0,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00208736,0.00432329,0.0828428,71.1915,0.349702,0,5.86134
+cjk_0@s2,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00158909,0.00527948,0.0722403,66.1183,0.27978,0,5.41674
+rand_gmm_complex_10#unk0,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00408874,0.018076,0.0610963,78.6158,0.332402,0,5.23224
+rand_gmm_complex_30#unk0,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00250449,0.00681233,0.0652514,66.7449,0.398696,0,5.5173
+flat_val_ring_1#unk0@s1,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00226509,0.00589785,0.0668816,64.2369,0.381358,0,6.38701
+rand_ana_poly_10#unk0,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.0018685,0.00465229,0.0663007,59.0627,0.322858,0,5.76754
+greek_upper_0#unk0@s2,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00176765,0.0047178,0.0611097,63.2623,0.309766,0,5.83263
+flat_val_ring_1,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00291579,0.00828522,0.0580114,76.1809,0.365476,0,5.69041
+flat_val_broad_1@s1,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00269838,0.00648443,0.0666843,73.079,0.35865,0,6.30888
+flat_val_blur_1#unk0@s1,val_beides,halbkugel,primitiv,U-Net D512 (lambda 630),0.00279197,0.010152,0.0596679,75.4611,0.380504,0,6.61786
+flat_val_blur_1#unk0,val_beides,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00240296,0.00415249,0.0418472,77.9182,0.435259,0,7.6013
+flat_val_ring_1@s2,val_beides,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00269556,0.00741498,0.0478495,74.5806,0.477376,0,10.0451
+flat_val_ring_0@s2,val_beides,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00164421,0.00271415,0.0788888,64.3467,0.5463,0,9.78825
+flat_val_blur_2#unk0@s1,val_beides,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00178424,0.00299409,0.0774365,66.55,0.504033,0,10.0267
+cjk_20@s1,val_beides,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00186733,0.0040214,0.0702886,62.3474,0.432928,0,8.79469
+rand_gmm_complex_10#unk0,val_beides,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.0034455,0.00800806,0.052642,93.3326,0.457963,0,9.91878
+rand_gmm_complex_20@s1,val_beides,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00283495,0.00358032,0.0442415,88.4107,0.48533,0,12.3305
+korean_5#unk0@s2,val_beides,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00216934,0.00290325,0.0699738,72.8193,0.391539,0,9.78124
+flat_val_broad_2#unk0,val_beides,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00293844,0.00433953,0.0585199,67.4018,0.488419,0,7.12975
+rand_gmm_10#unk0@s1,val_beides,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00214458,0.00258628,0.0645376,69.943,0.472553,0,8.16469
+rand_ana_poly_complex_10@s2,val_beides,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00255632,0.0041699,0.066575,55.4447,0.437164,0,7.06236
+greek_upper_0#unk0,val_beides,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00318646,0.00570476,0.0494424,69.6635,0.517986,0,8.27715
+flat_val_blur_1,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00309506,0.00627221,0.0725339,78.7088,0.474276,0,7.02356
+flat_val_ring_0#unk0,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00322773,0.00798959,0.0574562,74.1777,0.375058,0,6.72705
+rand_gmm_10#unk0@s2,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00315049,0.00778691,0.0608478,71.5827,0.376417,0,5.5441
+flat_val_blur_1#unk0@s2,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00281759,0.00603025,0.0618467,78.2239,0.395681,0,6.48129
+cjk_0#unk0@s2,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00220523,0.00367841,0.0696926,64.1326,0.437697,0,7.00806
+flat_val_ped_1@s1,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00254715,0.00509389,0.0632894,71.7177,0.392181,0,5.91679
+rand_ana_poly_complex_0#unk0@s1,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00187237,0.00371124,0.074284,64.5784,0.385565,0,5.98888
+rand_gmm_20@s2,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00346663,0.00776431,0.0704032,69.4812,0.365071,0,6.25158
+flat_val_ring_1@s1,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00346522,0.00746272,0.0540336,77.8253,0.427164,0,7.26543
+flat_val_blur_1,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00214718,0.00345719,0.0698821,81.3967,0.408337,0,7.24936
+korean_5@s2,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00226047,0.00486133,0.0676927,63.8102,0.280645,0,6.06021
+flat_val_blur_0#unk0,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00317414,0.00666008,0.0653027,70.4512,0.404675,0,6.71089
+organic_10#unk0,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00323697,0.00774758,0.0594084,76.6952,0.339935,0,5.90598
+cjk_20@s1,val_beides,organismus_00,organismus,U-Net D512 (lambda 630),0.00246701,0.00458295,0.0722324,61.7196,0.411734,0,6.6262
+flat_val_broad_2#unk0,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.00423441,0.0095924,0.0497024,78.2312,0.393437,0,8.68877
+organic_30#unk0@s2,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.00162638,0.00473037,0.0731044,61.0774,0.337304,0,5.03985
+flat_val_broad_0#unk0@s2,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.00338182,0.0104493,0.0476965,76.6505,0.371555,0,6.58271
+rand_gmm_10#unk0@s1,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.00298641,0.00852018,0.0552167,73.9819,0.38079,0,6.41048
+flat_val_blur_1,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.00256986,0.00484728,0.0700198,78.862,0.434606,0,7.20356
+rand_gmm_complex_30,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.00320271,0.00698719,0.0585848,75.8622,0.455671,0,8.08311
+rand_gmm_complex_20@s2,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.00343881,0.00924585,0.0485282,74.5055,0.411266,0,6.93091
+organic_0#unk0@s1,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.00265345,0.00658425,0.0667776,72.4352,0.363068,0,7.03605
+flat_val_ped_1#unk0,val_beides,organismus_38,organismus,U-Net D512 (lambda 630),0.0030587,0.00876883,0.0583508,75.835,0.367167,0,6.6065
+flat_val_ring_2#unk0@s2,val_beides,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000928584,0.00176132,0.078024,52.3972,0.359129,0,6.85248
+rand_gmm_complex_30,val_beides,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000824377,0.00110546,0.0697944,55.5011,0.408554,0,6.11553
+rand_gmm_10#unk0@s1,val_beides,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000641329,0.00117712,0.0821267,68.2467,0.295079,0,5.63358
+organic_20#unk0,val_beides,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000537555,0.00130332,0.0706677,63.975,0.298574,0,5.12697
+flat_val_broad_2@s1,val_beides,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.00118861,0.00341466,0.0634286,76.5883,0.422821,0,6.30574
+rand_ana_poly_20#unk0@s2,val_beides,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000828153,0.00188078,0.0671847,68.8167,0.314873,0,5.26246
+flat_val_broad_2,val_beides,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000998849,0.00220987,0.061142,72.2623,0.399909,0,7.13146
+flat_val_ring_0@s2,val_beides,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000863077,0.00125221,0.0895174,53.1046,0.301962,0,7.02668
+rand_ana_poly_complex_0,val_beides,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.000679184,0.000873673,0.0877995,51.7635,0.402957,0,5.9563
+a_lc@s2,val_beides,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.000878713,0.00186239,0.0826249,51.5526,0.493395,0,7.22509
+flat_val_blur_0@s2,val_beides,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.0012545,0.00213225,0.0821633,64.8952,0.481143,0,8.16299
+rand_ana_poly_complex_10#unk0@s1,val_beides,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00136648,0.00316089,0.0733442,73.2927,0.415519,0,6.02831
+flat_val_broad_1#unk0@s2,val_beides,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00178197,0.00572535,0.0540568,68.1294,0.373391,0,5.97327
+flat_val_blur_2#unk0,val_beides,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00106025,0.00140894,0.078311,64.2811,0.327308,0,7.9172
+rand_ana_poly_complex_30@s1,val_beides,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.000999072,0.00160367,0.0812624,57.1746,0.35055,0,5.40076
+cjk_10@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.000828769,0.00129014,0.0799077,45.5009,0.353174,0,5.10673
+greek_upper_0#unk0,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00115167,0.00317098,0.0747068,57.5644,0.31697,0,6.19605
+rand_gmm_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.0010882,0.00310598,0.0674849,59.6381,0.340503,0,4.79356
+flat_val_ring_1@s1,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00111346,0.00252221,0.0745803,59.3247,0.393839,0,6.87622
+rand_gmm_10@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00150949,0.0047148,0.0614588,55.6255,0.395167,0,6.21136
+organic_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00124598,0.00320801,0.0652332,64.0293,0.390649,0,6.24025
+rand_gmm_10@s1,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.0018309,0.00561244,0.0649707,64.0623,0.30793,0,4.95714
+flat_val_broad_2#unk0,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00196625,0.00709543,0.0505818,75.1249,0.333112,0,5.97105
+flat_val_blur_1#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00147662,0.00307793,0.0632622,68.8187,0.372512,0,5.70902
+rand_gmm_complex_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00131171,0.00336139,0.0691854,61.85,0.342352,0,6.15274
+organic_10#unk0@s1,val_beides,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.00115067,0.00371026,0.0757048,63.4032,0.315824,0,5.13117
+flat_val_blur_1#unk0@s1,val_beides,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.00113741,0.00339079,0.0640654,68.4,0.29809,0,4.62155
+flat_val_ring_0#unk0,val_beides,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.00091862,0.00230998,0.0793555,63.7484,0.30238,0,6.33108
+flat_val_ped_1@s1,val_beides,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000953231,0.00190736,0.0836416,59.1862,0.311586,0,4.79673
+organic_30#unk0@s1,val_beides,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000490122,0.00184689,0.0789479,39.6287,0.301561,0,3.94125
+digit_5#unk0@s1,val_beides,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000688687,0.00255197,0.0759255,49.0684,0.276072,0,3.86876
+organic_10#unk0,val_beides,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000484303,0.00129951,0.0746773,53.458,0.277959,0,4.45673
+organic_0#unk0@s2,val_beides,wort_vita,wort,U-Net D512 (lambda 630),0.000473312,0.00131737,0.078143,64.1652,0.267535,0,3.98507
+flat_val_blur_2@s1,val_beides,wort_vita,wort,U-Net D512 (lambda 630),0.000416777,0.000604755,0.0950017,54.167,0.335178,0,5.64729
+rand_ana_poly_complex_20#unk0,val_beides,wort_vita,wort,U-Net D512 (lambda 630),0.000393895,0.000621243,0.0848078,61.589,0.230988,0,3.17443
+rand_ana_poly_complex_0@s1,val_beides,wort_vita,wort,U-Net D512 (lambda 630),0.00038269,0.000742512,0.0869043,64.7177,0.238349,0,3.80478
+cjk_20#unk0@s2,val_beides,wort_vita,wort,U-Net D512 (lambda 630),0.00056394,0.00092496,0.0799099,75.0869,0.263702,0,5.38637
+rand_gmm_complex_30#unk0@s1,val_beides,wort_vita,wort,U-Net D512 (lambda 630),0.000635316,0.000815064,0.0918166,78.2051,0.292602,0,5.37008
+rand_ana_poly_complex_0@s2,val_beides,wort_vita,wort,U-Net D512 (lambda 630),0.000802797,0.00204414,0.0897682,61.7326,0.300637,0,3.66276
+organic_10@s1,val_beides,wort_vita,wort,U-Net D512 (lambda 630),0.000572746,0.00099623,0.0879805,63.2401,0.262423,0,4.5953
+rand_gmm_20,val_beides,wort_ias,wort,U-Net D512 (lambda 630),0.00146756,0.00433914,0.0579859,74.7785,0.333061,0,6.29862
+flat_val_blur_2@s1,val_beides,wort_ias,wort,U-Net D512 (lambda 630),0.000927905,0.00154518,0.0856509,71.0628,0.581624,0,10.3605
+rand_ana_poly_20#unk0,val_beides,wort_ias,wort,U-Net D512 (lambda 630),0.00111879,0.00205929,0.0767102,72.3619,0.342631,0,7.29003
+rand_gmm_10#unk0@s1,val_beides,wort_ias,wort,U-Net D512 (lambda 630),0.000877755,0.00125474,0.0671809,72.3297,0.444418,0,7.77874
+greek_upper_0,val_beides,wort_ias,wort,U-Net D512 (lambda 630),0.000878591,0.00116909,0.0824009,73.7246,0.417719,0,7.59154
+rand_ana_poly_complex_42,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00064265,0.00183278,0.0858418,41.7438,0.29339,0,2.55745
+korean_10@s2,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00068153,0.00125945,0.0822933,43.5125,0.246095,0,3.4723
+flat_ped_111#unk0@s1,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00119664,0.00322872,0.075043,53.2332,0.361442,0,5.17072
+rand_gmm_155#unk0@s2,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.0011067,0.00273614,0.0762745,61.7935,0.321003,0,5.30978
+rand_ana_poly_complex_28#unk0@s2,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00131309,0.00376231,0.0576562,51.3207,0.244973,0,3.91078
+flat_ped_80#unk0@s2,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00137375,0.00366921,0.0815076,63.3531,0.308535,0,5.3061
+korean_24#unk0@s1,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00101058,0.00381205,0.0704614,65.5199,0.265405,0,3.98
+rand_gmm_complex_44@s2,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00166236,0.00644131,0.038361,69.829,0.255771,0,3.59263
+rand_gmm_170#unk0@s1,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00085744,0.00148852,0.0868927,51.762,0.287859,0,3.72435
+rand_ana_poly_47@s1,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.000582397,0.00312569,0.0809966,23.986,0.252341,0,2.18293
+rand_gmm_173#unk0@s2,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.000892767,0.00170017,0.0756683,53.4197,0.360048,0,4.43231
+flat_blur_10#unk0@s1,val_flaeche,kapsel,primitiv,U-Net D512 (lambda 630),0.00168972,0.00403145,0.0652698,67.4762,0.306302,0,4.39338
+cjk_40,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.0020818,0.00884324,0.0679879,74.9212,0.321006,0,4.88014
+greek_upper_7,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.00128178,0.00456873,0.0797381,64.0717,0.308516,0,4.22802
+rand_ana_poly_119@s2,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.00125341,0.00272113,0.0900577,51.2806,0.267591,0,4.61907
+rand_ana_poly_118#unk0@s1,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.00165283,0.00590178,0.0737564,65.9533,0.306905,0,5.1413
+flat_blur_17#unk0@s2,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.00323088,0.0111703,0.0446302,81.7658,0.335439,0,5.65204
+rand_gmm_complex_43,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.00327198,0.00860653,0.0568515,83.918,0.398626,0,5.6044
+greek_lower_21@s1,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.00105054,0.00246429,0.0857401,47.1099,0.315927,0,5.27072
+cjk_19#unk0@s2,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.00246055,0.00610615,0.0628184,63.8384,0.386811,0,5.67379
+rand_ana_poly_153@s1,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.000300999,0.000741351,0.0943951,36.6176,0.213185,0,2.5083
+rand_ana_poly_137@s1,val_flaeche,halbkugel,primitiv,U-Net D512 (lambda 630),0.00032533,0.000881664,0.090561,27.9653,0.192765,0,3.30871
+rand_ana_poly_complex_62#unk0@s1,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00111495,0.00258283,0.0628442,61.0441,0.372591,0,6.99359
+korean_19@s1,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00135609,0.00343836,0.0760172,57.2011,0.353571,0,7.03727
+rand_ana_poly_164@s1,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.000392052,0.000605645,0.0903426,34.158,0.124721,0,2.42747
+rand_gmm_95,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00269793,0.0068765,0.054819,58.2161,0.35801,0,7.21776
+rand_ana_poly_complex_42@s2,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.000845996,0.00159883,0.0815691,53.2093,0.274977,0,6.0366
+rand_gmm_complex_39#unk0,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00168777,0.00231776,0.0497561,77.3448,0.537463,0,7.81961
+rand_ana_poly_94#unk0,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00170473,0.00343713,0.0674608,64.0617,0.469084,0,8.92162
+flat_ped_118@s1,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00242727,0.00549072,0.0478191,69.3974,0.488843,0,11.0514
+rand_gmm_140@s1,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.0020853,0.00334746,0.0506414,103.068,0.429707,0,8.77069
+rand_ana_poly_79#unk0@s2,val_flaeche,ziffer_1,buchstabe,U-Net D512 (lambda 630),0.00168835,0.00270442,0.0614088,76.5441,0.412184,0,6.89833
+rand_gmm_complex_25@s1,val_flaeche,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00293154,0.00554364,0.0564138,93.1001,0.507028,0,11.0681
+rand_gmm_complex_21,val_flaeche,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00307505,0.00412989,0.0468494,92.3406,0.448161,0,10.9732
+cjk_61#unk0@s1,val_flaeche,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00212627,0.00198742,0.052357,87.4952,0.457278,0,12.0551
+flat_broad_17@s2,val_flaeche,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00280672,0.00411931,0.0554492,69.6791,0.466013,0,8.41952
+rand_ana_poly_complex_63@s1,val_flaeche,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00139833,0.00227217,0.060539,52.869,0.272836,0,5.21613
+rand_ana_poly_54@s2,val_flaeche,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00131611,0.00194119,0.0790885,59.7762,0.4893,0,5.5115
+flat_blur_3#unk0@s1,val_flaeche,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00284166,0.00479709,0.0566234,63.8599,0.55902,0,7.11522
+flat_blur_30@s2,val_flaeche,ziffer_5,buchstabe,U-Net D512 (lambda 630),0.00308035,0.00486205,0.0669145,60.5774,0.467968,0,7.89528
+flat_ped_98@s1,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.0018548,0.00239199,0.0944392,68.3497,0.45003,0,8.34273
+korean_15#unk0@s2,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00131291,0.00152355,0.0875709,54.3137,0.33002,0,6.31919
+flat_blur_45#unk0@s1,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00253788,0.00430514,0.0753013,66.0365,0.417999,0,6.68942
+rand_gmm_124#unk0@s1,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00306865,0.00750484,0.0667062,72.0454,0.369494,0,7.32072
+organic_6#unk0,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00287195,0.00690407,0.0612615,71.8629,0.426945,0,7.43008
+rand_ana_poly_complex_6#unk0@s1,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00109651,0.0015372,0.0937923,61.396,0.316642,0,5.52263
+rand_gmm_161#unk0@s2,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.0023528,0.00592026,0.076544,67.36,0.394529,0,6.85605
+flat_ped_37@s1,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00226066,0.0027861,0.0952403,73.871,0.458831,0,8.88293
+rand_gmm_73@s2,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00310435,0.00552664,0.0773711,77.8687,0.353238,0,6.75476
+flat_ped_142@s2,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00285716,0.00576205,0.0624994,77.1939,0.41273,0,8.35453
+flat_broad_49#unk0,val_flaeche,organismus_00,organismus,U-Net D512 (lambda 630),0.00220026,0.00364477,0.0727329,61.6829,0.378779,0,7.05589
+flat_ped_39@s1,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00328341,0.006756,0.0470992,88.0861,0.443239,0,8.64225
+flat_ped_54#unk0@s2,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00288588,0.00408909,0.0728531,70.5864,0.397287,0,6.70194
+z_lc@s1,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00045256,0.000909242,0.0953926,42.2485,0.173397,0,3.37425
+rand_ana_poly_19,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.000321052,0.000760124,0.0963346,30.0642,0.130488,0,2.38505
+rand_gmm_110@s1,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00311708,0.00934059,0.0651927,76.2068,0.390033,0,6.78604
+flat_ring_56,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.0029884,0.00598547,0.0675948,70.0023,0.362478,0,6.72841
+rand_gmm_85@s1,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00292563,0.0084257,0.0588652,73.0093,0.406402,0,6.79374
+organic_32#unk0@s1,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00302158,0.00726914,0.0490647,69.4337,0.425761,0,7.25832
+rand_gmm_complex_25#unk0,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00283109,0.00645166,0.0647462,68.1471,0.420855,0,7.28499
+flat_blur_37#unk0@s2,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00264815,0.00528767,0.072564,65.6586,0.376457,0,6.57085
+flat_ped_94#unk0@s1,val_flaeche,organismus_38,organismus,U-Net D512 (lambda 630),0.00258949,0.00512844,0.070239,66.6808,0.368846,0,6.12728
+rand_ana_poly_146#unk0@s2,val_flaeche,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.00107758,0.00270396,0.0529479,65.8114,0.337336,0,5.45221
+rand_gmm_130@s1,val_flaeche,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000964783,0.00244374,0.0561244,72.766,0.293651,0,5.07616
+flat_ped_49#unk0,val_flaeche,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000720089,0.0011291,0.0742612,55.9009,0.339288,0,5.31593
+rand_gmm_63#unk0,val_flaeche,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000725851,0.003112,0.0641275,75.944,0.305072,0,5.47225
+flat_ped_51#unk0,val_flaeche,bg_hantel_var,baugruppe,U-Net D512 (lambda 630),0.000865067,0.00227374,0.0669563,65.1012,0.272826,0,6.6935
+rand_gmm_complex_31@s2,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00101447,0.00165669,0.0798702,60.8483,0.390471,0,7.50791
+rand_ana_poly_complex_11@s1,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.000651928,0.00197432,0.0887682,47.0476,0.379178,0,4.04205
+flat_broad_66#unk0,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00122878,0.00210108,0.0492487,68.4081,0.470702,0,6.75441
+cjk_60@s1,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.000993543,0.00194153,0.0761389,63.8873,0.445706,0,4.60086
+rand_gmm_105#unk0@s2,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.000960205,0.00174978,0.085438,65.5923,0.465694,0,6.36064
+flat_ring_58@s1,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00107828,0.00185618,0.0939856,64.5017,0.452858,0,6.90127
+flat_blur_33#unk0,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.000905944,0.00191622,0.0877591,63.9286,0.435643,0,8.45271
+cjk_14#unk0@s1,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00140507,0.00219168,0.0810585,67.5223,0.400721,0,7.8844
+rand_gmm_50,val_flaeche,bg_bogen_var,baugruppe,U-Net D512 (lambda 630),0.00166622,0.00452742,0.0629155,77.2899,0.296477,0,5.41086
+rand_ana_poly_107#unk0@s1,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00116003,0.00316642,0.0694295,60.9086,0.269141,0,4.71875
+rand_gmm_123#unk0@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00170376,0.00469501,0.0595289,66.855,0.337075,0,5.37869
+flat_blur_33@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00111963,0.00228218,0.0721565,52.0772,0.388272,0,7.30747
+greek_lower_8#unk0@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00115847,0.00380571,0.0674873,59.3084,0.245197,0,4.05731
+organic_48#unk0@s1,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00117367,0.0035931,0.0728068,65.5676,0.304495,0,6.05967
+flat_ped_110@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.000992709,0.00142873,0.0905374,59.2411,0.358162,0,7.23131
+flat_broad_4@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00158101,0.00467837,0.0621277,61.7445,0.396145,0,6.30187
+flat_ped_30,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.00108644,0.00200528,0.0789362,64.0132,0.283789,0,6.3712
+rand_ana_poly_105,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D512 (lambda 630),0.000496709,0.00131028,0.0975368,45.5132,0.274327,0,3.03319
+rand_ana_poly_44#unk0,val_flaeche,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.00154913,0.00426871,0.0608197,81.7114,0.228841,0,4.41233
+rand_ana_poly_59#unk0@s1,val_flaeche,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000919025,0.00424046,0.073929,61.7708,0.278911,0,4.06985
+p_lc@s1,val_flaeche,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000388723,0.00116579,0.0910931,43.7781,0.251354,0,3.03586
+rand_gmm_149#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000616928,0.00173428,0.0821084,50.4291,0.247445,0,3.71601
+rand_gmm_complex_16#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000559787,0.00148084,0.0696593,56.2385,0.335147,0,5.48769
+flat_ped_116#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,U-Net D512 (lambda 630),0.000576865,0.00100755,0.084005,46.0308,0.301016,0,4.53292
+flat_ring_5#unk0@s1,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.000596966,0.00179367,0.0745064,61.777,0.317925,0,4.52319
+flat_ped_32@s2,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.000575446,0.000678831,0.0842499,59.6281,0.346135,0,5.41677
+rand_gmm_44#unk0,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.000580629,0.00171069,0.070673,65.7576,0.319044,0,5.00673
+rand_gmm_13#unk0@s2,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.000576112,0.00129273,0.0872427,56.9225,0.477301,0,6.11909
+rand_ana_poly_146#unk0@s1,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.000684952,0.00152757,0.0773361,72.2675,0.340458,0,4.98721
+flat_ped_58@s2,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.000863016,0.0027635,0.0660561,84.1928,0.420754,0,5.31222
+flat_ped_138#unk0,val_flaeche,wort_vita,wort,U-Net D512 (lambda 630),0.000733701,0.0021736,0.0628135,74.8225,0.338997,0,6.96628
+flat_ped_33@s1,val_flaeche,wort_ias,wort,U-Net D512 (lambda 630),0.00100864,0.0020543,0.0601925,73.0413,0.415441,0,9.29739
+korean_1#unk0,val_flaeche,wort_ias,wort,U-Net D512 (lambda 630),0.00104223,0.00193041,0.0624573,78.3354,0.413831,0,7.61056
+rand_ana_poly_complex_0#unk0@s2,val_form,ebene_gekippt,ebene,U-Net D512 (lambda 630),0.00129648,0.00316979,0.0779186,60.0058,0.360934,0,5.00356
+rand_ana_poly_20,val_form,ebene_fib_2,ebene,U-Net D512 (lambda 630),0.00035428,0.000607766,0.0922247,35.3468,0.184825,0,2.70108
+organic_10#unk0@s1,val_form,ebene_fib_3,ebene,U-Net D512 (lambda 630),0.00108635,0.00391314,0.0785797,67.2544,0.290447,0,4.23459
+rand_gmm_complex_20,val_form,wuerfel,primitiv,U-Net D512 (lambda 630),0.00483418,0.005306,0.0486378,71.6529,0.656921,0,12.975
+organic_0#unk0@s2,val_form,kegel,primitiv,U-Net D512 (lambda 630),0.00412429,0.00786944,0.0774511,83.1134,0.430676,0,6.43091
+rand_ana_poly_complex_10#unk0@s2,val_form,oktaeder,primitiv,U-Net D512 (lambda 630),0.00127816,0.00251894,0.0784413,58.2104,0.375414,0,7.56815
+cjk_0,val_form,kuboktaeder,primitiv,U-Net D512 (lambda 630),0.00462933,0.00791322,0.0476724,75.6793,0.566983,0,9.86815
+rand_ana_poly_30@s1,val_form,quader,primitiv,U-Net D512 (lambda 630),0.00107176,0.00246575,0.0850432,39.407,0.289315,0,5.05862
+flat_val_broad_1@s2,val_form,spat,primitiv,U-Net D512 (lambda 630),0.00189472,0.00389759,0.0703407,57.5352,0.446446,0,8.35607
+organic_30@s1,val_form,spat,primitiv,U-Net D512 (lambda 630),0.000357272,0.00134674,0.0987043,40.2004,0.173714,0,2.6931
+rand_gmm_complex_20@s2,val_form,spat,primitiv,U-Net D512 (lambda 630),0.00162868,0.00362505,0.0632766,68.081,0.420008,0,6.67727
+flat_val_broad_1#unk0@s1,val_form,spat,primitiv,U-Net D512 (lambda 630),0.00125116,0.00181192,0.0806436,76.2703,0.307103,0,6.31866
+organic_10@s2,val_form,dreiecksplatte,primitiv,U-Net D512 (lambda 630),0.000719525,0.00169051,0.0911235,60.3518,0.299248,0,3.8394
+flat_val_ped_0@s2,val_form,keil,primitiv,U-Net D512 (lambda 630),0.0021485,0.00463756,0.0736289,64.9537,0.422745,0,7.56604
+digit_5@s1,val_form,antiprisma,primitiv,U-Net D512 (lambda 630),0.00113714,0.00279685,0.0767279,53.7361,0.409065,0,5.62188
+flat_val_ped_0#unk0,val_form,trapezoeder,primitiv,U-Net D512 (lambda 630),0.00234771,0.0063284,0.0553654,70.5838,0.324697,0,7.27959
+flat_val_blur_1#unk0@s2,val_form,trapezoeder,primitiv,U-Net D512 (lambda 630),0.00224046,0.00622936,0.0552067,78.4581,0.318085,0,6.5098
+rand_ana_poly_complex_20#unk0@s1,val_form,hohlzylinder,primitiv,U-Net D512 (lambda 630),0.0025627,0.00362296,0.0641023,67.4216,0.558894,0,12.631
+flat_val_ped_0#unk0,val_form,ellipsoid,primitiv,U-Net D512 (lambda 630),0.0011023,0.00197157,0.0823132,72.5624,0.264176,0,5.36247
+flat_val_ring_1,val_form,hyperboloid,primitiv,U-Net D512 (lambda 630),0.00302743,0.00684332,0.0598742,75.3351,0.545612,0,8.85084
+organic_10#unk0@s2,val_form,tropfen,primitiv,U-Net D512 (lambda 630),0.00273191,0.00644285,0.0594946,72.2758,0.394852,0,6.17115
+organic_0#unk0,val_form,buchstabe_a,buchstabe,U-Net D512 (lambda 630),0.0017966,0.00199003,0.0558884,68.2932,0.478342,0,10.343
+rand_gmm_complex_0@s1,val_form,buchstabe_b,buchstabe,U-Net D512 (lambda 630),0.00348553,0.00640154,0.0452364,89.8,0.522192,0,10.3166
+flat_val_broad_2#unk0,val_form,buchstabe_d,buchstabe,U-Net D512 (lambda 630),0.00329028,0.00439286,0.0623866,108.646,0.475672,0,11.1132
+rand_ana_poly_complex_30#unk0@s1,val_form,buchstabe_e,buchstabe,U-Net D512 (lambda 630),0.00280061,0.00397062,0.0557868,87.76,0.590889,0,12.026
+a_lc#unk0@s2,val_form,buchstabe_g,buchstabe,U-Net D512 (lambda 630),0.0029339,0.00439548,0.0528196,76.9853,0.428966,0,9.28479
+flat_val_ped_0#unk0@s1,val_form,buchstabe_g,buchstabe,U-Net D512 (lambda 630),0.00293092,0.00370938,0.0527174,78.0387,0.545584,0,10.9129
+cjk_0#unk0,val_form,buchstabe_g,buchstabe,U-Net D512 (lambda 630),0.00261708,0.0035384,0.0636369,72.2488,0.582548,0,9.80944
+rand_gmm_10#unk0,val_form,buchstabe_h,buchstabe,U-Net D512 (lambda 630),0.00322483,0.00656317,0.0428077,75.9265,0.610549,0,10.8953
+organic_30@s1,val_form,buchstabe_i,buchstabe,U-Net D512 (lambda 630),0.000277669,0.000742399,0.0964254,33.1668,0.171706,0,2.07687
+flat_val_ring_2@s1,val_form,buchstabe_m,buchstabe,U-Net D512 (lambda 630),0.00276,0.00421822,0.0559759,74.4909,0.546295,0,12.1137
+rand_gmm_20@s1,val_form,buchstabe_n,buchstabe,U-Net D512 (lambda 630),0.00366354,0.00415893,0.0489808,76.3567,0.53609,0,12.005
+flat_val_blur_1#unk0,val_form,buchstabe_p,buchstabe,U-Net D512 (lambda 630),0.00271453,0.00443311,0.0502162,70.782,0.48002,0,10.2669
+rand_gmm_10#unk0@s2,val_form,buchstabe_s,buchstabe,U-Net D512 (lambda 630),0.00249854,0.00291371,0.0717717,67.2402,0.431178,0,8.00338
+rand_ana_poly_complex_20#unk0@s2,val_form,buchstabe_t,buchstabe,U-Net D512 (lambda 630),0.00106196,0.00416815,0.0695925,52.7993,0.291063,0,4.75713
+cjk_10,val_form,buchstabe_v,buchstabe,U-Net D512 (lambda 630),0.00200179,0.00436746,0.0818843,66.9946,0.464847,0,8.47056
+flat_val_blur_2#unk0@s2,val_form,buchstabe_x,buchstabe,U-Net D512 (lambda 630),0.00253329,0.00397096,0.0579351,70.0273,0.762754,0,12.0147
+flat_val_blur_0#unk0,val_form,buchstabe_x,buchstabe,U-Net D512 (lambda 630),0.00354592,0.00403933,0.0499667,77.9234,0.628793,0,10.8797
+cjk_0@s1,val_form,buchstabe_y,buchstabe,U-Net D512 (lambda 630),0.00204111,0.0029426,0.0613873,68.8775,0.483943,0,8.31481
+rand_gmm_complex_0,val_form,buchstabe_y,buchstabe,U-Net D512 (lambda 630),0.00196635,0.00343231,0.0589051,71.3076,0.488926,0,8.58541
+organic_30#unk0,val_form,buchstabe_y,buchstabe,U-Net D512 (lambda 630),0.00143212,0.00298108,0.0633999,61.2389,0.34041,0,6.39151
+cjk_20@s1,val_form,organismus_02,organismus,U-Net D512 (lambda 630),0.00193164,0.00400556,0.0726308,59.9219,0.340857,0,5.61189
+flat_val_broad_1#unk0,val_form,organismus_05,organismus,U-Net D512 (lambda 630),0.003716,0.0094811,0.0494083,77.3899,0.344478,0,6.50312
+greek_upper_0#unk0@s2,val_form,organismus_05,organismus,U-Net D512 (lambda 630),0.00243091,0.00513552,0.0638494,70.3627,0.39341,0,6.62999
+greek_upper_0#unk0,val_form,organismus_09,organismus,U-Net D512 (lambda 630),0.00265275,0.0055582,0.0567098,67.7987,0.367977,0,7.04632
+organic_20,val_form,organismus_09,organismus,U-Net D512 (lambda 630),0.000673561,0.00145967,0.0858262,42.7436,0.269952,0,4.73378
+korean_5,val_form,organismus_12,organismus,U-Net D512 (lambda 630),0.00220177,0.00468598,0.060884,57.2133,0.41842,0,5.7848
+organic_0#unk0@s1,val_form,organismus_12,organismus,U-Net D512 (lambda 630),0.00243403,0.00506946,0.0667967,75.0686,0.349059,0,7.05682
+flat_val_ped_2@s2,val_form,organismus_18,organismus,U-Net D512 (lambda 630),0.00283994,0.00577518,0.054573,83.5983,0.409578,0,6.91811
+korean_5,val_form,organismus_18,organismus,U-Net D512 (lambda 630),0.00201276,0.00423703,0.0678584,59.5728,0.368984,0,5.22349
+rand_ana_poly_complex_0#unk0,val_form,organismus_19,organismus,U-Net D512 (lambda 630),0.00209254,0.00454002,0.0649218,63.8119,0.34894,0,6.30047
+rand_gmm_10@s2,val_form,organismus_19,organismus,U-Net D512 (lambda 630),0.00327452,0.0085402,0.0518666,69.1777,0.437347,0,7.19478
+rand_gmm_complex_20@s2,val_form,organismus_20,organismus,U-Net D512 (lambda 630),0.00345164,0.00851315,0.041939,79.3365,0.468918,0,6.55942
+a_lc,val_form,organismus_22,organismus,U-Net D512 (lambda 630),0.000577889,0.00107626,0.0948516,48.0813,0.191502,0,3.41664
+flat_val_blur_0@s2,val_form,organismus_23,organismus,U-Net D512 (lambda 630),0.00218777,0.00289519,0.0821918,64.7673,0.483923,0,7.20349
+rand_gmm_complex_0,val_form,organismus_25,organismus,U-Net D512 (lambda 630),0.00372028,0.00983525,0.0454471,74.3254,0.435204,0,6.7155
+flat_val_ped_2@s2,val_form,organismus_26,organismus,U-Net D512 (lambda 630),0.00322774,0.00729958,0.0531436,92.5459,0.411271,0,7.30074
+rand_gmm_20#unk0@s2,val_form,organismus_28,organismus,U-Net D512 (lambda 630),0.002675,0.00702953,0.0585215,64.2741,0.349095,0,5.89706
+flat_val_broad_2,val_form,organismus_29,organismus,U-Net D512 (lambda 630),0.00283943,0.00529496,0.0603738,71.6632,0.447617,0,7.01332
+rand_ana_poly_30#unk0@s1,val_form,organismus_37,organismus,U-Net D512 (lambda 630),0.00187488,0.00446109,0.0701114,63.4512,0.373482,0,5.03273
+rand_ana_poly_complex_30@s1,val_form,bg_lochkreuz,baugruppe,U-Net D512 (lambda 630),0.00185131,0.00269584,0.0737926,60.5786,0.358529,0,6.08342
+flat_val_ring_2#unk0,val_form,bg_facette,baugruppe,U-Net D512 (lambda 630),0.00325609,0.00780799,0.0722517,68.5087,0.527565,0,11.9006
+flat_val_broad_1,val_form,bg_facette,baugruppe,U-Net D512 (lambda 630),0.00354026,0.00762952,0.0623617,82.7796,0.48658,0,8.78309
+flat_val_ped_2#unk0,val_form,bg_becher,baugruppe,U-Net D512 (lambda 630),0.00491251,0.0065002,0.0471222,78.1775,0.662644,0,12.0911
+cjk_0,val_form,bg_kreuzstern,baugruppe,U-Net D512 (lambda 630),0.00103296,0.00159328,0.0671887,68.8485,0.379622,0,8.44505
+flat_val_blur_2#unk0@s1,val_form,bg_kerbe,baugruppe,U-Net D512 (lambda 630),0.00382105,0.00419407,0.0653485,73.7499,0.479187,0,9.079
+rand_gmm_10#unk0@s2,val_form,bg_kapselring,baugruppe,U-Net D512 (lambda 630),0.00192564,0.00291842,0.063668,65.5758,0.467509,0,10.7358
+greek_upper_0@s1,val_form,bg_lochkreuz_var,baugruppe,U-Net D512 (lambda 630),0.00119053,0.00124793,0.0818369,70.0526,0.381289,0,9.3516
+rand_ana_poly_complex_20#unk0@s1,val_form,bg_dorn_var,baugruppe,U-Net D512 (lambda 630),0.00152979,0.00523193,0.0641021,37.4061,0.19682,0,2.57429
+flat_val_blur_1#unk0@s2,val_form,bg_kreuzstern_var,baugruppe,U-Net D512 (lambda 630),0.00103285,0.00170325,0.0724386,64.0294,0.378069,0,10.877
+cjk_20,val_form,bg_zahnrad_var,baugruppe,U-Net D512 (lambda 630),0.0025468,0.00474223,0.0760755,69.407,0.341091,0,5.34006
+greek_upper_0,val_form,bg_zahnrad_var,baugruppe,U-Net D512 (lambda 630),0.000958281,0.00145952,0.0865825,66.5325,0.338597,0,4.9491
+rand_ana_poly_complex_20@s1,val_form,sq_spindel,superquadrik,U-Net D512 (lambda 630),0.000916073,0.00142478,0.0807455,37.9962,0.307889,0,4.27631
+rand_ana_poly_complex_10@s2,val_form,sq_dreikant,superquadrik,U-Net D512 (lambda 630),0.0012487,0.00167511,0.0894661,57.1769,0.388707,0,6.35336
+rand_gmm_20#unk0,val_form,sq_dreikant,superquadrik,U-Net D512 (lambda 630),0.00240151,0.00483283,0.063836,69.2267,0.461374,0,7.68167
+rand_gmm_complex_10@s2,val_form,sq_dreikant,superquadrik,U-Net D512 (lambda 630),0.0027261,0.00288416,0.0748694,89.0871,0.421174,0,8.28443
+rand_gmm_10#unk0@s1,val_form,sq_dreikant_lang,superquadrik,U-Net D512 (lambda 630),0.0015522,0.00538641,0.0650298,63.1685,0.305692,0,5.05947
+rand_gmm_complex_10@s2,val_form,sq_oktaederrund,superquadrik,U-Net D512 (lambda 630),0.00303905,0.00435604,0.0575817,90.3872,0.437737,0,7.73602
+flat_val_broad_2@s2,val_form,sq_oktaederrund,superquadrik,U-Net D512 (lambda 630),0.00361756,0.00635753,0.0589474,73.7805,0.477475,0,8.07826
+rand_gmm_complex_0@s1,val_form,sq_linse,superquadrik,U-Net D512 (lambda 630),0.00258319,0.00614103,0.0498323,75.7641,0.373814,0,6.0023
+rand_ana_poly_complex_0#unk0@s2,val_form,sq_flachstern,superquadrik,U-Net D512 (lambda 630),0.00127948,0.0037102,0.0860631,65.0293,0.318527,0,6.30333
+flat_val_ped_0,val_form,sq_flachstern,superquadrik,U-Net D512 (lambda 630),0.00279758,0.00775597,0.0652657,63.342,0.410797,0,7.16342
+rand_gmm_complex_30#unk0@s2,val_form,sq_flachstern_lang,superquadrik,U-Net D512 (lambda 630),0.00084543,0.00321853,0.0938485,66.0998,0.277671,0,4.37745
+flat_val_blur_2#unk0@s2,val_form,sq_nadelkasten,superquadrik,U-Net D512 (lambda 630),0.00257222,0.0030609,0.0723364,70.2434,0.540833,0,10.9295
+flat_val_blur_0,val_form,sq_nadelkasten,superquadrik,U-Net D512 (lambda 630),0.00286793,0.00306019,0.0749554,66.8696,0.504479,0,9.97294
+flat_val_broad_2#unk0@s1,val_form,sq_nadelkasten,superquadrik,U-Net D512 (lambda 630),0.00312124,0.0045412,0.0393697,92.7896,0.506359,0,9.27967
+rand_ana_poly_complex_0@s1,val_form,wort_se3,wort,U-Net D512 (lambda 630),0.000724404,0.00114889,0.0860316,66.6201,0.260413,0,4.27676
+flat_val_ped_1@s2,val_form,wort_gmm,wort,U-Net D512 (lambda 630),0.000681672,0.0011139,0.0808383,70.0841,0.349387,0,3.90317
+rand_gmm_20@s1,val_form,wort_gmm,wort,U-Net D512 (lambda 630),0.000781091,0.00272404,0.0721636,75.0558,0.267403,0,4.9543
+flat_val_broad_1#unk0@s1,val_form,wort_svgd,wort,U-Net D512 (lambda 630),0.000438823,0.00128344,0.0771078,73.8469,0.303938,0,4.31756
+flat_val_blur_1#unk0@s2,val_form,wort_flow,wort,U-Net D512 (lambda 630),0.000743643,0.00210368,0.0795184,78.269,0.332033,0,4.29609
+flat_val_broad_2,val_form,wort_kappa,wort,U-Net D512 (lambda 630),0.000504427,0.00105026,0.0908364,60.1749,0.305233,0,4.65998
+rand_ana_poly_complex_10@s1,val_form,wort_kappa,wort,U-Net D512 (lambda 630),0.000420621,0.000569979,0.0918669,62.4254,0.365587,0,4.0242
+flat_val_ped_1@s2,val_form,wort_kappa,wort,U-Net D512 (lambda 630),0.00031829,0.000610662,0.0880558,55.8728,0.454998,0,4.05407
+greek_upper_0@s1,val_form,wort_adam,wort,U-Net D512 (lambda 630),0.000350659,0.000812752,0.0890974,56.5638,0.287666,0,3.85703
+organic_0#unk0@s1,val_form,wort_adam,wort,U-Net D512 (lambda 630),0.000470942,0.00109996,0.0871235,68.7426,0.269971,0,3.68287
+flat_val_ped_1@s1,val_form,wort_adam,wort,U-Net D512 (lambda 630),0.000619288,0.00126548,0.0770223,75.2147,0.295463,0,4.34319
+rand_ana_poly_10#unk0,val_form,wort_coeff,wort,U-Net D512 (lambda 630),0.000304665,0.00067098,0.0865646,57.0586,0.401542,0,4.57735
+cjk_20,val_form,extern_armadillo,extern,U-Net D512 (lambda 630),0.00206132,0.00248442,0.0585746,67.4246,0.412429,0,8.43938
+rand_gmm_complex_0#unk0,val_form,extern_helm,extern,U-Net D512 (lambda 630),0.00404796,0.00675949,0.0614,74.181,0.487519,0,9.05928
+flat_val_broad_0@s2,val_beides,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00293731,0.00601408,0.0707427,67.9648,0.286165,0,2.7807
+flat_val_broad_2@s1,val_beides,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00175672,0.00328146,0.0803203,62.8311,0.328251,0,2.83533
+organic_20#unk0,val_beides,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00108033,0.00294084,0.0843233,63.6796,0.214171,0,2.80403
+flat_val_ped_1#unk0@s2,val_beides,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00156215,0.00335314,0.0842898,64.7996,0.295416,0,3.40193
+flat_val_ring_2#unk0@s1,val_beides,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00195076,0.00292515,0.0919178,78.2174,0.258061,0,2.80094
+flat_val_ring_0#unk0,val_beides,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00198081,0.00460548,0.0752614,69.0344,0.288597,0,2.89831
+flat_val_ring_1#unk0,val_beides,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.001856,0.0028915,0.0886136,69.4603,0.296585,0,2.90529
+rand_ana_poly_complex_20,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00094526,0.00169703,0.0934639,42.134,0.280701,0,2.25578
+rand_ana_poly_30,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00185724,0.00332556,0.086938,56.442,0.302859,0,2.14053
+flat_val_blur_2@s1,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00198898,0.00279901,0.0934432,47.9851,0.415627,0,4.21673
+flat_val_blur_2#unk0,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00184801,0.00358889,0.0801829,57.7339,0.339713,0,4.23693
+cjk_0@s2,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00185157,0.00413162,0.0702912,52.7723,0.351129,0,4.21803
+rand_gmm_complex_10#unk0,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00389239,0.0128201,0.0586733,57.5205,0.297804,0,3.71733
+rand_gmm_complex_30#unk0,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.0031512,0.00534124,0.0747211,70.6494,0.359639,0,3.69752
+flat_val_ring_1#unk0@s1,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00353221,0.00720568,0.0772512,87.4331,0.380902,0,3.50778
+rand_ana_poly_10#unk0,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00328374,0.00641929,0.0781339,74.3591,0.303732,0,3.38812
+greek_upper_0#unk0@s2,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00320384,0.00703708,0.07236,82.596,0.330365,0,3.3943
+flat_val_ring_1,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.0042274,0.0062982,0.0759963,86.6127,0.407146,0,2.6445
+flat_val_broad_1@s1,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00356052,0.00605655,0.0763944,89.4436,0.375571,0,3.50514
+flat_val_blur_1#unk0@s1,val_beides,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00424218,0.00741737,0.0662153,69.7711,0.352577,0,3.72803
+flat_val_blur_1#unk0,val_beides,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00299552,0.00366073,0.039302,73.2894,0.428667,0,3.69567
+flat_val_ring_1@s2,val_beides,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00410196,0.00630356,0.0653578,70.0852,0.437904,0,2.58694
+flat_val_ring_0@s2,val_beides,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00298306,0.00446213,0.0801441,70.2445,0.479462,0,4.21465
+flat_val_blur_2#unk0@s1,val_beides,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00316748,0.00440135,0.0809323,70.5662,0.439395,0,3.75547
+cjk_20@s1,val_beides,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00193761,0.00291334,0.071971,65.1857,0.44474,0,4.04071
+rand_gmm_complex_10#unk0,val_beides,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00432228,0.00769452,0.0582577,85.3765,0.393779,0,4.37021
+rand_gmm_complex_20@s1,val_beides,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00335167,0.00388002,0.0481602,82.5594,0.398075,0,4.3886
+korean_5#unk0@s2,val_beides,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00292986,0.0039952,0.0713755,65.8619,0.358326,0,3.59664
+flat_val_broad_2#unk0,val_beides,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00344794,0.00411087,0.0674502,79.5673,0.470083,0,4.24065
+rand_gmm_10#unk0@s1,val_beides,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00280422,0.00353482,0.0682631,81.6852,0.454235,0,4.18572
+rand_ana_poly_complex_10@s2,val_beides,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00287445,0.00367754,0.0718679,83.3397,0.413848,0,3.60561
+greek_upper_0#unk0,val_beides,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00365694,0.00442585,0.0608827,77.1652,0.442993,0,4.55888
+flat_val_blur_1,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00567787,0.00890716,0.0718918,83.1599,0.394099,0,3.42052
+flat_val_ring_0#unk0,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00560748,0.0102122,0.063625,88.9216,0.363032,0,3.50527
+rand_gmm_10#unk0@s2,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00454779,0.00964201,0.073129,80.7838,0.347701,0,3.28049
+flat_val_blur_1#unk0@s2,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00679387,0.0108467,0.0707719,86.5106,0.373002,0,3.43649
+cjk_0#unk0@s2,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.0041251,0.00683394,0.0736133,80.6673,0.431144,0,3.65437
+flat_val_ped_1@s1,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00561376,0.00858265,0.0781126,83.5454,0.355336,0,3.31651
+rand_ana_poly_complex_0#unk0@s1,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00347515,0.00596932,0.0843927,83.8952,0.344022,0,3.26791
+rand_gmm_20@s2,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00469622,0.00685889,0.0784531,76.4199,0.319637,0,2.98443
+flat_val_ring_1@s1,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.0065363,0.00843742,0.0862688,82.1648,0.407711,0,2.28596
+flat_val_blur_1,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00494109,0.00739522,0.0630733,101.94,0.39919,0,3.80349
+korean_5@s2,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00404273,0.00711085,0.0731327,74.6727,0.335833,0,3.33917
+flat_val_blur_0#unk0,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00546265,0.00825651,0.0805434,80.7803,0.3843,0,3.60805
+organic_10#unk0,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.0054653,0.00906054,0.0681906,83.0778,0.346524,0,3.82755
+cjk_20@s1,val_beides,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00464507,0.00632637,0.079348,76.3484,0.363881,0,3.7616
+flat_val_broad_2#unk0,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00503473,0.00658902,0.0529926,88.1848,0.332964,0,3.79329
+organic_30#unk0@s2,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00228207,0.00526344,0.0847699,74.4549,0.309326,0,2.97398
+flat_val_broad_0#unk0@s2,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00584334,0.0162725,0.0458159,87.4828,0.392296,0,4.21164
+rand_gmm_10#unk0@s1,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00354315,0.00672236,0.0686805,76.4122,0.357995,0,3.06533
+flat_val_blur_1,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00639727,0.0106934,0.0624307,101.747,0.407419,0,3.38901
+rand_gmm_complex_30,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00433916,0.00759008,0.0704549,86.9641,0.350064,0,3.65665
+rand_gmm_complex_20@s2,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.0053294,0.00809142,0.0624499,76.6753,0.402747,0,3.8975
+organic_0#unk0@s1,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00525794,0.0066481,0.0836215,79.1043,0.367098,0,3.21025
+flat_val_ped_1#unk0,val_beides,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00450157,0.00760484,0.0728009,80.0734,0.366307,0,3.71875
+flat_val_ring_2#unk0@s2,val_beides,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00152489,0.00221749,0.0850796,68.6743,0.308586,0,2.85195
+rand_gmm_complex_30,val_beides,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00131765,0.00261437,0.0700125,69.7584,0.396921,0,2.96437
+rand_gmm_10#unk0@s1,val_beides,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00181476,0.00440458,0.0819551,66.562,0.298763,0,2.95384
+organic_20#unk0,val_beides,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00103456,0.0018193,0.0745057,69.0099,0.300821,0,2.62065
+flat_val_broad_2@s1,val_beides,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00163455,0.00274983,0.0626462,72.4971,0.347364,0,3.41608
+rand_ana_poly_20#unk0@s2,val_beides,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00120799,0.00190906,0.0740656,69.3523,0.274825,0,2.46867
+flat_val_broad_2,val_beides,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00171492,0.00277875,0.0670267,75.2449,0.385775,0,3.23335
+flat_val_ring_0@s2,val_beides,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00163175,0.00246176,0.0877647,68.0241,0.27807,0,3.08055
+rand_ana_poly_complex_0,val_beides,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00189629,0.0038763,0.0739393,64.7899,0.357765,0,3.01559
+a_lc@s2,val_beides,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00103535,0.00187454,0.0834491,60.4715,0.396541,0,2.95063
+flat_val_blur_0@s2,val_beides,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00152188,0.00193779,0.0824278,68.2364,0.439048,0,3.3001
+rand_ana_poly_complex_10#unk0@s1,val_beides,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00202833,0.00298734,0.0777133,77.1268,0.358258,0,3.12443
+flat_val_broad_1#unk0@s2,val_beides,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.0020992,0.00454425,0.0454901,66.1205,0.325916,0,3.0084
+flat_val_blur_2#unk0,val_beides,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00158626,0.00272328,0.0896276,72.9193,0.286017,0,2.81287
+rand_ana_poly_complex_30@s1,val_beides,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00146373,0.0026317,0.084917,63.2392,0.29177,0,2.51111
+cjk_10@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00180598,0.00321584,0.0825576,71.9969,0.300851,0,2.92534
+greek_upper_0#unk0,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00194917,0.00428337,0.086235,87.564,0.294841,0,3.28963
+rand_gmm_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00197957,0.00381236,0.0727373,71.7886,0.336808,0,3.03124
+flat_val_ring_1@s1,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00166281,0.00268653,0.0911605,67.7809,0.340068,0,2.23116
+rand_gmm_10@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00242263,0.0048134,0.0722729,60.6944,0.398378,0,3.31853
+organic_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00184882,0.00349437,0.0802981,68.6334,0.313566,0,2.97508
+rand_gmm_10@s1,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00267922,0.00523645,0.0731084,64.4187,0.243377,0,2.73009
+flat_val_broad_2#unk0,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00254408,0.00509425,0.057059,78.1019,0.26386,0,3.06878
+flat_val_blur_1#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.0025972,0.00578859,0.0663118,75.0407,0.34459,0,2.86644
+rand_gmm_complex_10#unk0@s2,val_beides,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00158674,0.00284606,0.0826829,83.1936,0.299904,0,3.16347
+organic_10#unk0@s1,val_beides,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00115776,0.00160562,0.0792723,60.9364,0.314731,0,2.62723
+flat_val_blur_1#unk0@s1,val_beides,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00177001,0.00308402,0.066105,73.5404,0.277623,0,2.39322
+flat_val_ring_0#unk0,val_beides,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00113973,0.00189292,0.0787686,63.3797,0.289671,0,2.57258
+flat_val_ped_1@s1,val_beides,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.000901323,0.00154933,0.0840142,60.8285,0.31947,0,2.55597
+organic_30#unk0@s1,val_beides,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.000554116,0.000941874,0.0916428,48.5773,0.27214,0,2.44905
+digit_5#unk0@s1,val_beides,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.000979591,0.00133372,0.0827769,45.5753,0.249653,0,2.26671
+organic_10#unk0,val_beides,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.000739378,0.000935677,0.08364,49.61,0.249222,0,2.59056
+organic_0#unk0@s2,val_beides,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00112731,0.00293307,0.0713266,71.2373,0.27177,0,2.59805
+flat_val_blur_2@s1,val_beides,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.001072,0.00214233,0.0893962,58.0259,0.339154,0,3.10678
+rand_ana_poly_complex_20#unk0,val_beides,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.0008227,0.00192525,0.0836811,73.4058,0.203025,0,2.18972
+rand_ana_poly_complex_0@s1,val_beides,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.000683071,0.00107102,0.0859464,70.6797,0.240022,0,2.1287
+cjk_20#unk0@s2,val_beides,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00118998,0.0030334,0.0774387,78.8654,0.232317,0,2.60172
+rand_gmm_complex_30#unk0@s1,val_beides,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.000747328,0.00158076,0.0927543,77.4285,0.253567,0,2.8029
+rand_ana_poly_complex_0@s2,val_beides,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.000716638,0.00116084,0.0935758,70.4304,0.277365,0,2.27401
+organic_10@s1,val_beides,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00162559,0.0052065,0.0908179,59.517,0.299936,0,2.11886
+rand_gmm_20,val_beides,wort_ias,wort,U-Net D384 nooffset200 (lambda 100),0.00135009,0.00258166,0.0605811,64.1588,0.29708,0,2.71296
+flat_val_blur_2@s1,val_beides,wort_ias,wort,U-Net D384 nooffset200 (lambda 100),0.00216047,0.00307105,0.0913656,73.6801,0.530641,0,3.0708
+rand_ana_poly_20#unk0,val_beides,wort_ias,wort,U-Net D384 nooffset200 (lambda 100),0.00151558,0.00231874,0.072063,76.5156,0.33759,0,3.25562
+rand_gmm_10#unk0@s1,val_beides,wort_ias,wort,U-Net D384 nooffset200 (lambda 100),0.00167687,0.00232414,0.0631055,78.0707,0.462126,0,3.32008
+greek_upper_0,val_beides,wort_ias,wort,U-Net D384 nooffset200 (lambda 100),0.00168935,0.00258431,0.0810229,73.1927,0.334922,0,3.10773
+rand_ana_poly_complex_42,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.000920598,0.00248764,0.0930915,44.6312,0.24769,0,1.76715
+korean_10@s2,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00131708,0.00235485,0.0935032,54.561,0.23934,0,2.76766
+flat_ped_111#unk0@s1,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00147436,0.00299994,0.0897748,63.753,0.292649,0,2.89497
+rand_gmm_155#unk0@s2,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00198921,0.00511846,0.080893,65.1016,0.234138,0,2.6546
+rand_ana_poly_complex_28#unk0@s2,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00180478,0.00451499,0.0752567,57.6164,0.24405,0,2.30331
+flat_ped_80#unk0@s2,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00206126,0.00390238,0.0887414,62.2772,0.249732,0,3.2645
+korean_24#unk0@s1,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00186868,0.00473938,0.0805082,68.7615,0.251994,0,2.58401
+rand_gmm_complex_44@s2,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00240883,0.00460082,0.0442749,72.5893,0.244078,0,2.44105
+rand_gmm_170#unk0@s1,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00177329,0.00549482,0.0908815,50.9956,0.25441,0,2.77768
+rand_ana_poly_47@s1,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.000525385,0.00227866,0.0939011,45.5193,0.203709,0,1.61896
+rand_gmm_173#unk0@s2,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00178393,0.00416322,0.0875568,65.1027,0.298097,0,2.93763
+flat_blur_10#unk0@s1,val_flaeche,kapsel,primitiv,U-Net D384 nooffset200 (lambda 100),0.0024022,0.00523029,0.0734182,70.0317,0.311629,0,2.81226
+cjk_40,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00197821,0.00540659,0.0589862,51.3296,0.339096,0,3.36667
+greek_upper_7,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00169582,0.00471314,0.0756756,55.2669,0.312695,0,2.96072
+rand_ana_poly_119@s2,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00168904,0.00258086,0.0790078,43.3017,0.397004,0,2.80401
+rand_ana_poly_118#unk0@s1,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00204179,0.00455428,0.075119,52.8809,0.311604,0,3.27812
+flat_blur_17#unk0@s2,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.0051041,0.0135836,0.0408348,84.082,0.321546,0,3.36464
+rand_gmm_complex_43,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00395647,0.00547549,0.0500747,84.0895,0.387854,0,3.30675
+greek_lower_21@s1,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00183573,0.00361458,0.0893191,74.5908,0.301665,0,3.28791
+cjk_19#unk0@s2,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00375807,0.00672584,0.0712668,78.1176,0.317965,0,3.17565
+rand_ana_poly_153@s1,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.000585419,0.00192324,0.0972573,44.3887,0.20738,0,1.53643
+rand_ana_poly_137@s1,val_flaeche,halbkugel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00064746,0.00165552,0.103356,58.3453,0.223814,0,1.92431
+rand_ana_poly_complex_62#unk0@s1,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00180657,0.00297631,0.0594667,67.591,0.30991,0,3.16378
+korean_19@s1,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00197744,0.0028489,0.0740087,67.4354,0.312888,0,3.29857
+rand_ana_poly_164@s1,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.000697037,0.00156664,0.0891102,55.23,0.194293,0,1.58769
+rand_gmm_95,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00200648,0.0031912,0.0725505,60.7533,0.300409,0,3.19131
+rand_ana_poly_complex_42@s2,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00149821,0.00252201,0.0825824,64.657,0.310477,0,2.61967
+rand_gmm_complex_39#unk0,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00258945,0.00433124,0.0622416,67.7165,0.507297,0,4.31035
+rand_ana_poly_94#unk0,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00201985,0.0027083,0.0703185,75.064,0.441216,0,3.90776
+flat_ped_118@s1,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00370496,0.00516219,0.0541375,60.9318,0.444006,0,3.57109
+rand_gmm_140@s1,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00243992,0.00232787,0.0528849,88.407,0.362862,0,3.36299
+rand_ana_poly_79#unk0@s2,val_flaeche,ziffer_1,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00263095,0.00348696,0.0515221,86.8171,0.330487,0,3.22865
+rand_gmm_complex_25@s1,val_flaeche,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00396033,0.00471379,0.063522,86.3491,0.419064,0,3.73975
+rand_gmm_complex_21,val_flaeche,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00434827,0.00495555,0.0545982,82.2693,0.362584,0,3.03976
+cjk_61#unk0@s1,val_flaeche,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.0032574,0.00306379,0.0536275,93.787,0.418929,0,4.22049
+flat_broad_17@s2,val_flaeche,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00316335,0.00443056,0.0653582,73.7774,0.436587,0,4.55968
+rand_ana_poly_complex_63@s1,val_flaeche,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00392977,0.00942061,0.0738985,82.0138,0.250779,0,2.82363
+rand_ana_poly_54@s2,val_flaeche,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00238378,0.00456365,0.0795203,62.3748,0.287467,0,2.11436
+flat_blur_3#unk0@s1,val_flaeche,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00363276,0.00378021,0.074847,79.1491,0.499533,0,4.01947
+flat_blur_30@s2,val_flaeche,ziffer_5,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00318283,0.00278833,0.0685592,69.8744,0.461364,0,4.85134
+flat_ped_98@s1,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00426957,0.00650008,0.0920628,123.047,0.446915,0,3.93197
+korean_15#unk0@s2,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00364078,0.0051929,0.0938882,82.5601,0.331315,0,3.2647
+flat_blur_45#unk0@s1,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00413997,0.00603859,0.0825143,90.0556,0.337075,0,3.84851
+rand_gmm_124#unk0@s1,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00477913,0.00831556,0.0784581,87.7296,0.30609,0,3.17144
+organic_6#unk0,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00548169,0.00793028,0.0710075,70.9069,0.385915,0,3.1499
+rand_ana_poly_complex_6#unk0@s1,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00256672,0.00410469,0.0965719,90.3293,0.344016,0,3.36514
+rand_gmm_161#unk0@s2,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00316246,0.0049459,0.088505,82.644,0.344166,0,3.9538
+flat_ped_37@s1,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00463751,0.0068227,0.0923458,117.503,0.374879,0,4.37533
+rand_gmm_73@s2,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00531067,0.00834521,0.0736751,87.8821,0.312016,0,3.37191
+flat_ped_142@s2,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00594572,0.00952721,0.0843139,112.024,0.396862,0,2.79738
+flat_broad_49#unk0,val_flaeche,organismus_00,organismus,U-Net D384 nooffset200 (lambda 100),0.00425804,0.00622751,0.0834029,84.5639,0.329911,0,3.66433
+flat_ped_39@s1,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00531433,0.00841859,0.0505182,95.966,0.471326,0,3.54552
+flat_ped_54#unk0@s2,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00522726,0.00840974,0.0779503,94.3768,0.384464,0,3.7214
+z_lc@s1,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00145761,0.00263351,0.0949393,60.7667,0.173554,0,2.39006
+rand_ana_poly_19,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.000633483,0.00150044,0.102181,59.3709,0.204058,0,1.71132
+rand_gmm_110@s1,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.0040585,0.00672242,0.080092,83.8391,0.334966,0,3.81473
+flat_ring_56,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00557053,0.00681451,0.0906328,80.2246,0.399435,0,2.26913
+rand_gmm_85@s1,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00458229,0.00796775,0.0698036,89.3055,0.381939,0,3.49053
+organic_32#unk0@s1,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00531148,0.010642,0.05705,79.0089,0.43875,0,3.94617
+rand_gmm_complex_25#unk0,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00362979,0.00620279,0.0755328,80.6753,0.379021,0,3.49776
+flat_blur_37#unk0@s2,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00408889,0.00619297,0.0798778,82.225,0.354719,0,3.11273
+flat_ped_94#unk0@s1,val_flaeche,organismus_38,organismus,U-Net D384 nooffset200 (lambda 100),0.00486761,0.00718453,0.0778282,82.675,0.338151,0,3.58338
+rand_ana_poly_146#unk0@s2,val_flaeche,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00128305,0.00184918,0.066851,73.9622,0.34048,0,2.70072
+rand_gmm_130@s1,val_flaeche,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00183861,0.00410543,0.0639488,76.5307,0.266252,0,2.38483
+flat_ped_49#unk0,val_flaeche,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00109688,0.00157955,0.0766344,59.2825,0.366997,0,3.06089
+rand_gmm_63#unk0,val_flaeche,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00090149,0.00187592,0.0672646,66.6646,0.28492,0,2.55979
+flat_ped_51#unk0,val_flaeche,bg_hantel_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00139567,0.00204013,0.0737298,71.3623,0.265161,0,2.63319
+rand_gmm_complex_31@s2,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.0016217,0.00217645,0.0819795,77.4208,0.396299,0,2.97208
+rand_ana_poly_complex_11@s1,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.000791239,0.00175687,0.0852741,53.3582,0.392129,0,2.43001
+flat_broad_66#unk0,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00206338,0.00349948,0.0564908,67.1613,0.481044,0,3.20405
+cjk_60@s1,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00136547,0.0024706,0.0822426,74.2405,0.441535,0,3.22498
+rand_gmm_105#unk0@s2,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00145454,0.00283915,0.0887278,70.0458,0.444933,0,3.4665
+flat_ring_58@s1,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00166305,0.00251903,0.0922587,68.5042,0.418553,0,3.13457
+flat_blur_33#unk0,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00127081,0.00175157,0.0934114,67.641,0.340197,0,3.41273
+cjk_14#unk0@s1,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00141337,0.00206583,0.0875282,85.663,0.312286,0,3.34869
+rand_gmm_50,val_flaeche,bg_bogen_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00212008,0.00350251,0.07071,79.0565,0.196064,0,2.58472
+rand_ana_poly_107#unk0@s1,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00144495,0.00294792,0.0830838,79.5809,0.278737,0,2.48373
+rand_gmm_123#unk0@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00264751,0.00489896,0.0582717,74.4464,0.333663,0,2.92962
+flat_blur_33@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00184044,0.00257275,0.0916233,79.7645,0.381642,0,2.47305
+greek_lower_8#unk0@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00201821,0.00668248,0.0682807,70.231,0.220171,0,2.21257
+organic_48#unk0@s1,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00159676,0.00286181,0.0832651,65.5604,0.265607,0,2.95111
+flat_ped_110@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00197047,0.00325964,0.0977984,86.2354,0.296027,0,3.33499
+flat_broad_4@s2,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00217147,0.00371721,0.0760107,72.8833,0.337071,0,2.98435
+flat_ped_30,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00163339,0.00222711,0.0889672,74.2265,0.267311,0,3.08795
+rand_ana_poly_105,val_flaeche,sq_kreuzquer_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00046788,0.000616208,0.0991858,52.7152,0.214916,0,1.93025
+rand_ana_poly_44#unk0,val_flaeche,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00147202,0.00207601,0.0612548,79.261,0.206645,0,2.42748
+rand_ana_poly_59#unk0@s1,val_flaeche,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00103158,0.00183245,0.0842511,61.7016,0.269038,0,2.40664
+p_lc@s1,val_flaeche,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.000615677,0.0012054,0.0927961,51.6959,0.250727,0,2.12241
+rand_gmm_149#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.000959052,0.00206014,0.0867486,48.7228,0.238962,0,2.46019
+rand_gmm_complex_16#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00106945,0.00195938,0.074265,51.444,0.296632,0,2.40572
+flat_ped_116#unk0@s2,val_flaeche,sq_fass_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.000662024,0.00102263,0.0922054,39.6888,0.269193,0,2.46413
+flat_ring_5#unk0@s1,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.000924437,0.00186186,0.0785274,73.6312,0.354267,0,2.53347
+flat_ped_32@s2,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00099529,0.00133919,0.0893946,75.1388,0.302479,0,2.84232
+rand_gmm_44#unk0,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00117069,0.00349079,0.0701027,69.8636,0.321856,0,3.02169
+rand_gmm_13#unk0@s2,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00105723,0.00231694,0.0906326,69.3328,0.458311,0,2.6268
+rand_ana_poly_146#unk0@s1,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.000842746,0.00143064,0.0842417,63.5614,0.327586,0,2.6777
+flat_ped_58@s2,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00127997,0.00177017,0.065295,76.3684,0.415072,0,2.30108
+flat_ped_138#unk0,val_flaeche,wort_vita,wort,U-Net D384 nooffset200 (lambda 100),0.00107502,0.003341,0.0709167,59.0209,0.281529,0,2.89677
+flat_ped_33@s1,val_flaeche,wort_ias,wort,U-Net D384 nooffset200 (lambda 100),0.00153791,0.00289571,0.0639438,63.8032,0.483798,0,2.58403
+korean_1#unk0,val_flaeche,wort_ias,wort,U-Net D384 nooffset200 (lambda 100),0.00167485,0.00287397,0.0686281,83.8784,0.386349,0,3.50701
+rand_ana_poly_complex_0#unk0@s2,val_form,ebene_gekippt,ebene,U-Net D384 nooffset200 (lambda 100),0.00164603,0.00303572,0.0852436,55.6865,0.364067,0,3.81615
+rand_ana_poly_20,val_form,ebene_fib_2,ebene,U-Net D384 nooffset200 (lambda 100),0.000574448,0.000951564,0.0960946,44.3436,0.204287,0,1.58828
+organic_10#unk0@s1,val_form,ebene_fib_3,ebene,U-Net D384 nooffset200 (lambda 100),0.00175449,0.00320958,0.0828547,53.2676,0.283107,0,2.88059
+rand_gmm_complex_20,val_form,wuerfel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00837346,0.00829968,0.0523198,69.3641,0.619997,0,6.91744
+organic_0#unk0@s2,val_form,kegel,primitiv,U-Net D384 nooffset200 (lambda 100),0.00275858,0.00462818,0.0640583,66.3079,0.395237,0,4.26955
+rand_ana_poly_complex_10#unk0@s2,val_form,oktaeder,primitiv,U-Net D384 nooffset200 (lambda 100),0.00214667,0.00429153,0.0873521,70.8173,0.33314,0,3.23649
+cjk_0,val_form,kuboktaeder,primitiv,U-Net D384 nooffset200 (lambda 100),0.00669647,0.00972416,0.0467273,77.6874,0.517121,0,5.41304
+rand_ana_poly_30@s1,val_form,quader,primitiv,U-Net D384 nooffset200 (lambda 100),0.00108342,0.00164205,0.0861027,47.0874,0.366769,0,2.55194
+flat_val_broad_1@s2,val_form,spat,primitiv,U-Net D384 nooffset200 (lambda 100),0.00245501,0.00387337,0.0869491,70.7036,0.408568,0,3.73292
+organic_30@s1,val_form,spat,primitiv,U-Net D384 nooffset200 (lambda 100),0.000714684,0.000979811,0.101174,52.863,0.184384,0,1.83759
+rand_gmm_complex_20@s2,val_form,spat,primitiv,U-Net D384 nooffset200 (lambda 100),0.00229114,0.0046716,0.0677973,70.2725,0.371896,0,3.51252
+flat_val_broad_1#unk0@s1,val_form,spat,primitiv,U-Net D384 nooffset200 (lambda 100),0.00267774,0.00393945,0.0859045,73.0317,0.28892,0,3.39589
+organic_10@s2,val_form,dreiecksplatte,primitiv,U-Net D384 nooffset200 (lambda 100),0.00101229,0.00195734,0.0933415,55.2298,0.29707,0,1.69687
+flat_val_ped_0@s2,val_form,keil,primitiv,U-Net D384 nooffset200 (lambda 100),0.00257252,0.0031188,0.0774388,60.9834,0.442512,0,4.06725
+digit_5@s1,val_form,antiprisma,primitiv,U-Net D384 nooffset200 (lambda 100),0.00190517,0.00330439,0.0800692,62.1384,0.316496,0,3.37573
+flat_val_ped_0#unk0,val_form,trapezoeder,primitiv,U-Net D384 nooffset200 (lambda 100),0.00361554,0.00896295,0.0631901,82.5252,0.284852,0,2.95844
+flat_val_blur_1#unk0@s2,val_form,trapezoeder,primitiv,U-Net D384 nooffset200 (lambda 100),0.0043629,0.0102525,0.0556963,89.0922,0.300452,0,2.73225
+rand_ana_poly_complex_20#unk0@s1,val_form,hohlzylinder,primitiv,U-Net D384 nooffset200 (lambda 100),0.00346365,0.00615652,0.075894,69.6941,0.490638,0,4.7485
+flat_val_ped_0#unk0,val_form,ellipsoid,primitiv,U-Net D384 nooffset200 (lambda 100),0.00214184,0.00346247,0.0865216,94.3809,0.248284,0,2.80802
+flat_val_ring_1,val_form,hyperboloid,primitiv,U-Net D384 nooffset200 (lambda 100),0.00309794,0.00460734,0.0891512,69.5561,0.56556,0,2.84555
+organic_10#unk0@s2,val_form,tropfen,primitiv,U-Net D384 nooffset200 (lambda 100),0.0044126,0.00815722,0.0760114,81.6293,0.339444,0,3.54032
+organic_0#unk0,val_form,buchstabe_a,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00292495,0.00323672,0.0606028,71.8477,0.417336,0,3.69548
+rand_gmm_complex_0@s1,val_form,buchstabe_b,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00420226,0.00675183,0.0463589,88.617,0.494271,0,4.35906
+flat_val_broad_2#unk0,val_form,buchstabe_d,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00574082,0.013436,0.0526743,103.625,0.459379,0,4.39842
+rand_ana_poly_complex_30#unk0@s1,val_form,buchstabe_e,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00400355,0.00578539,0.050868,73.9133,0.546397,0,4.64461
+a_lc#unk0@s2,val_form,buchstabe_g,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00381207,0.00451779,0.0496332,66.8446,0.38018,0,3.99738
+flat_val_ped_0#unk0@s1,val_form,buchstabe_g,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00376221,0.00453193,0.0496743,86.4284,0.51961,0,4.68875
+cjk_0#unk0,val_form,buchstabe_g,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00382218,0.00392778,0.0699424,89.1729,0.502899,0,4.74858
+rand_gmm_10#unk0,val_form,buchstabe_h,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00408708,0.00577794,0.0471064,81.6671,0.509474,0,4.48126
+organic_30@s1,val_form,buchstabe_i,buchstabe,U-Net D384 nooffset200 (lambda 100),0.000693213,0.00183167,0.093144,41.4383,0.175263,0,1.56986
+flat_val_ring_2@s1,val_form,buchstabe_m,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00481286,0.00449937,0.0696766,77.4773,0.518514,0,3.26112
+rand_gmm_20@s1,val_form,buchstabe_n,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00423915,0.00484312,0.0502975,74.4535,0.510698,0,4.77475
+flat_val_blur_1#unk0,val_form,buchstabe_p,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00430503,0.00536353,0.0515456,75.6791,0.438929,0,4.88185
+rand_gmm_10#unk0@s2,val_form,buchstabe_s,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00293157,0.00306818,0.0775855,82.9496,0.413102,0,4.19945
+rand_ana_poly_complex_20#unk0@s2,val_form,buchstabe_t,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00181709,0.0044741,0.0757325,48.996,0.260762,0,2.87234
+cjk_10,val_form,buchstabe_v,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00291269,0.00471591,0.0708711,73.0012,0.385285,0,3.85058
+flat_val_blur_2#unk0@s2,val_form,buchstabe_x,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00280606,0.00283017,0.0610731,65.9363,0.647579,0,5.77489
+flat_val_blur_0#unk0,val_form,buchstabe_x,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00502496,0.00527713,0.0535223,83.0542,0.555727,0,4.59881
+cjk_0@s1,val_form,buchstabe_y,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00225558,0.00263145,0.065169,71.915,0.414626,0,3.91186
+rand_gmm_complex_0,val_form,buchstabe_y,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00231301,0.00331252,0.0673973,78.2444,0.381282,0,4.25503
+organic_30#unk0,val_form,buchstabe_y,buchstabe,U-Net D384 nooffset200 (lambda 100),0.00244567,0.00277733,0.0668897,64.2969,0.307918,0,3.30964
+cjk_20@s1,val_form,organismus_02,organismus,U-Net D384 nooffset200 (lambda 100),0.00413687,0.00704646,0.0773571,79.7377,0.303098,0,3.52907
+flat_val_broad_1#unk0,val_form,organismus_05,organismus,U-Net D384 nooffset200 (lambda 100),0.00530688,0.00978436,0.0523391,77.3266,0.361237,0,3.87218
+greek_upper_0#unk0@s2,val_form,organismus_05,organismus,U-Net D384 nooffset200 (lambda 100),0.00454068,0.00722592,0.0732735,82.566,0.349526,0,3.64591
+greek_upper_0#unk0,val_form,organismus_09,organismus,U-Net D384 nooffset200 (lambda 100),0.00596068,0.0123339,0.063656,68.2565,0.324138,0,3.26315
+organic_20,val_form,organismus_09,organismus,U-Net D384 nooffset200 (lambda 100),0.00137114,0.00276143,0.091341,55.5059,0.304567,0,2.23367
+korean_5,val_form,organismus_12,organismus,U-Net D384 nooffset200 (lambda 100),0.00453269,0.00951897,0.0652301,69.0889,0.347224,0,3.36735
+organic_0#unk0@s1,val_form,organismus_12,organismus,U-Net D384 nooffset200 (lambda 100),0.00468824,0.006535,0.07593,83.3574,0.387763,0,3.87679
+flat_val_ped_2@s2,val_form,organismus_18,organismus,U-Net D384 nooffset200 (lambda 100),0.00809067,0.0136813,0.0647062,90.7368,0.347865,0,2.61802
+korean_5,val_form,organismus_18,organismus,U-Net D384 nooffset200 (lambda 100),0.00365672,0.0075107,0.0720344,75.6139,0.36134,0,3.67801
+rand_ana_poly_complex_0#unk0,val_form,organismus_19,organismus,U-Net D384 nooffset200 (lambda 100),0.00429502,0.00820573,0.0796303,86.4357,0.326924,0,3.29841
+rand_gmm_10@s2,val_form,organismus_19,organismus,U-Net D384 nooffset200 (lambda 100),0.00609447,0.011284,0.06916,81.5396,0.451357,0,3.55799
+rand_gmm_complex_20@s2,val_form,organismus_20,organismus,U-Net D384 nooffset200 (lambda 100),0.00648022,0.0117737,0.0502892,95.2705,0.40406,0,3.58615
+a_lc,val_form,organismus_22,organismus,U-Net D384 nooffset200 (lambda 100),0.0012669,0.00269922,0.0962865,67.7785,0.20299,0,2.48343
+flat_val_blur_0@s2,val_form,organismus_23,organismus,U-Net D384 nooffset200 (lambda 100),0.00397262,0.00623293,0.0900108,96.8165,0.433192,0,3.61928
+rand_gmm_complex_0,val_form,organismus_25,organismus,U-Net D384 nooffset200 (lambda 100),0.00739417,0.0114645,0.0582109,67.3319,0.409659,0,3.17002
+flat_val_ped_2@s2,val_form,organismus_26,organismus,U-Net D384 nooffset200 (lambda 100),0.00643656,0.00789499,0.0477179,95.8503,0.421302,0,3.01506
+rand_gmm_20#unk0@s2,val_form,organismus_28,organismus,U-Net D384 nooffset200 (lambda 100),0.00460939,0.00830913,0.0751564,74.0792,0.340833,0,3.29799
+flat_val_broad_2,val_form,organismus_29,organismus,U-Net D384 nooffset200 (lambda 100),0.00604769,0.0113484,0.0744026,111.448,0.420837,0,3.83055
+rand_ana_poly_30#unk0@s1,val_form,organismus_37,organismus,U-Net D384 nooffset200 (lambda 100),0.00292867,0.00591095,0.0791522,74.3502,0.34475,0,3.14052
+rand_ana_poly_complex_30@s1,val_form,bg_lochkreuz,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00310003,0.00287801,0.0796997,65.8546,0.395625,0,2.84155
+flat_val_ring_2#unk0,val_form,bg_facette,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00391375,0.00522736,0.0884391,76.7725,0.432651,0,3.78108
+flat_val_broad_1,val_form,bg_facette,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00581408,0.00860612,0.0670403,94.6695,0.475359,0,3.78642
+flat_val_ped_2#unk0,val_form,bg_becher,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00709267,0.0070936,0.0459247,71.0679,0.620209,0,6.29633
+cjk_0,val_form,bg_kreuzstern,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00155009,0.00280766,0.0650879,68.3908,0.360986,0,2.98609
+flat_val_blur_2#unk0@s1,val_form,bg_kerbe,baugruppe,U-Net D384 nooffset200 (lambda 100),0.0066242,0.00780737,0.0689009,88.6207,0.445586,0,4.82377
+rand_gmm_10#unk0@s2,val_form,bg_kapselring,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00329647,0.00593376,0.0679885,74.6191,0.427171,0,3.57995
+greek_upper_0@s1,val_form,bg_lochkreuz_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00199111,0.00413486,0.079776,73.3872,0.342662,0,3.76768
+rand_ana_poly_complex_20#unk0@s1,val_form,bg_dorn_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00156127,0.00353426,0.0628764,35.1616,0.174853,0,2.14793
+flat_val_blur_1#unk0@s2,val_form,bg_kreuzstern_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00149879,0.00165466,0.0803403,65.0699,0.287863,0,2.54333
+cjk_20,val_form,bg_zahnrad_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00211729,0.00315098,0.0797082,73.9156,0.308995,0,2.98839
+greek_upper_0,val_form,bg_zahnrad_var,baugruppe,U-Net D384 nooffset200 (lambda 100),0.00107968,0.00159269,0.0910766,67.7627,0.280161,0,2.48469
+rand_ana_poly_complex_20@s1,val_form,sq_spindel,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00180306,0.00329886,0.0927201,62.5659,0.291662,0,2.32596
+rand_ana_poly_complex_10@s2,val_form,sq_dreikant,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00228604,0.00331054,0.098218,75.3877,0.412923,0,2.48878
+rand_gmm_20#unk0,val_form,sq_dreikant,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00395195,0.00706246,0.0695081,70.6828,0.385672,0,3.62654
+rand_gmm_complex_10@s2,val_form,sq_dreikant,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00490959,0.00636076,0.0688348,91.3658,0.394232,0,3.35022
+rand_gmm_10#unk0@s1,val_form,sq_dreikant_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00260534,0.00675597,0.0753787,71.9701,0.294422,0,2.5515
+rand_gmm_complex_10@s2,val_form,sq_oktaederrund,superquadrik,U-Net D384 nooffset200 (lambda 100),0.0071578,0.0101655,0.0507663,79.6121,0.457829,0,3.88606
+flat_val_broad_2@s2,val_form,sq_oktaederrund,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00556173,0.00657038,0.0646209,79.9772,0.439318,0,4.42968
+rand_gmm_complex_0@s1,val_form,sq_linse,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00450502,0.00958775,0.0591817,78.8166,0.388654,0,3.68352
+rand_ana_poly_complex_0#unk0@s2,val_form,sq_flachstern,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00166521,0.0020404,0.0866455,45.9561,0.329901,0,3.10125
+flat_val_ped_0,val_form,sq_flachstern,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00323643,0.00474228,0.0661617,50.7531,0.309203,0,3.588
+rand_gmm_complex_30#unk0@s2,val_form,sq_flachstern_lang,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00104221,0.00170521,0.089529,52.5091,0.278442,0,2.96381
+flat_val_blur_2#unk0@s2,val_form,sq_nadelkasten,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00466946,0.00592811,0.070797,77.2419,0.428966,0,4.86157
+flat_val_blur_0,val_form,sq_nadelkasten,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00426689,0.00383574,0.0747913,59.3236,0.500913,0,4.8736
+flat_val_broad_2#unk0@s1,val_form,sq_nadelkasten,superquadrik,U-Net D384 nooffset200 (lambda 100),0.00540634,0.0059115,0.0493734,83.5762,0.457682,0,5.21743
+rand_ana_poly_complex_0@s1,val_form,wort_se3,wort,U-Net D384 nooffset200 (lambda 100),0.00107985,0.00196275,0.088996,74.2227,0.24157,0,2.15866
+flat_val_ped_1@s2,val_form,wort_gmm,wort,U-Net D384 nooffset200 (lambda 100),0.000812138,0.00142587,0.0861113,70.0837,0.309557,0,2.62459
+rand_gmm_20@s1,val_form,wort_gmm,wort,U-Net D384 nooffset200 (lambda 100),0.000717651,0.0019635,0.0696894,73.735,0.299934,0,2.6962
+flat_val_broad_1#unk0@s1,val_form,wort_svgd,wort,U-Net D384 nooffset200 (lambda 100),0.000690313,0.00133261,0.0792004,63.725,0.247977,0,2.57607
+flat_val_blur_1#unk0@s2,val_form,wort_flow,wort,U-Net D384 nooffset200 (lambda 100),0.00126076,0.00344377,0.077811,67.6699,0.329684,0,2.92883
+flat_val_broad_2,val_form,wort_kappa,wort,U-Net D384 nooffset200 (lambda 100),0.000700451,0.00145432,0.0919683,63.5504,0.29098,0,2.76955
+rand_ana_poly_complex_10@s1,val_form,wort_kappa,wort,U-Net D384 nooffset200 (lambda 100),0.00081184,0.00200323,0.0898972,61.867,0.33633,0,2.30557
+flat_val_ped_1@s2,val_form,wort_kappa,wort,U-Net D384 nooffset200 (lambda 100),0.000505005,0.00120106,0.0890117,62.307,0.41113,0,3.05402
+greek_upper_0@s1,val_form,wort_adam,wort,U-Net D384 nooffset200 (lambda 100),0.000939842,0.00265365,0.0878018,57.1883,0.246223,0,2.7465
+organic_0#unk0@s1,val_form,wort_adam,wort,U-Net D384 nooffset200 (lambda 100),0.000700606,0.00182493,0.0869727,56.7651,0.315285,0,2.43731
+flat_val_ped_1@s1,val_form,wort_adam,wort,U-Net D384 nooffset200 (lambda 100),0.000995893,0.00226563,0.0816659,61.1821,0.296922,0,2.36755
+rand_ana_poly_10#unk0,val_form,wort_coeff,wort,U-Net D384 nooffset200 (lambda 100),0.000511387,0.000972873,0.083966,72.6295,0.357842,0,2.93587
+cjk_20,val_form,extern_armadillo,extern,U-Net D384 nooffset200 (lambda 100),0.00319758,0.00376417,0.0687774,72.4006,0.339916,0,3.77939
+rand_gmm_complex_0#unk0,val_form,extern_helm,extern,U-Net D384 nooffset200 (lambda 100),0.00446789,0.00482866,0.0701207,82.2395,0.480739,0,4.26862
