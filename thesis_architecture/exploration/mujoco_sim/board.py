@@ -89,23 +89,95 @@ ROBOT_DB = os.path.join(_ROOT, '3D_ergodic_learning', 'ergodic_dataset_robot.db'
 SOURCE_DB = os.path.join(_ARCH, 'ergodic_dataset_generator', 'ergodic_dataset_775.db')
 
 
-# -- Coordinate transforms ---------------------------------------------------
-def uv_to_world(uv, standoff=0.0):
+# -- Drawing surfaces ---------------------------------------------------------
+class Surface:
+    """
+    A flat square drawing surface: the pose of the pixel-site body plus the
+    direction the tool has to point in.
+
+    In the body frame the pixel grid lies in the local Y-Z plane, local +X is
+    the direction **into** the surface (= the tool axis), board coordinate
+    ``u`` runs along local -Y and ``v`` along local +Z.  A wall and a table are
+    therefore the same thing with a different body rotation.
+    """
+
+    def __init__(self, name, body_pos, body_rot, size):
+        self.name = name
+        self.body_pos = np.asarray(body_pos, dtype=np.float64)
+        self.rot = np.asarray(body_rot, dtype=np.float64).reshape(3, 3)
+        self.size = float(size)
+
+    @property
+    def tool_axis(self):
+        """World direction the tool points in when facing the surface."""
+        return self.rot[:, 0].copy()
+
+    def uv_to_world(self, uv, standoff=0.0):
+        """Board coordinates (..., 2) in [0,1]^2 -> world positions (..., 3)
+        ``standoff`` metres in front of the painted face."""
+        uv = np.asarray(uv, dtype=np.float64)
+        local = np.empty(uv.shape[:-1] + (3,), dtype=np.float64)
+        local[..., 0] = SITE_OFFSET_X + SITE_HALF_THICK - standoff
+        local[..., 1] = self.size * (0.5 - uv[..., 0])
+        local[..., 2] = self.size * (uv[..., 1] - 0.5)
+        return self.body_pos + local @ self.rot.T
+
+    def world_to_uv(self, pos):
+        """World positions (..., 3) -> board coordinates (..., 2)."""
+        local = (np.asarray(pos, dtype=np.float64) - self.body_pos) @ self.rot
+        u = 0.5 - local[..., 1] / self.size
+        v = 0.5 + local[..., 2] / self.size
+        return np.stack([u, v], axis=-1)
+
+    def key(self):
+        """Hashable description, for cache keys."""
+        return (self.name, tuple(np.round(self.body_pos, 6)),
+                tuple(np.round(self.rot.ravel(), 6)), self.size)
+
+
+#: Upright board in front of the robot, tool pointing along +X.
+WALL = Surface('wall', BOARD_ORIGIN, np.eye(3), BOARD_SIZE)
+
+#: Horizontal surface (shown as a solar panel on posts), tool pointing straight
+#: down (-Z).  Internally still called "table".  On screen ``u``
+#: runs to the right and ``v`` away from the robot, i.e. the 2D GUI as seen
+#: from above with the robot at the bottom.  The body sits TABLE_TOP + 4 mm
+#: above the floor so that the pixel sites rest on the table top.
+TABLE_CENTER_XY = (0.50, 0.0)
+TABLE_TOP = 0.35
+TABLE_SIZE = BOARD_SIZE
+TABLE = Surface(
+    'table',
+    [TABLE_CENTER_XY[0], TABLE_CENTER_XY[1], TABLE_TOP + SITE_OFFSET_X + SITE_HALF_THICK],
+    [[0.0, 0.0, 1.0],
+     [0.0, 1.0, 0.0],
+     [-1.0, 0.0, 0.0]],
+    TABLE_SIZE)
+
+SURFACES = {'wall': WALL, 'table': TABLE}
+
+#: Shared-memory layout of the trajectory the 2D control centre projects onto
+#: the surface, all points in board coordinates:
+#:   [n_past, n_current, n_preview,
+#:    past    (x,y) * PATH_MAX_PAST,     # driven in earlier rounds  (green)
+#:    current (x,y) * PATH_MAX_CURRENT,  # driven so far this round  (red)
+#:    preview (x,y) * PATH_MAX_PREVIEW]  # rest of this round's plan (red, faint)
+PATH_HEADER = 3
+PATH_MAX_PAST = 300
+PATH_MAX_CURRENT = 128
+PATH_MAX_PREVIEW = 128
+PATH_ARRAY_SIZE = PATH_HEADER + 2 * (PATH_MAX_PAST + PATH_MAX_CURRENT + PATH_MAX_PREVIEW)
+
+
+# -- Coordinate transforms (default: the wall) -------------------------------
+def uv_to_world(uv, standoff=0.0, surface=WALL):
     """Board coordinates (..., 2) in [0,1]^2 -> world positions (..., 3)."""
-    uv = np.asarray(uv, dtype=np.float64)
-    out = np.empty(uv.shape[:-1] + (3,), dtype=np.float64)
-    out[..., 0] = BOARD_FACE_X - standoff
-    out[..., 1] = BOARD_ORIGIN[1] + BOARD_SIZE * (0.5 - uv[..., 0])
-    out[..., 2] = BOARD_ORIGIN[2] + BOARD_SIZE * (uv[..., 1] - 0.5)
-    return out
+    return surface.uv_to_world(uv, standoff)
 
 
-def world_to_uv(pos):
+def world_to_uv(pos, surface=WALL):
     """World positions (..., 3) -> board coordinates (..., 2)."""
-    pos = np.asarray(pos, dtype=np.float64)
-    u = 0.5 - (pos[..., 1] - BOARD_ORIGIN[1]) / BOARD_SIZE
-    v = 0.5 + (pos[..., 2] - BOARD_ORIGIN[2]) / BOARD_SIZE
-    return np.stack([u, v], axis=-1)
+    return surface.world_to_uv(pos)
 
 
 def _legacy_pos_to_uv(pos):

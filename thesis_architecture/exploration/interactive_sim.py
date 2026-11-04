@@ -19,7 +19,7 @@ Klasse und denselben Zieldichte-/Schulden-Code wie die Batch-Missionen
 Missionen in einzelne Runden, die sich anhalten und animiert abfahren lassen.
 
     python interactive_sim.py
-    python interactive_sim.py --ckpt ../../transfer/netz2d_startpunkt.pt
+    python interactive_sim.py --ckpt ../../transfer/netz2d_startpunkt_lm_inpaint.pt
 """
 
 import argparse
@@ -54,6 +54,7 @@ from common.data import load_truth               # noqa: E402
 from common.belief import GPBelief                # noqa: E402
 from common.observation import measure, thin       # noqa: E402
 from common.acquisition import kappa_schedule       # noqa: E402
+from common import net_zoo                          # noqa: E402
 from common.metrics import (coverage_vs_truth, information_gain,  # noqa: E402
                             path_length, trim_to_length)
 
@@ -63,7 +64,8 @@ import svgd_engine as svgde                         # noqa: E402
 from obstacles import CircleObstacle, CompositeObstacle, polish_out_of_obstacle, bspline_basis_matrix # noqa: E402
 
 
-DEFAULT_CKPT = os.path.join(_root, 'transfer', 'netz2d_startpunkt.pt')
+#: Start-conditioned network trained with start inpainting (`start_inpaint`).
+DEFAULT_CKPT = os.path.join(_root, 'transfer', 'netz2d_startpunkt_lm_inpaint.pt')
 
 # Wieviele Runden Solver C/D in dieser interaktiven Ansicht fahren. Die
 # Batch-Skripte (`apply_cfm_belief.py`) nutzen 3 bzw. 20 -- hier kleiner
@@ -148,9 +150,10 @@ SOLVER_DESC = {
 }
 
 #: Solver E: number of rounds and the initial per-round kappa values (editable
-#: in the "Solver E" window). Decreasing = explore first, exploit later.
+#: in the "Solver E" window): falling geometrically from 1 to 0.005, i.e.
+#: explore first, exploit later.
 E_ROUNDS = 5
-E_DEFAULT_KAPPAS = [3.0, 2.0, 1.0, 0.5, 0.2]
+E_DEFAULT_KAPPAS = [round(float(k), 4) for k in np.geomspace(1.0, 0.005, E_ROUNDS)]
 
 #: In eraser mode the "Agent Radius" slider value is split into a smaller
 #: radius for erasing and a larger one for exploring (sensing/revealing).
@@ -356,20 +359,25 @@ class Mission:
         return self.last_action
 
     def _project_bspline(self, curve, start=None):
-        """Least-Squares-Projektion auf `nxi_ui` Kontrollpunkte.
+        """Least-squares projection onto `nxi_ui` control points.
 
-        Ein Fit ueber die ganze Bahn beruehrt den Startpunkt nicht exakt --
-        `curve_proj[0] != curve[0]` im Allgemeinen. Fuer Runde > 0 der
-        Replanning-Varianten (B/C/D) muss die Bahn aber am zuletzt gefahrenen
-        Punkt anschliessen, deshalb wird `start`, falls gesetzt, danach hart
-        gesetzt (derselbe harte Snap wie in `SvgdRefiner.refine`).
+        With `start` (replanning rounds of B/C/D/E) the first control point is
+        fixed to it, so the curve begins exactly where the last round ended
+        and is fitted smoothly from there (no jump at the first sample).
         """
         if self.nxi_ui != 25:
             from obstacles import bspline_basis_matrix
             T = curve.shape[0]
             B = torch.from_numpy(bspline_basis_matrix(self.nxi_ui, T, 5)).float().to(curve.device)
-            result = torch.linalg.lstsq(B, curve)
-            P = result.solution
+            if start is None:
+                P = torch.linalg.lstsq(B, curve).solution
+            else:
+                # Equality-constrained fit: control point 0 IS the start (the
+                # basis is clamped), only the others are fitted. Pinning the
+                # first sample after an unconstrained fit would leave a jump.
+                s0 = start.to(device=curve.device, dtype=curve.dtype)
+                rest = torch.linalg.lstsq(B[:, 1:], curve - B[:, :1] * s0[None]).solution
+                P = torch.cat([s0[None], rest], dim=0)
             curve = B @ P
         if start is not None:
             curve = curve.clone()
@@ -379,25 +387,48 @@ class Mission:
     def path_so_far(self):
         return torch.cat(self.driven, dim=0) if self.driven else None
 
+    def _cloud(self, phi):
+        """Particle cloud (N, 3) = (x, y, weight) the network is conditioned on.
+
+        `args.phi_cutoff` narrows the support: particles are only drawn where
+        Phi >= cutoff * max(Phi) (weights stay the Phi values). 0 = the whole
+        support {Phi > 1e-5}, as before. Relative to the maximum on purpose:
+        when Phi is nearly flat (exploration rounds) nothing is cut, when it is
+        concentrated the weak tail drops out of the cloud."""
+        cutoff = float(getattr(self.args, 'phi_cutoff', 0.0))
+        if cutoff > 0.0:
+            phi = torch.where(phi >= cutoff * phi.max(), phi, torch.zeros_like(phi))
+        return acb.phi_particles(phi, self.args.n_particles, mode=self.args.phi_mode,
+                                 device=self.args.device)
+
+    def _default_start(self):
+        """Where round 1 begins for a start-conditioned network: the agent's
+        initial position (board centre). Such a network was always trained
+        with a start point; planning without one is clearly worse (ergodic
+        score 0.0071 vs 0.0032, longer paths, 4% of the curve outside the
+        domain). None for planners that are not start-conditioned."""
+        if getattr(self.planner, 'start_cond', False):
+            return torch.tensor([0.5, 0.5], device=self.planner.device)
+        return None
+
     def _observe(self, seg):
         pts, vals = measure(seg.detach(), self.truth, noise_std=self.args.noise,
                             sensor_radius=self.args.sensor_radius)
         self.belief.observe(*thin(pts, vals, max_points=self.args.max_obs))
 
     def _refine(self, curve, phi, start=None):
-        """SVGD-Nachverfeinerung des Netz-Vorschlags gegen dieselbe Runden-
-        Zieldichte Phi -- ein reiner Durchreicher, solange `svgd_iters<=0`.
+        """SVGD refinement of the network proposal against the round's target
+        density Phi (a pure pass-through / B-spline projection while
+        `svgd_iters <= 0`).
 
-        `start`, falls gesetzt: Startpunkt-Constraint fuer die Replanning-
-        Varianten B/C/D -- die neu geplante Bahn muss an der zuletzt
-        gefahrenen Position anschliessen. Weder die SVGD-Verfeinerung noch
-        die B-Spline-Projektion respektieren das von sich aus (beide passen
-        die ganze Bahn an, ohne einen Ankerpunkt), deshalb wird der Pin an
-        beide durchgereicht -- siehe `SvgdRefiner.refine`
-        (`common/svgd_refine.py`, nutzt dieselbe `WaypointPins`-Strafe wie
-        `constraints/02_waypoint_anchor/waypoints.py`) und
-        `_project_bspline` oben."""
+        `start`, if given, is the position where the previous round ended: in
+        the replanning variants (B/C/D/E) the new curve must begin exactly
+        there. It is passed to `SvgdRefiner.refine` (hard-pinned in every
+        iteration by each backend) and to `_project_bspline` (fixed first
+        control point)."""
         self.current_step = 'svgd'
+        if start is None:
+            start = self._default_start()
         if self.args.svgd_iters <= 0:
             return self._project_bspline(curve, start=start)
         device, dtype = curve.device, curve.dtype
@@ -409,7 +440,12 @@ class Mission:
                                    obstacle=self.args.obstacle,
                                    obstacle_weight=50000.0,
                                    start=start_np)
-        return torch.from_numpy(refined).to(device=device, dtype=dtype)
+        refined = torch.from_numpy(refined).to(device=device, dtype=dtype)
+        if start is not None:
+            # Safety net: every backend pins the start itself; this only
+            # guarantees the exact value (no jump relative to the last driven point).
+            refined[0] = start.to(device=device, dtype=dtype)
+        return refined
 
     def rounds(self):
         if self.variant == 'A':
@@ -430,7 +466,11 @@ class Mission:
         - Heuristik-Modus: `_default_init is None` -> aus Phi generieren, TSP
           startend vom aktuellen Agenten."""
         if not hasattr(self.planner, '_default_init'):
-            return {}  # CfmPlanner — kein init noetig
+            # CfmPlanner: no init needed. Round 1 of a start-conditioned
+            # network still gets the agent's initial position (see
+            # `_default_start`); later rounds pass the real position anyway.
+            start = self._default_start() if pos is None else None
+            return {} if start is None else {'start': start}
         
         sp_np = np.array([0.5, 0.5])
         if pos is not None:
@@ -542,9 +582,7 @@ class Mission:
                 phi = self.truth
             else:
                 phi = acb.zieldichte(mu, sd, self.args.kappa0, self.args)
-            parts = acb.phi_particles(phi, self.args.n_particles,
-                                      mode=self.args.phi_mode,
-                                      device=self.args.device)
+            parts = self._cloud(phi)
             here = self.path_so_far()
             pos = here[-1] if here is not None else None
             
@@ -598,9 +636,7 @@ class Mission:
                 else:
                     phi, v = acb.debt_density(mu, sd, visit, self.args.kappa0,
                                               self.args)
-                parts = acb.phi_particles(phi, self.args.n_particles,
-                                          mode=self.args.phi_mode,
-                                          device=self.args.device)
+                parts = self._cloud(phi)
                 pos = here[-1] if here is not None else None
                 init_kw = self._get_init(phi, pos=pos)
                 if pos is not None:
@@ -649,9 +685,7 @@ class Mission:
                     phi = self.truth
                 else:
                     phi = acb.zieldichte(mu, sd, kap, self.args)
-                parts = acb.phi_particles(phi, self.args.n_particles,
-                                          mode=self.args.phi_mode,
-                                          device=self.args.device)
+                parts = self._cloud(phi)
                 
                 here = self.path_so_far()
                 pos = here[-1] if here is not None else None
@@ -694,9 +728,7 @@ class Mission:
                     v = visit if visit is not None else torch.zeros_like(phi)
                 else:
                     phi, v = acb.debt_density(mu, sd, visit, kap, self.args)
-                parts = acb.phi_particles(phi, self.args.n_particles,
-                                          mode=self.args.phi_mode,
-                                          device=self.args.device)
+                parts = self._cloud(phi)
                 pos = here[-1] if here is not None else None
                 init_kw = self._get_init(phi, pos=pos)
                 if pos is not None:
@@ -740,6 +772,7 @@ def build_args(device, phi_model='ucb', kappa0=3.0, svgd_iters=0, phi_tau=0.25, 
     a.device = device
     a.phi_mode = 'uniform'
     a.phi_quantile = 0.5
+    a.phi_cutoff = 0.0     # see Mission._cloud
     a.target_length = None
     a.target_length_cfg = 0.0
     a.n_candidates = 1
@@ -766,6 +799,11 @@ from common.svgd_refine import SvgdRefiner, DEFAULT_BACKEND  # noqa: E402,F401
 # Interaktive Ansicht
 # ===========================================================================
 
+#: Belief kernels of the repo (`evaluation_full_matrix/variant_runner.py`): the stationary RBF
+#: GP, the GP with the Attentive Kernel (AK), and the pretrained attentive neural process (NP).
+BELIEF_KERNELS = ('RBF', 'AK', 'NP')
+
+
 class App:
     N_PRIOR = 12
     GP_RES = 64
@@ -778,16 +816,26 @@ class App:
     DEFAULT_SPEED_CM_S = 20
     PLAN_TIME_EST_INIT = 1.5  # Sekunden; wird nach der ersten Runde kalibriert
 
-    def __init__(self, ckpt, shapes, device, seed, shared_truth=None, agent_info_array=None, shared_obstacles=None):
+    def __init__(self, ckpt, shapes, device, seed, shared_truth=None, agent_info_array=None,
+                 shared_obstacles=None, shared_path=None):
         self.shared_truth = shared_truth
         self.agent_info_array = agent_info_array
         self.shared_obstacles = shared_obstacles
+        self.shared_path = shared_path
+        #: 'wall' (upright board) or 'table' (horizontal) in the MuJoCo scene.
+        self.surface_mode = 'wall'
         self.eraser_mode = False
         self.allknowing_mode = False
         self.device = device
         self.seed = seed
         print(f"Loading checkpoint: {ckpt}")
         self.planner = acb.CfmPlanner(ckpt=ckpt, device=device)
+        self.ckpt = ckpt
+        #: Registered network (`common/net_zoo.py`) of the loaded checkpoint, switched by the
+        #: "Network" button; unknown checkpoints get a generic entry from their metadata.
+        self.net_entry = net_zoo.entry_for(ckpt) or net_zoo.custom_entry(ckpt)
+        self.fig_net = None
+        self.net_radio = None
         self.ergodic = acb.ErgodicScore(K=8, device=device)
         self.names, self.truths = load_truth(n=shapes, resolution=self.TRUTH_RES,
                                              device=device)
@@ -797,6 +845,7 @@ class App:
         self.solver = 'A'
         self.phi_ui = 'ucb'
         self.phi_view = 'Φ'   # Toggle: 'Φ', 'μ' oder 'σ'
+        self.belief_kernel = 'RBF'   # one of BELIEF_KERNELS, switched by the "Belief Kernel" radio
         self.init_mode = 'CFM'  # 'CFM', 'Linear', 'Heuristic', 'Manual'
         self.kappa = PHI_DEFAULTS[self.phi_ui]     # fuer ucb/eid/stretch/mi
         
@@ -858,6 +907,7 @@ class App:
         self.custom_prior_mask = None
         
         self.nxi_ui = 25       # Default number of B-Spline control points
+        self.cloud_cutoff = 0.0  # particle cloud: only where Phi >= cutoff * max(Phi)
         self.sensor_radius_ui = 0.06  # Default agent radius
         self.target_length_ui = 0.0   # Default Target Length
         
@@ -1068,6 +1118,22 @@ class App:
         self.r_solver.on_clicked(self._on_solver)
         self._info_buttons.append(self._make_info_button(0.07 + 0.09 - 0.02, ctrl_bottom + ctrl_h + 0.01, 'solvers'))
 
+        # Belief kernel (RBF / AK / NP), in the free strip left of the solver radio
+        ax_kernel = self.fig.add_axes([0.005, ctrl_bottom, 0.055, 0.11])
+        ax_kernel.set_title('Belief\nkernel', fontsize=8.5)
+        self.r_kernel = RadioButtons(ax_kernel, list(BELIEF_KERNELS),
+                                     active=BELIEF_KERNELS.index(self.belief_kernel))
+        for lbl in self.r_kernel.labels:
+            lbl.set_fontsize(8.5)
+        self.r_kernel.on_clicked(self._on_belief_kernel)
+
+        # Network checkpoint: opens a window with the available networks and their descriptions
+        ax_net = self.fig.add_axes([0.005, 0.15, 0.055, 0.05])
+        self.b_net = Button(ax_net, '')
+        self.b_net.label.set_fontsize(8)
+        self.b_net.on_clicked(self._open_net_window)
+        self._sync_net_ui()
+
         # Zielfunktion-Auswahl
         ax_phi_model = self.fig.add_axes([0.17, ctrl_bottom, 0.10, ctrl_h])
         ax_phi_model.set_title('Target Function Φ', fontsize=9.5)
@@ -1141,9 +1207,15 @@ class App:
         self.b_open_wb.on_clicked(self._on_open_writeboard)
 
         # Open MuJoCo
-        ax_open_mj = self.fig.add_axes([btn_x, 0.29, btn_w, 0.026])
+        ax_open_mj = self.fig.add_axes([btn_x, 0.29, 0.062, 0.026])
         self.b_open_mj = Button(ax_open_mj, 'Open MuJoCo')
         self.b_open_mj.on_clicked(self._on_open_mujoco)
+
+        # Drawing surface in the MuJoCo scene: upright board <-> table
+        ax_surface = self.fig.add_axes([btn_x + 0.062 + 0.005, 0.29, 0.053, 0.026])
+        self.b_surface = Button(ax_surface, 'Surface: Wall')
+        self.b_surface.label.set_fontsize(7)
+        self.b_surface.on_clicked(self._on_toggle_surface)
 
         # SVGD-Backend- und Known-Area-Auswahl, gestapelt in der Luecke
         # zwischen der Knopf-Spalte und den Reglern (siehe common/
@@ -1219,6 +1291,23 @@ class App:
         self.s_length = Slider(ax_length, 'Target Length', 0.0, 10.0, valinit=self.target_length_ui, valstep=0.1, color='#FF5722')
         self.s_length.on_changed(self._on_target_length)
 
+        # Particle-cloud cutoff: the network only sees 256 particles (x, y,
+        # weight = Phi). 0 = particles anywhere Phi > 1e-5 (the whole square
+        # in practice); larger = only where Phi >= cutoff * max(Phi), i.e. a
+        # narrower support without the weak tail.
+        ax_cloud = self.fig.add_axes([0.85, 0.285, 0.12, 0.022])
+        self.s_cloud = Slider(ax_cloud, 'Cloud Cutoff', 0.0, 0.5, valinit=self.cloud_cutoff,
+                              valstep=0.01, color='#6D4C41')
+        self.s_cloud.label.set_fontsize(8)
+        self.s_cloud.valtext.set_fontsize(8)
+        self.s_cloud.on_changed(self._on_cloud_cutoff)
+        # Dashed marker = where the cutoff was before the last change (at the
+        # start: the initial value), to compare against while trying values.
+        self.cloud_marker = self.s_cloud.ax.axvline(self.cloud_cutoff, color='#D32F2F',
+                                                    linestyle='--', linewidth=1.2, zorder=5)
+        self.fig.text(0.85, 0.272, 'particles only where Φ ≥ cutoff · max Φ  (dashed: previous)',
+                      fontsize=6.5, color='#777777')
+
         # Optimal-Policy-Knopf: uebernimmt tau/kappa/w, SVGD-Iters und
         # Ziellaenge aus der Holdout-Optimierung FUER DAS GERADE AUSGEWAEHLTE
         # Phi-Modell (siehe OPTIMAL_POLICY/PARAM_CURVES oben und
@@ -1257,6 +1346,130 @@ class App:
             np.zeros((self.GP_RES, self.GP_RES)), origin='lower',
             extent=[0, 1, 0, 1], cmap=self.cmap, vmin=0, vmax=1, alpha=0.9)
 
+    # ── Belief kernel ────────────────────────────────────────────────────
+    def _make_belief(self):
+        """Empty belief of the selected kernel.  AK refits its kernel network after every
+        `observe` (`common/ak_belief.py`), NP is one forward pass of the pretrained neural
+        process (`common/np_belief.py`, needs checkpoints/belief_np_date_*_final.pt)."""
+        kw = dict(grid_res=self.GP_RES, lengthscale=0.08, noise=0.05, device=self.device)
+        if self.belief_kernel == 'AK':
+            from common.ak_belief import AKBelief
+            return AKBelief(seed=self.seed, **kw)
+        if self.belief_kernel == 'NP':
+            try:
+                from common.np_belief import NPBelief
+                return NPBelief(**kw)
+            except FileNotFoundError as exc:
+                print(f'[belief kernel] NP unavailable: {exc}')
+                self._set_belief_kernel('RBF')
+                self.status_txt.set_text('NP checkpoint missing (checkpoints/belief_np_date_*_final.pt) '
+                                         '- back to RBF')
+        return GPBelief(**kw)
+
+    def _set_belief_kernel(self, name):
+        """Select a kernel without triggering the radio callback."""
+        self.belief_kernel = name
+        self.r_kernel.eventson = False
+        self.r_kernel.set_active(BELIEF_KERNELS.index(name))
+        self.r_kernel.eventson = True
+
+    def _on_belief_kernel(self, label):
+        self._deactivate_optimal_policy()
+        self.belief_kernel = label
+        self.reset(replan=True)
+
+    def _belief_name(self):
+        return {'RBF': 'GP belief', 'AK': 'GP belief (attentive kernel)',
+                'NP': 'neural-process belief'}[self.belief_kernel]
+
+    # ── Network checkpoint ───────────────────────────────────────────────
+    def _net_choices(self):
+        """``[(entry, path)]`` offered in the selection window (+ the loaded one if unregistered)."""
+        nets = net_zoo.available()
+        if all(e.key != self.net_entry.key for e, _ in nets):
+            nets.append((self.net_entry, self.ckpt))
+        return nets
+
+    def _sync_net_ui(self):
+        """Button label and, if open, the selection window follow the loaded network."""
+        self.b_net.label.set_text('Network\n[%s]' % self.net_entry.key)
+        if self.fig_net is not None and self.net_radio is not None:
+            keys = [e.key for e, _ in self._net_choices()]
+            self.net_radio.eventson = False
+            self.net_radio.set_active(keys.index(self.net_entry.key))
+            self.net_radio.eventson = True
+            self.net_file_txt.set_text('loaded: %s' % os.path.basename(self.ckpt))
+            self.fig_net.canvas.draw_idle()
+
+    def _open_net_window(self, event=None):
+        if self.fig_net is not None:
+            try:
+                self.fig_net.canvas.manager.show()
+            except Exception:  # noqa: BLE001 -- raising the window is cosmetic
+                pass
+            return
+        nets = self._net_choices()
+        n = len(nets)
+        fig = plt.figure(figsize=(11.5, 1.5 + 0.85 * n), facecolor='white')
+        try:
+            fig.canvas.manager.set_window_title('Network checkpoint')
+        except Exception:  # noqa: BLE001 -- title is cosmetic
+            pass
+        fig.text(0.02, 0.965, 'Planner network (2D, 25 control points) - click to load and replan',
+                 fontsize=11, fontweight='bold', color='#1A1A2E', va='top')
+        ax_r = fig.add_axes([0.02, 0.08, 0.30, 0.80], facecolor='white')
+        ax_r.set_xticks([])
+        ax_r.set_yticks([])
+        keys = [e.key for e, _ in nets]
+        self.net_radio = RadioButtons(ax_r, [e.label for e, _ in nets],
+                                      active=keys.index(self.net_entry.key))
+        for lbl in self.net_radio.labels:
+            lbl.set_fontsize(9)
+        self.net_radio.on_clicked(self._on_net_pick)
+        ax_d = fig.add_axes([0.34, 0.08, 0.64, 0.80])
+        ax_d.axis('off')
+        for (entry, _), lbl in zip(nets, self.net_radio.labels):
+            ax_d.text(0.0, lbl.get_position()[1], entry.description, fontsize=8.5, color='#555555',
+                      va='center', ha='left', transform=ax_d.transAxes, linespacing=1.35)
+        self.net_file_txt = fig.text(0.02, 0.02, 'loaded: %s' % os.path.basename(self.ckpt),
+                                     fontsize=8, color='#555555')
+        self.fig_net = fig
+        fig.canvas.mpl_connect('close_event', self._on_net_closed)
+        plt.show(block=False)
+
+    def _on_net_closed(self, event):
+        self.fig_net = None
+        self.net_radio = None
+
+    def _on_net_pick(self, label):
+        for entry, path in self._net_choices():
+            if entry.label == label:
+                self._switch_net(entry, path)
+                return
+
+    def _switch_net(self, entry, path):
+        """Load another planner checkpoint and restart the mission with it."""
+        if entry.key == self.net_entry.key or os.path.abspath(path) == os.path.abspath(self.ckpt):
+            return
+        self._deactivate_optimal_policy()
+        self.status_txt.set_text('Loading network [%s] ...' % entry.key)
+        self.fig.canvas.draw()
+        self.fig.canvas.flush_events()
+        try:
+            planner = acb.CfmPlanner(ckpt=path, device=self.device)
+        except Exception as exc:  # noqa: BLE001 -- report, keep the old network
+            print('[network] could not load %s: %s' % (path, exc))
+            self.status_txt.set_text('Network [%s] could not be loaded - keeping [%s]'
+                                     % (entry.key, self.net_entry.key))
+            self._sync_net_ui()
+            return
+        print('[network] switched to %s (%s)' % (entry.key, os.path.basename(path)))
+        self.planner, self.ckpt, self.net_entry = planner, path, entry
+        if str(self.device).startswith('cuda'):
+            torch.cuda.empty_cache()
+        self._sync_net_ui()
+        self.reset(replan=True)
+
     # ── Zustand ──────────────────────────────────────────────────────────
     def reset(self, replan):
         if self.custom_truth_np is not None:
@@ -1264,8 +1477,7 @@ class App:
         else:
             truth = self.truths[self.shape_i]
             
-        belief = GPBelief(grid_res=self.GP_RES, lengthscale=0.08, noise=0.05,
-                          device=self.device)
+        belief = self._make_belief()
                           
         if self.custom_prior_mask is not None:
             y_idx, x_idx = np.where(self.custom_prior_mask)
@@ -1299,6 +1511,7 @@ class App:
                           sensor_radius=self._explore_radius())
         args.obstacle = CompositeObstacle(self.obstacles) if len(self.obstacles) > 0 else None
         args.allknowing_mode = self.allknowing_mode
+        args.phi_cutoff = self.cloud_cutoff
         if self.solver == 'B':
             # Dieselben Debt-Dichte-Werte wie in der Cluster-Studie
             # (`exploration_optimierung.mission.build_mission_args`), nicht
@@ -1634,6 +1847,13 @@ class App:
         bisher."""
         self.known_area_mode = KNOWN_AREA_LABEL_TO_KEY[label]
         self.custom_prior_mask = self._known_area_mask(self.known_area_mode)
+        self.reset(replan=True)
+
+    def _on_cloud_cutoff(self, val):
+        previous = self.cloud_cutoff
+        self.cloud_cutoff = float(val)
+        if self.cloud_cutoff != previous:
+            self.cloud_marker.set_xdata([previous, previous])
         self.reset(replan=True)
 
     def _on_nxi(self, val):
@@ -2087,6 +2307,17 @@ class App:
             self.p_wb = mp.Process(target=run_writeboard, args=(self.shared_truth, self.agent_info_array, self.shared_obstacles))
             self.p_wb.start()
 
+    def _on_toggle_surface(self, event):
+        """Switch the MuJoCo drawing surface between the upright board and the
+        table; the arm, the target density and the trajectory follow."""
+        self.surface_mode = 'table' if self.surface_mode == 'wall' else 'wall'
+        self.b_surface.label.set_text(
+            'Surface: %s' % ('Solar' if self.surface_mode == 'table' else 'Wall'))
+        if self.agent_info_array is not None and len(self.agent_info_array) > 4:
+            with self.agent_info_array.get_lock():
+                self.agent_info_array[4] = 1.0 if self.surface_mode == 'table' else 0.0
+        self.fig.canvas.draw_idle()
+
     def _on_open_mujoco(self, event):
         if self._no_companion_arrays():
             return
@@ -2098,7 +2329,9 @@ class App:
                 print(f"[MuJoCo] Fehler beim Laden: {e}\n"
                       "Installiere MuJoCo mit:  pip install mujoco")
                 return
-            self.p_mj = mp.Process(target=run_mujoco_sim, args=(self.agent_info_array, self.shared_truth))
+            self.p_mj = mp.Process(target=run_mujoco_sim,
+                                   args=(self.agent_info_array, self.shared_truth),
+                                   kwargs={'shared_path': self.shared_path})
             self.p_mj.start()
         self._open_knowledge_window()
 
@@ -2309,7 +2542,7 @@ class App:
                 'niveau': 'Φ = P(f(x) > τ)   (f: true density, P: GP-prob)',
             }
             defn = phi_defs.get(self.phi_ui, 'Φ')
-            t = f'{defn}   —   Target Density from GP Belief'
+            t = f'{defn}   —   Target Density from {self._belief_name()}'
         if self.phi_ui == 'niveau' and self.phi_view in ('Φ', 'μ'):
             t += '\ndashed: μ=τ level line   ·   band: 0.25<Φ<0.75 (unsettled boundary)'
         self.ax_phi.set_title(t, fontsize=11, color='#1A1A2E', loc='left')
@@ -2479,6 +2712,44 @@ class App:
             except Exception:
                 pass
 
+    def _publish_path(self):
+        """Hand the path to MuJoCo, which projects it onto the drawing surface
+        (layout: board.py): earlier rounds (green), the part of the current
+        round driven so far and the rest of its plan (both red)."""
+        if self.shared_path is None:
+            return
+        from mujoco_sim.board import (PATH_HEADER, PATH_MAX_PAST, PATH_MAX_CURRENT,
+                                      PATH_MAX_PREVIEW)
+
+        def thin(pts, cap):
+            # Stride anchored at the start, so the picked points stay stable
+            # while the path grows; the last point is always kept.
+            if len(pts) <= cap:
+                return pts
+            stride = int(np.ceil((len(pts) - 1) / (cap - 1)))
+            idx = np.arange(0, len(pts), stride)
+            if idx[-1] != len(pts) - 1:
+                if len(idx) < cap:
+                    idx = np.append(idx, len(pts) - 1)
+                else:
+                    idx[-1] = len(pts) - 1
+            return pts[idx]
+
+        current, preview = np.zeros((0, 2)), np.zeros((0, 2))
+        if self.cur is not None:
+            seg = self.cur['seg'].detach().cpu().numpy()
+            current, preview = seg[:self.play_idx], seg[self.play_idx:]
+        past = thin(self.driven_np, PATH_MAX_PAST)
+        current, preview = thin(current, PATH_MAX_CURRENT), thin(preview, PATH_MAX_PREVIEW)
+        off_cur = PATH_HEADER + 2 * PATH_MAX_PAST
+        off_pre = off_cur + 2 * PATH_MAX_CURRENT
+        with self.shared_path.get_lock():
+            buf = np.frombuffer(self.shared_path.get_obj(), dtype=np.float64)
+            buf[0], buf[1], buf[2] = len(past), len(current), len(preview)
+            buf[PATH_HEADER:PATH_HEADER + 2 * len(past)] = past.ravel()
+            buf[off_cur:off_cur + 2 * len(current)] = current.ravel()
+            buf[off_pre:off_pre + 2 * len(preview)] = preview.ravel()
+
     def _companion_active(self):
         """True, sobald Writeboard oder MuJoCo-Fenster tatsaechlich laufen.
 
@@ -2547,7 +2818,11 @@ class App:
                 pos = self.driven_np[-1]
             with self.agent_info_array.get_lock():
                 shown_r = self._erase_radius() if self.eraser_mode else self.sensor_radius_ui
-                self.agent_info_array[:] = [pos[0], pos[1], shown_r, 1.0 if self.eraser_mode else 0.0]
+                info = [pos[0], pos[1], shown_r, 1.0 if self.eraser_mode else 0.0]
+                if len(self.agent_info_array) > 4:
+                    info.append(1.0 if self.surface_mode == 'table' else 0.0)
+                self.agent_info_array[:len(info)] = info
+            self._publish_path()
 
         if self.busy:
             self._poll_plan()
@@ -2701,7 +2976,9 @@ class App:
             else:
                 self.round_txt.set_text(
                     f"{SOLVER_DESC[self.solver]}  ·  Φ={self.phi_ui}  ·  {tag}"
-                    f"{svgd_tag}")
+                    f"{svgd_tag}" +
+                    ('' if self.belief_kernel == 'RBF' else f'  ·  kernel={self.belief_kernel}') +
+                    ('' if self.net_entry.key == 'lm1300' else f'  ·  net={self.net_entry.key}'))
         else:
             self.line_driven.set_data(self.driven_np[:, 0], self.driven_np[:, 1])
             self.line_preview.set_data([], [])
@@ -2766,7 +3043,9 @@ class App:
             ax.grid(False)
             for s in ax.spines.values():
                 s.set_color('#ccc')
-        ax_gp.set_title('GP belief — posterior mean μ', fontsize=11, color='#1A1A2E')
+        name = self._belief_name()
+        ax_gp.set_title(f'{name[0].upper() + name[1:]} — posterior mean μ', fontsize=11,
+                        color='#1A1A2E')
         ax_known.set_title('Known ground truth — black = unknown', fontsize=11,
                            color='#1A1A2E')
         ax_known.set_facecolor('black')

@@ -14,38 +14,45 @@ for _p in (_here, _arch, os.path.join(_arch, 'ergodic_dataset_generator'), os.pa
 from interactive_sim import App, DEFAULT_CKPT
 from writeboard import run_writeboard
 
-def run_interactive_sim(ckpt, shapes, device, seed, shared_truth, agent_info_array, shared_obstacles):
-    App(ckpt, shapes, device, seed, shared_truth=shared_truth, agent_info_array=agent_info_array, shared_obstacles=shared_obstacles)
+def run_interactive_sim(ckpt, shapes, device, seed, shared_truth, agent_info_array, shared_obstacles, shared_path):
+    App(ckpt, shapes, device, seed, shared_truth=shared_truth, agent_info_array=agent_info_array,
+        shared_obstacles=shared_obstacles, shared_path=shared_path)
 
 def run_writeboard(truth_array, agent_info_array, shared_obstacles):
     from writeboard import run_writeboard
     run_writeboard(truth_array, agent_info_array, shared_obstacles)
 
-def run_mujoco(agent_info_array, shared_truth):
+def run_mujoco(agent_info_array, shared_truth, shared_path=None):
     from mujoco_sim.run_mujoco import run_mujoco_sim
-    run_mujoco_sim(agent_info_array, shared_truth)
+    run_mujoco_sim(agent_info_array, shared_truth, shared_path=shared_path)
 
 if __name__ == '__main__':
     # Using 'spawn' to ensure PyTorch and Matplotlib play nicely in multiprocessing
     mp.set_start_method('spawn')
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    ckpt = r"C:\Users\Philipp\Documents\Uni\Master_Thesis\Master_thesis_ergodic_learning\thesis_architecture\exploration\modelle_und_Datenbank\cond_particles_crossattn_flow_matching_particle_ergodic_date_08_28_09h13min_nxi64_D384_N256_C2_flip0.0_START_FLAT7540_LEN-pd0.1_LINEARFREQ_LR1E4_ERGLOSS-SINKHORN-w1300-blur0.05-tp2_final.pt"
+    # Default: transfer/netz2d_startpunkt_lm_inpaint.pt; optionally pass another
+    # checkpoint as the first argument:  python main.py <path/to/model.pt>
+    ckpt = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_CKPT
     shapes = 12
     seed = 0
     
     # 96x96 array for target distribution (shared memory)
     truth_array = mp.Array('d', 96 * 96)
     
-    # [pos_x, pos_y, radius, eraser_mode]
-    agent_info_array = mp.Array('d', 4)
-    agent_info_array[:] = [0.5, 0.5, 0.06, 0.0]
+    # [pos_x, pos_y, radius, eraser_mode, surface_mode (0 = wall, 1 = table)]
+    agent_info_array = mp.Array('d', 5)
+    agent_info_array[:] = [0.5, 0.5, 0.06, 0.0, 0.0]
 
     # [x, y, radius] * 10
     shared_obstacles = mp.Array('d', 30)
 
+    # Trajectory projected onto the drawing surface (layout: mujoco_sim/board.py)
+    from mujoco_sim.board import PATH_ARRAY_SIZE
+    shared_path = mp.Array('d', PATH_ARRAY_SIZE)
+
     print("Starting Control Center (Schaltzentrale)...")
-    p1 = mp.Process(target=run_interactive_sim, args=(ckpt, shapes, device, seed, truth_array, agent_info_array, shared_obstacles))
+    p1 = mp.Process(target=run_interactive_sim, args=(ckpt, shapes, device, seed, truth_array, agent_info_array, shared_obstacles, shared_path))
     
     p1.start()
     p1.join()

@@ -207,6 +207,10 @@ class CfmPlanner:
         # staerkste Flag.
         self.start_cond = bool(ck.get('start_cond', False)) if ck else False
         self.length_cond = bool(ck.get('length_cond', False)) if ck else False
+        #: Checkpoints trained with `start_inpaint` carry an extra scalar
+        #: `start_inpaint_flag` and expect the start to be held fixed as the
+        #: first control point during the whole flow integration.
+        self.start_inpaint = bool(ck.get('start_inpaint', False)) if ck else False
         extra_kw = {}
         if self.length_cond:
             from flow_matching_cond_particles_length import (
@@ -233,6 +237,8 @@ class CfmPlanner:
         # `n_particles` ist ein reiner Datenparameter — der Tokenizer arbeitet
         # ueber die Sequenzachse und kennt keine feste Wolkengroesse.
         self.model = ParticleCrossAttnFlowNetwork(nxi=nxi, D=D, **extra_kw).to(self.device)
+        if self.start_inpaint:
+            self.model.register_buffer('start_inpaint_flag', torch.zeros((), device=self.device))
         if ck is not None:
             self.model.load_state_dict(ck['model_state_dict'])
         self.model.eval()
@@ -257,6 +263,8 @@ class CfmPlanner:
         kw = {}
         if start is not None and self.start_cond:
             kw['start'] = start.to(self.device).reshape(-1)
+            if self.start_inpaint:
+                kw['inpaint_start'] = True
         if length is not None and self.length_cond:
             kw['length'] = length
             kw['length_cfg_weight'] = length_cfg_weight

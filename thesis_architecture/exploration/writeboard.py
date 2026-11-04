@@ -206,7 +206,7 @@ class Writeboard:
         
         if self.agent_info is not None:
             with self.agent_info.get_lock():
-                ax, ay, a_rad, eraser_mode = self.agent_info[:]
+                ax, ay, a_rad, eraser_mode = self.agent_info[:4]
         else:
             ax, ay, a_rad, eraser_mode = 0.5, 0.5, 0.06, 0.0
             

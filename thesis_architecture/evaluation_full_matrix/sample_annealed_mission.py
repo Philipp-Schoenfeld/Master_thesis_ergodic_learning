@@ -165,7 +165,26 @@ def info_gain_cutoff(belief, seg, unc0, threshold):
 
 def run_mission(name, truth, planner, bs, ee, B32, args, device,
                 n_rounds, n_init, n_iters, kappas, start_pos, seed,
-                ig_threshold=None):
+                ig_threshold=None, cutoff=0.0, on_round=None, path_fn=None,
+                init_fn=None, target_fn=None):
+    """`cutoff` narrows the particle cloud the network is conditioned on (same rule
+    as the GUI's "Cloud Cutoff": particles only where Phi >= cutoff * max(Phi);
+    the refiner's target stays the full Phi). 0 = unchanged behaviour.
+
+    `on_round(r, belief, segments, diag)`: optional callback after every round's
+    belief update; `diag` holds the best / median ergodic energy (vs. this round's
+    target) of the raw network candidates (`E_init_*`) and of the refined ones
+    (`E_ref_*`).
+
+    `path_fn(r, start, phi) -> (T, 2)`: optional model-free path source for baselines
+    (random walk, lawnmower). It replaces the network + refinement; belief update,
+    measurements, and `on_round` stay identical (`E_*` are NaN then). `planner`, `bs`
+    may be None in that case.
+
+    `init_fn(r, start, phi) -> (n_init, T, 2)`: optional network-free candidate source
+    (e.g. linear rays); replaces the CFM forward pass, the SVGD refinement stays.
+    `target_fn(phi) -> (M,)` float64: optional target coefficients for `bs.run` (default:
+    the K=10 TSVEC coefficients; the Adam-SVGD backend needs its own K=8 ones)."""
     belief = vr.build_belief(CONDITION, truth, seed=seed, device=device,
                              gp_noise=args.gp_noise, gp_lengthscale=0.08,
                              dtype=torch.float64, kernel=args.belief_kernel,
@@ -187,35 +206,50 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
         if float(phi.max()) < 1e-6:
             phi = torch.ones_like(phi)
 
-        parts = acb.phi_particles(phi, args.n_particles, mode=args.phi_mode,
-                                  quantile=args.phi_quantile, device=device)
-        planner.cfg_weight = 2.0
-        with torch.no_grad():
-            cps = planner.plan(parts, n_candidates=n_init, start=start)
-            curves = planner.render(cps).detach()                   # (n_init, T, 2)
+        if path_fn is not None:
+            # model-free baseline (random walk, lawnmower): no network, no refinement
+            winner = path_fn(r, start, phi).to(device).float().clone()
+            winner[0] = start
+            winner = winner.clamp(0.0, 1.0)
+            E_init = E = torch.full((1,), float('nan'), device=device)
+        else:
+            if init_fn is not None:
+                curves = init_fn(r, start, phi).to(device).float()      # (n_init, T, 2)
+            else:
+                phi_cloud = (torch.where(phi >= cutoff * phi.max(), phi, torch.zeros_like(phi))
+                             if cutoff > 0.0 else phi)
+                parts = acb.phi_particles(phi_cloud, args.n_particles, mode=args.phi_mode,
+                                          quantile=args.phi_quantile, device=device)
+                planner.cfg_weight = 2.0
+                with torch.no_grad():
+                    cps = planner.plan(parts, n_candidates=n_init, start=start)
+                    curves = planner.render(cps).detach()               # (n_init, T, 2)
 
-        # -- TSVEC-SVGD refinement (common/tsvec_svgd.py via its batched
-        #    adapter), K=10 Fourier target to match `ee`/`BatchedTsvecSvgdTorch`
-        #    (NOT the K=8 `SvgdRefiner`/'tsvec' backend uses -- see
-        #    `run_mission_eval.py`'s own `run_svgd` target-construction branch).
-        phi_k10 = ee.target_coeffs(phi)
-        target_np = phi_k10.detach().cpu().numpy().astype(np.float64)
-        curves_np = curves.cpu().numpy().astype(np.float64)
-        starts_np = np.tile(start.detach().cpu().numpy(), (n_init, 1))
-        seeds = [seed * 100000 + r * 1000 + i for i in range(n_init)]
-        out = bs.run(curves_np, target_np, starts_np, seeds, n_iters, record=False)
-        final_cps = torch.as_tensor(out['final_cps'], device=device)
-        final_curves = torch.einsum('pi,cid->cpd', B32, final_cps)   # (n_init, T, 2)
+            # -- TSVEC-SVGD refinement (common/tsvec_svgd.py via its batched
+            #    adapter), K=10 Fourier target to match `ee`/`BatchedTsvecSvgdTorch`
+            #    (NOT the K=8 `SvgdRefiner`/'tsvec' backend uses -- see
+            #    `run_mission_eval.py`'s own `run_svgd` target-construction branch).
+            phi_k10 = ee.target_coeffs(phi)
+            E_init = (ee.w * 0.5 * ee.Lambda * (coeffs_from_points(curves, ee.k_idx)
+                                                - phi_k10.unsqueeze(0)) ** 2).sum(-1)
+            target_np = (target_fn(phi) if target_fn is not None
+                         else phi_k10.detach().cpu().numpy().astype(np.float64))
+            curves_np = curves.cpu().numpy().astype(np.float64)
+            starts_np = np.tile(start.detach().cpu().numpy(), (n_init, 1))
+            seeds = [seed * 100000 + r * 1000 + i for i in range(n_init)]
+            out = bs.run(curves_np, target_np, starts_np, seeds, n_iters, record=False)
+            final_cps = torch.as_tensor(out['final_cps'], device=device, dtype=torch.float32)
+            final_curves = torch.einsum('pi,cid->cpd', B32, final_cps)   # (n_init, T, 2)
 
-        # -- select by lowest ergodic error against THIS round's target
-        #    (`--select_by target`, the real pipeline's default -- no look at
-        #    the ground truth).
-        c = coeffs_from_points(final_curves, ee.k_idx)
-        E = (ee.w * 0.5 * ee.Lambda * (c - phi_k10.unsqueeze(0)) ** 2).sum(-1)
-        sel = int(torch.argmin(E))
-        winner = final_curves[sel].clone()
-        winner[0] = start                                             # hard snap, as `execute()`
-        winner = winner.clamp(0.0, 1.0)
+            # -- select by lowest ergodic error against THIS round's target
+            #    (`--select_by target`, the real pipeline's default -- no look at
+            #    the ground truth).
+            c = coeffs_from_points(final_curves, ee.k_idx)
+            E = (ee.w * 0.5 * ee.Lambda * (c - phi_k10.unsqueeze(0)) ** 2).sum(-1)
+            sel = int(torch.argmin(E))
+            winner = final_curves[sel].clone()
+            winner[0] = start                                             # hard snap, as `execute()`
+            winner = winner.clamp(0.0, 1.0)
 
         # -- execute: the WHOLE refined candidate by default ("full
         #    execution"), or, if `ig_threshold` is set, only the prefix
@@ -237,6 +271,10 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
         segments.append(seg.detach().cpu())
         phis.append(phi.detach().cpu())
         infos.append({'gain': ig_gain, 'n_used': seg.shape[0], 'n_planned': n_pts})
+        if on_round is not None:
+            on_round(r, belief, segments,
+                     dict(E_init_best=float(E_init.min()), E_init_med=float(E_init.median()),
+                          E_ref_best=float(E.min()), E_ref_med=float(E.median())))
         start = seg[-1].detach()
         extra = (f"  dH={ig_gain:.3f} (target {ig_threshold:.3f}, "
                 f"{seg.shape[0]}/{n_pts} pts driven)" if ig_gain is not None else "")

@@ -22,6 +22,7 @@ The target density is drawn on the board with a grid of coloured mini-sites
 """
 
 import argparse
+import contextlib
 import hashlib
 import os
 import sys
@@ -40,7 +41,8 @@ from mujoco_sim.ik import TaskPriorityIK, plan_joint_path  # noqa: E402
 from mujoco_sim.joint_map import get_joint_map     # noqa: E402
 from mujoco_sim.board import (                     # noqa: E402
     BOARD_FACE_X, BOARD_ORIGIN, BOARD_SIZE, SITE_RES, TOOL_AXIS, TRUTH_RES,
-    DEFAULT_STANDOFF, JOINT_VMAX, MAX_TIP_SPEED,
+    DEFAULT_STANDOFF, JOINT_VMAX, MAX_TIP_SPEED, SURFACES, WALL, TABLE,
+    PATH_HEADER, PATH_MAX_PAST, PATH_MAX_CURRENT, PATH_MAX_PREVIEW,
 )
 
 # -- Eraser tool --------------------------------------------------------------
@@ -73,6 +75,33 @@ def _build_white_inferno_lut(n=256):
 
 
 CMAP_LUT = _build_white_inferno_lut()
+
+#: Base colour of the solar-panel glass (also used as the zero-density colour).
+PANEL_BLUE = (0.05, 0.10, 0.28)
+
+
+def _build_panel_lut(n=256):
+    """Inferno colormap whose zero end fades in from the dark-blue panel glass
+    instead of white, so the target density glows like a thermal image of a
+    solar panel."""
+    try:
+        import matplotlib
+        inf = matplotlib.colormaps['inferno'](np.linspace(0, 1, n))[:, :3]
+        blend = 70
+        ramp = np.linspace(0, 1, blend)[:, None]
+        inf[:blend] = (1 - ramp) * np.array(PANEL_BLUE) + ramp * inf[:blend]
+        return (inf * 255).astype(np.uint8)
+    except ImportError:
+        g = np.linspace(0, 255, n).astype(np.uint8)
+        return np.stack([g // 4, g // 3, g], axis=-1)
+
+
+PANEL_LUT = _build_panel_lut()
+
+
+def lut_for(surface):
+    """Colour lookup table of the density on ``surface``."""
+    return PANEL_LUT if surface.name == 'table' else CMAP_LUT
 
 #: Mounting positions for the eraser, as offsets along a hand-frame axis.
 _AXES = {
@@ -155,7 +184,140 @@ def _build_scene(model_dir, orthogonal_axis="Z", site_res=SITE_RES):
     tip.quat = quat.tolist()                     # local +Z == eraser axis
     tip.rgba = [0.0, 0.78, 0.33, 1.0]
 
-    return spec.compile()
+    _add_table(spec)
+    model = spec.compile()
+    SurfaceRig(model, site_res).set(WALL)        # upright board, table hidden
+    return model
+
+
+#: Solar-panel look of the horizontal surface (all visual only, in metres).
+PANEL_RIM = 0.030            # aluminium frame width around the glass
+PANEL_MARGIN = 0.12          # panel extends this far beyond the drawing area
+PANEL_N_CELLS = 6            # solar cells per edge
+PANEL_GLASS_MAT = "panel_glass"
+_ALU = [0.78, 0.80, 0.83, 1.0]
+_STEEL = [0.55, 0.57, 0.60, 1.0]
+_CONCRETE = [0.60, 0.59, 0.57, 1.0]
+_CELL_LINE = [0.58, 0.64, 0.80, 1.0]
+
+
+def _box(body, name, size, pos, rgba, material=None):
+    g = body.add_geom()
+    g.name = name
+    g.type = mujoco.mjtGeom.mjGEOM_BOX
+    g.size = list(size)
+    g.pos = list(pos)
+    g.rgba = list(rgba)
+    if material is not None:
+        g.material = material
+    return g
+
+
+def _add_table(spec):
+    """A visual-only solar panel (glass, cell grid, aluminium frame) on steel
+    posts and concrete footings below the table surface; hidden until the
+    table surface is selected.  The pixel sites rest on the glass."""
+    cx, cy = board_mod.TABLE_CENTER_XY
+    top = board_mod.TABLE_TOP
+    half = board_mod.TABLE_SIZE / 2.0 + PANEL_MARGIN
+    glass_half = half - PANEL_RIM
+    body = spec.worldbody.add_body()
+    body.name = "table_body"
+    body.pos = [cx, cy, 0.0]
+
+    mat = spec.add_material()
+    mat.name = PANEL_GLASS_MAT
+    mat.rgba = list(PANEL_BLUE) + [1.0]
+    mat.specular = 0.7
+    mat.shininess = 0.9
+    mat.reflectance = 0.12
+
+    # glass (top face exactly at the surface height) and the frame below it
+    _box(body, "table_glass", [glass_half, glass_half, 0.003], [0, 0, top - 0.003],
+         list(PANEL_BLUE) + [1.0], material=PANEL_GLASS_MAT)
+    frame_h = 0.020
+    _box(body, "table_frame", [half, half, frame_h / 2], [0, 0, top - 0.006 - frame_h / 2], _ALU)
+    # raised aluminium rim
+    rim_z = top + 0.002
+    for k, s in enumerate((1, -1)):
+        _box(body, "table_rim_x%d" % k, [half, PANEL_RIM / 2, 0.008],
+             [0, s * (half - PANEL_RIM / 2), rim_z], _ALU)
+        _box(body, "table_rim_y%d" % k, [PANEL_RIM / 2, half - PANEL_RIM, 0.008],
+             [s * (half - PANEL_RIM / 2), 0, rim_z], _ALU)
+    # cell grid, flush with the glass (hidden under the pixel sites where those are)
+    cell = 2 * glass_half / PANEL_N_CELLS
+    for k in range(1, PANEL_N_CELLS):
+        off = -glass_half + k * cell
+        _box(body, "table_cell_x%d" % k, [glass_half, 0.0008, 0.0004], [0, off, top + 0.0004],
+             _CELL_LINE)
+        _box(body, "table_cell_y%d" % k, [0.0008, glass_half, 0.0004], [off, 0, top + 0.0004],
+             _CELL_LINE)
+
+    # mounting rails, posts and concrete footings
+    post_xy = half - 0.08
+    foot_h = 0.02
+    rail_z = top - 0.006 - frame_h - 0.012
+    for k, s in enumerate((1, -1)):
+        _box(body, "table_rail%d" % k, [0.018, half - 0.02, 0.012], [s * post_xy, 0, rail_z], _STEEL)
+        for j, t in enumerate((1, -1)):
+            post_h = (rail_z - 0.012 - 2 * foot_h) / 2.0
+            p = body.add_geom()
+            p.name = "table_post%d%d" % (k, j)
+            p.type = mujoco.mjtGeom.mjGEOM_CYLINDER
+            p.size = [0.02, post_h, 0]
+            p.pos = [s * post_xy, t * post_xy, 2 * foot_h + post_h]
+            p.rgba = list(_STEEL)
+            _box(body, "table_foot%d%d" % (k, j), [0.06, 0.06, foot_h],
+                 [s * post_xy, t * post_xy, foot_h], _CONCRETE)
+
+    for g in body.geoms:                         # visual only, never collides
+        g.contype = 0
+        g.conaffinity = 0
+
+
+class SurfaceRig:
+    """Moves the pixel-site body between drawing surfaces at run time (the
+    upright board or the table) and shows the table only when it is needed."""
+
+    def __init__(self, model, site_res=SITE_RES):
+        self.model = model
+        self.res = site_res
+        self.body_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "writeboard_body")
+        self.site_ids = np.array(
+            [mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, "wb_pix_%d_%d" % (iv, iu))
+             for iv in range(site_res) for iu in range(site_res)], dtype=np.int32)
+        table_body = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_BODY, "table_body")
+        self.table_geoms = np.flatnonzero(model.geom_bodyid == table_body)
+        self._table_rgba = model.geom_rgba[self.table_geoms].copy()
+        self.glass_mat = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_MATERIAL, PANEL_GLASS_MAT)
+        self._glass_rgba = model.mat_rgba[self.glass_mat].copy()
+        v, u = np.meshgrid(np.linspace(0, 1, site_res), np.linspace(0, 1, site_res),
+                           indexing='ij')
+        self._u, self._v = u.ravel(), v.ravel()
+        self._size = None
+        self.surface = None
+
+    def set(self, surface):
+        m = self.model
+        m.body_pos[self.body_id] = surface.body_pos
+        quat = np.zeros(4)
+        mujoco.mju_mat2Quat(quat, surface.rot.reshape(-1))
+        m.body_quat[self.body_id] = quat
+        if self._size != surface.size:
+            half = surface.size / self.res / 2.0
+            m.site_size[self.site_ids] = [board_mod.SITE_HALF_THICK, half, half]
+            m.site_pos[self.site_ids, 0] = board_mod.SITE_OFFSET_X
+            m.site_pos[self.site_ids, 1] = surface.size * (0.5 - self._u)
+            m.site_pos[self.site_ids, 2] = surface.size * (self._v - 0.5)
+            self._size = surface.size
+        alpha = 1.0 if surface.name == 'table' else 0.0
+        rgba = self._table_rgba.copy()
+        rgba[:, 3] = alpha
+        m.geom_rgba[self.table_geoms] = rgba
+        glass = self._glass_rgba.copy()
+        glass[3] = alpha
+        m.mat_rgba[self.glass_mat] = glass
+        self.surface = surface
 
 
 class BoardPainter:
@@ -171,15 +333,30 @@ class BoardPainter:
         self.site_ids = np.array(ids, dtype=np.int32)
         self._rgba = np.ones((site_res * site_res, 4), dtype=np.float64)
 
-    def paint(self, density):
-        """``density`` is (res, res) in [0, 1], indexed [v, u]."""
+        # Solar-cell grid lines of the panel, as a pixel mask on the site grid.
+        glass_half = board_mod.TABLE_SIZE / 2.0 + PANEL_MARGIN - PANEL_RIM
+        cell = 2 * glass_half / PANEL_N_CELLS
+        lines = 0.5 + (-glass_half + cell * np.arange(1, PANEL_N_CELLS)) / board_mod.TABLE_SIZE
+        axis = np.linspace(0.0, 1.0, site_res)
+        on_line = (np.abs(axis[:, None] - lines[None, :]) < 0.5 / (site_res - 1)).any(axis=1)
+        self._cell_mask = (on_line[None, :] | on_line[:, None]).ravel()
+
+    def paint(self, density, lut=None, cells=False):
+        """``density`` is (res, res) in [0, 1], indexed [v, u]; ``lut`` is the
+        colour table (default: WHITE_INFERNO); ``cells`` draws the solar-cell
+        grid faintly underneath the density."""
+        lut = CMAP_LUT if lut is None else lut
         grid = np.asarray(density, dtype=np.float64)
         if grid.shape != (self.res, self.res):
             vi = np.linspace(0, grid.shape[0] - 1, self.res).astype(np.int32)
             ui = np.linspace(0, grid.shape[1] - 1, self.res).astype(np.int32)
             grid = grid[np.ix_(vi, ui)]
         idx = np.clip(grid * 255.0, 0, 255).astype(np.intp)
-        self._rgba[:, :3] = CMAP_LUT[idx].reshape(-1, 3) / 255.0
+        rgb = lut[idx].reshape(-1, 3) / 255.0
+        if cells:
+            weight = 0.35 * (1.0 - idx.reshape(-1, 1) / 255.0) * self._cell_mask[:, None]
+            rgb = (1.0 - weight) * rgb + weight * np.array(_CELL_LINE[:3])
+        self._rgba[:, :3] = rgb
         self.model.site_rgba[self.site_ids] = self._rgba
 
 
@@ -291,15 +468,15 @@ def _cartesian_segment(ik, q_seed, p_from, p_to, n=40, tool_axis=TOOL_AXIS):
 
 
 # -- Trajectory planning (with on-disk cache) ---------------------------------
-def _cache_key(shape_name, standoff, axis, densify, n_pts):
+def _cache_key(shape_name, standoff, axis, densify, n_pts, surface=WALL):
     payload = "|".join(str(x) for x in (
         shape_name, round(standoff, 6), axis, densify, n_pts,
-        BOARD_FACE_X, BOARD_SIZE, tuple(BOARD_ORIGIN), ERASER_TIP, SITE_RES))
+        surface.key(), ERASER_TIP, SITE_RES))
     return hashlib.sha1(payload.encode()).hexdigest()[:16]
 
 
 def plan_playback(model, shape_name, standoff=DEFAULT_STANDOFF, axis='Z',
-                  densify=4, restarts=8, use_cache=True):
+                  densify=4, restarts=8, use_cache=True, surface=WALL):
     """
     Plan everything needed to replay ``shape_name``: the drawing joint path and
     the approach/retract segments.  Returns ``(schedule, path_pos, report)``.
@@ -308,11 +485,12 @@ def plan_playback(model, shape_name, standoff=DEFAULT_STANDOFF, axis='Z',
     n_raw = len(uv)
     idx = np.linspace(0, n_raw - 1, max(densify * n_raw, n_raw))
     uv_dense = np.stack([np.interp(idx, np.arange(n_raw), uv[:, k]) for k in range(2)], axis=1)
-    path_pos = board_mod.uv_to_world(uv_dense, standoff)
+    path_pos = surface.uv_to_world(uv_dense, standoff)
+    tool_axis = surface.tool_axis
 
-    ik = TaskPriorityIK(model, tool_axis=TOOL_AXIS)
+    ik = TaskPriorityIK(model, tool_axis=tool_axis)
 
-    key = _cache_key(shape_name, standoff, axis, densify, n_raw)
+    key = _cache_key(shape_name, standoff, axis, densify, n_raw, surface)
     cache_file = os.path.join(CACHE_DIR, "qpath_%s_%s.npz" % (shape_name, key))
     q_draw = None
     if use_cache and os.path.exists(cache_file):
@@ -332,7 +510,7 @@ def plan_playback(model, shape_name, standoff=DEFAULT_STANDOFF, axis='Z',
     if q_draw is None:
         print("  planning joint trajectory over %d waypoints ..." % len(path_pos))
         t0 = time.perf_counter()
-        q_draw, report = plan_joint_path(ik, path_pos, TOOL_AXIS, restarts=restarts)
+        q_draw, report = plan_joint_path(ik, path_pos, tool_axis, restarts=restarts)
         report['cached'] = False
         print("  planned in %.1f s" % (time.perf_counter() - t0))
         if use_cache:
@@ -348,19 +526,22 @@ def plan_playback(model, shape_name, standoff=DEFAULT_STANDOFF, axis='Z',
         mujoco.mj_resetDataKeyframe(model, scratch, key_id)
     q_home = scratch.qpos[:N_ARM_JOINTS].copy()
 
-    back = np.array([RETRACT, 0.0, 0.0])
+    back = tool_axis * RETRACT                   # backing off = against the tool axis
     p_first, p_last = path_pos[0], path_pos[-1]
-    q_pre, _, _ = ik.solve(q_draw[0], p_first - back, TOOL_AXIS, iterations=300)
-    q_post, _, _ = ik.solve(q_draw[-1], p_last - back, TOOL_AXIS, iterations=300)
+    q_pre, _, _ = ik.solve(q_draw[0], p_first - back, tool_axis, iterations=300)
+    q_post, _, _ = ik.solve(q_draw[-1], p_last - back, tool_axis, iterations=300)
 
     draw_time = n_raw * dt
     segments = [
         Segment(_joint_lerp(q_home, q_pre), 2.5, 'approach', ease=True),
-        Segment(_cartesian_segment(ik, q_pre, p_first - back, p_first), 1.0, 'engage'),
+        Segment(_cartesian_segment(ik, q_pre, p_first - back, p_first, tool_axis=tool_axis),
+                1.0, 'engage'),
         Segment(q_draw, draw_time, 'draw', drawing=True),
-        Segment(_cartesian_segment(ik, q_draw[-1], p_last, p_last - back), 0.8, 'retract'),
+        Segment(_cartesian_segment(ik, q_draw[-1], p_last, p_last - back, tool_axis=tool_axis),
+                0.8, 'retract'),
         Segment(_joint_lerp(q_post, q_pre), 1.5, 'return', ease=True),
-        Segment(_cartesian_segment(ik, q_pre, p_first - back, p_first), 1.0, 'engage'),
+        Segment(_cartesian_segment(ik, q_pre, p_first - back, p_first, tool_axis=tool_axis),
+                1.0, 'engage'),
     ]
     # The intro (approach + first engage) runs once; the rest loops.
     return Schedule(segments, n_intro=2), path_pos, report
@@ -369,9 +550,10 @@ def plan_playback(model, shape_name, standoff=DEFAULT_STANDOFF, axis='Z',
 # -- Standalone playback ------------------------------------------------------
 def run_shape_playback(shape_name='A', speed=1.0, erase=False, loop=True,
                        standoff=DEFAULT_STANDOFF, axis='Z', show_path=True,
-                       use_cache=True, restarts=8, fps=60.0):
-    print("Building MuJoCo scene ...")
+                       use_cache=True, restarts=8, fps=60.0, surface=WALL):
+    print("Building MuJoCo scene (%s) ..." % surface.name)
     model = _build_scene(_HERE, orthogonal_axis=axis)
+    SurfaceRig(model).set(surface)
     data = mujoco.MjData(model)
 
     key_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_KEY, "home")
@@ -381,7 +563,7 @@ def run_shape_playback(shape_name='A', speed=1.0, erase=False, loop=True,
     print("Planning '%s' ..." % shape_name)
     schedule, path_pos, report = plan_playback(
         model, shape_name, standoff=standoff, axis=axis,
-        use_cache=use_cache, restarts=restarts)
+        use_cache=use_cache, restarts=restarts, surface=surface)
     print("  planned tip accuracy: max %.1f um (mean %.1f um) | "
           "tool tilt max %.2f deg (mean %.2f deg)"
           % (report['max_pos_err'] * 1e6, report['mean_pos_err'] * 1e6,
@@ -392,12 +574,12 @@ def run_shape_playback(shape_name='A', speed=1.0, erase=False, loop=True,
         print("  no density parameters stored for %r -- board stays blank" % shape_name)
         density = np.zeros((SITE_RES, SITE_RES))
     painter = BoardPainter(model)
-    painter.paint(density)
+    painter.paint(density, lut_for(surface), cells=surface.name == 'table')
 
     tip_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, "eraser_tip")
     dt = model.opt.timestep
     n_sub = max(1, int(round((1.0 / fps) / dt)))
-    erase_radius_uv = ERASER_RADIUS / BOARD_SIZE
+    erase_radius_uv = ERASER_RADIUS / surface.size
     lead = servo_lead_time(model)
 
     # Start already settled in the home pose.
@@ -435,8 +617,8 @@ def run_shape_playback(shape_name='A', speed=1.0, erase=False, loop=True,
 
             tip = data.site_xpos[tip_id].copy()
             if erase and seg.drawing:
-                erase_disc(density, board_mod.world_to_uv(tip), erase_radius_uv)
-                painter.paint(density)
+                erase_disc(density, surface.world_to_uv(tip), erase_radius_uv)
+                painter.paint(density, lut_for(surface), cells=surface.name == 'table')
 
             if seg.label != last_label:
                 print("  [%6.2f s] %s" % (sim_t, seg.label))
@@ -489,24 +671,22 @@ def _update_tip_marker(viewer, tip):
 # -- Live mode driven by the 2D control centre --------------------------------
 class LiveArm:
     """
-    Mirror a 2D goal on the board with the Panda (one ``step`` per frame).
+    Mirror a 2D goal on the drawing surface with the Panda (one ``step`` per
+    frame).  The surface is the upright board ('wall') or the table ('table')
+    and can be switched at any time with :meth:`set_surface`.
 
     The 2D agent teleports between planning rounds and can sweep far faster
     than the arm.  Its position is therefore treated as a *goal* that the tool
     chases at no more than ``max_tip_speed`` m/s: the arm trails behind on fast
     moves instead of being handed a command it cannot reach, which is what used
-    to throw the tip tens of millimetres off the board plane.
+    to throw the tip tens of millimetres off the surface plane.
 
-    The joint command is rate-limited to ``JOINT_VMAX`` on top of that.  Online
-    IK continuation occasionally has to hop to a different branch -- most
-    reliably in the low centre of the board -- and without the limit that hop
-    is issued as a single ~46 rad/s step, which shows up as the tool briefly
-    leaving the board.  Ramping it out cuts the worst excursion from 95 mm to
-    26 mm and keeps the tip behind the board surface throughout.
+    The joint command is rate-limited to ``JOINT_VMAX`` on top of that, which
+    also turns a switch between wall and table into a smooth reconfiguration.
     """
 
     def __init__(self, axis='Z', standoff=DEFAULT_STANDOFF, fps=60.0,
-                 max_tip_speed=MAX_TIP_SPEED, ik_iters=4):
+                 max_tip_speed=MAX_TIP_SPEED, ik_iters=4, surface='wall'):
         self.ik_iters = ik_iters
         self.model = _build_scene(_HERE, orthogonal_axis=axis)
         self.data = mujoco.MjData(self.model)
@@ -518,40 +698,58 @@ class LiveArm:
         mujoco.mj_forward(model, data)
 
         self.ik = TaskPriorityIK(model, tool_axis=TOOL_AXIS)
+        self.rig = SurfaceRig(model)
         self.standoff = standoff
+        self.max_tip_speed = max_tip_speed
         self.tip_id = mujoco.mj_name2id(model, mujoco.mjtObj.mjOBJ_SITE, "eraser_tip")
 
-        # One smooth, validated orthogonal joint configuration per board point.
-        self.jmap = get_joint_map(
-            self.ik, standoff, CACHE_DIR,
-            key_parts=(BOARD_FACE_X, BOARD_SIZE, tuple(BOARD_ORIGIN), ERASER_TIP, axis))
-        rep = self.jmap.report
-        if rep['max_pos_err'] > 5e-4 or rep['max_axis_err'] > np.radians(0.1):
-            print("[mujoco] warning: joint map is not exact (tip %.2f mm, tilt %.2f deg)"
-                  % (rep['max_pos_err'] * 1e3, np.degrees(rep['max_axis_err'])))
+        dt = model.opt.timestep
+        self.n_sub = max(1, int(round((1.0 / fps) / dt)))
+        self.frame_dt = self.n_sub * dt
+        self.lead = servo_lead_time(model)
+        self.cursor = np.array([0.5, 0.5])
 
-        # Settle on the board centre before following the agent.
-        centre = board_mod.uv_to_world(np.array([0.5, 0.5]), standoff)
+        # One smooth, validated orthogonal joint configuration per surface point.
+        self.maps = {}
+        for name, surf in SURFACES.items():
+            jmap = get_joint_map(self.ik, standoff, CACHE_DIR, surf,
+                                 key_parts=(ERASER_TIP, axis))
+            rep = jmap.report
+            if rep['max_pos_err'] > 5e-4 or rep['max_axis_err'] > np.radians(0.1):
+                print("[mujoco] warning: %s joint map is not exact (tip %.2f mm, tilt %.2f deg)"
+                      % (name, rep['max_pos_err'] * 1e3, np.degrees(rep['max_axis_err'])))
+            self.maps[name] = jmap
+        self._select(surface)
+
+        # Settle on the surface centre before following the agent.
+        centre = self.surface.uv_to_world(np.array([0.5, 0.5]), standoff)
         self.q_cmd, pos_err, _ = self.ik.solve(
-            self.jmap.query((0.5, 0.5)), centre, TOOL_AXIS, iterations=100,
-            priority='axis')
+            self.jmap.query((0.5, 0.5)), centre, self.surface.tool_axis,
+            iterations=100, priority='axis')
         if pos_err > 1e-3:
-            print("[mujoco] warning: could not reach the board centre (%.1f mm)" % (pos_err * 1e3))
+            print("[mujoco] warning: could not reach the surface centre (%.1f mm)"
+                  % (pos_err * 1e3))
         data.qpos[:N_ARM_JOINTS] = self.q_cmd
         data.ctrl[:N_ARM_JOINTS] = self.q_cmd
         data.ctrl[N_ARM_JOINTS] = GRIPPER_CTRL
         mujoco.mj_forward(model, data)
 
-        dt = model.opt.timestep
-        self.n_sub = max(1, int(round((1.0 / fps) / dt)))
-        self.frame_dt = self.n_sub * dt
-        self.max_step_uv = max_tip_speed * self.frame_dt / BOARD_SIZE
-        self.lead = servo_lead_time(model)
-        self.cursor = np.array([0.5, 0.5])
+    def _select(self, name):
+        self.surface = SURFACES[name]
+        self.jmap = self.maps[name]
+        self.ik.posture = self.jmap.posture.copy()
+        self.rig.set(self.surface)
+        self.max_step_uv = self.max_tip_speed * self.frame_dt / self.surface.size
+
+    def set_surface(self, name):
+        """Switch between 'wall' and 'table'; the arm follows smoothly."""
+        if name != self.surface.name:
+            self._select(name)
 
     def step(self, goal):
-        """Advance one frame towards the board goal ``(u, v)``."""
+        """Advance one frame towards the surface goal ``(u, v)``."""
         model, data, ik = self.model, self.data, self.ik
+        surf = self.surface
 
         step = np.clip(np.asarray(goal, dtype=np.float64), 0.0, 1.0) - self.cursor
         dist = np.linalg.norm(step)
@@ -563,11 +761,11 @@ class LiveArm:
         # the arm sits on the agent instead of trailing it (see
         # ``servo_lead_time``).  With a stationary cursor this is a no-op.
         aim = np.clip(self.cursor + (self.lead / self.frame_dt) * step, 0.0, 1.0)
-        target = board_mod.uv_to_world(aim, self.standoff)
+        target = surf.uv_to_world(aim, self.standoff)
         # Start from the validated map value (never from the previous command),
         # so the arm cannot drift onto a tilted branch; a few IK steps then
         # remove the interpolation error.
-        q_next, _, _ = ik.solve(self.jmap.query(aim), target, TOOL_AXIS,
+        q_next, _, _ = ik.solve(self.jmap.query(aim), target, surf.tool_axis,
                                 iterations=self.ik_iters, priority='axis')
 
         # Never ask for more joint speed than the real arm has.
@@ -584,21 +782,106 @@ class LiveArm:
             mujoco.mj_step(model, data)
 
     def tool_state(self):
-        """(tip position, tool-axis tilt vs. the board normal [rad]) of the
+        """(tip position, tool-axis tilt vs. the surface normal [rad]) of the
         *simulated* arm, not of the commanded joint configuration."""
         pos = self.data.site_xpos[self.tip_id].copy()
         z = self.data.site_xmat[self.tip_id].reshape(3, 3)[:, 2]
-        tilt = float(np.arccos(np.clip(z @ TOOL_AXIS, -1.0, 1.0)))
+        tilt = float(np.arccos(np.clip(z @ self.surface.tool_axis, -1.0, 1.0)))
         return pos, tilt
+
+
+class PathOverlay:
+    """Projects the trajectory of the 2D control centre onto the surface:
+    everything driven in earlier rounds in green, the current round (driven so
+    far, solid) and the rest of its plan (faint) in red. When the next round
+    starts, the finished round simply becomes part of the green past."""
+
+    PAST_RGBA = (0.0, 0.78, 0.33, 0.95)         # #00C853
+    CURRENT_RGBA = (1.00, 0.09, 0.27, 1.00)     # #FF1744
+    PREVIEW_RGBA = (1.00, 0.09, 0.27, 0.50)
+    RADIUS = 0.0015
+    #: Height above the painted face (m): clear of the pixel sites, below the tool.
+    LIFT = 0.0035
+    #: Consecutive points further apart than this (board units) are not joined.
+    MAX_JUMP = 0.25
+
+    #: Rebuilding the capsules is the costly part, so do it at most this often (s).
+    MIN_INTERVAL = 0.05
+
+    def __init__(self, shared_path):
+        self.shared = shared_path
+        self._last = None
+        self._t = 0.0
+
+    def _read(self):
+        with self.shared.get_lock():
+            raw = np.frombuffer(self.shared.get_obj(), dtype=np.float64).copy()
+        n_past = int(np.clip(raw[0], 0, PATH_MAX_PAST))
+        n_cur = int(np.clip(raw[1], 0, PATH_MAX_CURRENT))
+        n_pre = int(np.clip(raw[2], 0, PATH_MAX_PREVIEW))
+        off_cur = PATH_HEADER + 2 * PATH_MAX_PAST
+        off_pre = off_cur + 2 * PATH_MAX_CURRENT
+        return (raw[PATH_HEADER:PATH_HEADER + 2 * n_past].reshape(-1, 2),
+                raw[off_cur:off_cur + 2 * n_cur].reshape(-1, 2),
+                raw[off_pre:off_pre + 2 * n_pre].reshape(-1, 2))
+
+    @staticmethod
+    def _joined(past, current, preview):
+        """Join the three parts at their seams so that no gaps are drawn."""
+        if len(past) and len(current):
+            current = np.vstack([past[-1:], current])
+        tail = current if len(current) else past
+        if len(tail) and len(preview):
+            preview = np.vstack([tail[-1:], preview])
+        return past, current, preview
+
+    def draw(self, viewer, surface):
+        scn = getattr(viewer, 'user_scn', None)
+        now = time.perf_counter()
+        if scn is None or now - self._t < self.MIN_INTERVAL:
+            return
+        past, current, preview = self._read()
+        sig = (surface.name, past.tobytes(), current.tobytes(), preview.tobytes())
+        if sig == self._last:
+            return
+        self._last, self._t = sig, now
+        past, current, preview = self._joined(past, current, preview)
+        lock = getattr(viewer, 'lock', None)
+        with (lock() if lock is not None else contextlib.nullcontext()):
+            scn.ngeom = 0
+            self._lines(scn, surface, past, self.PAST_RGBA)
+            self._lines(scn, surface, current, self.CURRENT_RGBA)
+            self._lines(scn, surface, preview, self.PREVIEW_RGBA)
+
+    def _lines(self, scn, surface, uv, rgba):
+        if len(uv) < 2:
+            return
+        pts = surface.uv_to_world(np.clip(uv, 0.0, 1.0), self.LIFT)   # stay on the surface
+        for k in range(len(uv) - 1):
+            if scn.ngeom >= scn.maxgeom:
+                return
+            if np.abs(uv[k + 1] - uv[k]).max() > self.MAX_JUMP:
+                continue
+            geom = scn.geoms[scn.ngeom]
+            mujoco.mjv_initGeom(geom, mujoco.mjtGeom.mjGEOM_CAPSULE, np.zeros(3),
+                                np.zeros(3), np.eye(3).flatten(), np.array(rgba, dtype=np.float32))
+            mujoco.mjv_connector(geom, mujoco.mjtGeom.mjGEOM_CAPSULE, self.RADIUS,
+                                 pts[k], pts[k + 1])
+            scn.ngeom += 1
 
 
 def run_mujoco_sim(agent_info_array, shared_truth, truth_res=TRUTH_RES,
                    axis='Z', standoff=DEFAULT_STANDOFF, fps=60.0,
-                   max_tip_speed=MAX_TIP_SPEED):
+                   max_tip_speed=MAX_TIP_SPEED, shared_path=None):
     """Live mode: follow the 2D agent from ``interactive_sim.py`` (see
-    :class:`LiveArm`) and paint the shared target density on the board."""
+    :class:`LiveArm`), paint the shared target density on the surface and, if
+    ``shared_path`` is given, project the trajectory onto it.
+
+    ``agent_info_array`` = [u, v, radius, eraser_mode, surface_mode] with
+    surface_mode 0 = wall, 1 = table (the last entry is optional)."""
     arm = LiveArm(axis=axis, standoff=standoff, fps=fps, max_tip_speed=max_tip_speed)
     painter = BoardPainter(arm.model)
+    overlay = PathOverlay(shared_path) if shared_path is not None else None
 
     with mujoco.viewer.launch_passive(arm.model, arm.data) as viewer:
         while viewer.is_running():
@@ -607,6 +890,8 @@ def run_mujoco_sim(agent_info_array, shared_truth, truth_res=TRUTH_RES,
             with agent_info_array.get_lock():
                 goal = np.array([float(agent_info_array[0]),
                                  float(agent_info_array[1])])
+                table = len(agent_info_array) > 4 and agent_info_array[4] > 0.5
+            arm.set_surface('table' if table else 'wall')
             arm.step(goal)
 
             if shared_truth is not None:
@@ -616,7 +901,10 @@ def run_mujoco_sim(agent_info_array, shared_truth, truth_res=TRUTH_RES,
                 peak = grid.max()
                 if peak > 0:
                     grid /= peak
-                painter.paint(np.clip(grid, 0.0, 1.0))
+                painter.paint(np.clip(grid, 0.0, 1.0), lut_for(arm.surface),
+                              cells=arm.surface.name == 'table')
+            if overlay is not None:
+                overlay.draw(viewer, arm.surface)
 
             viewer.sync()
             sleep = 1.0 / fps - (time.perf_counter() - frame_start)
@@ -640,6 +928,8 @@ def main(argv=None):
     p.add_argument('--standoff', type=float, default=DEFAULT_STANDOFF,
                    help="gap between eraser tip and board surface in m")
     p.add_argument('--no-path', action='store_true', help="hide the reference trajectory")
+    p.add_argument('--surface', default='wall', choices=sorted(SURFACES),
+                   help="draw on the upright board or on the table (default: wall)")
     p.add_argument('--no-cache', action='store_true', help="always re-plan the joint path")
     p.add_argument('--restarts', type=int, default=8, help="IK seed restarts (default: 8)")
     p.add_argument('--list-shapes', action='store_true', help="print available shapes and exit")
@@ -655,7 +945,7 @@ def main(argv=None):
     run_shape_playback(shape_name=args.shape, speed=args.speed, erase=args.erase,
                        loop=not args.once, standoff=args.standoff, axis=args.axis,
                        show_path=not args.no_path, use_cache=not args.no_cache,
-                       restarts=args.restarts)
+                       restarts=args.restarts, surface=SURFACES[args.surface])
     return 0
 
 

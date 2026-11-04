@@ -78,3 +78,11 @@ thesis_architecture/teacher_study/results/calib_A/
 thesis_architecture/teacher_study/results/pilot_*/finals/
 # LM teacher DB (178 MB, over the GitHub limit)
 thesis_architecture/ergodic_dataset_generator/ergodic_dataset_lm_nxi25.db
+
+# Too large for GitHub (>100 MB) or private documents
+3D_ergodic_learning/ergodic_dataset_3d_lm.db
+Simulation_video.mp4
+Meeting 22_10.pptx
+thesis_architecture/evaluation_full_matrix/plots/exploration_comparison/exploration_comparison.db*
+Anmeldung_Masterthesis*.pdf
+Master_Thesis_Registration_*.pdf

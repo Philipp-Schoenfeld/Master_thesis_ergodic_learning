@@ -440,7 +440,7 @@ def svgd_step_numpy(particles, compute_energy_and_grad_fn, T, dim):
 
 def run_svgd_numpy(particles, T, n_iters, compute_energy_and_grad_fn, dim,
                    adam_lr=2e-3, adam_beta1=0.9, adam_beta2=0.999, adam_eps=1e-8,
-                   n_particles=None, label="SVGD", iter_callback=None):
+                   n_particles=None, label="SVGD", iter_callback=None, pin_first=None):
     """
     Full SVGD optimization loop with Adam optimizer (NumPy).
 
@@ -456,6 +456,10 @@ def run_svgd_numpy(particles, T, n_iters, compute_energy_and_grad_fn, dim,
         iter_callback: optional function(it, particles) called after every
             iteration (0-based `it`, particles (N, T*dim) after the Adam
             update and clipping). Read-only hook; default None = unchanged.
+        pin_first: optional (dim,) point. When given, the first of the T points
+            of every particle is hard-set to it before the first iteration and
+            again after every update (so the optimisation can never move it).
+            Default None = unchanged.
 
     Returns:
         particles: (N, T*dim) optimized trajectories
@@ -465,6 +469,9 @@ def run_svgd_numpy(particles, T, n_iters, compute_energy_and_grad_fn, dim,
         n_particles = particles.shape[0]
 
     particles = particles.copy()
+    if pin_first is not None:
+        pin_first = np.asarray(pin_first, dtype=particles.dtype)
+        particles.reshape(n_particles, T, dim)[:, 0, :] = pin_first
     m = np.zeros_like(particles)
     v = np.zeros_like(particles)
     energy_log = []
@@ -485,6 +492,8 @@ def run_svgd_numpy(particles, T, n_iters, compute_energy_and_grad_fn, dim,
 
         particles = particles.reshape(n_particles, T, dim)
         particles = np.clip(particles, 0.02, 0.98)
+        if pin_first is not None:
+            particles[:, 0, :] = pin_first
         particles = particles.reshape(n_particles, -1)
         mean_e = np.mean(energies)
         energy_log.append(mean_e)

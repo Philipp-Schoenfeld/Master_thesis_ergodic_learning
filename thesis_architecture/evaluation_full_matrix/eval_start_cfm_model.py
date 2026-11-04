@@ -326,7 +326,7 @@ def plot_all(rows, warm, cases, gens, out):
                chord='Chords (no solver)')
     methods = [m for m in ('ground_truth', 'new', 'old', 'chord') if any(r['method'] == m for r in rows)]
     # 1: metric bars on the stored starts of the holdout densities
-    panels = [('hellinger', 'Hellinger distance to target'), ('smooth', 'Smoothness energy'),
+    panels = [('hellinger', 'Ergodicity error to target'), ('smooth', 'Smoothness energy'),
               ('outside', 'Fraction of points outside [0.03, 0.97]'), ('start_err', 'Start error')]
     fig, axes = plt.subplots(1, 4, figsize=(15, 3.8), facecolor='white')
     for ax, (key, title) in zip(axes, panels):
@@ -345,7 +345,7 @@ def plot_all(rows, warm, cases, gens, out):
     # 2: warm start curves
     if warm:
         fig, axes = plt.subplots(1, 3, figsize=(13, 3.8), facecolor='white')
-        for ax, (key, title) in zip(axes, [('hellinger', 'Hellinger distance'), ('ergodic_k10', 'Fourier error K=10'),
+        for ax, (key, title) in zip(axes, [('hellinger', 'Ergodicity error'), ('ergodic_k10', 'Fourier error K=10'),
                                            ('smooth', 'Smoothness energy')]):
             _style(ax)
             for n, d in warm.items():

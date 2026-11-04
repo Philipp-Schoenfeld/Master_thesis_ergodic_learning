@@ -1,0 +1,254 @@
+7032 2D-Paare aus ergodic_dataset_lm_nxi25.db: 6816 bekannte, 216 zurueckgehaltene Dichten
+188 Trainingsflaechen, 12 zurueckgehaltene, 2 Blickwinkel je Flaeche
+  [  1/200] ebene_flach            ebene          528 Eintraege  (92 s)
+  [  2/200] ebene_gekippt          ebene         1056 Eintraege  (146 s)
+  [  3/200] ebene_diagonal         ebene         1584 Eintraege  (188 s)
+  [  4/200] ebene_fib_0            ebene         2112 Eintraege  (223 s)
+  [  5/200] ebene_fib_1            ebene         2640 Eintraege  (251 s)
+  [  6/200] ebene_fib_2            ebene         3168 Eintraege  (272 s)
+  [  7/200] ebene_fib_3            ebene         3696 Eintraege  (290 s)
+  [  8/200] ebene_fib_4            ebene         4224 Eintraege  (307 s)
+  [  9/200] ebene_fib_5            ebene         4752 Eintraege  (319 s)
+  [ 10/200] ebene_fib_6            ebene         5280 Eintraege  (330 s)
+  [ 11/200] kugel                  primitiv      5808 Eintraege  (338 s)
+  [ 12/200] wuerfel                primitiv      6335 Eintraege  (345 s)
+  [ 13/200] ei                     primitiv      6863 Eintraege  (350 s)
+  [ 14/200] bunny                  extern        7326 Eintraege  (355 s)
+  [ 15/200] prisma                 primitiv      7854 Eintraege  (358 s)
+  [ 16/200] kegel                  primitiv      8320 Eintraege  (363 s)
+  [ 17/200] torus                  primitiv      8842 Eintraege  (366 s)
+  [ 18/200] tetraeder              primitiv      9115 Eintraege  (368 s)
+  [ 19/200] oktaeder               primitiv      9583 Eintraege  (369 s)
+  [ 20/200] dodekaeder             primitiv     10111 Eintraege  (370 s)
+  [ 21/200] ikosaeder              primitiv     10639 Eintraege  (371 s)
+  [ 22/200] kuboktaeder            primitiv     11167 Eintraege  (373 s)
+  [ 23/200] oktaederstumpf         primitiv     11693 Eintraege  (375 s)
+  [ 24/200] quader                 primitiv     12221 Eintraege  (375 s)
+  [ 25/200] spat                   primitiv     12743 Eintraege  (376 s)
+  [ 26/200] rhomboeder             primitiv     13271 Eintraege  (377 s)
+  [ 27/200] dreiecksplatte         primitiv     13739 Eintraege  (377 s)
+  [ 28/200] sechseckprisma         primitiv     14267 Eintraege  (378 s)
+  [ 29/200] sternprisma            primitiv     14738 Eintraege  (378 s)
+  [ 30/200] pyramide               primitiv     15119 Eintraege  (379 s)
+  [ 31/200] bipyramide             primitiv     15595 Eintraege  (380 s)
+  [ 32/200] pyramidenstumpf        primitiv     16119 Eintraege  (380 s)
+  [ 33/200] keil                   primitiv     16593 Eintraege  (381 s)
+  [ 34/200] antiprisma             primitiv     17121 Eintraege  (381 s)
+  [ 35/200] trapezoeder            primitiv     17649 Eintraege  (382 s)
+  [ 36/200] zylinder               primitiv     18177 Eintraege  (383 s)
+  [ 37/200] hohlzylinder           primitiv     18682 Eintraege  (383 s)
+  [ 38/200] kegel_schlank          primitiv     18991 Eintraege  (384 s)
+  [ 39/200] kegelstumpf            primitiv     19516 Eintraege  (384 s)
+  [ 40/200] torus_dick             primitiv     20044 Eintraege  (385 s)
+  [ 41/200] ellipsoid              primitiv     20572 Eintraege  (386 s)
+  [ 42/200] paraboloid             primitiv     21100 Eintraege  (386 s)
+  [ 43/200] hyperboloid            primitiv     21628 Eintraege  (387 s)
+  [ 44/200] katenoid               primitiv     21925 Eintraege  (388 s)
+  [ 45/200] spindel                primitiv     22453 Eintraege  (388 s)
+  [ 46/200] tropfen                primitiv     22981 Eintraege  (389 s)
+  [ 47/200] oloid                  primitiv     23504 Eintraege  (389 s)
+  [ 48/200] buchstabe_a            buchstabe    24026 Eintraege  (390 s)
+  [ 49/200] buchstabe_b            buchstabe    24554 Eintraege  (390 s)
+  [ 50/200] buchstabe_c            buchstabe    25072 Eintraege  (391 s)
+  [ 51/200] buchstabe_d            buchstabe    25600 Eintraege  (392 s)
+  [ 52/200] buchstabe_e            buchstabe    26128 Eintraege  (392 s)
+  [ 53/200] buchstabe_f            buchstabe    26655 Eintraege  (393 s)
+  [ 54/200] buchstabe_g            buchstabe    27175 Eintraege  (393 s)
+  [ 55/200] buchstabe_h            buchstabe    27508 Eintraege  (394 s)
+  [ 56/200] buchstabe_i            buchstabe    27899 Eintraege  (394 s)
+  [ 57/200] buchstabe_j            buchstabe    28427 Eintraege  (395 s)
+  [ 58/200] buchstabe_k            buchstabe    28951 Eintraege  (395 s)
+  [ 59/200] buchstabe_l            buchstabe    29479 Eintraege  (396 s)
+  [ 60/200] buchstabe_m            buchstabe    29990 Eintraege  (397 s)
+  [ 61/200] buchstabe_n            buchstabe    30517 Eintraege  (397 s)
+  [ 62/200] buchstabe_o            buchstabe    31045 Eintraege  (398 s)
+  [ 63/200] buchstabe_p            buchstabe    31573 Eintraege  (398 s)
+  [ 64/200] buchstabe_q            buchstabe    32002 Eintraege  (399 s)
+  [ 65/200] buchstabe_r            buchstabe    32530 Eintraege  (399 s)
+  [ 66/200] buchstabe_s            buchstabe    33025 Eintraege  (400 s)
+  [ 67/200] buchstabe_t            buchstabe    33427 Eintraege  (400 s)
+  [ 68/200] buchstabe_u            buchstabe    33913 Eintraege  (401 s)
+  [ 69/200] buchstabe_v            buchstabe    34385 Eintraege  (401 s)
+  [ 70/200] buchstabe_w            buchstabe    34913 Eintraege  (402 s)
+  [ 71/200] buchstabe_x            buchstabe    35441 Eintraege  (403 s)
+  [ 72/200] buchstabe_y            buchstabe    35955 Eintraege  (403 s)
+  [ 73/200] buchstabe_z            buchstabe    36364 Eintraege  (404 s)
+  [ 74/200] organismus_01          organismus   36892 Eintraege  (404 s)
+  [ 75/200] organismus_02          organismus   37420 Eintraege  (405 s)
+  [ 76/200] organismus_03          organismus   37948 Eintraege  (406 s)
+  [ 77/200] organismus_04          organismus   38476 Eintraege  (406 s)
+  [ 78/200] organismus_05          organismus   39004 Eintraege  (407 s)
+  [ 79/200] organismus_06          organismus   39532 Eintraege  (408 s)
+  [ 80/200] organismus_07          organismus   40060 Eintraege  (409 s)
+  [ 81/200] organismus_08          organismus   40588 Eintraege  (409 s)
+  [ 82/200] organismus_09          organismus   41116 Eintraege  (410 s)
+  [ 83/200] organismus_10          organismus   41644 Eintraege  (410 s)
+  [ 84/200] organismus_11          organismus   42172 Eintraege  (411 s)
+  [ 85/200] organismus_12          organismus   42700 Eintraege  (412 s)
+  [ 86/200] organismus_13          organismus   43228 Eintraege  (412 s)
+  [ 87/200] organismus_14          organismus   43756 Eintraege  (413 s)
+  [ 88/200] organismus_15          organismus   44284 Eintraege  (413 s)
+  [ 89/200] organismus_16          organismus   44812 Eintraege  (414 s)
+  [ 90/200] organismus_17          organismus   45340 Eintraege  (415 s)
+  [ 91/200] organismus_18          organismus   45868 Eintraege  (415 s)
+  [ 92/200] organismus_19          organismus   46396 Eintraege  (416 s)
+  [ 93/200] organismus_20          organismus   46924 Eintraege  (416 s)
+  [ 94/200] organismus_21          organismus   47452 Eintraege  (417 s)
+  [ 95/200] organismus_22          organismus   47980 Eintraege  (418 s)
+  [ 96/200] organismus_23          organismus   48506 Eintraege  (418 s)
+  [ 97/200] organismus_24          organismus   49034 Eintraege  (419 s)
+  [ 98/200] organismus_25          organismus   49562 Eintraege  (420 s)
+  [ 99/200] organismus_26          organismus   50090 Eintraege  (420 s)
+  [100/200] organismus_27          organismus   50617 Eintraege  (421 s)
+  [101/200] organismus_28          organismus   51145 Eintraege  (421 s)
+  [102/200] organismus_29          organismus   51673 Eintraege  (422 s)
+  [103/200] organismus_30          organismus   52201 Eintraege  (423 s)
+  [104/200] organismus_31          organismus   52729 Eintraege  (423 s)
+  [105/200] organismus_32          organismus   53257 Eintraege  (424 s)
+  [106/200] organismus_33          organismus   53785 Eintraege  (424 s)
+  [107/200] organismus_34          organismus   54313 Eintraege  (425 s)
+  [108/200] organismus_35          organismus   54841 Eintraege  (425 s)
+  [109/200] organismus_36          organismus   55369 Eintraege  (426 s)
+  [110/200] organismus_37          organismus   55897 Eintraege  (427 s)
+  [111/200] bg_lochkreuz           baugruppe    56425 Eintraege  (427 s)
+  [112/200] bg_torussteg           baugruppe    56950 Eintraege  (428 s)
+  [113/200] bg_facette             baugruppe    57478 Eintraege  (428 s)
+  [114/200] bg_dorn                baugruppe    57823 Eintraege  (429 s)
+  [115/200] bg_hantel              baugruppe    58351 Eintraege  (429 s)
+  [116/200] bg_lblock              baugruppe    58734 Eintraege  (430 s)
+  [117/200] bg_becher              baugruppe    59262 Eintraege  (430 s)
+  [118/200] bg_kreuzstern          baugruppe    59593 Eintraege  (431 s)
+  [119/200] bg_ringwuerfel         baugruppe    60121 Eintraege  (432 s)
+  [120/200] bg_kerbe               baugruppe    60649 Eintraege  (432 s)
+  [121/200] bg_zahnrad             baugruppe    61149 Eintraege  (433 s)
+  [122/200] bg_bogen               baugruppe    61497 Eintraege  (433 s)
+  [123/200] bg_kapselring          baugruppe    62025 Eintraege  (434 s)
+  [124/200] bg_lochkreuz_var       baugruppe    62553 Eintraege  (434 s)
+  [125/200] bg_torussteg_var       baugruppe    63080 Eintraege  (435 s)
+  [126/200] bg_facette_var         baugruppe    63608 Eintraege  (435 s)
+  [127/200] bg_dorn_var            baugruppe    63971 Eintraege  (436 s)
+  [128/200] bg_lblock_var          baugruppe    64497 Eintraege  (437 s)
+  [129/200] bg_becher_var          baugruppe    65025 Eintraege  (437 s)
+  [130/200] bg_kreuzstern_var      baugruppe    65380 Eintraege  (438 s)
+  [131/200] bg_ringwuerfel_var     baugruppe    65883 Eintraege  (438 s)
+  [132/200] bg_kerbe_var           baugruppe    66411 Eintraege  (439 s)
+  [133/200] bg_zahnrad_var         baugruppe    66939 Eintraege  (439 s)
+  [134/200] sq_stern3d             superquadrik   67467 Eintraege  (440 s)
+  [135/200] sq_stern3d_lang        superquadrik   67989 Eintraege  (440 s)
+  [136/200] sq_spindel             superquadrik   68517 Eintraege  (441 s)
+  [137/200] sq_spindel_lang        superquadrik   69043 Eintraege  (441 s)
+  [138/200] sq_dreikant            superquadrik   69571 Eintraege  (442 s)
+  [139/200] sq_dreikant_lang       superquadrik   70099 Eintraege  (442 s)
+  [140/200] sq_oktaederrund        superquadrik   70627 Eintraege  (443 s)
+  [141/200] sq_oktaederrund_lang   superquadrik   71155 Eintraege  (443 s)
+  [142/200] sq_kugel               superquadrik   71683 Eintraege  (444 s)
+  [143/200] sq_kugel_lang          superquadrik   72211 Eintraege  (445 s)
+  [144/200] sq_rundkasten          superquadrik   72671 Eintraege  (445 s)
+  [145/200] sq_rundkasten_lang     superquadrik   73129 Eintraege  (446 s)
+  [146/200] sq_kasten              superquadrik   73180 Eintraege  (446 s)
+  [147/200] sq_kasten_lang         superquadrik   73201 Eintraege  (447 s)
+  [148/200] sq_linse               superquadrik   73729 Eintraege  (448 s)
+  [149/200] sq_linse_lang          superquadrik   74250 Eintraege  (448 s)
+  [150/200] sq_tonne               superquadrik   74769 Eintraege  (449 s)
+  [151/200] sq_tonne_lang          superquadrik   75190 Eintraege  (449 s)
+  [152/200] sq_diamant             superquadrik   75718 Eintraege  (450 s)
+  [153/200] sq_diamant_lang        superquadrik   76246 Eintraege  (450 s)
+  [154/200] sq_flachstern          superquadrik   76772 Eintraege  (451 s)
+  [155/200] sq_flachstern_lang     superquadrik   77300 Eintraege  (451 s)
+  [156/200] sq_nadelkasten         superquadrik   77828 Eintraege  (452 s)
+  [157/200] sq_nadelkasten_lang    superquadrik   78348 Eintraege  (452 s)
+  [158/200] sq_kreuzquer           superquadrik   78874 Eintraege  (453 s)
+  [159/200] sq_fass                superquadrik   79402 Eintraege  (454 s)
+  [160/200] wort_se3               wort         79901 Eintraege  (454 s)
+  [161/200] wort_tsvec             wort         80420 Eintraege  (455 s)
+  [162/200] wort_cfm               wort         80948 Eintraege  (455 s)
+  [163/200] wort_lbo               wort         81393 Eintraege  (456 s)
+  [164/200] wort_gmm               wort         81847 Eintraege  (456 s)
+  [165/200] wort_svgd              wort         82258 Eintraege  (457 s)
+  [166/200] wort_mpd               wort         82742 Eintraege  (457 s)
+  [167/200] wort_warm              wort         82965 Eintraege  (458 s)
+  [168/200] wort_flow              wort         83367 Eintraege  (458 s)
+  [169/200] wort_ergo              wort         83895 Eintraege  (459 s)
+  [170/200] wort_phi               wort         84423 Eintraege  (459 s)
+  [171/200] wort_kappa             wort         84926 Eintraege  (460 s)
+  [172/200] wort_gauss             wort         85371 Eintraege  (460 s)
+  [173/200] wort_spline            wort         85616 Eintraege  (461 s)
+  [174/200] wort_prior             wort         86141 Eintraege  (461 s)
+  [175/200] wort_adam              wort         86665 Eintraege  (462 s)
+  [176/200] wort_relu              wort         87191 Eintraege  (462 s)
+  [177/200] wort_unet              wort         87536 Eintraege  (463 s)
+  [178/200] wort_cross             wort         87952 Eintraege  (463 s)
+  [179/200] wort_zero              wort         88326 Eintraege  (464 s)
+  [180/200] wort_film              wort         88827 Eintraege  (464 s)
+  [181/200] wort_attn              wort         89284 Eintraege  (465 s)
+  [182/200] wort_coeff             wort         89775 Eintraege  (465 s)
+  [183/200] extern_armadillo       extern       89974 Eintraege  (466 s)
+  [184/200] extern_knoten          extern       90499 Eintraege  (467 s)
+  [185/200] extern_affenkopf       extern       90907 Eintraege  (467 s)
+  [186/200] extern_avocado         extern       91431 Eintraege  (468 s)
+  [187/200] extern_helm            extern       91958 Eintraege  (468 s)
+  [188/200] extern_fliegerhelm     extern       92205 Eintraege  (469 s)
+  [189/200] kapsel                 primitiv     92301 Eintraege  (469 s)
+  [190/200] halbkugel              primitiv     92397 Eintraege  (469 s)
+  [191/200] ziffer_1               buchstabe    92471 Eintraege  (469 s)
+  [192/200] ziffer_5               buchstabe    92564 Eintraege  (469 s)
+  [193/200] organismus_00          organismus   92660 Eintraege  (469 s)
+  [194/200] organismus_38          organismus   92756 Eintraege  (470 s)
+  [195/200] bg_hantel_var          baugruppe    92835 Eintraege  (470 s)
+  [196/200] bg_bogen_var           baugruppe    92897 Eintraege  (470 s)
+  [197/200] sq_kreuzquer_lang      superquadrik   92993 Eintraege  (470 s)
+  [198/200] sq_fass_lang           superquadrik   93081 Eintraege  (470 s)
+  [199/200] wort_vita              wort         93170 Eintraege  (470 s)
+  [200/200] wort_ias               wort         93219 Eintraege  (470 s)
+
+93219 Eintraege in ergodic_dataset_3d_lm.db (1554 MiB, 470 s)
+7197 verworfen (Fehlschuss > 35%)
+Dichtegitter: 2344 gerechnet, 98072 aus dem Zwischenspeicher (98% gespart)
+
+Eintraege je Split:
+  train            83789
+  val_form          8416
+  val_flaeche        508
+  val_beides         506
+
+Guete je Gruppe:
+  baugruppe      11183  Fehlschuss  10.9 %  Sprung 0.266  senkrecht bis 0.04°  beschienen 41.5 %
+  buchstabe      13027  Fehlschuss  12.3 %  Sprung 0.347  senkrecht bis 0.03°  beschienen 42.0 %
+  ebene           5280  Fehlschuss   0.0 %  Sprung 0.032  senkrecht bis 0.03°  beschienen 81.9 %
+  extern          2893  Fehlschuss  17.9 %  Sprung 0.334  senkrecht bis 0.03°  beschienen 40.6 %
+  organismus     19725  Fehlschuss   6.2 %  Sprung 0.130  senkrecht bis 0.04°  beschienen 40.7 %
+  primitiv       17953  Fehlschuss   9.4 %  Sprung 0.190  senkrecht bis 0.04°  beschienen 41.2 %
+  superquadrik   12647  Fehlschuss   9.2 %  Sprung 0.169  senkrecht bis 0.04°  beschienen 41.7 %
+  wort           10511  Fehlschuss  18.3 %  Sprung 0.230  senkrecht bis 0.03°  beschienen 42.1 %
+
+Guete je Flaeche (schlechteste 20 nach Fehlschuss):
+  wort_warm              wort          223  Fehlschuss  30.5 %  Sprung 0.161  senkrecht bis 0.03°  beschienen 38.6 %
+  extern_fliegerhelm     extern        247  Fehlschuss  27.9 %  Sprung 0.299  senkrecht bis 0.03°  beschienen 39.0 %
+  extern_armadillo       extern        199  Fehlschuss  27.9 %  Sprung 0.538  senkrecht bis 0.03°  beschienen 40.6 %
+  buchstabe_h            buchstabe     333  Fehlschuss  27.8 %  Sprung 0.375  senkrecht bis 0.02°  beschienen 42.1 %
+  bg_kreuzstern_var      baugruppe     355  Fehlschuss  27.4 %  Sprung 0.263  senkrecht bis 0.02°  beschienen 41.6 %
+  wort_spline            wort          245  Fehlschuss  27.4 %  Sprung 0.269  senkrecht bis 0.03°  beschienen 42.9 %
+  buchstabe_z            buchstabe     409  Fehlschuss  26.5 %  Sprung 0.389  senkrecht bis 0.02°  beschienen 41.5 %
+  wort_svgd              wort          411  Fehlschuss  26.1 %  Sprung 0.257  senkrecht bis 0.03°  beschienen 41.7 %
+  bg_bogen               baugruppe     348  Fehlschuss  25.9 %  Sprung 0.388  senkrecht bis 0.03°  beschienen 41.6 %
+  wort_attn              wort          457  Fehlschuss  25.9 %  Sprung 0.213  senkrecht bis 0.02°  beschienen 42.1 %
+  wort_mpd               wort          484  Fehlschuss  25.9 %  Sprung 0.228  senkrecht bis 0.03°  beschienen 43.2 %
+  bg_kreuzstern          baugruppe     331  Fehlschuss  25.7 %  Sprung 0.257  senkrecht bis 0.02°  beschienen 41.2 %
+  sq_kasten_lang         superquadrik     21  Fehlschuss  25.4 %  Sprung 0.135  senkrecht bis 0.03°  beschienen 35.1 %
+  kegel_schlank          primitiv      309  Fehlschuss  24.4 %  Sprung 0.275  senkrecht bis 0.03°  beschienen 40.6 %
+  sq_tonne_lang          superquadrik    421  Fehlschuss  24.3 %  Sprung 0.190  senkrecht bis 0.03°  beschienen 43.2 %
+  sq_kasten              superquadrik     51  Fehlschuss  24.0 %  Sprung 0.175  senkrecht bis 0.03°  beschienen 35.2 %
+  bg_bogen_var           baugruppe      62  Fehlschuss  24.0 %  Sprung 0.384  senkrecht bis 0.03°  beschienen 40.6 %
+  tetraeder              primitiv      273  Fehlschuss  24.0 %  Sprung 0.343  senkrecht bis 0.02°  beschienen 33.7 %
+  bg_hantel_var          baugruppe      79  Fehlschuss  24.0 %  Sprung 0.271  senkrecht bis 0.03°  beschienen 40.4 %
+  bg_dorn                baugruppe     345  Fehlschuss  23.7 %  Sprung 0.353  senkrecht bis 0.02°  beschienen 44.3 %
+
+[!] 8 Blickwinkel nur mit Abstrichen (Silhouette unter 55% oder Netz durchlaessig):
+    bg_dorn_var            Winkel 1  Treffer 0.54  Fehlschuss 0.000
+    bg_kreuzstern_var      Winkel 1  Treffer 0.54  Fehlschuss 0.000
+    sq_kasten              Winkel 0  Treffer 0.43  Fehlschuss 0.000
+    sq_kasten              Winkel 1  Treffer 0.39  Fehlschuss 0.000
+    sq_kasten_lang         Winkel 0  Treffer 0.34  Fehlschuss 0.000
+    sq_kasten_lang         Winkel 1  Treffer 0.35  Fehlschuss 0.000
+    extern_armadillo       Winkel 0  Treffer 0.55  Fehlschuss 0.000
+    extern_armadillo       Winkel 1  Treffer 0.53  Fehlschuss 0.000

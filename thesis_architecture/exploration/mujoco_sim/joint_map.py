@@ -21,9 +21,6 @@ import os
 
 import numpy as np
 
-from . import board as board_mod
-from .board import TOOL_AXIS
-
 #: A map cell counts as exact below these errors.
 EXACT_POS = 5e-4        # m
 EXACT_AXIS = 1e-3       # rad
@@ -35,10 +32,13 @@ SMOOTH_STEP = np.radians(30.0)   # max joint change between screening cells
 class JointMap:
     """``q[iv, iu]`` on a regular (n x n) grid over board coordinates [0,1]^2."""
 
-    def __init__(self, q, report):
+    def __init__(self, q, report, posture):
         self.q = q
         self.n = q.shape[0]
         self.report = report
+        #: Reference posture of the whole map (the centre pose); the IK pulls
+        #: its null space towards it.
+        self.posture = np.asarray(posture, dtype=np.float64)
 
     def query(self, uv):
         """Bilinear interpolation of the joint configuration at ``uv`` (2,)."""
@@ -51,15 +51,16 @@ class JointMap:
                 + a * (1 - b) * q[i0 + 1, j0] + a * b * q[i0 + 1, j0 + 1])
 
 
-def _world_fn(n, standoff):
+def _world_fn(n, standoff, surface):
     def world(iv, iu):
-        return board_mod.uv_to_world(np.array([iu / (n - 1.0), iv / (n - 1.0)]), standoff)
+        return surface.uv_to_world(np.array([iu / (n - 1.0), iv / (n - 1.0)]), standoff)
     return world
 
 
-def _fill_grid(ik, q_c, n, standoff, iterations):
+def _fill_grid(ik, q_c, n, standoff, iterations, surface):
     """Continuation over an (n x n) grid starting from the centre pose ``q_c``."""
-    world = _world_fn(n, standoff)
+    world = _world_fn(n, standoff, surface)
+    axis = surface.tool_axis
     ic = n // 2
     ik.posture = q_c.copy()
     q = np.full((n, n, ik.n), np.nan)
@@ -68,7 +69,7 @@ def _fill_grid(ik, q_c, n, standoff, iterations):
     q[ic, ic] = q_c
 
     def fill(iv, iu, seed):
-        qq, pe, ae = ik.solve(seed, world(iv, iu), TOOL_AXIS, iterations=iterations,
+        qq, pe, ae = ik.solve(seed, world(iv, iu), axis, iterations=iterations,
                               priority='axis')
         q[iv, iu], pos_err[iv, iu], axis_err[iv, iu] = qq, pe, ae
 
@@ -98,7 +99,7 @@ def _stats(ik, q, pos_err, axis_err):
     }
 
 
-def _centre_candidates(ik, target, rng):
+def _centre_candidates(ik, target, axis, rng):
     """Distinct valid centre solutions, best joint-limit margin first."""
     seeds = [rng.uniform(ik.lo, ik.hi) for _ in range(24)]
     seeds += [np.array([0.0, rng.uniform(-1, 1.2), 0.0, rng.uniform(-3.0, -0.6), 0.0,
@@ -106,27 +107,27 @@ def _centre_candidates(ik, target, rng):
     ik.posture = np.array([0.0, 0.3, 0.0, -1.8, 0.0, 1.2, 0.0])
     cands = []
     for s in seeds:
-        q, pe, ae = ik.solve(s, target, TOOL_AXIS, iterations=300, priority='axis')
+        q, pe, ae = ik.solve(s, target, axis, iterations=300, priority='axis')
         if pe < 1e-4 and ae < 1e-3 and not any(np.abs(q - c).max() < 0.05 for c in cands):
             cands.append(q)
     cands.sort(key=lambda q: -(np.minimum(q - ik.lo, ik.hi - q) / ik.span).min())
     return cands
 
 
-def build_joint_map(ik, standoff, n=25, iterations=80, verbose=True):
+def build_joint_map(ik, standoff, surface, n=25, iterations=80, verbose=True):
     """Build the map; ``n`` must be odd so that the centre is a grid point."""
     if n % 2 == 0:
         raise ValueError("n must be odd")
     rng = np.random.default_rng(0)
-    centre = board_mod.uv_to_world(np.array([0.5, 0.5]), standoff)
-    cands = _centre_candidates(ik, centre, rng)
+    centre = surface.uv_to_world(np.array([0.5, 0.5]), standoff)
+    cands = _centre_candidates(ik, centre, surface.tool_axis, rng)
     if not cands:
-        raise RuntimeError("cannot reach the board centre with the tool axis "
-                           "orthogonal to the board")
+        raise RuntimeError("cannot reach the %s centre with the tool axis "
+                           "orthogonal to the surface" % surface.name)
 
     best = None
     for q_c in cands[:SCREEN_KEEP]:
-        q, pe, ae = _fill_grid(ik, q_c, SCREEN_N, standoff, iterations)
+        q, pe, ae = _fill_grid(ik, q_c, SCREEN_N, standoff, iterations, surface)
         s = _stats(ik, q, pe, ae)
         exact = s['max_pos_err'] < EXACT_POS and s['max_axis_err'] < EXACT_AXIS
         smooth = s['max_cell_step'] <= SMOOTH_STEP
@@ -137,39 +138,39 @@ def build_joint_map(ik, standoff, n=25, iterations=80, verbose=True):
     if best[0][0] and verbose:
         print("  warning: no centre solution covers the board orthogonally")
 
-    q, pos_err, axis_err = _fill_grid(ik, q_c, n, standoff, iterations)
+    q, pos_err, axis_err = _fill_grid(ik, q_c, n, standoff, iterations, surface)
     report = _stats(ik, q, pos_err, axis_err)
     if verbose:
-        print("  joint map %dx%d: max tip error %.3f mm | max tilt %.4f deg | "
+        print("  %s joint map %dx%d: max tip error %.3f mm | max tilt %.4f deg | "
               "min joint-limit margin %.1f%% of range | max step between cells %.1f deg"
-              % (n, n, report['max_pos_err'] * 1e3, np.degrees(report['max_axis_err']),
-                 100 * report['min_margin'], np.degrees(report['max_cell_step'])))
-    return JointMap(q, report), q_c
+              % (surface.name, n, n, report['max_pos_err'] * 1e3,
+                 np.degrees(report['max_axis_err']), 100 * report['min_margin'],
+                 np.degrees(report['max_cell_step'])))
+    return JointMap(q, report, q_c)
 
 
 _REPORT_KEYS = ('max_pos_err', 'max_axis_err', 'min_margin', 'max_cell_step')
 #: Bump when the build algorithm changes so that stale cached maps are rebuilt.
-MAP_VERSION = 2
+MAP_VERSION = 3
 
 
-def get_joint_map(ik, standoff, cache_dir, key_parts, n=25, verbose=True):
-    """Load the map from the on-disk cache or build (and cache) it."""
+def get_joint_map(ik, standoff, cache_dir, surface, key_parts=(), n=25, verbose=True):
+    """Load the map for ``surface`` from the on-disk cache or build (and cache) it."""
     key = hashlib.sha1("|".join(str(x) for x in
-                                key_parts + (round(standoff, 6), n, MAP_VERSION))
+                                key_parts + surface.key()
+                                + (round(standoff, 6), n, MAP_VERSION))
                        .encode()).hexdigest()[:16]
-    path = os.path.join(cache_dir, "jointmap_%s.npz" % key)
+    path = os.path.join(cache_dir, "jointmap_%s_%s.npz" % (surface.name, key))
     if os.path.exists(path):
         try:
             blob = np.load(path)
             report = {k: float(blob[k]) for k in _REPORT_KEYS}
-            ik.posture = blob['posture'].copy()
-            return JointMap(blob['q'], report)
+            return JointMap(blob['q'], report, blob['posture'])
         except Exception as exc:                       # corrupt/stale cache
             print("  ignoring joint-map cache (%s)" % exc)
     if verbose:
-        print("  building the orthogonal joint map (once, then cached) ...")
-    jmap, q_c = build_joint_map(ik, standoff, n=n, verbose=verbose)
-    ik.posture = q_c.copy()
+        print("  building the %s joint map (once, then cached) ..." % surface.name)
+    jmap = build_joint_map(ik, standoff, surface, n=n, verbose=verbose)
     os.makedirs(cache_dir, exist_ok=True)
-    np.savez_compressed(path, q=jmap.q, posture=q_c, **jmap.report)
+    np.savez_compressed(path, q=jmap.q, posture=jmap.posture, **jmap.report)
     return jmap

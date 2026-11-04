@@ -32,10 +32,13 @@ from common.belief import GPBelief         # noqa: E402
 
 
 def latest_np_ckpt():
-    found = sorted(glob.glob(os.path.join(_arch, 'checkpoints', 'belief_np_date_*_final.pt')),
+    # trained on the cluster into checkpoints/, pulled into transfer/ (or a dated sub-folder)
+    roots = [os.path.join(_arch, 'checkpoints'), os.path.join(os.path.dirname(_arch), 'transfer')]
+    found = sorted((f for r in roots for sub in ('', '*')
+                    for f in glob.glob(os.path.join(r, sub, 'belief_np_date_*_final.pt'))),
                    key=os.path.getmtime)
     if not found:
-        raise FileNotFoundError('no checkpoints/belief_np_date_*_final.pt; pass np_ckpt')
+        raise FileNotFoundError('no belief_np_date_*_final.pt in checkpoints/ or transfer/; pass np_ckpt')
     return found[-1]
 
 

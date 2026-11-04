@@ -261,8 +261,16 @@ def projiziere(proj, d2, xy, standoff=0.0, n_particles=512, seed=0):
 
 
 # ── Die 2D-Quelle ────────────────────────────────────────────────────────────
-def lade_paare(db, splits=('train', 'val', 'val_flat')):
+def lade_paare(db, splits=('train', 'val', 'val_flat', 'val_start'),
+               traj_points=0):
     """-> Liste von dicts mit name, split, dichte, xy, x0.
+
+    `traj_points > 0` resamples every path to that many points by linear
+    interpolation over the index (end points, hence x0, are kept). The
+    LM-teacher DB stores 401 points per path, the previous 3D databases were
+    built from 200; with 200 the ray count, file size and table format stay
+    identical to the last database. `val_start` (LM DB: extra start points of
+    held-out densities) counts as an unknown density, like `val`.
 
     `x0` kommt jetzt mit. Ohne ihn koennte die Startpunkt-Konditionierung nicht
     trainiert werden: das Netz braucht den Startpunkt als *Eingang*, und der
@@ -277,6 +285,10 @@ def lade_paare(db, splits=('train', 'val', 'val_flat')):
     out = []
     for nm, sp, dp, blob, x0 in c.execute(q, splits):
         xy = np.frombuffer(blob, dtype=np.float32).reshape(-1, 2).astype(np.float64)
+        if traj_points and len(xy) != traj_points:
+            t_old = np.linspace(0.0, 1.0, len(xy))
+            t_new = np.linspace(0.0, 1.0, int(traj_points))
+            xy = np.stack([np.interp(t_new, t_old, xy[:, k]) for k in (0, 1)], axis=1)
         out.append(dict(name=nm, split=sp, dichte=json.loads(dp),
                         xy=np.clip(xy, 0.0, 1.0),
                         x0=np.asarray(json.loads(x0), dtype=np.float64)))
@@ -301,6 +313,8 @@ class Dichtegitter:
         self.treffer = self.fehlgriffe = 0
 
     def __call__(self, name, dichte):
+        # Start-point variants ('<shape>@s1') share the density of the shape.
+        name = name.split('@s')[0]
         g = self._c.get(name)
         if g is None:
             self.fehlgriffe += 1
@@ -367,7 +381,7 @@ def _flaechenliste(a):
 
 
 def bauen(a):
-    paare = lade_paare(a.db_in, tuple(a.splits))
+    paare = lade_paare(a.db_in, tuple(a.splits), a.traj_points)
     bekannt = [p for p in paare if p['split'] == 'train']
     unbekannt = [p for p in paare if p['split'] != 'train']
     print(f'{len(paare)} 2D-Paare aus {os.path.basename(a.db_in)}: '
@@ -521,7 +535,7 @@ def _bericht(con, a, geschrieben, verworfen, notwinkel, gitter, t0):
 
 # ── Vorschau ─────────────────────────────────────────────────────────────────
 def vorschau(a):
-    paare = lade_paare(a.db_in, tuple(a.splits))
+    paare = lade_paare(a.db_in, tuple(a.splits), a.traj_points)
     train_f, held_f = _flaechenliste(a)
     keys = (train_f + held_f)
     gitter = Dichtegitter(a.dens_res)
@@ -603,7 +617,11 @@ def main():
                    help='Probebau: 10 Paare je Winkel, eigene Ausgabedatei')
     p.add_argument('--preview', type=int, default=0,
                    help='so viele Beispiele als JSON ablegen, ohne die DB zu schreiben')
-    p.add_argument('--splits', nargs='+', default=['train', 'val', 'val_flat'])
+    p.add_argument('--splits', nargs='+',
+                   default=['train', 'val', 'val_flat', 'val_start'])
+    p.add_argument('--traj_points', type=int, default=200,
+                   help='points per 2D path after resampling (0 = as stored); '
+                        '200 matches the last 3D database')
     p.add_argument('--out_dir', default=os.path.join(_here, 'results', 'db3d'))
     a = p.parse_args()
 

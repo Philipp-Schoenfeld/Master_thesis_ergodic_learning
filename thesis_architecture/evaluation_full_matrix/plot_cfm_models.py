@@ -104,7 +104,7 @@ def plot_tradeoff(models, st, base, dens, out):
     gt = {k: float(base['A_ground_truth'][f'm__{k}'].mean()) for k in ('hellinger', 'smooth', 'outside')}
     for ax, (key, xlabel) in zip(axes, [('smooth', 'Smoothness energy (lower = smoother)'),
                                          ('outside', 'Fraction of points outside [0.03, 0.97]')]):
-        _ax(ax, xlabel, 'Hellinger distance to target (lower = better)')
+        _ax(ax, xlabel, 'Ergodicity error to target (lower = better)')
         ax.scatter([gt[key]], [gt['hellinger']], marker='*', s=190, color=C_GT, zorder=5, edgecolors='white', linewidths=0.8)
         ax.annotate('Ground truth', (gt[key], gt['hellinger']), xytext=(8, -3), textcoords='offset points',
                     fontsize=8.5, color=INK, va='center')
@@ -136,7 +136,7 @@ def plot_distribution(models, st, base, cases, out):
     labs = [l for l, m in models.items() if 'A' in m]
     fig, axes = plt.subplots(1, 2, figsize=(11.5, 4.6), facecolor='white', sharey=True)
     for ax, (kind, title) in zip(axes, kinds):
-        _ax(ax, None, 'Hellinger distance to target' if kind == 'base' else None, title)
+        _ax(ax, None, 'Ergodicity error to target' if kind == 'base' else None, title)
         mask = np.array([c['kind'] == kind for c in cases])
         data = [base['A_ground_truth']['m__hellinger'].mean(1)[mask]] + \
                [models[l]['A']['m__hellinger'].mean(1)[mask] for l in labs]
@@ -154,7 +154,7 @@ def plot_distribution(models, st, base, cases, out):
     _legend(axes[0], [Line2D([], [], color=INK, lw=1.6, label='median'),
                       Line2D([], [], marker='D', ls='', markerfacecolor='white', markeredgecolor=INK, label='mean')],
             loc='upper left')
-    fig.suptitle('Per-case Hellinger distance (mean over 30 samples; box = quartiles, whiskers = 1.5 IQR)',
+    fig.suptitle('Per-case ergodicity error (mean over 30 samples; box = quartiles, whiskers = 1.5 IQR)',
                  fontsize=11, color=INK, y=1.02)
     plt.tight_layout()
     _save(fig, out, 'distribution.png')
@@ -169,8 +169,8 @@ def plot_warm_start(models, st, base, proto, out):
     series['chord'] = (C_CHORD, 'x', 'Chords (no network)', '--', base['B_chord'])
     fig, axes = plt.subplots(1, 4, figsize=(19.5, 4.4), facecolor='white')
     x = np.arange(len(its))
-    for ax, (key, title, log, zoom) in zip(axes, [('hellinger', 'Hellinger distance to target', False, False),
-                                                   ('hellinger', 'Hellinger distance (zoom, from 5 iterations)', False, True),
+    for ax, (key, title, log, zoom) in zip(axes, [('hellinger', 'Ergodicity error to target', False, False),
+                                                   ('hellinger', 'Ergodicity error (zoom, from 5 iterations)', False, True),
                                                    ('ergodic_k10', 'Fourier error (K=10)', True, False),
                                                    ('smooth', 'Smoothness energy', False, False)]):
         _ax(ax, 'Levenberg–Marquardt iterations', None, title)
@@ -214,7 +214,7 @@ def plot_samples(models, st, dens, out):
         axes[0].bar(i, m, width=0.55, color=st[l]['color'])
         axes[0].errorbar(i, m, yerr=[[m - lo], [hi - m]], color=INK, capsize=3, lw=1.2)
     # (b) best-of-N vs mean
-    _ax(axes[1], None, 'Hellinger distance to target', 'Best of N samples vs average sample')
+    _ax(axes[1], None, 'Ergodicity error to target', 'Best of N samples vs average sample')
     n = models[labs[0]]['A']['m__hellinger'].shape[1]
     for i, l in enumerate(labs):
         H = models[l]['A']['m__hellinger']
@@ -274,7 +274,7 @@ def plot_gallery(models, st, base, proto, db, out):
                     ax.plot(X[k, :, 0], X[k, :, 1], color='#00C853', lw=2.2 if k == 0 else 1.2,
                             alpha=0.95 if k == 0 else 0.3)
                 h = models[labs[j - 1]]['A']['m__hellinger'][ci].mean()
-                title = f'{st[labs[j - 1]]["name"]}  (H = {h:.2f})'
+                title = f'{st[labs[j - 1]]["name"]}  (err = {h:.2f})'
             ax.scatter([c['sd'].x0[0]], [c['sd'].x0[1]], color=C_GT, marker='*', s=110, edgecolors='white',
                        linewidths=0.6, zorder=4)
             ax.set_xlim(0, 1)
@@ -284,10 +284,10 @@ def plot_gallery(models, st, base, proto, db, out):
             ax.set_yticks([])
             for s in ax.spines.values():
                 s.set_color('#ccc')
-            ax.set_title(title if i == 0 else (f'H = {h:.2f}' if j else ''), fontsize=8.5, color=INK)
+            ax.set_title(title if i == 0 else (f'err = {h:.2f}' if j else ''), fontsize=8.5, color=INK)
             if j == 0:
                 ax.set_ylabel(c['density'], fontsize=9, color=INK)
-    fig.suptitle('Generated trajectories on holdout densities (stored start ★; first sample bold, 4 more faint; H = mean Hellinger distance)',
+    fig.suptitle('Generated trajectories on holdout densities (stored start ★; first sample bold, 4 more faint; err = mean ergodicity error)',
                  fontsize=10.5, color=INK, y=1.0)
     plt.tight_layout()
     _save(fig, out, 'gallery.png')

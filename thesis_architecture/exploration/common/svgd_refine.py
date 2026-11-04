@@ -251,8 +251,10 @@ class SvgdRefiner:
 
             jitter = self.rng.normal(scale=self.JITTER, size=(self.N_PARTICLES, nxi, 2))
             init = P[None] + jitter
+            if start is not None:
+                init[:, 0, :] = start       # clamped basis: control point 0 == curve start
             particles = init.reshape(self.N_PARTICLES, nxi * 2)
-            
+
             iter_cb = None
             if trajectory_log is not None:
                 trajectory_log.append(P.copy())
@@ -266,7 +268,7 @@ class SvgdRefiner:
                     contextlib.redirect_stderr(devnull):
                 particles, _ = svgde.run_svgd_numpy(
                     particles, nxi, int(n_iters), energy_fn, dim=self.DIM,
-                    label='SVGD-Verfeinerung', iter_callback=iter_cb)
+                    label='SVGD-Verfeinerung', iter_callback=iter_cb, pin_first=start)
                     
             particles = particles.reshape(self.N_PARTICLES, nxi, 2)
             scores = [energy_fn(p.ravel(), nxi)[0] for p in particles]
@@ -275,13 +277,15 @@ class SvgdRefiner:
         else:
             jitter = self.rng.normal(scale=self.JITTER, size=(self.N_PARTICLES, T, 2))
             init = np.clip(curve_np[None] + jitter, 0.02, 0.98)
+            if start is not None:
+                init[:, 0, :] = start
             particles = init.reshape(self.N_PARTICLES, T * 2)
 
             with open(os.devnull, 'w') as devnull, \
                     contextlib.redirect_stderr(devnull):
                 particles, _ = svgde.run_svgd_numpy(
                     particles, T, int(n_iters), energy_fn_orig, dim=self.DIM,
-                    label='SVGD-Verfeinerung')
+                    label='SVGD-Verfeinerung', pin_first=start)
 
             particles = particles.reshape(self.N_PARTICLES, T, 2)
             scores = [energy_fn_orig(p.ravel(), T)[0] for p in particles]
@@ -304,9 +308,9 @@ class SvgdRefiner:
         oben (verrauschter Partikelschwarm, B-Spline-Fit falls `nxi != T`),
         aber SVGD-Update/Kernel/Preconditioner folgen dem Paper statt
         plattem Adam. Kein Hindernis-Term (TsvecSvgd hat keinen) -- `obstacle`
-        muss `None` sein. Der harte Startpunkt-Snap am Ende gilt wie bei den
-        anderen Backends; ein weiches Ziehen waehrend der Iterationen (wie
-        `WaypointPins` beim `'tsvec'`-Zweig) gibt es hier nicht."""
+        muss `None` sein. Der Startpunkt ist in jeder Iteration hart gepinnt
+        (`TsvecSvgd.run(start=...)`), der Snap am Ende ist nur noch eine
+        Absicherung."""
         if n_iters <= 0:
             if start is not None:
                 curve_np = curve_np.copy()
@@ -339,7 +343,11 @@ class SvgdRefiner:
             jitter = self.rng.normal(scale=self.JITTER, size=(self.N_PARTICLES, T, 2))
             init_P = np.clip(P0[None] + jitter, 0.02, 0.98)
 
-        out = svgd.run(init_P, phi_k, int(n_iters), record=trajectory_log is not None)
+        # Hard-pin parameter 0 (= the rendered first point for the clamped
+        # basis / raw waypoints) to `start` in every iteration; without it the
+        # first point drifts and the final snap leaves a jump.
+        out = svgd.run(init_P, phi_k, int(n_iters), record=trajectory_log is not None,
+                       start=None if start is None else np.asarray(start, dtype=np.float64))
         residual_fn = svgd._residual_fn(phi_k)
 
         def best_of(particles):

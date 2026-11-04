@@ -403,6 +403,7 @@ def generate_particle_trajectories(
     guide_weight: float = 0.0,
     guide_t_start: float = 0.3,
     eta: float = None,
+    inpaint_start: bool = False,
 ) -> tuple:
     """Integrate the flow ODE, optionally repelling the curve from an obstacle.
 
@@ -420,6 +421,11 @@ def generate_particle_trajectories(
     Diffusion checkpoints (`model.diffusion_pred` set) are sampled by
     `diffusion_cond_particles_start.generate_particle_trajectories_diffusion`
     instead; `eta` (default 1.0 = DDPM) only applies there.
+
+    `inpaint_start` (needs `start`): the first control point is held at `start`
+    during the whole integration, i.e. the known start is inpainted into the
+    state at every step instead of only being set after the last one (for
+    checkpoints trained with `start_inpaint`).
     """
     if getattr(model, 'diffusion_pred', None) is not None:
         from diffusion_cond_particles_start import generate_particle_trajectories_diffusion
@@ -460,6 +466,10 @@ def generate_particle_trajectories(
     # control point 0 = start at every t, so it is reset before every step.
     inpaint = start_b is not None and getattr(model, 'start_inpaint', False)
 
+    inpaint = inpaint_start and start_b is not None
+    if inpaint:
+        x[:, 0, :] = start_b
+
     for step in range(steps):
         if inpaint:
             x[:, 0, :] = start_b.to(x.dtype)
@@ -496,6 +506,8 @@ def generate_particle_trajectories(
                 v = v - (guide_weight * s ** 2) * v_rms * g / g_rms
 
         x = x + v * dt
+        if inpaint:
+            x[:, 0, :] = start_b
 
         if lam_batch is not None:
             lam_cond, _ = lam_batch.chunk(2, dim=0)

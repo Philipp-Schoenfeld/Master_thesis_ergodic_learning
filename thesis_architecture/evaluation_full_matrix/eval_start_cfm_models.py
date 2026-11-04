@@ -439,7 +439,7 @@ def _plot(s, models, out):
     col.update(ground_truth=C_GT, chord=C_CHORD)
     # 1: quality bars, all cases
     meths = ['ground_truth'] + labs
-    panels = [('hellinger', 'Hellinger distance to target'), ('ergodic_k10', 'Fourier error K=10'),
+    panels = [('hellinger', 'Ergodicity error to target'), ('ergodic_k10', 'Fourier error K=10'),
               ('smooth', 'Smoothness energy'), ('outside', 'Fraction outside [0.03, 0.97]')]
     fig, axes = plt.subplots(1, 4, figsize=(4 + 1.1 * len(meths) * 4 / 2, 4.2), facecolor='white')
     for ax, (k, title) in zip(axes, panels):
@@ -456,7 +456,7 @@ def _plot(s, models, out):
     plt.close()
     # 2: metrics against lambda_erg, one line per (backbone, epochs)
     fig, axes = plt.subplots(1, 2, figsize=(11, 4), facecolor='white')
-    for ax, (ci, title) in zip(axes, [(s['hellinger_ci'], 'Hellinger distance to target'),
+    for ax, (ci, title) in zip(axes, [(s['hellinger_ci'], 'Ergodicity error to target'),
                                       (s['smooth_ci'], 'Smoothness energy')]):
         _style(ax)
         fam = {}
@@ -480,7 +480,7 @@ def _plot(s, models, out):
     # 3: warm start curves
     if s['warm_start']:
         fig, axes = plt.subplots(1, 3, figsize=(14, 4), facecolor='white')
-        for ax, (k, title) in zip(axes, [('hellinger', 'Hellinger distance'), ('ergodic_k10', 'Fourier error K=10'),
+        for ax, (k, title) in zip(axes, [('hellinger', 'Ergodicity error'), ('ergodic_k10', 'Fourier error K=10'),
                                          ('smooth', 'Smoothness energy')]):
             _style(ax)
             for lab, d in s['warm_start'].items():
