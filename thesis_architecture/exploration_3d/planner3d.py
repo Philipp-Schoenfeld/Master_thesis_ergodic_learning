@@ -28,6 +28,10 @@ from obstacles import bspline_basis_matrix             # noqa: E402  (the 3D one
 #: unit cube that distorts the path (about +22 % length without snapping, up to +57 %), whereas
 #: 20..500 leave the shape intact (+3 %) and the final polish guarantees the clearance anyway.
 OBSTACLE_WEIGHT = 500.0
+#: Surface constraint (mesh_alignment.SurfaceTangentAlignment) during inference: ramp strength and
+#: element-wise gradient cap (the 3D evaluation, ``run_surface_eval.py``, caps at 0.5).
+SURFACE_WEIGHT = 20.0
+SURFACE_FORCE_MAX = 0.5
 
 
 class Planner3D:
@@ -60,7 +64,8 @@ class Planner3D:
 
     @torch.no_grad()
     def plan(self, particles, start=None, generator=None, obstacle=None,
-             obstacle_weight=OBSTACLE_WEIGHT):
+             obstacle_weight=OBSTACLE_WEIGHT, force=None, force_weight=SURFACE_WEIGHT,
+             force_max=SURFACE_FORCE_MAX, force_polish_steps=0):
         """particles (N, 4) -> (cps (nxi, 3), rot6 (nxi, 6) or None), on the CPU.
 
         ``start`` (3,) pins the first control point and conditions the network;
@@ -69,7 +74,11 @@ class Planner3D:
         ``obstacle`` (``SphereObstacle`` / ``CompositeObstacle``, None = free space): during the
         flow integration the repulsion gradient of the obstacle, evaluated on the dense curve,
         is subtracted from the velocity (ramped in from t = 0.3), and the result is polished by
-        pure descent on the penalty. The network itself never sees the obstacle."""
+        pure descent on the penalty. The network itself never sees the obstacle.
+
+        ``force`` (``cps (1, nxi, 3) -> dE/dcps``): a further constraint, applied the same way
+        (ramped into the velocity, then ``force_polish_steps`` of descent) - used for the
+        surface constraint of ``mesh_alignment.py``."""
         parts = torch.as_tensor(np.asarray(particles), dtype=torch.float32, device=self.device)
         kw = {}
         if start is not None and self.start_cond:
@@ -78,6 +87,9 @@ class Planner3D:
         if obstacle is not None:
             kw.update(obstacle=obstacle, obstacle_weight=obstacle_weight,
                       bspline_pts=int(self.B.shape[0]), bspline_deg=self.deg)
+        if force is not None:
+            kw.update(force=force, force_weight=force_weight, force_max=force_max,
+                      force_polish_steps=force_polish_steps)
         cps, rot6 = generate_particle_trajectories(
             self.model, parts, num_samples=1, nxi=self.nxi, nd=3, steps=self.steps,
             device=str(self.device), cfg_weight=self.cfg_weight, generator=generator, **kw)

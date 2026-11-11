@@ -550,8 +550,20 @@ def generate_particle_trajectories(
     start: torch.Tensor = None,
     generator: torch.Generator = None,
     drop_start: bool = False,
+    force=None,
+    force_weight: float = 20.0,
+    force_t_start: float = 0.3,
+    force_max: float = None,
+    force_polish_steps: int = 0,
+    force_polish_lr: float = 1.0,
 ) -> tuple:
     """Integrate the flow ODE, optionally repelling the curve from an obstacle.
+
+    `force` is an arbitrary further inference-time constraint, ``force(cps) -> dE/dcps`` on the
+    positional block (the recipe of ``thesis_architecture/constraints/common.guided_generate``:
+    quadratic ramp from `force_t_start`, gradient clipped to `force_max`, then
+    `force_polish_steps` of pure descent). Used for the surface constraint
+    (``mesh_alignment.SurfaceTangentAlignment``) next to the obstacle.
 
     With `obstacle=None` the behaviour is unchanged. Otherwise a repulsion term
     is added to the velocity at inference time only — the model itself never
@@ -638,7 +650,26 @@ def generate_particle_trajectories(
                 v = v.clone()
                 v[..., :nd] = v[..., :nd] - (obstacle_weight * s ** 2) * g
 
+        if force is not None and step * dt >= force_t_start:
+            s_f = (step * dt - force_t_start) / max(1.0 - force_t_start, 1e-8)
+            g_f = force(x[..., :nd])
+            if force_max is not None:
+                g_f = g_f.clamp(min=-force_max, max=force_max)
+            v = v.clone()
+            v[..., :nd] = v[..., :nd] - (force_weight * s_f ** 2) * g_f
+
         x = x + v * dt
+
+    if force is not None and force_polish_steps > 0:
+        pos = x[..., :nd].contiguous()
+        for _ in range(force_polish_steps):
+            g_f = force(pos)
+            if force_max is not None:
+                g_f = g_f.clamp(min=-force_max, max=force_max)
+            if g_f.abs().max() < 1e-7:
+                break
+            pos = pos - force_polish_lr * g_f
+        x = torch.cat([pos, x[..., nd:]], dim=-1) if x.shape[-1] > nd else pos
 
     # Polish: the ramp alone does not guarantee hard clearance. A few pure
     # descent steps on the penalty drive the remaining violation to zero while

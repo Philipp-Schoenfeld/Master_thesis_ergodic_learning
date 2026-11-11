@@ -394,8 +394,9 @@ class App:
     def _poll_plan(self):
         elapsed = time.perf_counter() - self._busy_t0
         step = getattr(self.mission, 'current_step', 'inference')
-        self.prog_txt.set_text('%s ... %.1fs' % ('Inference' if step == 'inference' else
-                                                    ('Clamping to cube' if self.volume_mode else 'Snapping to surface'), elapsed))
+        label = {'inference': 'Inference', 'refine': 'Surface constraint'}.get(
+            step, 'Clamping to cube' if self.volume_mode else 'Snapping to surface')
+        self.prog_txt.set_text('%s ... %.1fs' % (label, elapsed))
         if self._plan_thread.is_alive():
             return
         self.busy = False

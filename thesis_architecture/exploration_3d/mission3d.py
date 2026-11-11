@@ -32,6 +32,9 @@ from ergodic_metric import (make_k_grid, trajectory_coeffs,        # noqa: E402
 from surface3d import make_lit, snap_plan               # noqa: E402
 from belief3d import make_belief, Sensor                   # noqa: E402
 from planner3d import OBSTACLE_WEIGHT                      # noqa: E402
+from mesh_alignment import (TrimeshSDF, SurfaceTangentAlignment,    # noqa: E402
+                            curve_energy_grad, polish)
+from obstacles import curve_repulsion_grad                 # noqa: E402  (the 3D one)
 
 C_ROUNDS = 4
 D_ROUNDS = 8
@@ -105,6 +108,17 @@ class Args:
         self.truth_known = False               # plan against the true density instead of the GP belief
         self.obstacle = None                   # SphereObstacle / CompositeObstacle: repels the plan
         self.obstacle_weight = OBSTACLE_WEIGHT # strength of the repulsion during inference
+        # Surface constraint = Constraint 5 (mesh_alignment.SurfaceTangentAlignment, SDF of the
+        # figure mesh): applied as a force during inference and as a refinement polish, the
+        # defaults of ``run_surface_eval.py``.  Not used for the cube volume (no surface).
+        self.surface_constraint = True
+        self.w_surface = 50.0
+        self.w_align = 1.0
+        self.surface_polish_steps = 0          # descent steps right after the flow integration
+        self.refine_iters = 60                 # refinement polish (surface + obstacle)
+        self.refine_lr = 0.2
+        self.refine_max_force = 0.5
+        self.obstacle_refine_weight = 1.0      # obstacle force relative to the surface force
         self.debt_weight = 1.0
         self.debt_weight_lse = 0.15
         self.visit_sat = 0.25
@@ -131,6 +145,8 @@ class Mission3D:
         self.planner, self.fig, self.args, self.variant = planner, figure, args, variant
         self.device = torch.device(device or planner.device)
         self.lit = make_lit(figure)
+        self._con_cache = (None, None)         # ((w_surface, w_align), SurfaceTangentAlignment)
+        self.last_report = {}                  # constraint diagnostics of the last plan
         self.sensor = Sensor(figure, noise=args.noise, seed=seed)
         self.belief = make_belief(args.belief_kernel, figure.pts, figure.nrm, seed=seed,
                                   noise=args.gp_noise, device=self.device)
@@ -153,6 +169,36 @@ class Mission3D:
         self._truth_t = torch.from_numpy(np.asarray(figure.w, dtype=np.float32)).to(self.device)
 
     # -- helpers -------------------------------------------------------------
+    def surface_con(self):
+        """The surface constraint of the figure's mesh, or None (disabled / cube volume)."""
+        a = self.args
+        mesh = getattr(self.fig, 'mesh', None)
+        if not a.surface_constraint or mesh is None or getattr(self.fig, 'is_volume', False):
+            return None
+        key = (float(a.w_surface), float(a.w_align))
+        if self._con_cache[0] != key:
+            self._con_cache = (key, SurfaceTangentAlignment(TrimeshSDF(mesh), w_surface=key[0],
+                                                            w_align=key[1]))
+        return self._con_cache[1]
+
+    def refine_on_surface(self, cps, con, obs, start):
+        """Refinement of the network's control points: pure descent on the surface constraint
+        (stay on the mesh, tangent in its plane) plus the obstacle repulsion, both through the
+        B-spline basis.  The start stays pinned."""
+        a, B = self.args, self.planner.B
+        c = cps.to(B.device).float().unsqueeze(0)
+
+        def force(x):
+            g = curve_energy_grad(x, con.energy, B)
+            if obs is not None:
+                g = g + a.obstacle_refine_weight * curve_repulsion_grad(x, obs, B)
+            return g
+
+        c = polish(c, force, iters=a.refine_iters, lr=a.refine_lr, max_force=a.refine_max_force)
+        if start is not None:
+            c[0, 0] = torch.as_tensor(np.asarray(start), dtype=c.dtype, device=c.device)
+        return c[0].cpu()
+
     def end_point(self):
         return self.driven[-1][-1] if self.driven else None
 
@@ -236,8 +282,20 @@ class Mission3D:
         if start is None:
             start = self.fig.start
         self.current_step = 'inference'
+        con = self.surface_con()
+        force = None
+        if con is not None:
+            B_plan = self.planner.B
+            force = lambda c: curve_energy_grad(c, con.energy, B_plan)       # noqa: E731
         cps, rot6 = self.planner.plan(parts, start=start, obstacle=obs,
-                                      obstacle_weight=a.obstacle_weight)
+                                      obstacle_weight=a.obstacle_weight, force=force,
+                                      force_polish_steps=a.surface_polish_steps)
+        self.last_report = {}
+        if con is not None:
+            self.current_step = 'refine'
+            cps = self.refine_on_surface(cps, con, obs, start)
+            sdf_max, cos_tn = con.report((self.planner.B.cpu() @ cps)[None])
+            self.last_report = dict(sdf_max=sdf_max, cos_tn=cos_tn)
         raw_curve, net_axes = self.planner.render(cps, rot6)
         if a.snap:
             self.current_step = 'snap'

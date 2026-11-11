@@ -86,11 +86,13 @@ def main():
     ap.add_argument('--preview_step', type=int, default=700, help='simulation step of the preview frame')
     ap.add_argument('--split', default='val_form')
     ap.add_argument('--entry', type=int, default=0)
+    ap.add_argument('--match', default=None,
+                    help="pick the first entry of the split whose 'shape|surface' contains this text")
     ap.add_argument('--rounds', type=int, default=3)
     ap.add_argument('--n_obstacles', type=int, default=2)
     ap.add_argument('--radius', type=float, default=0.10, help='obstacle radius (figure units)')
     ap.add_argument('--margin', type=float, default=None,
-                    help='clearance added to the radius (figure units); default: eraser radius + 5 mm in the scene')
+                    help='clearance added to the radius (figure units); default: eraser radius + 15 mm in the scene')
     ap.add_argument('--seed', type=int, default=0)
     ap.add_argument('--fps', type=int, default=30)
     ap.add_argument('--width', type=int, default=960)
@@ -102,7 +104,10 @@ def main():
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     planner = Planner3D(device=device)
-    entry = F.list_entries(args.split)[args.entry]
+    entries = F.list_entries(args.split)
+    if args.match:
+        entries = [e for e in entries if args.match.lower() in ('%s|%s' % (e['shape'], e['surface'])).lower()]
+    entry = entries[args.entry]
     fig = F.build_figure(entry)
     lit = make_lit(fig)
     print('[demo] figure: %s' % fig.title, flush=True)
@@ -120,7 +125,7 @@ def main():
           % (placement.scale, 100 * reach, 100 * jmap.valid_fraction), flush=True)
 
     # -- obstacles + mission -----------------------------------------------------------
-    margin = args.margin if args.margin is not None else (S.ERASER_RADIUS + 0.005) / placement.scale
+    margin = args.margin if args.margin is not None else (S.ERASER_RADIUS + 0.015) / placement.scale
     print('[demo] obstacle radius %.3f + clearance %.3f (figure units)' % (args.radius, margin), flush=True)
     obstacles = place_obstacles(planner, fig, args.seed, device, args.n_obstacles, args.radius, margin)
     obs_comp = CompositeObstacle(obstacles)
@@ -234,6 +239,15 @@ def main():
           % np.round(clear, 3).tolist())
     print('[demo] closest eraser tip to an obstacle surface in the scene: %.1f mm (tool radius 18 mm)'
           % (1e3 * state['min_tip']))
+    if not getattr(fig, 'is_volume', False):
+        import trimesh
+        from scipy.spatial import cKDTree
+        dense, _ = trimesh.sample.sample_surface(fig.mesh, 300000, seed=5)
+        dist = cKDTree(dense).query(driven.astype(np.float64))[0]
+        print('[demo] driven path vs. figure surface: max %.1f mm, mean %.2f mm in the scene (scale %.2f)'
+              % (1e3 * dist.max() * placement.scale, 1e3 * dist.mean() * placement.scale, placement.scale))
+    print('[demo] surface constraint (mesh_alignment, |SDF| max / mean |cos(t,n)|) of the last plan: %s'
+          % {k: round(float(v), 4) for k, v in mission.last_report.items()})
     print('[demo] wrote %s: %d frames, %.1fs of video, %.0fs wall-clock'
           % (args.out, state['frames'], state['frames'] / args.fps, time.perf_counter() - t_start))
 
