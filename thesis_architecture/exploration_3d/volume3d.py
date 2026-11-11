@@ -129,13 +129,28 @@ class CubeSpace:
         self.pts = np.asarray(figure.pts, dtype=np.float64)
         self.nrm = np.tile(FIXED_NORMAL, (len(self.pts), 1))
         self.tree = cKDTree(self.pts)
+        self.obstacle = None
+
+    def set_obstacle(self, obstacle):
+        """Free space = the cube minus the (inflated) obstacle; ``project`` clamps and pushes out."""
+        self.obstacle = obstacle if obstacle is not None and len(getattr(obstacle, 'obstacles', [0]))             else None
+
+    def _free(self, p):
+        shape = np.shape(p)
+        p = np.clip(np.atleast_2d(np.asarray(p, dtype=np.float64)), CUBE_LO, CUBE_HI)
+        if self.obstacle is not None:
+            for _ in range(3):                    # pushing out may leave the cube: clamp again
+                p = np.clip(self.obstacle.project_out(p, inflated=True), CUBE_LO, CUBE_HI)
+                if not self.obstacle.contains(p, inflated=True).any():
+                    break
+        return p.reshape(shape)
 
     def project(self, curve):
-        c = np.clip(np.asarray(curve, dtype=np.float64), CUBE_LO, CUBE_HI)
+        c = self._free(curve)
         return c, np.tile(FIXED_NORMAL, (len(c), 1))
 
     def snap_point(self, p):
-        return np.clip(np.asarray(p, dtype=np.float64), CUBE_LO, CUBE_HI)
+        return self._free(p)
 
     def snap_index(self, p):
         return int(self.tree.query(np.asarray(p, dtype=np.float64))[1])

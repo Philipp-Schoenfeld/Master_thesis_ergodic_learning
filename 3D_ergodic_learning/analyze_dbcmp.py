@@ -21,7 +21,7 @@ LABEL = {'sinkhorn': 'Sinkhorn (footprint)', 'fourier': 'Fourier (footprint)',
          'standoff_pca': '|standoff - 0.12| (PCA plane)', 'pointing_pca': 'pointing angle [deg] (PCA)',
          'path_len': 'control polygon length', 'cp_rmse': 'control point RMSE to DB target'}
 LOGM = {'sinkhorn', 'fourier'}
-COLORS = ['#1565C0', '#00C853', '#F57C00', '#8E24AA', '#555555']
+COLORS = ['#1565C0', '#00C853', '#F57C00', '#8E24AA', '#D81B60', '#555555']
 REF = 'DB teacher'
 NEW, OLD = 'DiT-S, refined DB', 'DiT-S, old DB'
 
@@ -54,10 +54,12 @@ def main():
         for patch, k in zip(bp['boxes'], models):
             patch.set_facecolor(col[k]); patch.set_alpha(0.6)
         ax.set_xticks(range(1, len(models) + 1))
-        ax.set_xticklabels([k.replace(', ', '\n') for k in models], fontsize=8)
+        ax.set_xticklabels([k.replace(' 750 ep', '\n750 ep').replace(', ', '\n') for k in models],
+                           fontsize=8)
         ax.set_title(LABEL[m] + (' [log10]' if m in LOGM else ''), color='#1A1A2E', fontsize=10)
         style(ax)
-    fig.suptitle('Per-entry metric distributions (1200 holdout entries)', color='#1A1A2E')
+    fig.suptitle('Per-entry metric distributions (%d holdout entries per model)'
+                 % (len(df) // len(models)), color='#1A1A2E')
     fig.tight_layout(); fig.savefig(os.path.join(out, 'cmp_distributions.png'), dpi=130)
     plt.close(fig)
 

@@ -201,6 +201,27 @@ def test_obstacle():
         check(f"polish clears: {name}", after <= 1e-6,
               f"{before:.4f} -> {after:.2e}")
 
+    # Several spheres (what the 3D control centre places by clicking).
+    from obstacles import CompositeObstacle
+    comp = CompositeObstacle([SphereObstacle(center=(0.3, 0.5, 0.5), radius=0.08),
+                              SphereObstacle(center=(0.7, 0.5, 0.5), radius=0.08)])
+    P = torch.rand(300, 3, dtype=torch.float64)
+    ana = comp.grad_penalty(P)
+    ref = sum(o.grad_penalty(P) for o in comp.obstacles)
+    check("composite gradient is the sum of the parts", (ana - ref).abs().max().item() < 1e-14)
+    inside = comp.contains(torch.tensor([[0.3, 0.5, 0.5], [0.5, 0.5, 0.5]]), inflated=False)
+    check("composite contains()", inside.tolist() == [True, False], str(inside.tolist()))
+    pushed = comp.project_out(np.array([[0.31, 0.5, 0.5], [0.5, 0.5, 0.5]]))
+    check("project_out lands on the inflated rim, leaves free points",
+          abs(np.linalg.norm(pushed[0] - np.array([0.3, 0.5, 0.5])) - 0.09) < 1e-9
+          and np.allclose(pushed[1], [0.5, 0.5, 0.5]), str(np.round(pushed, 3).tolist()))
+    t = torch.linspace(0, 1, nxi)[:, None]
+    line = (torch.tensor([0.05, 0.5, 0.5])[None] * (1 - t)
+            + torch.tensor([0.95, 0.5, 0.5])[None] * t)[None]     # passes through both spheres
+    after = max_violation(polish_out_of_obstacle(line, comp, Bf), comp, Bf)
+    check("polish clears a composite", after <= 1e-6,
+          f"{max_violation(line, comp, Bf):.4f} -> {after:.2e}")
+
 
 # ── 5. Data helpers ──────────────────────────────────────────────────────────
 def test_data_helpers():

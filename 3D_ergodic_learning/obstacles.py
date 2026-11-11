@@ -125,12 +125,41 @@ class SphereObstacle:
                 + (Y - self.center[1]) ** 2
                 + (Z - self.center[2]) ** 2) <= r ** 2
 
+    def contains(self, P, inflated=True):
+        """(..., 3) -> (...,) bool: True where a point lies inside the sphere."""
+        r = self.effective_radius if inflated else self.radius
+        d = self._delta(P)
+        return (d ** 2).sum(-1) < r ** 2
+
+    def project_out(self, P, inflated=True):
+        """Move points inside the sphere radially onto its surface (numpy, (N, 3)).
+
+        This is the exact projection onto the free space, used where there is no
+        surface to slide along (the cube workspace). A point exactly at the centre
+        has no radial direction; it is pushed along +x.
+        """
+        P = np.array(P, dtype=np.float64, copy=True)
+        r = self.effective_radius if inflated else self.radius
+        c = np.asarray(self.center, dtype=np.float64)
+        d = P - c
+        dist = np.linalg.norm(d, axis=-1, keepdims=True)
+        inside = (dist < r)[..., 0]
+        if inside.any():
+            dirs = np.where(dist > 1e-9, d / np.maximum(dist, 1e-12), np.array([1.0, 0.0, 0.0]))
+            P[inside] = (c + dirs * r)[inside]
+        return P
+
+    def signature(self):
+        """Hashable description of the geometry (cache key for derived data)."""
+        return ((self.center, self.effective_radius),)
+
     def draw(self, ax, zorder=1.5, show_margin=True, n_mesh=24):
         """Draw a translucent sphere on a 3D axis, in the project's grey.
 
         Drawn below the trajectories so a path that cuts through stays visible.
         `plot_surface` ignores zorder reliably on Axes3D, so the argument is
         accepted for signature parity with the 2D version but not forwarded.
+        Returns the created artists so a caller can remove them again.
         """
         u = np.linspace(0, 2 * np.pi, n_mesh)
         v = np.linspace(0, np.pi, n_mesh // 2)
@@ -143,17 +172,84 @@ class SphereObstacle:
             return x, y, z
 
         x, y, z = _sphere(self.radius)
-        ax.plot_surface(x, y, z, color='#9E9E9E', alpha=0.30,
-                        linewidth=0, antialiased=True, shade=True)
+        artists = [ax.plot_surface(x, y, z, color='#9E9E9E', alpha=0.30,
+                                   linewidth=0, antialiased=True, shade=True)]
         if show_margin and self.margin > 0:
             xm, ym, zm = _sphere(self.effective_radius)
-            ax.plot_wireframe(xm, ym, zm, color='#424242', alpha=0.18,
-                              linewidth=0.4, rstride=3, cstride=3)
+            artists.append(ax.plot_wireframe(xm, ym, zm, color='#424242', alpha=0.18,
+                                             linewidth=0.4, rstride=3, cstride=3))
+        return artists
 
 
 # Alias so downstream code can stay dimension-agnostic when it only needs
 # "the obstacle of this project".
 CircleObstacle = SphereObstacle
+
+
+class CompositeObstacle:
+    """A collection of spheres (e.g. placed in the GUI); same interface as one sphere.
+
+    Penalty and gradient are sums over the parts, the violation is the deepest
+    one. Mirrors the 2D ``CompositeObstacle``.
+    """
+
+    def __init__(self, obstacles=None):
+        self.obstacles = list(obstacles) if obstacles else []
+
+    def __len__(self):
+        return len(self.obstacles)
+
+    def mask(self, X, Y, Z, inflated=False):
+        m = np.zeros_like(X, dtype=bool)
+        for o in self.obstacles:
+            m |= o.mask(X, Y, Z, inflated=inflated)
+        return m
+
+    def contains(self, P, inflated=True):
+        if not self.obstacles:
+            if _is_torch(P):
+                return _torch.zeros_like(P[..., 0], dtype=_torch.bool)
+            return np.zeros(P.shape[:-1], dtype=bool)
+        m = self.obstacles[0].contains(P, inflated)
+        for o in self.obstacles[1:]:
+            m = m | o.contains(P, inflated)
+        return m
+
+    def project_out(self, P, inflated=True, passes=3):
+        """Radial push-out of every sphere; repeated, because leaving one sphere may enter the next."""
+        P = np.asarray(P, dtype=np.float64)
+        for _ in range(passes):
+            for o in self.obstacles:
+                P = o.project_out(P, inflated)
+            if not self.contains(P, inflated).any():
+                break
+        return P
+
+    def signature(self):
+        return tuple(s for o in self.obstacles for s in o.signature())
+
+    def penalty(self, P):
+        if not self.obstacles:
+            return _torch.zeros_like(P[..., 0]).sum() if _is_torch(P) else 0.0
+        return sum(o.penalty(P) for o in self.obstacles)
+
+    def grad_penalty(self, P):
+        if not self.obstacles:
+            return _torch.zeros_like(P) if _is_torch(P) else np.zeros_like(P)
+        return sum(o.grad_penalty(P) for o in self.obstacles)
+
+    def violation(self, P):
+        if not self.obstacles:
+            return _torch.zeros_like(P[..., 0]) if _is_torch(P) else np.zeros_like(P[..., 0])
+        if _is_torch(P):
+            return _torch.stack([o.violation(P) for o in self.obstacles], dim=0).amax(dim=0)
+        return np.max([o.violation(P) for o in self.obstacles], axis=0)
+
+    def draw(self, ax, zorder=1.5, show_margin=True, n_mesh=24):
+        artists = []
+        for o in self.obstacles:
+            artists += o.draw(ax, zorder=zorder, show_margin=show_margin, n_mesh=n_mesh)
+        return artists
 
 
 # ── B-Spline coupling ─────────────────────────────────────────────────────────
@@ -226,7 +322,19 @@ def polish_out_of_obstacle(cps, obstacle, B, max_iters=250, tol=1e-7,
     sideways, so plain descent stalls. In 3D the degenerate set is a line rather
     than a single diameter, but the failure mode is identical. A stall is
     detected and broken with a deterministic nudge orthogonal to the tangent.
+
+    A ``CompositeObstacle`` is polished sphere by sphere; since leaving one
+    sphere can enter the next, the sweep is repeated until nothing is left.
     """
+    if isinstance(obstacle, CompositeObstacle):
+        for _ in range(3):
+            for part in obstacle.obstacles:
+                cps = polish_out_of_obstacle(cps, part, B, max_iters, tol,
+                                             stall_patience, stall_rtol)
+            if max_violation(cps, obstacle, B) <= tol:
+                break
+        return cps
+
     cps = cps.clone()
     last_v, stalled_for = None, 0
 
@@ -296,6 +404,9 @@ def max_violation(cps, obstacle, B):
     Measured against `radius`, not `effective_radius`: the margin is a guidance
     cushion, the reported violation should be the physical one.
     """
+    if isinstance(obstacle, CompositeObstacle):
+        return max([max_violation(cps, o, B) for o in obstacle.obstacles] + [0.0])
+
     curve = _torch.einsum('pi,bid->bpd', B, cps)
     d = curve - _torch.as_tensor(obstacle.center, dtype=curve.dtype,
                                  device=curve.device)

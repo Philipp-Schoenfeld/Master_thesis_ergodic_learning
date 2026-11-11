@@ -31,6 +31,7 @@ from ergodic_metric import (make_k_grid, trajectory_coeffs,        # noqa: E402
                             target_coeffs_from_particles)
 from surface3d import make_lit, snap_plan               # noqa: E402
 from belief3d import make_belief, Sensor                   # noqa: E402
+from planner3d import OBSTACLE_WEIGHT                      # noqa: E402
 
 C_ROUNDS = 4
 D_ROUNDS = 8
@@ -38,7 +39,11 @@ B_ROUNDS = 12
 E_ROUNDS = 5
 D_EXECUTE_FRAC = 0.15
 LENGTH_UNIT = 0.8          # path length B drives per round (plans are ~2-3.5 long)
-E_DEFAULT_KAPPAS = [round(float(k), 4) for k in np.geomspace(1.0, 0.005, E_ROUNDS)]
+#: Clearance added to every obstacle's radius (figure units).  The eraser is 18 mm in radius and
+#: its pad sits within ~7 cm of the surface, so with the figure scaled by up to 0.64 in the MuJoCo
+#: scene the tool needs about 0.04 beyond the sphere to pass without clipping it.
+OBSTACLE_MARGIN = 0.04
+E_DEFAULT_KAPPAS =[round(float(k), 4) for k in np.geomspace(1.0, 0.005, E_ROUNDS)]
 
 
 # -- target density models (elementwise; mirrors common/acquisition.py) ---------
@@ -97,6 +102,9 @@ class Args:
         self.belief_kernel = 'rbf'             # 'rbf' | 'ak' (belief3d.KERNELS)
         self.snap = True                       # project the plan onto the lit surface
         self.net_orientation = False           # tool axis from the network instead of the surface normal
+        self.truth_known = False               # plan against the true density instead of the GP belief
+        self.obstacle = None                   # SphereObstacle / CompositeObstacle: repels the plan
+        self.obstacle_weight = OBSTACLE_WEIGHT # strength of the repulsion during inference
         self.debt_weight = 1.0
         self.debt_weight_lse = 0.15
         self.visit_sat = 0.25
@@ -142,6 +150,7 @@ class Mission3D:
                     torch.from_numpy(dist[:, 1:]).float().to(self.device))
         self._pts_t = torch.from_numpy(figure.pts).to(self.device)
         self.lit_mask = torch.from_numpy(figure.lit.astype(np.float32)).to(self.device)
+        self._truth_t = torch.from_numpy(np.asarray(figure.w, dtype=np.float32)).to(self.device)
 
     # -- helpers -------------------------------------------------------------
     def end_point(self):
@@ -150,11 +159,27 @@ class Mission3D:
     def path_so_far(self):
         return np.concatenate(self.driven, axis=0) if self.driven else None
 
-    def phi_plain(self, mu, sd, kappa):
+    def planning_belief(self, mu, sd):
+        """What the planner sees as (mean, sigma): the GP posterior or, with
+        ``args.truth_known``, the true density with zero uncertainty (the oracle case of the 2D
+        side: the target density is the truth, no acquisition trade-off)."""
+        if self.args.truth_known:
+            return self._truth_t, torch.zeros_like(self._truth_t)
+        return mu, sd
+
+    def phi_plain(self, mu, sd, kappa, from_belief=True):
+        """Target density of a round.  ``from_belief``: (mu, sd) are the raw GP posterior and
+        are replaced by the truth when it is known; the coverage-debt solvers pass an already
+        depleted (mu, sd) and set it to False."""
         a = self.args
+        if from_belief:
+            mu, sd = self.planning_belief(mu, sd)
         mu = mu.clamp(0.0, 1.0)                # the target density is normalised to max 1
-        phi = PHI_MODELS[a.phi_model](mu, sd, kappa=kappa, tau=a.phi_tau, noise=a.gp_noise,
-                                      nbr=self.nbr)
+        if a.truth_known:
+            phi = _norm_max(mu)                # known density: no uncertainty term to trade off
+        else:
+            phi = PHI_MODELS[a.phi_model](mu, sd, kappa=kappa, tau=a.phi_tau, noise=a.gp_noise,
+                                          nbr=self.nbr)
         return phi * self.lit_mask             # the robot only works on the lit side
 
     def visit_field(self, path, half_life):
@@ -174,13 +199,14 @@ class Mission3D:
 
     def debt_phi(self, mu, sd, visit, kappa):
         a = self.args
+        mu, sd = self.planning_belief(mu, sd)
         v = (torch.zeros_like(mu) if visit is None
              else (visit / (a.visit_sat * visit.max().clamp(min=1e-12))).clamp(0.0, 1.0))
         sd_eff = sd * (1.0 - v)
         know = 1.0 - sd.clamp(0.0, 1.0)
         w_debt = a.debt_weight_lse if a.phi_model == 'lse' else a.debt_weight
         mu_eff = mu.clamp(min=0.0) * (1.0 - (w_debt * v * know).clamp(0.0, 1.0))
-        return self.phi_plain(mu_eff, sd_eff.clamp(min=1e-6), kappa), v
+        return self.phi_plain(mu_eff, sd_eff.clamp(min=1e-6), kappa, from_belief=False), v
 
     def cloud(self, phi):
         """Particle cloud (N, 4) = (x, y, z, weight): positions drawn uniformly over
@@ -198,18 +224,25 @@ class Mission3D:
 
         ``args.snap``: project the positions onto the lit surface (else the raw network
         positions are used).  ``args.net_orientation``: tool axes from the network's
-        own orientation head (else the inward surface normal)."""
+        own orientation head (else the inward surface normal).
+
+        ``args.obstacle``: the plan is repelled from it during the flow integration
+        (inference) and again in every snapping iteration (refinement)."""
         a = self.args
+        obs = a.obstacle
+        self.lit.set_obstacle(obs)              # also keeps the tool-axis lookups obstacle-free
         parts = self.cloud(phi)
         start = self.end_point()
         if start is None:
             start = self.fig.start
         self.current_step = 'inference'
-        cps, rot6 = self.planner.plan(parts, start=start)
+        cps, rot6 = self.planner.plan(parts, start=start, obstacle=obs,
+                                      obstacle_weight=a.obstacle_weight)
         raw_curve, net_axes = self.planner.render(cps, rot6)
         if a.snap:
             self.current_step = 'snap'
-            _, curve, normal_axes = snap_plan(cps, self.planner.B.cpu(), self.lit, start=start)
+            _, curve, normal_axes = snap_plan(cps, self.planner.B.cpu(), self.lit, start=start,
+                                              obstacle=obs)
         else:
             curve = raw_curve.numpy().astype(np.float32)
             _, nrm = self.lit.project(curve)

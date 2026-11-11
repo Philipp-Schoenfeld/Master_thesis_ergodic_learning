@@ -8,6 +8,7 @@ The control centre (``interactive_sim_3d.py``) writes into shared memory:
 ``fig_sel``  [version, split_code, entry_index]   which held-out figure to show
 ``agent``    [x, y, z, ax, ay, az, radius]        tool tip / tool axis, figure frame
 ``path``     see ``PATH_*`` below                 trajectory in the figure frame
+``obs``      [n, (x, y, z, radius, margin) * n]   obstacle spheres, figure frame
 
 This process builds the scene for the selected figure (mesh + density, placed
 so that the lit side faces the robot), lets the Panda follow the agent with the
@@ -41,6 +42,9 @@ PATH_MAX_CURRENT = 300
 PATH_MAX_PREVIEW = 200
 PATH_ARRAY_SIZE = PATH_HEADER + 3 * (PATH_MAX_PAST + PATH_MAX_CURRENT + PATH_MAX_PREVIEW)
 FIG_SEL_SIZE = 4
+OBS_MAX = 10
+OBS_STRIDE = 5
+OBS_ARRAY_SIZE = 1 + OBS_STRIDE * OBS_MAX
 AGENT_SIZE = 8
 SPLITS = ('val_form', 'val_beides', 'val_flaeche', 'volume')
 
@@ -147,8 +151,12 @@ class LiveArm3D:
 
 class PathOverlay3D:
     """Draws the trajectory on the figure: green past, red current round (solid
-    for the part driven so far, faint for the rest of the plan)."""
+    for the part driven so far, faint for the rest of the plan), and the obstacle
+    spheres (grey, with a faint shell at the clearance radius)."""
 
+    OBSTACLE_RGBA = (0.45, 0.45, 0.50, 0.55)
+    MARGIN_RGBA = (0.45, 0.45, 0.50, 0.12)
+    GHOST_RGBA = (0.08, 0.40, 0.75, 0.55)
     PAST_RGBA = (0.0, 0.78, 0.33, 0.95)
     CURRENT_RGBA = (1.00, 0.09, 0.27, 1.00)
     PREVIEW_RGBA = (1.00, 0.09, 0.27, 0.45)
@@ -157,9 +165,19 @@ class PathOverlay3D:
     MAX_JUMP = 0.12                 # do not join points further apart (m)
     MIN_INTERVAL = 0.05
 
-    def __init__(self, shared_path, placement, lit):
+    def __init__(self, shared_path, placement, lit, shared_obs=None):
         self.shared, self.pl, self.lit = shared_path, placement, lit
+        self.shared_obs = shared_obs
         self._last, self._t = None, 0.0
+
+    def _read_obstacles(self):
+        """(n, 5) array of (x, y, z, radius, margin), figure frame."""
+        if self.shared_obs is None:
+            return np.zeros((0, OBS_STRIDE))
+        with self.shared_obs.get_lock():
+            raw = np.frombuffer(self.shared_obs.get_obj(), dtype=np.float64).copy()
+        n = int(np.clip(raw[0], 0, OBS_MAX))
+        return raw[1:1 + OBS_STRIDE * n].reshape(-1, OBS_STRIDE)
 
     def _read(self):
         with self.shared.get_lock():
@@ -183,23 +201,47 @@ class PathOverlay3D:
         if scn is None or now - self._t < self.MIN_INTERVAL:
             return
         past, cur, pre = self._read()
-        sig = (past.tobytes(), cur.tobytes(), pre.tobytes())
+        obs = self._read_obstacles()
+        sig = (past.tobytes(), cur.tobytes(), pre.tobytes(), obs.tobytes())
         if sig == self._last:
             return
         self._last, self._t = sig, now
+        lock = getattr(viewer, 'lock', None)
+        with (lock() if lock is not None else contextlib.nullcontext()):
+            scn.ngeom = 0
+            self.add_geoms(scn, past, cur, pre, obs)
+
+    def add_geoms(self, scn, past, cur, pre, obs=None, ghost=None):
+        """Append the overlay geoms to ``scn`` (figure-frame inputs).  Obstacles go first so
+        they are never dropped when the geom budget runs out; ``ghost`` is an optional extra
+        polyline (e.g. the plan without obstacles)."""
+        if obs is not None:
+            self._spheres(scn, obs)
         if len(past) and len(cur):
             cur = np.vstack([past[-1:], cur])
         tail = cur if len(cur) else past
         if len(tail) and len(pre):
             pre = np.vstack([tail[-1:], pre])
-        lock = getattr(viewer, 'lock', None)
-        with (lock() if lock is not None else contextlib.nullcontext()):
-            scn.ngeom = 0
-            for pts, rgba in ((past, self.PAST_RGBA), (cur, self.CURRENT_RGBA),
-                              (pre, self.PREVIEW_RGBA)):
-                self._lines(scn, self._world(pts), rgba)
+        if ghost is not None and len(ghost):
+            self._lines(scn, self._world(ghost), self.GHOST_RGBA, radius=self.RADIUS * 0.8)
+        for pts, rgba in ((past, self.PAST_RGBA), (cur, self.CURRENT_RGBA),
+                          (pre, self.PREVIEW_RGBA)):
+            self._lines(scn, self._world(pts), rgba)
 
-    def _lines(self, scn, pts, rgba):
+    def _spheres(self, scn, obs):
+        for x, y, z, r, margin in np.asarray(obs, dtype=np.float64).reshape(-1, OBS_STRIDE):
+            centre = self.pl.point(np.array([x, y, z]))
+            for radius, rgba in ((r, self.OBSTACLE_RGBA), (r + margin, self.MARGIN_RGBA)):
+                if scn.ngeom >= scn.maxgeom:
+                    return
+                geom = scn.geoms[scn.ngeom]
+                mujoco.mjv_initGeom(geom, mujoco.mjtGeom.mjGEOM_SPHERE,
+                                    np.array([radius * self.pl.scale, 0.0, 0.0]), centre,
+                                    np.eye(3).flatten(), np.array(rgba, dtype=np.float32))
+                scn.ngeom += 1
+
+    def _lines(self, scn, pts, rgba, radius=None):
+        radius = self.RADIUS if radius is None else radius
         for k in range(len(pts) - 1):
             if scn.ngeom >= scn.maxgeom:
                 return
@@ -208,7 +250,7 @@ class PathOverlay3D:
             geom = scn.geoms[scn.ngeom]
             mujoco.mjv_initGeom(geom, mujoco.mjtGeom.mjGEOM_CAPSULE, np.zeros(3), np.zeros(3),
                                 np.eye(3).flatten(), np.array(rgba, dtype=np.float32))
-            mujoco.mjv_connector(geom, mujoco.mjtGeom.mjGEOM_CAPSULE, self.RADIUS,
+            mujoco.mjv_connector(geom, mujoco.mjtGeom.mjGEOM_CAPSULE, radius,
                                  pts[k], pts[k + 1])
             scn.ngeom += 1
 
@@ -239,7 +281,7 @@ def _read_sel(fig_sel):
         return int(fig_sel[0]), int(fig_sel[1]), int(fig_sel[2])
 
 
-def run_mujoco_3d(fig_sel, agent, shared_path, fps=60.0):
+def run_mujoco_3d(fig_sel, agent, shared_path, fps=60.0, shared_obs=None):
     import paths3d
     paths3d.setup()
     import figures3d as F
@@ -278,7 +320,7 @@ def run_mujoco_3d(fig_sel, agent, shared_path, fps=60.0):
         arm = LiveArm3D(model, jmap, placement.point(a0[:3]), start_axis, fps=fps)
         print('[mujoco3d] arm placed at the start: tip %.1f mm, tilt %.1f deg off'
               % (arm.start_error[0] * 1e3, np.degrees(arm.start_error[1])), flush=True)
-        overlay = PathOverlay3D(shared_path, placement, lit)
+        overlay = PathOverlay3D(shared_path, placement, lit, shared_obs=shared_obs)
         changed = False
         with mujoco.viewer.launch_passive(model, arm.data) as viewer:
             viewer.cam.lookat[:] = placement.shift
