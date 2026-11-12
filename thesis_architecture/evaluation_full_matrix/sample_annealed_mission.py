@@ -51,6 +51,7 @@ not attempt).
 import argparse
 import os
 import sys
+import time
 
 import matplotlib
 matplotlib.use('Agg')
@@ -129,6 +130,13 @@ def round_colors(n_rounds):
     return [mcolors.to_hex(ROUND_CMAP(t)) for t in np.linspace(0.0, 1.0, n_rounds)]
 
 
+def _now(device):
+    """perf_counter after draining the GPU queue, so timings include the asynchronous kernels."""
+    if str(device).startswith('cuda') and torch.cuda.is_available():
+        torch.cuda.synchronize()
+    return time.perf_counter()
+
+
 def info_gain_cutoff(belief, seg, unc0, threshold):
     """Smallest prefix length k of `seg` whose predicted information gain
     (unc0 - belief.uncertainty_after(seg[:k])) reaches `threshold`.
@@ -166,7 +174,7 @@ def info_gain_cutoff(belief, seg, unc0, threshold):
 def run_mission(name, truth, planner, bs, ee, B32, args, device,
                 n_rounds, n_init, n_iters, kappas, start_pos, seed,
                 ig_threshold=None, cutoff=0.0, on_round=None, path_fn=None,
-                init_fn=None, target_fn=None):
+                init_fn=None, target_fn=None, conv_iters=None):
     """`cutoff` narrows the particle cloud the network is conditioned on (same rule
     as the GUI's "Cloud Cutoff": particles only where Phi >= cutoff * max(Phi);
     the refiner's target stays the full Phi). 0 = unchanged behaviour.
@@ -184,7 +192,20 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
     `init_fn(r, start, phi) -> (n_init, T, 2)`: optional network-free candidate source
     (e.g. linear rays); replaces the CFM forward pass, the SVGD refinement stays.
     `target_fn(phi) -> (M,)` float64: optional target coefficients for `bs.run` (default:
-    the K=10 TSVEC coefficients; the Adam-SVGD backend needs its own K=8 ones)."""
+    the K=10 TSVEC coefficients; the Adam-SVGD backend needs its own K=8 ones).
+
+    A `path_fn` with the attribute `wants_belief = True` is called as
+    `path_fn(r, start, phi, mu=mu, sd=sd)` with the belief fields the round was planned from.
+
+    `conv_iters`: optional increasing int array of SVGD iteration counts (e.g. 0, 1, 2, 5, ...,
+    `n_iters`). If given, the refiner runs with `record=True` and `diag['conv_E']` holds the
+    ergodic error of EVERY candidate against the round's target at those iterations,
+    shape (len(conv_iters), n_init) -- the in-mission convergence curve of the solver.
+
+    Timings: `diag` also holds wall-clock seconds (GPU-synchronised) of the round's stages:
+    `t_target` (belief posterior + target density), `t_init` (network forward / ray generation /
+    baseline path), `t_refine` (SVGD refinement + candidate selection; 0 without refiner),
+    `t_belief` (measurement + belief update, incl. the AK kernel fit) and `t_round` (their sum)."""
     belief = vr.build_belief(CONDITION, truth, seed=seed, device=device,
                              gp_noise=args.gp_noise, gp_lengthscale=0.08,
                              dtype=torch.float64, kernel=args.belief_kernel,
@@ -193,6 +214,7 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
 
     segments, phis, infos = [], [], []
     for r in range(n_rounds):
+        t_0 = _now(device)
         torch.manual_seed(seed * 1000 + r)
         mu, sd = belief.posterior_grid()
         belief._cache = None
@@ -206,12 +228,17 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
         if float(phi.max()) < 1e-6:
             phi = torch.ones_like(phi)
 
+        conv_E = None
+        t_1 = _now(device)
         if path_fn is not None:
-            # model-free baseline (random walk, lawnmower): no network, no refinement
-            winner = path_fn(r, start, phi).to(device).float().clone()
+            # model-free baseline (random walk, lawnmower, ...): no network, no refinement
+            raw = (path_fn(r, start, phi, mu=mu, sd=sd) if getattr(path_fn, 'wants_belief', False)
+                   else path_fn(r, start, phi))
+            winner = raw.to(device).float().clone()
             winner[0] = start
             winner = winner.clamp(0.0, 1.0)
             E_init = E = torch.full((1,), float('nan'), device=device)
+            t_2 = t_3 = _now(device)
         else:
             if init_fn is not None:
                 curves = init_fn(r, start, phi).to(device).float()      # (n_init, T, 2)
@@ -232,12 +259,29 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
             phi_k10 = ee.target_coeffs(phi)
             E_init = (ee.w * 0.5 * ee.Lambda * (coeffs_from_points(curves, ee.k_idx)
                                                 - phi_k10.unsqueeze(0)) ** 2).sum(-1)
+            t_2 = _now(device)
             target_np = (target_fn(phi) if target_fn is not None
                          else phi_k10.detach().cpu().numpy().astype(np.float64))
             curves_np = curves.cpu().numpy().astype(np.float64)
             starts_np = np.tile(start.detach().cpu().numpy(), (n_init, 1))
             seeds = [seed * 100000 + r * 1000 + i for i in range(n_init)]
-            out = bs.run(curves_np, target_np, starts_np, seeds, n_iters, record=False)
+            record = conv_iters is not None and n_iters > 0
+            if n_iters <= 0:
+                # no refinement: the B-spline least-squares fit of the raw candidates (SVGD state 0)
+                rhs = curves.permute(1, 0, 2).reshape(curves.shape[1], -1)
+                P0 = torch.linalg.lstsq(B32, rhs).solution.reshape(B32.shape[1], n_init, 2)
+                P0 = P0.permute(1, 0, 2).contiguous()
+                P0[:, 0] = start
+                out = dict(final_cps=P0.cpu().numpy(), cps=None)
+            else:
+                out = bs.run(curves_np, target_np, starts_np, seeds, n_iters, record=record)
+            if record and out.get('cps') is not None:
+                idx = torch.as_tensor(np.asarray(conv_iters, dtype=np.int64), device=out['cps'].device)
+                sel_cps = out['cps'][:, idx].to(device=device, dtype=torch.float32)  # (C, K, nxi, 2)
+                dense = torch.einsum('pi,ckid->ckpd', B32, sel_cps)
+                c_all = coeffs_from_points(dense.reshape(-1, *dense.shape[2:]), ee.k_idx)
+                conv_E = ((ee.w * 0.5 * ee.Lambda * (c_all - phi_k10.unsqueeze(0)) ** 2).sum(-1)
+                          .reshape(dense.shape[0], dense.shape[1]).T.cpu().numpy())      # (K, C)
             final_cps = torch.as_tensor(out['final_cps'], device=device, dtype=torch.float32)
             final_curves = torch.einsum('pi,cid->cpd', B32, final_cps)   # (n_init, T, 2)
 
@@ -250,6 +294,7 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
             winner = final_curves[sel].clone()
             winner[0] = start                                             # hard snap, as `execute()`
             winner = winner.clamp(0.0, 1.0)
+            t_3 = _now(device)
 
         # -- execute: the WHOLE refined candidate by default ("full
         #    execution"), or, if `ig_threshold` is set, only the prefix
@@ -267,6 +312,7 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
                             sensor_radius=args.sensor_radius)
         pts_t, vals_t = thin(pts, vals, max_points=args.max_obs)
         belief.observe(pts_t, vals_t)
+        t_4 = _now(device)
 
         segments.append(seg.detach().cpu())
         phis.append(phi.detach().cpu())
@@ -274,7 +320,9 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
         if on_round is not None:
             on_round(r, belief, segments,
                      dict(E_init_best=float(E_init.min()), E_init_med=float(E_init.median()),
-                          E_ref_best=float(E.min()), E_ref_med=float(E.median())))
+                          E_ref_best=float(E.min()), E_ref_med=float(E.median()),
+                          t_target=t_1 - t_0, t_init=t_2 - t_1, t_refine=t_3 - t_2,
+                          t_belief=t_4 - t_3, t_round=t_4 - t_0, conv_E=conv_E))
         start = seg[-1].detach()
         extra = (f"  dH={ig_gain:.3f} (target {ig_threshold:.3f}, "
                 f"{seg.shape[0]}/{n_pts} pts driven)" if ig_gain is not None else "")

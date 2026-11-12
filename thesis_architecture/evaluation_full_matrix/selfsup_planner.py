@@ -49,9 +49,15 @@ _arch = os.path.dirname(_here)
 #: floor), so its `n_init` candidates are noticeably more similar to each
 #: other than the CFM planner's -- an honest property of the current
 #: checkpoint, not a bug in this wrapper.
-DEFAULT_SELFSUP_CKPT = os.path.join(
-    _arch, 'checkpoints',
-    'selfsup_selfsup_particles_date_08_12_10h13min_nxi25_D384_N256_K8_div10_final.pt')
+_SELFSUP_CKPT_NAME = ('selfsup_selfsup_particles_date_08_12_10h13min_nxi25_D384_N256_K8_div10_final.pt')
+_SELFSUP_CKPT_CANDIDATES = [
+    os.path.join(_arch, 'checkpoints', _SELFSUP_CKPT_NAME),
+    os.path.join(os.path.dirname(_arch), 'transfer', _SELFSUP_CKPT_NAME),   # repo-level transfer folder
+    os.path.join(_arch, 'transfer', _SELFSUP_CKPT_NAME),
+]
+# first existing location wins; if none exists the first one is kept so the error message names it
+DEFAULT_SELFSUP_CKPT = next((c for c in _SELFSUP_CKPT_CANDIDATES if os.path.exists(c)),
+                            _SELFSUP_CKPT_CANDIDATES[0])
 
 
 class SelfsupPlanner:

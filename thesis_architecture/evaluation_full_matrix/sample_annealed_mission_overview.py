@@ -103,8 +103,21 @@ NETS = {
     # network-free initialiser, refined by the Adam-SVGD backend (only run by
     # run_exploration_comparison.py, not by this script's main())
     'linadam': ('Linear init + Adam-SVGD', None),
+    # added 2026-11-11 for the extended exploration comparison (run_exploration_comparison.py)
+    'old500': ('U-Net λ=500 (older start model)', r'^netz2d_startpunkt\.pt$'),
+    'lm1300': ('U-Net λ=1300 (600 ep.)', r'LMTEACHER|netz2d_startpunkt_lm_inpaint'),
+    'selfsup': ('Self-supervised generator', None),     # own checkpoint, see selfsup_planner.py
+    'lintsvec': ('Linear init + TSVEC-SVGD', None),     # ergodic search WITHOUT a learned prior
+    'gpgoal': ('Line to GP-sampled point', None),       # model-free, no SVGD
+    'linray': ('Best straight ray', None),              # model-free, no SVGD
 }
-BASELINES = ('rw', 'lawn')
+BASELINES = ('rw', 'lawn', 'gpgoal', 'linray')
+#: straight-ray initialised, refined by an SVGD backend (no network)
+RAY_REFINED = ('linadam', 'lintsvec')
+#: nets without a start-conditioned checkpoint in `transfer/` (own loader)
+OWN_LOADER = ('selfsup',)
+#: setups only run by run_exploration_comparison.py (this script's default set excludes them)
+COMPARISON_ONLY = RAY_REFINED + ('gpgoal', 'linray', 'selfsup', 'old500', 'lm1300')
 
 
 @dataclass(frozen=True)
@@ -143,7 +156,9 @@ SETUPS = {s.key: s for s in (
     Setup('ak_dit630_mid', 'ak', 'dit630', CUT_MID),
     Setup('ak_diff630_mid', 'ak', 'diff630', CUT_MID),
     *(Setup(f'{k}_{n}', k, n, CUT_MID)
-      for k in ('rbf', 'ak') for n in ('rw', 'lawn', 'linadam')),
+      for k in ('rbf', 'ak') for n in ('rw', 'lawn', 'linadam', 'lintsvec', 'gpgoal', 'linray')),
+    *(Setup(f'{k}_{n}_mid', k, n, CUT_MID)
+      for k in ('rbf', 'ak') for n in ('selfsup', 'old500', 'lm1300', 'unet0', 'unet1890')),
     *(Setup(f'{k}_unet630_mid', k, 'unet630', CUT_MID) for k in ('rbf', 'ak')),
     Setup('rbf_dit630_mid', 'rbf', 'dit630', CUT_MID),
     Setup('ak_unet210_nocut', 'ak', 'unet210', 0.0),
@@ -195,7 +210,10 @@ def find_checkpoint(net):
     pat = re.compile(NETS[net][1])
     files = glob.glob(os.path.join(net_zoo.TRANSFER, '*.pt')) + \
         glob.glob(os.path.join(net_zoo.TRANSFER, '*', '*.pt'))
+    # the 3D surface models (`*flow3d*`, `lm3d_*`, `nooffset*`) sit in transfer/ too and match the
+    # same architecture patterns (e.g. 'DIT-d12-h6'); they are not 2D planners
     hits = [f for f in files if pat.search(os.path.basename(f))
+            and 'flow3d' not in os.path.basename(f)
             and os.path.basename(os.path.dirname(f)) not in ('old_models', 'gross')]
     if not hits:
         raise FileNotFoundError(f"no checkpoint for '{net}' (pattern {NETS[net][1]!r}) "
@@ -330,12 +348,14 @@ def plot_rows(results, title, out, shape):
                'κ annealed ' + ' → '.join(f'{k:g}' for k in kap))
     nets = {SETUPS[r['setup']].net for r in results}
     parts = []
-    if nets - set(BASELINES) - {'linadam'}:
-        parts.append('CFM init + TSVEC-SVGD refine')
+    if nets - set(BASELINES) - set(RAY_REFINED):
+        parts.append('network init + TSVEC-SVGD refine')
     if 'linadam' in nets:
         parts.append('straight-ray init + Adam-SVGD refine')
+    if 'lintsvec' in nets:
+        parts.append('straight-ray init + TSVEC-SVGD refine')
     if nets & set(BASELINES):
-        parts.append('random walk / lawnmower: no network, no SVGD')
+        parts.append('random walk / lawnmower / GP-goal line / best ray: no network, no SVGD')
     method = '; '.join(parts)
     fig.suptitle(f'{title}\nshape {shape}; {method}, {kap_txt}, '
                  'full execution per round, zero prior knowledge', fontsize=12.5, color=TEXT)
@@ -378,7 +398,7 @@ def main():
     cache_dir = os.path.join(out_dir, 'cache')
     os.makedirs(cache_dir, exist_ok=True)
     device = a.device
-    keys = a.only.split(',') if a.only else [k for k in SETUPS if SETUPS[k].net != 'linadam']
+    keys = a.only.split(',') if a.only else [k for k in SETUPS if SETUPS[k].net not in COMPARISON_ONLY]
     unknown = [k for k in keys if k not in SETUPS]
     if unknown:
         raise SystemExit(f'unknown setup keys {unknown}; known: {list(SETUPS)}')

@@ -1,0 +1,85 @@
+{
+ "rule": "lowest final-round E vs. ground truth, mean over knowledge conditions of results/as_models_20261028",
+ "chosen": {
+  "dit": "dit630",
+  "unet": "old500",
+  "selfsup": "selfsup"
+ },
+ "methods": [
+  "rw",
+  "lawn",
+  "gpgoal",
+  "linray",
+  "linadam",
+  "lintsvec",
+  "dit630",
+  "old500",
+  "selfsup",
+  "unet630"
+ ],
+ "to_run": [
+  "gpgoal",
+  "linray",
+  "lintsvec",
+  "old500",
+  "selfsup"
+ ],
+ "table": [
+  {
+   "family": "dit",
+   "model": "dit630",
+   "E_final": 9.97708550810814,
+   "sem": 1.5064825896733889,
+   "n_conditions": 2,
+   "chosen": true
+  },
+  {
+   "family": "unet",
+   "model": "old500",
+   "E_final": 8.202049773503095,
+   "sem": 1.3366645899642178,
+   "n_conditions": 2,
+   "chosen": true
+  },
+  {
+   "family": "unet",
+   "model": "unet0",
+   "E_final": 8.801235219649971,
+   "sem": 1.3595961710055804,
+   "n_conditions": 2,
+   "chosen": false
+  },
+  {
+   "family": "unet",
+   "model": "unet1890",
+   "E_final": 9.134485451616346,
+   "sem": 1.3607743298856656,
+   "n_conditions": 2,
+   "chosen": false
+  },
+  {
+   "family": "unet",
+   "model": "unet630",
+   "E_final": 9.186180247012526,
+   "sem": 1.392490638190755,
+   "n_conditions": 2,
+   "chosen": false
+  },
+  {
+   "family": "unet",
+   "model": "lm1300",
+   "E_final": 9.540946608390659,
+   "sem": 1.3559706425566005,
+   "n_conditions": 2,
+   "chosen": false
+  },
+  {
+   "family": "selfsup",
+   "model": "selfsup",
+   "E_final": null,
+   "sem": null,
+   "n_conditions": 0,
+   "chosen": true
+  }
+ ]
+}

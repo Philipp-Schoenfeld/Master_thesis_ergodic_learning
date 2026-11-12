@@ -18,7 +18,18 @@ Methods (same shape / seed / belief for every method, so rows differ only by the
             direction, K=10, beta=100, lr=2e-3 = `linear_adam_bspline` of
             run_smoothness_comparison_v2.py, start hard-pinned) against the round's target
 
-Belief kernels: 'rbf' and 'ak' (Attentive Kernel). 5 methods x 2 kernels x 25 shapes.
+Added 2026-11-11 (same shapes / seeds / belief / budget, so they slot into the finished DB):
+  selfsup   self-supervised single-pass generator (`selfsup_planner.py`) init + TSVEC-SVGD refine
+  old500    U-Net lambda=500, the older start model (best U-Net of the as_models comparison)
+  unet0 / unet1890 / lm1300   further U-Net checkpoints (candidates of `select_best_models.py`)
+  lintsvec  ergodic search WITHOUT a learned prior: the same straight rays as `linadam`, refined
+            by the very same TSVEC-SVGD as the networks (isolates the prior)
+  gpgoal    straight line(s) to a point sampled from the current GP estimate (no SVGD),
+            see `mission_baselines.py`
+  linray    straight-line initialisation without search: the best of the `--n_init` rays by
+            ergodic error against the round's target, driven as it is (no SVGD)
+
+Belief kernels: 'rbf' and 'ak' (Attentive Kernel). 25 shapes x 7 variants per method and kernel.
 
 Metrics per round (of the whole path driven so far unless prefixed `seg_`; all against the
 ground truth (GT) the mission never sees, normalised to max 1, except E_belief / E_plan):
@@ -41,7 +52,11 @@ ground truth (GT) the mission never sees, normalised to max 1, except E_belief /
                                   absolute turning angle per unit length of the segment
   revisit_frac                    share of this segment's points within 0.03 of earlier rounds
   E_init_best / E_ref_best (+ _med)   best / median candidate vs. the round's target before /
-                                  after SVGD (NaN for random walk and lawnmower)
+                                  after SVGD (NaN for the methods without candidates)
+  t_target / t_init / t_refine / t_belief / t_round   wall-clock seconds of the round's stages
+                                  (target density, network forward or path generation, SVGD,
+                                  measurement + belief update, sum); NULL for runs stored before
+                                  2026-11-11
 Per run: reached 90 % / 99 % GT-mass coverage and the path length at which it was reached.
 
     python run_exploration_comparison.py --smoke           # 2 shapes, 2 rounds, tiny budget
@@ -72,6 +87,7 @@ from common.data import load_truth                                          # no
 from common.metrics import path_length                                      # noqa: E402
 from ergodic_energy_torch import coeffs_from_points                         # noqa: E402,F401
 from init_baselines import linear_ray_path                                  # noqa: E402
+import mission_baselines as mb                                              # noqa: E402
 from metrics_explore_exploit import (ExploreExploitErgodic, smoothness_energy,   # noqa: E402
                                      steps_to_full_coverage)
 from run_ideal_matrix import PLANNER_BUILDERS                               # noqa: E402
@@ -80,19 +96,43 @@ from svgd_batched import BatchedTsvecSvgdTorch                              # no
 import run_svgd_convergence as rsc                                          # noqa: E402
 import variant_runner as vr                                                 # noqa: E402
 from common.adam_svgd import AdamSvgd                                       # noqa: E402
+from selfsup_planner import SelfsupPlanner, DEFAULT_SELFSUP_CKPT           # noqa: E402
 from ergodic_energy_torch import W_SMOOTH                                   # noqa: E402
 from run_smoothness_comparison_v2 import ADAM_BETA, ADAM_K, ADAM_LR         # noqa: E402
 
 _here = os.path.dirname(os.path.abspath(__file__))
 
-METHODS = ('unet630', 'dit630', 'rw', 'lawn', 'linadam')
+#: the five methods of the first full run (2026-10-29); their outputs stay in `out_dir` itself
+ORIGINAL_METHODS = ('unet630', 'dit630', 'rw', 'lawn', 'linadam')
+METHODS = ('unet630', 'dit630', 'rw', 'lawn', 'linadam',
+           'selfsup', 'old500', 'unet0', 'unet1890', 'lm1300', 'lintsvec', 'gpgoal', 'linray')
+#: what a plain invocation runs: everything the final comparison needs. Finished (shape, kernel,
+#: method, variant) rows are skipped, so on the existing DB only the missing methods are computed.
+DEFAULT_METHODS = ('unet630', 'dit630', 'rw', 'lawn', 'linadam',
+                   'selfsup', 'old500', 'lintsvec', 'gpgoal', 'linray')
 KERNELS = ('rbf', 'ak')
 METHOD_LABEL = {'unet630': 'U-Net λ=630', 'dit630': 'DiT λ=630', 'rw': 'Random walk',
-                'lawn': 'Lawnmower', 'linadam': 'Linear init + Adam-SVGD'}
+                'lawn': 'Lawnmower', 'linadam': 'Linear init + Adam-SVGD',
+                'selfsup': 'Self-supervised + TSVEC', 'old500': 'U-Net λ=500 (older)',
+                'unet0': 'U-Net, no ErgLoss', 'unet1890': 'U-Net λ=1890',
+                'lm1300': 'U-Net λ=1300 (600 ep.)', 'lintsvec': 'Linear init + TSVEC (no prior)',
+                'gpgoal': 'Line to GP-sampled point', 'linray': 'Best straight ray (no search)'}
 METHOD_COLOR = {'unet630': '#1565C0', 'dit630': '#6A1B9A', 'rw': '#888888',
-                'lawn': '#E65100', 'linadam': '#00897B'}
-NET_OF = {'unet630': 'unet630', 'dit630': 'dit630', 'rw': 'rw', 'lawn': 'lawn',
-          'linadam': 'linadam'}
+                'lawn': '#E65100', 'linadam': '#00897B', 'selfsup': '#C62828',
+                'old500': '#0D47A1', 'unet0': '#42A5F5', 'unet1890': '#5C6BC0',
+                'lm1300': '#26C6DA', 'lintsvec': '#2E7D32', 'gpgoal': '#F9A825',
+                'linray': '#8D6E63'}
+NET_OF = {m: m for m in METHODS}
+#: methods that start from a trained network
+NETWORK_METHODS = ('unet630', 'dit630', 'selfsup', 'old500', 'unet0', 'unet1890', 'lm1300')
+#: methods without network and without SVGD (path_fn baselines)
+PATH_METHODS = ('rw', 'lawn', 'gpgoal', 'linray')
+#: methods that start from straight rays and refine them
+RAY_METHODS = ('linadam', 'lintsvec')
+#: groups of the final comparison (used by the summary plots)
+GROUPS = {'baseline': ('rw', 'lawn', 'gpgoal', 'linray', 'linadam'),
+          'search_no_prior': ('lintsvec',),
+          'search_with_prior': ('unet630', 'dit630', 'selfsup', 'old500')}
 CUTOFF = ov.CUT_MID
 
 GT_SUPPORT = 0.05            # path point counts as "outside the GT" below this GT value
@@ -108,6 +148,7 @@ METRIC_COLS = [
     'seg_out_gt_frac', 'seg_in_hi50_frac', 'seg_in_hi75_frac', 'seg_smooth', 'seg_curv',
     'revisit_frac',
     'E_init_best', 'E_init_med', 'E_ref_best', 'E_ref_med',
+    't_target', 't_init', 't_refine', 't_belief', 't_round',
 ]
 # aliases the overview table / plot code expects
 ALIASES = {'swept': 'swept06', 'belief_corr': 'belief_corr'}
@@ -144,6 +185,16 @@ class ResultDB:
         self.conn = sqlite3.connect(path)
         self.conn.executescript(SCHEMA)
         self.conn.execute('PRAGMA journal_mode=WAL')
+        self._migrate()
+
+    def _migrate(self):
+        """Add-only schema migration: a DB written before a metric column existed gets the column
+        (NULL for the old rows); nothing stored is changed or removed."""
+        have = {r[1] for r in self.conn.execute('PRAGMA table_info(rounds)')}
+        for c in METRIC_COLS:
+            if c not in have:
+                self.conn.execute(f'ALTER TABLE rounds ADD COLUMN {c} REAL')
+        self.conn.commit()
 
     def has_run(self, shape, kernel, method, variant):
         return self.conn.execute(
@@ -226,8 +277,9 @@ class RefAdamSvgdBatch:
         phi_k = np.asarray(phi_k, dtype=np.float64)
         phi_k = phi_k[0] if phi_k.ndim == 2 else phi_k
         start = None if start is None else np.asarray(start, dtype=np.float64).reshape(-1, 2)[0]
-        out = self.solver.run(P0, phi_k, n_iters=n_iters, record=False, start=start)
-        return dict(cps=None, final_cps=out['final'].detach().cpu().numpy().astype(np.float32),
+        out = self.solver.run(P0, phi_k, n_iters=n_iters, record=record, start=start)
+        log = (out['log'].permute(1, 0, 2, 3) if record and out.get('log') is not None else None)
+        return dict(cps=log, final_cps=out['final'].detach().cpu().numpy().astype(np.float32),
                     final_energy=out['energy'].detach().cpu().numpy())
 
 
@@ -320,9 +372,10 @@ def run_one(method, kernel, shape, truth, planner, bs, B32, ee, base_args, a, ka
     args = types.SimpleNamespace(**vars(base_args))
     args.belief_kernel, args.ak_fit_iters, args.np_ckpt = kernel, a.ak_fit_iters, None
     evl = Evaluator(truth, ee, device)
-    rows, mus, sds = [], [], []
+    rows, mus, sds, convs = [], [], [], []
 
     def on_round(r, belief, segments, diag):
+        convs.append(diag.get('conv_E'))
         driven = torch.cat(segments, dim=0)
         earlier = torch.cat(segments[:-1], dim=0) if r > 0 else None
         row, mu, sd = evl.round_metrics(driven, segments[-1], earlier, belief, diag)
@@ -333,16 +386,22 @@ def run_one(method, kernel, shape, truth, planner, bs, B32, ee, base_args, a, ka
     kw = {}
     if method in ('rw', 'lawn'):
         kw['path_fn'] = ov.baseline_path_fn(setup, a, seed)
-    elif method == 'linadam':
+    elif method == 'gpgoal':
+        kw['path_fn'] = mb.gp_goal_path_fn(a.walk_len, seed, source=getattr(a, 'gp_goal_source', 'mean'))
+    elif method == 'linray':
+        kw['path_fn'] = mb.best_ray_path_fn(ee, a.n_init, a.walk_len, rsc.N_POINTS)
+    elif method in RAY_METHODS:
         kw['init_fn'] = lambda r, start, phi: torch.stack(
             [linear_ray_path(start.detach().cpu().numpy(), 360.0 * i / a.n_init, a.walk_len, rsc.N_POINTS)
              for i in range(a.n_init)])
+    if getattr(a, 'conv_iters', None) is not None:
+        kw['conv_iters'] = a.conv_iters
     start_pos = (0.06, 0.06) if method == 'lawn' else (0.5, 0.5)
     t0 = time.time()
     segments, phis, _ = sam.run_mission(
         f'{kernel}/{method}/{shape}', truth, planner, bs, ee, B32, args, device, a.n_rounds,
         a.n_init, a.n_iters, kappas, start_pos, seed,
-        cutoff=CUTOFF if method in ('unet630', 'dit630') else 0.0, on_round=on_round, **kw)
+        cutoff=CUTOFF if method in NETWORK_METHODS else 0.0, on_round=on_round, **kw)
     seconds = time.time() - t0
     for r, row in enumerate(rows):      # E vs. the round's own planning target (needs phis)
         row['E_plan'] = ee.score(torch.cat(segments[:r + 1], dim=0),
@@ -354,7 +413,7 @@ def run_one(method, kernel, shape, truth, planner, bs, B32, ee, base_args, a, ka
         lens[thr] = (int(reached), float(frac) * path_length(full) if reached else float('nan'))
     starts = [start_pos] + [s[-1].tolist() for s in segments[:-1]]
     return dict(rows=rows, segments=[s.numpy() for s in segments], phis=[p.numpy() for p in phis],
-                mus=mus, sds=sds, kappas=kappas, starts=starts, seconds=seconds, seed=seed,
+                mus=mus, sds=sds, convs=convs, kappas=kappas, starts=starts, seconds=seconds, seed=seed,
                 reached90=lens[0.90][0], reached99=lens[0.99][0], len90=lens[0.90][1],
                 len99=lens[0.99][1])
 
@@ -363,8 +422,38 @@ def run_one(method, kernel, shape, truth, planner, bs, B32, ee, base_args, a, ka
 # Plots / tables from the DB
 # ===========================================================================
 
+def make_context(device):
+    """Everything a mission needs besides the shape: strategy arguments, ergodic metric, B-spline
+    basis and the two SVGD backends. Shared by the comparison, convergence and timing runners."""
+    base_args, _, _ = vr.build_strategy_args(sam.STRATEGY_NAME, device)
+    B_np = rsc.basis_matrix(rsc.NXI, rsc.N_POINTS, rsc.DEGREE)
+    ctx = types.SimpleNamespace(
+        base_args=base_args, ee=ExploreExploitErgodic(device=device), B_np=B_np,
+        B32=torch.as_tensor(B_np, dtype=torch.float32, device=device),
+        bs_tsvec=BatchedTsvecSvgdTorch(B_np, device), bs_adam=RefAdamSvgdBatch(B_np, device))
+    ctx.refiner_for = lambda method: ctx.bs_adam if method == 'linadam' else ctx.bs_tsvec
+    return ctx
+
+
+def build_planner(method, a, device):
+    """Network of a network-initialised method (None for the others)."""
+    if method == 'selfsup':
+        ckpt = a.selfsup_ckpt or DEFAULT_SELFSUP_CKPT
+        if not os.path.isfile(ckpt):
+            raise SystemExit(f'self-supervised checkpoint not found: {ckpt}\n'
+                             '(pull it from the cluster or pass --selfsup_ckpt)')
+        planner = SelfsupPlanner(ckpt, device)
+        assert planner.nxi == rsc.NXI, f'selfsup nxi={planner.nxi}, expected {rsc.NXI}'
+        return planner
+    if method in NETWORK_METHODS:
+        return PLANNER_BUILDERS['particles'](ov.find_checkpoint(NET_OF[method]), device)
+    return None
+
+
 def setup_key(kernel, method):
-    return f'{kernel}_{method}' if method in ('rw', 'lawn', 'linadam') else f'{kernel}_{method}_mid'
+    if method in PATH_METHODS or method in RAY_METHODS:
+        return f'{kernel}_{method}'
+    return f'{kernel}_{method}_mid'
 
 
 def plot_shape(db, shape, kernel, methods, out_dir):
@@ -483,6 +572,20 @@ def aggregate(db, out_dir, methods):
                     if not np.isnan(v).all():
                         w.writerow([k, m, shape, c, len(v), np.nanmean(v), np.nanstd(v),
                                     np.nanmin(v), np.nanmax(v)])
+    # wall-clock of one round per method (only runs stored with the t_* columns, i.e. since 2026-11-11)
+    tcols = ['t_target', 't_init', 't_refine', 't_belief', 't_round']
+    with open(os.path.join(out_dir, 'timing_by_method.csv'), 'w', newline='', encoding='utf-8') as f:
+        w = csv.writer(f)
+        w.writerow(['kernel', 'method', 'n_rounds_timed'] + [f'{c}_mean' for c in tcols] +
+                   [f'{c}_median' for c in tcols])
+        for k in KERNELS:
+            for m in methods:
+                sel = [d for d in recs if d['kernel'] == k and d['method'] == m
+                       and d['t_round'] is not None]
+                if sel:
+                    cols = {c: np.array([d[c] for d in sel], dtype=float) for c in tcols}
+                    w.writerow([k, m, len(sel)] + [float(np.nanmean(cols[c])) for c in tcols] +
+                               [float(np.nanmedian(cols[c])) for c in tcols])
     # paired comparison of the final round, pairing (shape, variant): the same seed means the
     # same belief noise for every method
     final = {(d['kernel'], d['method'], d['shape'], d['variant']): d
@@ -565,7 +668,9 @@ def plot_curves(cells, n_rounds, out_dir, methods, mode):
 def main():
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('--methods', type=str, default=','.join(METHODS))
+    p.add_argument('--methods', type=str, default=','.join(DEFAULT_METHODS),
+                   help='Comma-separated; known: ' + ', '.join(METHODS) + '. Finished rows are '
+                        'skipped, so the default only computes what the DB still lacks.')
     p.add_argument('--kernels', type=str, default=','.join(KERNELS))
     p.add_argument('--n_shapes', type=int, default=None, help='Only the first N heldout shapes (default: all).')
     p.add_argument('--shape_names', type=str, default=None, help='Comma-separated explicit shapes.')
@@ -580,6 +685,14 @@ def main():
     p.add_argument('--walk_len', type=float, default=6.1,
                    help='Path length per round of random walk / lawnmower / linear rays.')
     p.add_argument('--ak_fit_iters', type=int, default=200)
+    p.add_argument('--selfsup_ckpt', type=str, default=None,
+                   help='Self-supervised checkpoint (default: selfsup_planner.DEFAULT_SELFSUP_CKPT).')
+    p.add_argument('--gp_goal_source', type=str, default='mean', choices=['mean', 'phi'],
+                   help="'gpgoal' draws its goals from the GP posterior mean ('mean') or from the "
+                        "round's target density ('phi').")
+    p.add_argument('--dry_run', action='store_true',
+                   help='Only list the missions still to compute per method and kernel (and a '
+                        'time estimate from the stored runs), compute nothing.')
     p.add_argument('--max_minutes', type=float, default=None, help='Stop cleanly after this wall time.')
     p.add_argument('--db', type=str, default=None)
     p.add_argument('--out_dir', type=str, default=None)
@@ -591,9 +704,12 @@ def main():
         a.n_rounds, a.n_init, a.n_iters, a.n_variants = 2, 2, 20, 2
         a.n_shapes = a.n_shapes or 2
     tag = 'exploration_comparison' + ('_smoke' if a.smoke else '')
-    out_dir = a.out_dir or os.path.join(_here, 'plots', tag)
-    db_path = a.db or os.path.join(out_dir, f'{tag}.db')
+    base_dir = a.out_dir or os.path.join(_here, 'plots', tag)
+    db_path = a.db or os.path.join(base_dir, f'{tag}.db')
     methods, kernels = a.methods.split(','), a.kernels.split(',')
+    # plots / tables of a method set beyond the first five go to a sub-folder, so the first run's
+    # figures and tables stay untouched
+    out_dir = base_dir if set(methods) <= set(ORIGINAL_METHODS) else os.path.join(base_dir, 'extended')
     for m in methods:
         if m not in METHODS:
             raise SystemExit(f'unknown method {m}; known: {METHODS}')
@@ -608,20 +724,17 @@ def main():
 
     if not a.plot_only:
         kappas = [kappa_schedule(r, a.n_rounds, a.kappa0, a.kappa1) for r in range(a.n_rounds)]
-        base_args, _, _ = vr.build_strategy_args(sam.STRATEGY_NAME, device)
-        ee = ExploreExploitErgodic(device=device)
-        B_np = rsc.basis_matrix(rsc.NXI, rsc.N_POINTS, rsc.DEGREE)
-        B32 = torch.as_tensor(B_np, dtype=torch.float32, device=device)
-        bs_tsvec = BatchedTsvecSvgdTorch(B_np, device)
-        bs_adam = RefAdamSvgdBatch(B_np, device)
+        ctx = make_context(device)
+        base_args, ee, B32 = ctx.base_args, ctx.ee, ctx.B32
         meta = dict(n_variants=a.n_variants, n_rounds=a.n_rounds, n_init=a.n_init, n_iters=a.n_iters, kappa0=a.kappa0,
                     kappa1=a.kappa1, walk_len=a.walk_len, cutoff=CUTOFF, gt_support=GT_SUPPORT,
                     hi_levels=list(HI_LEVELS), adam_k=ADAM_K, adam_beta=ADAM_BETA,
                     adam_lr=ADAM_LR)
-        for k, v in meta.items():
-            db.conn.execute('INSERT OR REPLACE INTO meta VALUES (?,?)', (k, str(v)))
-        for n, t in zip(names, truths):
-            db.put_truth(n, t)
+        if not a.dry_run:
+            for k, v in meta.items():
+                db.conn.execute('INSERT OR REPLACE INTO meta VALUES (?,?)', (k, str(v)))
+            for n, t in zip(names, truths):
+                db.put_truth(n, t)
         t_start = time.time()
         stop = False
         for method in methods:
@@ -630,10 +743,11 @@ def main():
                     for k in kernels if not db.has_run(n, k, method, v)]
             if not todo:
                 continue
-            planner = None
-            if method in ('unet630', 'dit630'):
-                planner = PLANNER_BUILDERS['particles'](ov.find_checkpoint(NET_OF[method]), device)
-            bs = bs_adam if method == 'linadam' else bs_tsvec
+            if a.dry_run:
+                print(f'  {method}: {len(todo)} missions to compute')
+                continue
+            planner = build_planner(method, a, device)
+            bs = ctx.refiner_for(method)
             print(f'\n=== {method}: {len(todo)} missions ===')
             for k, i, n, v in todo:
                 if a.max_minutes and (time.time() - t_start) / 60 > a.max_minutes:
@@ -652,6 +766,8 @@ def main():
             if stop:
                 break
 
+    if a.dry_run:
+        return
     print('\n=== plots + tables ===')
     done = {r[0] for r in db.conn.execute('SELECT DISTINCT shape FROM runs')}
     for n in names:

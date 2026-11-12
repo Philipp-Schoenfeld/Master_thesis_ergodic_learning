@@ -24,14 +24,24 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, LogNorm, TwoSlopeNorm
 
-METHODS = ('unet630', 'dit630', 'rw', 'lawn', 'linadam')
+# order = display order of the groups: model-free baselines, search without a prior, search with a prior
+METHODS = ('rw', 'lawn', 'gpgoal', 'linray', 'linadam', 'lintsvec',
+           'unet630', 'old500', 'unet0', 'unet1890', 'lm1300', 'dit630', 'selfsup')
 KERNELS = ('rbf', 'ak')
 LABEL = {'unet630': 'U-Net λ=630', 'dit630': 'DiT λ=630', 'rw': 'Random walk',
-         'lawn': 'Lawnmower', 'linadam': 'Linear init + Adam-SVGD'}
-SHORT = {'unet630': 'U-Net', 'dit630': 'DiT', 'rw': 'Random walk', 'lawn': 'Lawnmower',
-         'linadam': 'Lin+Adam'}
+         'lawn': 'Lawnmower', 'linadam': 'Linear init + Adam-SVGD',
+         'selfsup': 'Self-supervised + TSVEC', 'old500': 'U-Net λ=500 (older)',
+         'unet0': 'U-Net, no ErgLoss', 'unet1890': 'U-Net λ=1890', 'lm1300': 'U-Net λ=1300 (600 ep.)',
+         'lintsvec': 'Linear init + TSVEC (no prior)', 'gpgoal': 'Line to GP-sampled point',
+         'linray': 'Best straight ray (no search)'}
+SHORT = {'unet630': 'U-Net 630', 'dit630': 'DiT', 'rw': 'Random walk', 'lawn': 'Lawnmower',
+         'linadam': 'Lin+Adam', 'selfsup': 'Self-sup.', 'old500': 'U-Net 500', 'unet0': 'U-Net λ0',
+         'unet1890': 'U-Net 1890', 'lm1300': 'U-Net 1300', 'lintsvec': 'Lin+TSVEC',
+         'gpgoal': 'GP-goal line', 'linray': 'Best ray'}
 COLOR = {'unet630': '#1565C0', 'dit630': '#6A1B9A', 'rw': '#888888', 'lawn': '#E65100',
-         'linadam': '#00897B'}
+         'linadam': '#00897B', 'selfsup': '#C62828', 'old500': '#0D47A1', 'unet0': '#42A5F5',
+         'unet1890': '#5C6BC0', 'lm1300': '#26C6DA', 'lintsvec': '#2E7D32', 'gpgoal': '#F9A825',
+         'linray': '#8D6E63'}
 KERNEL_NAME = {'rbf': 'RBF belief', 'ak': 'Attentive-Kernel belief'}
 TEXT, MUTED, SPINE = '#1A1A2E', '#555555', '#CCCCCC'
 
@@ -53,9 +63,11 @@ RANK_CMAP = LinearSegmentedColormap.from_list('rank', ['#F1F5FB', '#9EC1E8', '#1
 class Data:
     """arr[kernel][metric] -> float array [method, shape, variant, round]."""
 
-    def __init__(self, directory):
+    def __init__(self, directory, db_path=None, only=None):
         with open(os.path.join(directory, 'metrics_all.csv'), newline='', encoding='utf-8') as f:
             rows = list(csv.DictReader(f))
+        if only:
+            rows = [r for r in rows if r['method'] in only]
         self.shapes = sorted({r['shape'] for r in rows})
         self.n_var = max(int(r['variant']) for r in rows) + 1
         self.n_rounds = max(int(r['round']) for r in rows) + 1
@@ -71,14 +83,16 @@ class Data:
                 v = r[c]
                 self.arr[r['kernel']][c][idx] = float(v) if v not in ('', 'None') else np.nan
         # coverage-reach columns come from the runs table
-        db = sqlite3.connect('file:' + os.path.join(directory, 'exploration_comparison.db')
-                             + '?mode=ro', uri=True)
+        db_path = db_path or os.path.join(directory, 'exploration_comparison.db')
+        db = sqlite3.connect('file:' + os.path.abspath(db_path).replace(os.sep, '/') + '?mode=ro', uri=True)
         self.reach = {k: {c: np.full(shp[:3], np.nan) for c in
                           ('reached90', 'reached99', 'path_len_90', 'path_len_99', 'seconds')}
                       for k in KERNELS}
         for sh, k, m, v, *vals in db.execute(
                 'select shape,kernel,method,variant,reached90,reached99,path_len_90,path_len_99,'
                 'seconds from runs'):
+            if m not in mi:
+                continue
             for c, x in zip(('reached90', 'reached99', 'path_len_90', 'path_len_99', 'seconds'),
                             vals):
                 self.reach[k][c][mi[m], si[sh], v] = np.nan if x is None else x
@@ -127,7 +141,7 @@ def overall_order(d, k):
 
 # --------------------------------------------------------------------------- figures
 def fig_scorecard(d, out):
-    fig, axes = plt.subplots(1, 2, figsize=(17, 4.6), facecolor='white')
+    fig, axes = plt.subplots(1, 2, figsize=(17, 1.5 + 0.62 * len(d.methods)), facecolor='white')
     rows_csv = [['kernel', 'method', 'metric', 'mean_rank', 'mean_value']]
     for ax, k in zip(axes, KERNELS):
         order, per_metric, overall = overall_order(d, k)
@@ -165,9 +179,9 @@ def fig_scorecard(d, out):
         for s in ax.spines.values():
             s.set_visible(False)
         ax.set_title(KERNEL_NAME[k], fontsize=11, color=TEXT, pad=38)
-    fig.suptitle('Rank scorecard after round 5: mean rank among the 5 methods (1 = best), top '
+    fig.suptitle(f'Rank scorecard after round 5: mean rank among the {len(d.methods)} methods (1 = best), top '
                  'number; mean metric value below.\nRanks are formed per (shape, variant) with '
-                 'the same seed, then averaged over 25 shapes × 7 variants.',
+                 f'the same seed, then averaged over {len(d.shapes)} shapes × {d.n_var} variants.',
                  fontsize=10, color=MUTED, y=0.0, va='top')
     fig.tight_layout()
     save(fig, out, '01_rank_scorecard.png')
@@ -244,7 +258,7 @@ def fig_dots(d, out):
          plt.Line2D([], [], marker='D', color=MUTED, ls='', mfc='white', mew=1.8, ms=7,
                     label='Attentive-Kernel belief')]
     fig.legend(handles=h, loc='lower center', ncol=2, frameon=False, fontsize=9)
-    fig.suptitle('Final metrics after round 5 (mean over 25 shapes, whiskers: 95 % CI over '
+    fig.suptitle(f'Final metrics after round 5 (mean over {len(d.shapes)} shapes, whiskers: 95 % CI over '
                  'shapes); methods ordered by overall rank under the AK belief',
                  fontsize=11, color=TEXT)
     fig.tight_layout(rect=[0, 0.04, 1, 0.96])
@@ -322,7 +336,7 @@ def fig_rank_rounds(d, out):
 
 
 def fig_efficiency(d, out):
-    fig, axes = plt.subplots(1, 3, figsize=(16, 4.8), facecolor='white',
+    fig, axes = plt.subplots(1, 3, figsize=(16 + 0.25 * len(d.methods), 4.8), facecolor='white',
                              gridspec_kw=dict(width_ratios=[1, 1, 1.15]))
     w = 0.38
     for ax, thr in zip(axes[:2], ('90', '99')):
@@ -356,7 +370,7 @@ def fig_efficiency(d, out):
                         yerr=1.96 * e.std() / np.sqrt(len(e)), fmt=mk, color=COLOR[m], ms=9,
                         mfc=COLOR[m] if fill else 'white', mew=1.8, capsize=3, lw=1.4)
         ax.annotate(SHORT[m], (np.nanmean(d.final('ak', 'path_len')[mi]),
-                               np.nanmean(d.final('ak', 'E_truth')[mi])), xytext=(10, {'dit630': 14, 'unet630': -16}.get(m, 6)),
+                               np.nanmean(d.final('ak', 'E_truth')[mi])), xytext=(10, {'dit630': 14, 'unet630': -16, 'old500': -10}.get(m, 6)),
                     textcoords='offset points', fontsize=9, color=COLOR[m], fontweight='bold')
     ax.set_yscale('log')
     plain_log_axis(ax.yaxis, [4, 6, 10, 15, 25, 40])
@@ -396,7 +410,7 @@ def fig_distributions(d, out):
             ax.set_xticks(range(len(order)))
             ax.set_xticklabels([SHORT[d.methods[m]] for m in order], fontsize=9, color=TEXT)
             ax.set_title(f'{title} – {KERNEL_NAME[k]}', fontsize=10, color=TEXT)
-    fig.suptitle('Every dot is one run (25 shapes × 7 variants); box: quartiles, line: median',
+    fig.suptitle(f'Every dot is one run ({len(d.shapes)} shapes × {d.n_var} variants); box: quartiles, line: median',
                  fontsize=11, color=TEXT)
     fig.tight_layout(rect=[0, 0, 1, 0.96])
     save(fig, out, '07_distributions.png')
@@ -405,11 +419,23 @@ def fig_distributions(d, out):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('--dir', default=os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                 'plots', 'exploration_comparison'))
+                                                 'plots', 'exploration_comparison'),
+                   help='Folder with metrics_all.csv (the `extended` sub-folder for the full method set).')
+    p.add_argument('--db', default=None,
+                   help='Comparison DB (default: exploration_comparison.db in --dir or its parent).')
+    p.add_argument('--methods', default=None,
+                   help='Comma-separated subset to show (default: every method found).')
     a = p.parse_args()
     out = os.path.join(a.dir, 'summary')
     os.makedirs(out, exist_ok=True)
-    d = Data(a.dir)
+    db = a.db
+    if db is None:
+        for cand in (os.path.join(a.dir, 'exploration_comparison.db'),
+                     os.path.join(os.path.dirname(a.dir), 'exploration_comparison.db')):
+            if os.path.isfile(cand):
+                db = cand
+                break
+    d = Data(a.dir, db, only=a.methods.split(',') if a.methods else None)
     print(f'{len(d.methods)} methods, {len(d.shapes)} shapes, {d.n_var} variants, '
           f'{d.n_rounds} rounds')
     fig_scorecard(d, out)
