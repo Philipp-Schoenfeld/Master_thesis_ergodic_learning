@@ -1,0 +1,5 @@
+[job] Fri Nov 13 01:56:50 CET 2026 node=dgx-station gpu=Tesla V100-DGXS-32GB parts=sweep,trace methods=dit630 tag=main_dit630
+convergence tests -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/convergence_tests_main_dit630
+  parts=['sweep', 'trace'] methods=['dit630', 'lintsvec'] kernels=['ak'] iters=[0, 10, 25, 50, 100, 250, 500, 1000] variants=3  device=cuda
+
+=== sweep dit630: 600 missions to compute ===

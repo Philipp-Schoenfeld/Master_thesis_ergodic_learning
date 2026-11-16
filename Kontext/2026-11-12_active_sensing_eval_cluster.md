@@ -1,5 +1,42 @@
 # Kontext: Active-Sensing-Evaluation am Cluster starten (Session 2026-11-12)
 
+## STATUS 2026-11-16: ALLE CLUSTER-JOBS FERTIG, Ergebnisse ausgewertet (Abschnitte 5-7 unten sind erledigt)
+**Es muss nichts mehr am Cluster gerechnet werden.** Rest ist Auswertung/Schreiben.
+
+Jobs (alle COMPLETED): Welle 1 = 205936 (selfsup+old500, lief ins `--max_minutes`; old500 mit 208554 nachgeholt),
+205937 (lintsvec), 205938 (gpgoal+linray). Welle 2 = 206044/45/47/48 (lintsvec, old500, selfsup, linadam) + 208555
+(dit630; 206046 war wegen veraltetem `flow_matching_cond_particles_start.py` am Cluster abgestuerzt). Welle 3 = Zeittest 208556
+(206049 gleiche Ursache abgestuerzt). Logs: `thesis_architecture/evaluation_full_matrix/cluster_logs/`.
+Fuer den Cluster waren zusaetzlich `exploration/**/*.py` und `flow_matching_cond_particles_start.py` per rsync nachzuziehen.
+
+**Wo liegt was**
+- Git (klein): `plots/exploration_comparison_combined/` (metrics_all.csv, kleine runs-DB, `summary/01..07_*.png`, `ranking.csv`),
+  `results/convergence_tests_main/` (nur CSV/PNG), `results/timing_tests_cluster_rtx3090/` (CSV, PNG, hardware.json),
+  `cluster_logs/`, `combine_comparison_metrics.py`.
+- NICHT im Git, per Hand nach `transfer/2026-11-16_active_sensing_results/` (1,2 GB, Struktur = Repo-Pfade ab
+  `thesis_architecture/evaluation_full_matrix/`): Extra-DBs `plots/exploration_comparison_extra_{a,b,c}/*.db` (+ Einzelplots),
+  `results/convergence_tests_main/{sweep.db,trace/*.npz}` und die Einzelordner `convergence_tests_main_<methode>/`.
+  Zurueck an den Ort kopieren, falls Skripte neu laufen sollen.
+- Die **Haupt-DB `exploration_comparison.db` (254 MB) wurde nie auf den Cluster-Laptop gebracht** (weder lokal noch am Cluster
+  vorhanden; nur auf dem Quellrechner). Ersatz: `python combine_comparison_metrics.py` baut aus der im Git liegenden
+  `plots/exploration_comparison/metrics_all.csv` (5 alte Methoden) + Extra-DBs den 10-Methoden-Datensatz; dann
+  `python plot_exploration_summary.py --dir plots/exploration_comparison_combined`. Folge: im Effizienz-Plot (06) fehlen die
+  5 alten Methoden (Reach-Spalten nur in der Haupt-DB); Konvergenz-Teile variants/reach/belief sind uebersprungen. Wer die
+  Haupt-DB auf dem Quellrechner hat, kann Abschnitt 7 vollstaendig nachholen (`merge_exploration_dbs.py` + `--plot_only` +
+  `run_convergence_tests.py --parts analysis --main_db ...`).
+
+**Kernergebnisse** (mittlerer Rang ueber 10 Methoden, 1 = best; RBF / AK): Lin+TSVEC ohne Prior 3,22 / 3,21 (#1), U-Net500 4,14 / 4,38,
+U-Net630 4,32 / 4,22, Self-sup 4,48 / 4,33, DiT 4,59 / 4,54, Lin+Adam 4,88 / 4,47, GP-Linie 5,38 / 5,05 (bester End-E, aber
+schlechter Belief), Lawnmower 7,0 / 7,2, beste Gerade 8,1 / 8,4, Random Walk 8,9 / 9,2.
+Konvergenz (End-E, AK, 0 / 10 / 25 / 100 / 500 / 1000 Iter.): lintsvec 10,5 / 6,3 / 5,6 / 5,7 / 5,6 / 5,5; dit630 6,0 / 6,3 / 6,6 / 6,6 / 6,6 / 6,6;
+old500 5,8 / 6,4 / 6,0 / 5,7 / 6,6 / 6,1; selfsup 6,6 / 6,7 / 6,9 / 6,8 / 6,2 / 6,4; linadam 10,5 / 8,9 / 8,1 / 5,5 / 6,1 / 6,5.
+=> Der Prior hilft bei 0 Iterationen (5,8-6,6 statt 10,5), `lintsvec` ist aber nach ca. 25 Iterationen auf Plateau und bei 500 Iterationen
+gleich gut oder besser als die Netze. Zeit (RTX 3090, s/Mission AK / RBF): unet630 15,4 / 11,5; old500 15,3 / 11,5; dit630 12,7 / 9,0;
+selfsup 8,1 / 4,3; lintsvec 8,0 / 4,2; linadam 7,5 / 3,7; gpgoal/linray/lawn 3,9 / 0,05; rw 5,0 / 1,2. Netz-Forward kostet 4,7 s (DiT) bzw. 7,3 s (U-Net),
+SVGD 500 Iter. ca. 4,2 s, selfsup-Forward 0,05 s; AK-Belief-Update ca. 3,8 s je Mission.
+Offene Punkte: Plausibilitaet "lintsvec schlaegt Netze" pruefen/diskutieren (gepaarte CIs in `sweep_by_iters.csv`, `02_winrate_matrix.png`);
+Zeit-Plot-Beschriftung (Balken-Labels) ueberlappt in `timing_overview.png`. Rest dieser Datei = urspruenglicher Auftrag (Historie).
+
 Uebergabe an den Rechner MIT Cluster-Zugang. Alles Noetige steht hier; Rueckfragen an Philipp sollten
 nicht noetig sein (ausser den Freigaben, die CLAUDE.md ohnehin vorschreibt, siehe 0). Auf dem Quellrechner
 wurde NICHTS davon gerechnet (nur Smoke-Tests mit Fake-Gewichten, ein abgebrochener Lauf, siehe 2).

@@ -1,0 +1,110 @@
+{
+ "hardware": {
+  "date": "2026-11-13 15:48:16",
+  "host": "gn05",
+  "platform": "Linux-6.8.0-149-generic-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "cpu_count": 56,
+  "python": "3.13.14",
+  "torch": "2.7.1+cu118",
+  "numpy": "2.5.1",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 3090",
+  "gpu_mem_gb": 23.6,
+  "cuda": "11.8",
+  "cudnn": 90100,
+  "git_rev": null
+ },
+ "args": {
+  "parts": [
+   "planner",
+   "init",
+   "refiner",
+   "belief",
+   "missions"
+  ],
+  "tag": "cluster_rtx3090",
+  "out_dir": null,
+  "shapes": [
+   "A",
+   "rand_gmm_20",
+   "organic_20"
+  ],
+  "net_methods": [
+   "unet630",
+   "dit630",
+   "old500",
+   "unet0",
+   "unet1890",
+   "lm1300",
+   "selfsup"
+  ],
+  "methods": [
+   "unet630",
+   "dit630",
+   "rw",
+   "lawn",
+   "linadam",
+   "selfsup",
+   "old500",
+   "unet0",
+   "unet1890",
+   "lm1300",
+   "lintsvec",
+   "gpgoal",
+   "linray"
+  ],
+  "kernels": [
+   "rbf",
+   "ak"
+  ],
+  "belief_kernels": [
+   "rbf",
+   "ak",
+   "np"
+  ],
+  "refiners": [
+   "tsvec_svgd",
+   "adam_svgd"
+  ],
+  "n_init_sweep": [
+   1,
+   2,
+   4,
+   8,
+   16,
+   30,
+   60
+  ],
+  "iters_sweep": [
+   10,
+   50,
+   200
+  ],
+  "nobs_sweep": [
+   0,
+   64,
+   128,
+   256,
+   512
+  ],
+  "reps": 15,
+  "warmup": 3,
+  "reps_slow": 3,
+  "warmup_slow": 1,
+  "mission_reps": 2,
+  "n_rounds": 5,
+  "n_init": 8,
+  "n_iters": 500,
+  "kappa0": 1.0,
+  "kappa1": 0.05,
+  "walk_len": 6.1,
+  "ak_fit_iters": 200,
+  "selfsup_ckpt": null,
+  "np_ckpt": null,
+  "gp_goal_source": "mean",
+  "smoke": false,
+  "dry_run": false,
+  "device": "cuda"
+ }
+}

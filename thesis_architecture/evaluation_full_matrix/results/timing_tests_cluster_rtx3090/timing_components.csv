@@ -1,0 +1,125 @@
+part,variant,param,value,median_s,q25_s,q75_s,n,extra
+planner,unet630,n_init,1,0.546077,0.542728,0.54805,15,peak 381 MiB
+planner,unet630,n_init,2,0.58684,0.586422,0.587065,15,peak 385 MiB
+planner,unet630,n_init,4,0.871746,0.871118,0.876903,15,peak 418 MiB
+planner,unet630,n_init,8,1.48195,1.47647,1.48981,15,peak 484 MiB
+planner,unet630,n_init,16,2.71487,2.70969,2.71986,15,peak 617 MiB
+planner,unet630,n_init,30,6.54059,6.53135,6.55218,15,peak 847 MiB
+planner,unet630,n_init,60,12.996,12.9957,12.9964,15,peak 1341 MiB
+planner,dit630,n_init,1,0.931979,0.927572,0.940571,15,peak 169 MiB
+planner,dit630,n_init,2,0.933417,0.93143,0.941734,15,peak 171 MiB
+planner,dit630,n_init,4,0.965208,0.956688,0.969513,15,peak 178 MiB
+planner,dit630,n_init,8,0.934205,0.928863,0.9381,15,peak 188 MiB
+planner,dit630,n_init,16,1.24123,1.23898,1.24402,15,peak 211 MiB
+planner,dit630,n_init,30,2.0599,2.05858,2.06136,15,peak 249 MiB
+planner,dit630,n_init,60,3.86755,3.85851,3.89933,15,peak 331 MiB
+planner,old500,n_init,1,0.548267,0.539868,0.548522,15,peak 539 MiB
+planner,old500,n_init,2,0.610548,0.610437,0.610959,15,peak 543 MiB
+planner,old500,n_init,4,0.902371,0.901995,0.902818,15,peak 576 MiB
+planner,old500,n_init,8,1.51756,1.51728,1.51808,15,peak 642 MiB
+planner,old500,n_init,16,2.73229,2.73162,2.7331,15,peak 776 MiB
+planner,old500,n_init,30,6.52698,6.50893,6.54559,15,peak 1005 MiB
+planner,old500,n_init,60,12.9981,12.9961,13.0053,15,peak 1499 MiB
+planner,selfsup,n_init,1,0.00460133,0.00457834,0.00460903,15,peak 879 MiB
+planner,selfsup,n_init,2,0.00513403,0.0051301,0.00513885,15,peak 880 MiB
+planner,selfsup,n_init,4,0.00664438,0.00660106,0.00668239,15,peak 884 MiB
+planner,selfsup,n_init,8,0.00934601,0.00933634,0.0093693,15,peak 916 MiB
+planner,selfsup,n_init,16,0.0149957,0.0149516,0.0150376,15,peak 982 MiB
+planner,selfsup,n_init,30,0.0257188,0.0254448,0.0257613,15,peak 1101 MiB
+planner,selfsup,n_init,60,0.0654767,0.0643867,0.0658485,15,peak 1345 MiB
+init,straight rays (lintsvec / linadam),n_init,1,0.000253141,0.000249659,0.000261571,15,
+init,random-walk candidates,n_init,1,0.23751,0.236712,0.237954,15,
+init,"best ray (linray, incl. E)",n_init,1,0.000653189,0.000647959,0.000659827,15,
+init,straight rays (lintsvec / linadam),n_init,2,0.000475572,0.000470232,0.000479439,15,
+init,random-walk candidates,n_init,2,0.474365,0.472271,0.475612,15,
+init,"best ray (linray, incl. E)",n_init,2,0.000888115,0.000885284,0.000897162,15,
+init,straight rays (lintsvec / linadam),n_init,4,0.000907662,0.000903143,0.000910757,15,
+init,random-walk candidates,n_init,4,0.946597,0.944834,0.949722,15,
+init,"best ray (linray, incl. E)",n_init,4,0.00133831,0.00132458,0.0016997,15,
+init,straight rays (lintsvec / linadam),n_init,8,0.0017401,0.00173358,0.00174455,15,
+init,random-walk candidates,n_init,8,1.89826,1.89112,1.94748,15,
+init,"best ray (linray, incl. E)",n_init,8,0.00230735,0.00212662,0.00247542,15,
+init,straight rays (lintsvec / linadam),n_init,16,0.00352594,0.00352105,0.00353634,15,
+init,random-walk candidates,n_init,16,3.87814,3.8063,3.8879,15,
+init,"best ray (linray, incl. E)",n_init,16,0.00389324,0.00388845,0.00411571,15,
+init,straight rays (lintsvec / linadam),n_init,30,0.0066851,0.00667512,0.00669721,15,
+init,random-walk candidates,n_init,30,7.22462,7.21081,7.24291,15,
+init,"best ray (linray, incl. E)",n_init,30,0.00703562,0.00702684,0.00707069,15,
+init,straight rays (lintsvec / linadam),n_init,60,0.0132971,0.0132817,0.0133114,15,
+init,random-walk candidates,n_init,60,14.4732,14.4495,14.5181,15,
+init,"best ray (linray, incl. E)",n_init,60,0.0134879,0.0134657,0.0135394,15,
+init,random walk (rw),n_init,1,0.238161,0.237019,0.238476,15,
+init,lawnmower round (lawn),n_init,1,5.46e-06,5.30999e-06,5.666e-06,15,
+init,line to GP-sampled point (gpgoal),n_init,1,0.00593893,0.00592025,0.00595548,15,
+refiner,tsvec_svgd,"n_init=1,n_iters",10,0.0166862,0.0166266,0.0167208,3,"1.669 ms/iter, 1668.6 us/cand-iter"
+refiner,tsvec_svgd,"n_init=1,n_iters",50,0.0784997,0.0784542,0.0785192,3,"1.570 ms/iter, 1570.0 us/cand-iter"
+refiner,tsvec_svgd,"n_init=1,n_iters",200,0.310911,0.31069,0.311043,3,"1.555 ms/iter, 1554.6 us/cand-iter"
+refiner,tsvec_svgd,"n_init=2,n_iters",10,0.017689,0.0176495,0.0177771,3,"1.769 ms/iter, 884.4 us/cand-iter"
+refiner,tsvec_svgd,"n_init=2,n_iters",50,0.0841003,0.084078,0.084133,3,"1.682 ms/iter, 841.0 us/cand-iter"
+refiner,tsvec_svgd,"n_init=2,n_iters",200,0.332406,0.332313,0.332524,3,"1.662 ms/iter, 831.0 us/cand-iter"
+refiner,tsvec_svgd,"n_init=4,n_iters",10,0.017724,0.0177029,0.017775,3,"1.772 ms/iter, 443.1 us/cand-iter"
+refiner,tsvec_svgd,"n_init=4,n_iters",50,0.0840566,0.084025,0.0841419,3,"1.681 ms/iter, 420.3 us/cand-iter"
+refiner,tsvec_svgd,"n_init=4,n_iters",200,0.332034,0.332014,0.332107,3,"1.660 ms/iter, 415.0 us/cand-iter"
+refiner,tsvec_svgd,"n_init=8,n_iters",10,0.0178536,0.0178116,0.0178541,3,"1.785 ms/iter, 223.2 us/cand-iter"
+refiner,tsvec_svgd,"n_init=8,n_iters",50,0.0842852,0.0842543,0.084308,3,"1.686 ms/iter, 210.7 us/cand-iter"
+refiner,tsvec_svgd,"n_init=8,n_iters",200,0.333001,0.332994,0.333018,3,"1.665 ms/iter, 208.1 us/cand-iter"
+refiner,tsvec_svgd,"n_init=16,n_iters",10,0.0179529,0.0179059,0.0179704,3,"1.795 ms/iter, 112.2 us/cand-iter"
+refiner,tsvec_svgd,"n_init=16,n_iters",50,0.0846376,0.0845544,0.0846677,3,"1.693 ms/iter, 105.8 us/cand-iter"
+refiner,tsvec_svgd,"n_init=16,n_iters",200,0.333623,0.333534,0.333939,3,"1.668 ms/iter, 104.3 us/cand-iter"
+refiner,tsvec_svgd,"n_init=30,n_iters",10,0.0235763,0.0235509,0.0235905,3,"2.358 ms/iter, 78.6 us/cand-iter"
+refiner,tsvec_svgd,"n_init=30,n_iters",50,0.111076,0.111007,0.111285,3,"2.222 ms/iter, 74.1 us/cand-iter"
+refiner,tsvec_svgd,"n_init=30,n_iters",200,0.439891,0.439865,0.440446,3,"2.199 ms/iter, 73.3 us/cand-iter"
+refiner,tsvec_svgd,"n_init=60,n_iters",10,0.0240949,0.0240519,0.0241115,3,"2.409 ms/iter, 40.2 us/cand-iter"
+refiner,tsvec_svgd,"n_init=60,n_iters",50,0.112831,0.112827,0.112849,3,"2.257 ms/iter, 37.6 us/cand-iter"
+refiner,tsvec_svgd,"n_init=60,n_iters",200,0.443936,0.443892,0.444552,3,"2.220 ms/iter, 37.0 us/cand-iter"
+refiner,adam_svgd,"n_init=1,n_iters",10,0.0121729,0.0121538,0.0121949,3,"1.217 ms/iter, 1217.3 us/cand-iter"
+refiner,adam_svgd,"n_init=1,n_iters",50,0.0551651,0.0551604,0.055178,3,"1.103 ms/iter, 1103.3 us/cand-iter"
+refiner,adam_svgd,"n_init=1,n_iters",200,0.215933,0.215879,0.21606,3,"1.080 ms/iter, 1079.7 us/cand-iter"
+refiner,adam_svgd,"n_init=2,n_iters",10,0.0158739,0.0157929,0.0159508,3,"1.587 ms/iter, 793.7 us/cand-iter"
+refiner,adam_svgd,"n_init=2,n_iters",50,0.0727228,0.0726967,0.0727747,3,"1.454 ms/iter, 727.2 us/cand-iter"
+refiner,adam_svgd,"n_init=2,n_iters",200,0.286386,0.286179,0.286452,3,"1.432 ms/iter, 716.0 us/cand-iter"
+refiner,adam_svgd,"n_init=4,n_iters",10,0.0160616,0.0160579,0.0160619,3,"1.606 ms/iter, 401.5 us/cand-iter"
+refiner,adam_svgd,"n_init=4,n_iters",50,0.0738178,0.0737913,0.073893,3,"1.476 ms/iter, 369.1 us/cand-iter"
+refiner,adam_svgd,"n_init=4,n_iters",200,0.290689,0.290412,0.290719,3,"1.453 ms/iter, 363.4 us/cand-iter"
+refiner,adam_svgd,"n_init=8,n_iters",10,0.0160894,0.0160632,0.016134,3,"1.609 ms/iter, 201.1 us/cand-iter"
+refiner,adam_svgd,"n_init=8,n_iters",50,0.0740516,0.0740318,0.0741179,3,"1.481 ms/iter, 185.1 us/cand-iter"
+refiner,adam_svgd,"n_init=8,n_iters",200,0.291418,0.291241,0.291449,3,"1.457 ms/iter, 182.1 us/cand-iter"
+refiner,adam_svgd,"n_init=16,n_iters",10,0.0160939,0.0160922,0.0161351,3,"1.609 ms/iter, 100.6 us/cand-iter"
+refiner,adam_svgd,"n_init=16,n_iters",50,0.0741977,0.0740849,0.0742667,3,"1.484 ms/iter, 92.7 us/cand-iter"
+refiner,adam_svgd,"n_init=16,n_iters",200,0.291038,0.290826,0.291125,3,"1.455 ms/iter, 90.9 us/cand-iter"
+refiner,adam_svgd,"n_init=30,n_iters",10,0.0172651,0.0172577,0.0172692,3,"1.727 ms/iter, 57.6 us/cand-iter"
+refiner,adam_svgd,"n_init=30,n_iters",50,0.0789583,0.0789338,0.0789697,3,"1.579 ms/iter, 52.6 us/cand-iter"
+refiner,adam_svgd,"n_init=30,n_iters",200,0.310308,0.310203,0.310312,3,"1.552 ms/iter, 51.7 us/cand-iter"
+refiner,adam_svgd,"n_init=60,n_iters",10,0.017742,0.0177262,0.0177449,3,"1.774 ms/iter, 29.6 us/cand-iter"
+refiner,adam_svgd,"n_init=60,n_iters",50,0.0795183,0.0794741,0.0809486,3,"1.590 ms/iter, 26.5 us/cand-iter"
+refiner,adam_svgd,"n_init=60,n_iters",200,0.310788,0.310665,0.310841,3,"1.554 ms/iter, 25.9 us/cand-iter"
+belief,rbf observe(64 pts),n_obs_before,0,6.1076e-05,6.0079e-05,6.1562e-05,15,
+belief,rbf posterior grid,n_obs_before,0,0.00110054,0.00109571,0.00110427,15,
+belief,rbf observe(64 pts),n_obs_before,64,6.0315e-05,6.0014e-05,6.0605e-05,15,
+belief,rbf posterior grid,n_obs_before,64,0.00194919,0.0019459,0.00195359,15,
+belief,rbf observe(64 pts),n_obs_before,128,6.0284e-05,6.0149e-05,6.04745e-05,15,
+belief,rbf posterior grid,n_obs_before,128,0.00304017,0.00303863,0.00304624,15,
+belief,rbf observe(64 pts),n_obs_before,256,6.1447e-05,6.0856e-05,6.16375e-05,15,
+belief,rbf posterior grid,n_obs_before,256,0.00572055,0.00571637,0.00573048,15,
+belief,rbf observe(64 pts),n_obs_before,512,6.2028e-05,6.15865e-05,6.2829e-05,15,
+belief,rbf posterior grid,n_obs_before,512,0.0130313,0.0130133,0.0130435,15,
+belief,ak observe(64 pts),n_obs_before,0,0.620073,0.614469,0.622283,15,
+belief,ak posterior grid,n_obs_before,0,0.0029586,0.00292548,0.00297481,15,
+belief,ak observe(64 pts),n_obs_before,64,0.671347,0.668931,0.672769,15,
+belief,ak posterior grid,n_obs_before,64,0.0043279,0.00431339,0.00434805,15,
+belief,ak observe(64 pts),n_obs_before,128,0.736075,0.729618,0.738114,15,
+belief,ak posterior grid,n_obs_before,128,0.00612929,0.00611614,0.00614921,15,
+belief,ak observe(64 pts),n_obs_before,256,0.958926,0.957873,0.959729,15,
+belief,ak posterior grid,n_obs_before,256,0.0101548,0.0101368,0.0101923,15,
+belief,ak observe(64 pts),n_obs_before,512,2.0583,2.05786,2.05934,15,
+belief,ak posterior grid,n_obs_before,512,0.0208154,0.0207966,0.0208555,15,
+belief,np observe(64 pts),n_obs_before,0,7.8038e-05,6.76435e-05,7.88945e-05,15,
+belief,np posterior grid,n_obs_before,0,0.00229024,0.00198277,0.00231861,15,
+belief,np observe(64 pts),n_obs_before,64,7.7777e-05,7.7597e-05,7.8499e-05,15,
+belief,np posterior grid,n_obs_before,64,0.00229449,0.00228465,0.00230821,15,
+belief,np observe(64 pts),n_obs_before,128,7.6635e-05,7.60045e-05,7.7382e-05,15,
+belief,np posterior grid,n_obs_before,128,0.0023029,0.00228898,0.00231547,15,
+belief,np observe(64 pts),n_obs_before,256,6.4733e-05,6.3686e-05,6.4978e-05,15,
+belief,np posterior grid,n_obs_before,256,0.00196728,0.00194828,0.00215414,15,
+belief,np observe(64 pts),n_obs_before,512,7.5944e-05,6.58805e-05,7.8419e-05,15,
+belief,np posterior grid,n_obs_before,512,0.00239086,0.00229883,0.00239775,15,

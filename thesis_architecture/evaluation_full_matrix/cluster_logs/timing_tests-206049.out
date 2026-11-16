@@ -1,0 +1,9 @@
+[job] Fri Nov 13 06:25:39 CET 2026 node=gn05 gpu=NVIDIA GeForce RTX 3090
+timing tests -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/timing_tests_cluster_rtx3090
+  parts=['planner', 'init', 'refiner', 'belief', 'missions']  device=cuda
+  planner: 7 nets x n_init [1, 2, 4, 8, 16, 30, 60]
+  refiner: ['tsvec_svgd', 'adam_svgd'] x n_init [1, 2, 4, 8, 16, 30, 60] x n_iters [10, 50, 200]
+  belief:  ['rbf', 'ak', 'np'] x n_obs [0, 64, 128, 256, 512]
+  missions: 13 methods x 2 kernels x 3 shapes x 2 reps, 5 rounds, n_init=8, n_iters=500
+
+=== planner forward pass ===

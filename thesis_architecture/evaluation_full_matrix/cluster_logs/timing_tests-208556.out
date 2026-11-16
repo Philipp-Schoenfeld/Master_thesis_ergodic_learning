@@ -1,0 +1,881 @@
+[job] Fri Nov 13 15:48:01 CET 2026 node=gn05 gpu=NVIDIA GeForce RTX 3090
+timing tests -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/timing_tests_cluster_rtx3090
+  parts=['planner', 'init', 'refiner', 'belief', 'missions']  device=cuda
+  planner: 7 nets x n_init [1, 2, 4, 8, 16, 30, 60]
+  refiner: ['tsvec_svgd', 'adam_svgd'] x n_init [1, 2, 4, 8, 16, 30, 60] x n_iters [10, 50, 200]
+  belief:  ['rbf', 'ak', 'np'] x n_obs [0, 64, 128, 256, 512]
+  missions: 13 methods x 2 kernels x 3 shapes x 2 reps, 5 rounds, n_init=8, n_iters=500
+
+=== planner forward pass ===
+  [planner] unet630                n_init=1         546.08 ms [542.73, 548.05]  peak 381 MiB
+  [planner] unet630                n_init=2         586.84 ms [586.42, 587.07]  peak 385 MiB
+  [planner] unet630                n_init=4         871.75 ms [871.12, 876.90]  peak 418 MiB
+  [planner] unet630                n_init=8        1481.95 ms [1476.47, 1489.81]  peak 484 MiB
+  [planner] unet630                n_init=16       2714.87 ms [2709.69, 2719.86]  peak 617 MiB
+  [planner] unet630                n_init=30       6540.59 ms [6531.35, 6552.18]  peak 847 MiB
+  [planner] unet630                n_init=60      12996.03 ms [12995.70, 12996.37]  peak 1341 MiB
+  [planner] dit630                 n_init=1         931.98 ms [927.57, 940.57]  peak 169 MiB
+  [planner] dit630                 n_init=2         933.42 ms [931.43, 941.73]  peak 171 MiB
+  [planner] dit630                 n_init=4         965.21 ms [956.69, 969.51]  peak 178 MiB
+  [planner] dit630                 n_init=8         934.20 ms [928.86, 938.10]  peak 188 MiB
+  [planner] dit630                 n_init=16       1241.23 ms [1238.98, 1244.02]  peak 211 MiB
+  [planner] dit630                 n_init=30       2059.90 ms [2058.58, 2061.36]  peak 249 MiB
+  [planner] dit630                 n_init=60       3867.55 ms [3858.51, 3899.33]  peak 331 MiB
+  [planner] old500                 n_init=1         548.27 ms [539.87, 548.52]  peak 539 MiB
+  [planner] old500                 n_init=2         610.55 ms [610.44, 610.96]  peak 543 MiB
+  [planner] old500                 n_init=4         902.37 ms [902.00, 902.82]  peak 576 MiB
+  [planner] old500                 n_init=8        1517.56 ms [1517.28, 1518.08]  peak 642 MiB
+  [planner] old500                 n_init=16       2732.29 ms [2731.62, 2733.10]  peak 776 MiB
+  [planner] old500                 n_init=30       6526.98 ms [6508.93, 6545.59]  peak 1005 MiB
+  [planner] old500                 n_init=60      12998.14 ms [12996.09, 13005.32]  peak 1499 MiB
+  [planner] unet0: skipped (no checkpoint for 'unet0' (pattern 'LAMERG0_final') under /home/stud_schonfeld/Master_thesis/transfer)
+  [planner] unet1890: skipped (no checkpoint for 'unet1890' (pattern 'LAMERG75') under /home/stud_schonfeld/Master_thesis/transfer)
+  [planner] lm1300: skipped (no checkpoint for 'lm1300' (pattern 'LMTEACHER|netz2d_startpunkt_lm_inpaint') under /home/stud_schonfeld/Master_thesis/transfer)
+  [planner] selfsup                n_init=1           4.60 ms [4.58, 4.61]  peak 879 MiB
+  [planner] selfsup                n_init=2           5.13 ms [5.13, 5.14]  peak 880 MiB
+  [planner] selfsup                n_init=4           6.64 ms [6.60, 6.68]  peak 884 MiB
+  [planner] selfsup                n_init=8           9.35 ms [9.34, 9.37]  peak 916 MiB
+  [planner] selfsup                n_init=16         15.00 ms [14.95, 15.04]  peak 982 MiB
+  [planner] selfsup                n_init=30         25.72 ms [25.44, 25.76]  peak 1101 MiB
+  [planner] selfsup                n_init=60         65.48 ms [64.39, 65.85]  peak 1345 MiB
+
+=== network-free candidate sources ===
+  [init] straight rays (lintsvec / linadam) n_init=1           0.25 ms [0.25, 0.26]  
+  [init] random-walk candidates n_init=1         237.51 ms [236.71, 237.95]  
+  [init] best ray (linray, incl. E) n_init=1           0.65 ms [0.65, 0.66]  
+  [init] straight rays (lintsvec / linadam) n_init=2           0.48 ms [0.47, 0.48]  
+  [init] random-walk candidates n_init=2         474.37 ms [472.27, 475.61]  
+  [init] best ray (linray, incl. E) n_init=2           0.89 ms [0.89, 0.90]  
+  [init] straight rays (lintsvec / linadam) n_init=4           0.91 ms [0.90, 0.91]  
+  [init] random-walk candidates n_init=4         946.60 ms [944.83, 949.72]  
+  [init] best ray (linray, incl. E) n_init=4           1.34 ms [1.32, 1.70]  
+  [init] straight rays (lintsvec / linadam) n_init=8           1.74 ms [1.73, 1.74]  
+  [init] random-walk candidates n_init=8        1898.26 ms [1891.12, 1947.48]  
+  [init] best ray (linray, incl. E) n_init=8           2.31 ms [2.13, 2.48]  
+  [init] straight rays (lintsvec / linadam) n_init=16          3.53 ms [3.52, 3.54]  
+  [init] random-walk candidates n_init=16       3878.14 ms [3806.30, 3887.90]  
+  [init] best ray (linray, incl. E) n_init=16          3.89 ms [3.89, 4.12]  
+  [init] straight rays (lintsvec / linadam) n_init=30          6.69 ms [6.68, 6.70]  
+  [init] random-walk candidates n_init=30       7224.62 ms [7210.81, 7242.91]  
+  [init] best ray (linray, incl. E) n_init=30          7.04 ms [7.03, 7.07]  
+  [init] straight rays (lintsvec / linadam) n_init=60         13.30 ms [13.28, 13.31]  
+  [init] random-walk candidates n_init=60      14473.17 ms [14449.51, 14518.12]  
+  [init] best ray (linray, incl. E) n_init=60         13.49 ms [13.47, 13.54]  
+  [init] random walk (rw)       n_init=1         238.16 ms [237.02, 238.48]  
+  [init] lawnmower round (lawn) n_init=1           0.01 ms [0.01, 0.01]  
+  [init] line to GP-sampled point (gpgoal) n_init=1           5.94 ms [5.92, 5.96]  
+
+=== SVGD refinement ===
+  [refiner] tsvec_svgd             n_init=1,n_iters=10         16.69 ms [16.63, 16.72]  1.669 ms/iter, 1668.6 us/cand-iter
+  [refiner] tsvec_svgd             n_init=1,n_iters=50         78.50 ms [78.45, 78.52]  1.570 ms/iter, 1570.0 us/cand-iter
+  [refiner] tsvec_svgd             n_init=1,n_iters=200       310.91 ms [310.69, 311.04]  1.555 ms/iter, 1554.6 us/cand-iter
+  [refiner] tsvec_svgd             n_init=2,n_iters=10         17.69 ms [17.65, 17.78]  1.769 ms/iter, 884.4 us/cand-iter
+  [refiner] tsvec_svgd             n_init=2,n_iters=50         84.10 ms [84.08, 84.13]  1.682 ms/iter, 841.0 us/cand-iter
+  [refiner] tsvec_svgd             n_init=2,n_iters=200       332.41 ms [332.31, 332.52]  1.662 ms/iter, 831.0 us/cand-iter
+  [refiner] tsvec_svgd             n_init=4,n_iters=10         17.72 ms [17.70, 17.78]  1.772 ms/iter, 443.1 us/cand-iter
+  [refiner] tsvec_svgd             n_init=4,n_iters=50         84.06 ms [84.03, 84.14]  1.681 ms/iter, 420.3 us/cand-iter
+  [refiner] tsvec_svgd             n_init=4,n_iters=200       332.03 ms [332.01, 332.11]  1.660 ms/iter, 415.0 us/cand-iter
+  [refiner] tsvec_svgd             n_init=8,n_iters=10         17.85 ms [17.81, 17.85]  1.785 ms/iter, 223.2 us/cand-iter
+  [refiner] tsvec_svgd             n_init=8,n_iters=50         84.29 ms [84.25, 84.31]  1.686 ms/iter, 210.7 us/cand-iter
+  [refiner] tsvec_svgd             n_init=8,n_iters=200       333.00 ms [332.99, 333.02]  1.665 ms/iter, 208.1 us/cand-iter
+  [refiner] tsvec_svgd             n_init=16,n_iters=10         17.95 ms [17.91, 17.97]  1.795 ms/iter, 112.2 us/cand-iter
+  [refiner] tsvec_svgd             n_init=16,n_iters=50         84.64 ms [84.55, 84.67]  1.693 ms/iter, 105.8 us/cand-iter
+  [refiner] tsvec_svgd             n_init=16,n_iters=200       333.62 ms [333.53, 333.94]  1.668 ms/iter, 104.3 us/cand-iter
+  [refiner] tsvec_svgd             n_init=30,n_iters=10         23.58 ms [23.55, 23.59]  2.358 ms/iter, 78.6 us/cand-iter
+  [refiner] tsvec_svgd             n_init=30,n_iters=50        111.08 ms [111.01, 111.28]  2.222 ms/iter, 74.1 us/cand-iter
+  [refiner] tsvec_svgd             n_init=30,n_iters=200       439.89 ms [439.86, 440.45]  2.199 ms/iter, 73.3 us/cand-iter
+  [refiner] tsvec_svgd             n_init=60,n_iters=10         24.09 ms [24.05, 24.11]  2.409 ms/iter, 40.2 us/cand-iter
+  [refiner] tsvec_svgd             n_init=60,n_iters=50        112.83 ms [112.83, 112.85]  2.257 ms/iter, 37.6 us/cand-iter
+  [refiner] tsvec_svgd             n_init=60,n_iters=200       443.94 ms [443.89, 444.55]  2.220 ms/iter, 37.0 us/cand-iter
+  [refiner] adam_svgd              n_init=1,n_iters=10         12.17 ms [12.15, 12.19]  1.217 ms/iter, 1217.3 us/cand-iter
+  [refiner] adam_svgd              n_init=1,n_iters=50         55.17 ms [55.16, 55.18]  1.103 ms/iter, 1103.3 us/cand-iter
+  [refiner] adam_svgd              n_init=1,n_iters=200       215.93 ms [215.88, 216.06]  1.080 ms/iter, 1079.7 us/cand-iter
+  [refiner] adam_svgd              n_init=2,n_iters=10         15.87 ms [15.79, 15.95]  1.587 ms/iter, 793.7 us/cand-iter
+  [refiner] adam_svgd              n_init=2,n_iters=50         72.72 ms [72.70, 72.77]  1.454 ms/iter, 727.2 us/cand-iter
+  [refiner] adam_svgd              n_init=2,n_iters=200       286.39 ms [286.18, 286.45]  1.432 ms/iter, 716.0 us/cand-iter
+  [refiner] adam_svgd              n_init=4,n_iters=10         16.06 ms [16.06, 16.06]  1.606 ms/iter, 401.5 us/cand-iter
+  [refiner] adam_svgd              n_init=4,n_iters=50         73.82 ms [73.79, 73.89]  1.476 ms/iter, 369.1 us/cand-iter
+  [refiner] adam_svgd              n_init=4,n_iters=200       290.69 ms [290.41, 290.72]  1.453 ms/iter, 363.4 us/cand-iter
+  [refiner] adam_svgd              n_init=8,n_iters=10         16.09 ms [16.06, 16.13]  1.609 ms/iter, 201.1 us/cand-iter
+  [refiner] adam_svgd              n_init=8,n_iters=50         74.05 ms [74.03, 74.12]  1.481 ms/iter, 185.1 us/cand-iter
+  [refiner] adam_svgd              n_init=8,n_iters=200       291.42 ms [291.24, 291.45]  1.457 ms/iter, 182.1 us/cand-iter
+  [refiner] adam_svgd              n_init=16,n_iters=10         16.09 ms [16.09, 16.14]  1.609 ms/iter, 100.6 us/cand-iter
+  [refiner] adam_svgd              n_init=16,n_iters=50         74.20 ms [74.08, 74.27]  1.484 ms/iter, 92.7 us/cand-iter
+  [refiner] adam_svgd              n_init=16,n_iters=200       291.04 ms [290.83, 291.13]  1.455 ms/iter, 90.9 us/cand-iter
+  [refiner] adam_svgd              n_init=30,n_iters=10         17.27 ms [17.26, 17.27]  1.727 ms/iter, 57.6 us/cand-iter
+  [refiner] adam_svgd              n_init=30,n_iters=50         78.96 ms [78.93, 78.97]  1.579 ms/iter, 52.6 us/cand-iter
+  [refiner] adam_svgd              n_init=30,n_iters=200       310.31 ms [310.20, 310.31]  1.552 ms/iter, 51.7 us/cand-iter
+  [refiner] adam_svgd              n_init=60,n_iters=10         17.74 ms [17.73, 17.74]  1.774 ms/iter, 29.6 us/cand-iter
+  [refiner] adam_svgd              n_init=60,n_iters=50         79.52 ms [79.47, 80.95]  1.590 ms/iter, 26.5 us/cand-iter
+  [refiner] adam_svgd              n_init=60,n_iters=200       310.79 ms [310.66, 310.84]  1.554 ms/iter, 25.9 us/cand-iter
+
+=== belief update ===
+  [belief] rbf observe(64 pts)    n_obs_before=0           0.06 ms [0.06, 0.06]  
+  [belief] rbf posterior grid     n_obs_before=0           1.10 ms [1.10, 1.10]  
+  [belief] rbf observe(64 pts)    n_obs_before=64          0.06 ms [0.06, 0.06]  
+  [belief] rbf posterior grid     n_obs_before=64          1.95 ms [1.95, 1.95]  
+  [belief] rbf observe(64 pts)    n_obs_before=128         0.06 ms [0.06, 0.06]  
+  [belief] rbf posterior grid     n_obs_before=128         3.04 ms [3.04, 3.05]  
+  [belief] rbf observe(64 pts)    n_obs_before=256         0.06 ms [0.06, 0.06]  
+  [belief] rbf posterior grid     n_obs_before=256         5.72 ms [5.72, 5.73]  
+  [belief] rbf observe(64 pts)    n_obs_before=512         0.06 ms [0.06, 0.06]  
+  [belief] rbf posterior grid     n_obs_before=512        13.03 ms [13.01, 13.04]  
+  [belief] ak observe(64 pts)     n_obs_before=0         620.07 ms [614.47, 622.28]  
+  [belief] ak posterior grid      n_obs_before=0           2.96 ms [2.93, 2.97]  
+  [belief] ak observe(64 pts)     n_obs_before=64        671.35 ms [668.93, 672.77]  
+  [belief] ak posterior grid      n_obs_before=64          4.33 ms [4.31, 4.35]  
+  [belief] ak observe(64 pts)     n_obs_before=128       736.08 ms [729.62, 738.11]  
+  [belief] ak posterior grid      n_obs_before=128         6.13 ms [6.12, 6.15]  
+  [belief] ak observe(64 pts)     n_obs_before=256       958.93 ms [957.87, 959.73]  
+  [belief] ak posterior grid      n_obs_before=256        10.15 ms [10.14, 10.19]  
+  [belief] ak observe(64 pts)     n_obs_before=512      2058.30 ms [2057.86, 2059.34]  
+  [belief] ak posterior grid      n_obs_before=512        20.82 ms [20.80, 20.86]  
+  [belief] np observe(64 pts)     n_obs_before=0           0.08 ms [0.07, 0.08]  
+  [belief] np posterior grid      n_obs_before=0           2.29 ms [1.98, 2.32]  
+  [belief] np observe(64 pts)     n_obs_before=64          0.08 ms [0.08, 0.08]  
+  [belief] np posterior grid      n_obs_before=64          2.29 ms [2.28, 2.31]  
+  [belief] np observe(64 pts)     n_obs_before=128         0.08 ms [0.08, 0.08]  
+  [belief] np posterior grid      n_obs_before=128         2.30 ms [2.29, 2.32]  
+  [belief] np observe(64 pts)     n_obs_before=256         0.06 ms [0.06, 0.06]  
+  [belief] np posterior grid      n_obs_before=256         1.97 ms [1.95, 2.15]  
+  [belief] np observe(64 pts)     n_obs_before=512         0.08 ms [0.07, 0.08]  
+  [belief] np posterior grid      n_obs_before=512         2.39 ms [2.30, 2.40]  
+
+=== full missions ===
+    [rbf/unet630/A] round 0: kappa=1.000  path_len=5.43  n_obs=64
+    [rbf/unet630/A] round 0: kappa=1.000  path_len=6.09  n_obs=64
+    [rbf/unet630/A] round 1: kappa=0.762  path_len=6.69  n_obs=128
+    [rbf/unet630/A] round 2: kappa=0.525  path_len=6.86  n_obs=192
+    [rbf/unet630/A] round 3: kappa=0.288  path_len=5.99  n_obs=256
+    [rbf/unet630/A] round 4: kappa=0.050  path_len=6.00  n_obs=320
+  [missions] unet630   rbf A              rep0:   11.5 s (2.30 s/round)  E_truth=8.98
+    [rbf/unet630/A] round 0: kappa=1.000  path_len=6.33  n_obs=64
+    [rbf/unet630/A] round 1: kappa=0.762  path_len=6.11  n_obs=128
+    [rbf/unet630/A] round 2: kappa=0.525  path_len=6.78  n_obs=192
+    [rbf/unet630/A] round 3: kappa=0.288  path_len=5.46  n_obs=256
+    [rbf/unet630/A] round 4: kappa=0.050  path_len=5.92  n_obs=320
+  [missions] unet630   rbf A              rep1:   11.5 s (2.30 s/round)  E_truth=9.32
+    [rbf/unet630/rand_gmm_20] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/unet630/rand_gmm_20] round 1: kappa=0.762  path_len=6.48  n_obs=128
+    [rbf/unet630/rand_gmm_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/unet630/rand_gmm_20] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/unet630/rand_gmm_20] round 4: kappa=0.050  path_len=5.50  n_obs=320
+  [missions] unet630   rbf rand_gmm_20    rep0:   11.5 s (2.30 s/round)  E_truth=7.26
+    [rbf/unet630/rand_gmm_20] round 0: kappa=1.000  path_len=6.21  n_obs=64
+    [rbf/unet630/rand_gmm_20] round 1: kappa=0.762  path_len=6.96  n_obs=128
+    [rbf/unet630/rand_gmm_20] round 2: kappa=0.525  path_len=6.50  n_obs=192
+    [rbf/unet630/rand_gmm_20] round 3: kappa=0.288  path_len=5.35  n_obs=256
+    [rbf/unet630/rand_gmm_20] round 4: kappa=0.050  path_len=6.34  n_obs=320
+  [missions] unet630   rbf rand_gmm_20    rep1:   11.5 s (2.30 s/round)  E_truth=6.40
+    [rbf/unet630/organic_20] round 0: kappa=1.000  path_len=6.72  n_obs=64
+    [rbf/unet630/organic_20] round 1: kappa=0.762  path_len=6.17  n_obs=128
+    [rbf/unet630/organic_20] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/unet630/organic_20] round 3: kappa=0.288  path_len=5.90  n_obs=256
+    [rbf/unet630/organic_20] round 4: kappa=0.050  path_len=4.08  n_obs=320
+  [missions] unet630   rbf organic_20     rep0:   11.5 s (2.31 s/round)  E_truth=7.15
+    [rbf/unet630/organic_20] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [rbf/unet630/organic_20] round 1: kappa=0.762  path_len=6.70  n_obs=128
+    [rbf/unet630/organic_20] round 2: kappa=0.525  path_len=6.76  n_obs=192
+    [rbf/unet630/organic_20] round 3: kappa=0.288  path_len=6.10  n_obs=256
+    [rbf/unet630/organic_20] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [missions] unet630   rbf organic_20     rep1:   11.6 s (2.31 s/round)  E_truth=7.95
+    [ak/unet630/A] round 0: kappa=1.000  path_len=6.09  n_obs=64
+    [ak/unet630/A] round 1: kappa=0.762  path_len=6.36  n_obs=128
+    [ak/unet630/A] round 2: kappa=0.525  path_len=6.78  n_obs=192
+    [ak/unet630/A] round 3: kappa=0.288  path_len=5.19  n_obs=256
+    [ak/unet630/A] round 4: kappa=0.050  path_len=5.37  n_obs=320
+  [missions] unet630   ak  A              rep0:   15.3 s (3.07 s/round)  E_truth=6.33
+    [ak/unet630/A] round 0: kappa=1.000  path_len=6.33  n_obs=64
+    [ak/unet630/A] round 1: kappa=0.762  path_len=6.62  n_obs=128
+    [ak/unet630/A] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/unet630/A] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [ak/unet630/A] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [missions] unet630   ak  A              rep1:   15.4 s (3.08 s/round)  E_truth=6.02
+    [ak/unet630/rand_gmm_20] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/unet630/rand_gmm_20] round 1: kappa=0.762  path_len=6.02  n_obs=128
+    [ak/unet630/rand_gmm_20] round 2: kappa=0.525  path_len=6.96  n_obs=192
+    [ak/unet630/rand_gmm_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [ak/unet630/rand_gmm_20] round 4: kappa=0.050  path_len=4.98  n_obs=320
+  [missions] unet630   ak  rand_gmm_20    rep0:   15.4 s (3.08 s/round)  E_truth=4.90
+    [ak/unet630/rand_gmm_20] round 0: kappa=1.000  path_len=6.21  n_obs=64
+    [ak/unet630/rand_gmm_20] round 1: kappa=0.762  path_len=7.13  n_obs=128
+    [ak/unet630/rand_gmm_20] round 2: kappa=0.525  path_len=6.56  n_obs=192
+    [ak/unet630/rand_gmm_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/unet630/rand_gmm_20] round 4: kappa=0.050  path_len=5.51  n_obs=320
+  [missions] unet630   ak  rand_gmm_20    rep1:   15.4 s (3.08 s/round)  E_truth=5.11
+    [ak/unet630/organic_20] round 0: kappa=1.000  path_len=6.72  n_obs=64
+    [ak/unet630/organic_20] round 1: kappa=0.762  path_len=6.39  n_obs=128
+    [ak/unet630/organic_20] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/unet630/organic_20] round 3: kappa=0.288  path_len=5.52  n_obs=256
+    [ak/unet630/organic_20] round 4: kappa=0.050  path_len=4.81  n_obs=320
+  [missions] unet630   ak  organic_20     rep0:   15.3 s (3.07 s/round)  E_truth=5.33
+    [ak/unet630/organic_20] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [ak/unet630/organic_20] round 1: kappa=0.762  path_len=6.19  n_obs=128
+    [ak/unet630/organic_20] round 2: kappa=0.525  path_len=5.50  n_obs=192
+    [ak/unet630/organic_20] round 3: kappa=0.288  path_len=6.16  n_obs=256
+    [ak/unet630/organic_20] round 4: kappa=0.050  path_len=4.83  n_obs=320
+  [missions] unet630   ak  organic_20     rep1:   15.4 s (3.07 s/round)  E_truth=6.66
+    [rbf/dit630/A] round 0: kappa=1.000  path_len=5.16  n_obs=64
+    [rbf/dit630/A] round 0: kappa=1.000  path_len=5.93  n_obs=64
+    [rbf/dit630/A] round 1: kappa=0.762  path_len=6.51  n_obs=128
+    [rbf/dit630/A] round 2: kappa=0.525  path_len=5.89  n_obs=192
+    [rbf/dit630/A] round 3: kappa=0.288  path_len=5.61  n_obs=256
+    [rbf/dit630/A] round 4: kappa=0.050  path_len=6.16  n_obs=320
+  [missions] dit630    rbf A              rep0:    9.0 s (1.79 s/round)  E_truth=9.23
+    [rbf/dit630/A] round 0: kappa=1.000  path_len=6.37  n_obs=64
+    [rbf/dit630/A] round 1: kappa=0.762  path_len=6.44  n_obs=128
+    [rbf/dit630/A] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [rbf/dit630/A] round 3: kappa=0.288  path_len=5.94  n_obs=256
+    [rbf/dit630/A] round 4: kappa=0.050  path_len=5.27  n_obs=320
+  [missions] dit630    rbf A              rep1:    9.0 s (1.79 s/round)  E_truth=10.69
+    [rbf/dit630/rand_gmm_20] round 0: kappa=1.000  path_len=6.27  n_obs=64
+    [rbf/dit630/rand_gmm_20] round 1: kappa=0.762  path_len=6.40  n_obs=128
+    [rbf/dit630/rand_gmm_20] round 2: kappa=0.525  path_len=6.60  n_obs=192
+    [rbf/dit630/rand_gmm_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/dit630/rand_gmm_20] round 4: kappa=0.050  path_len=6.08  n_obs=320
+  [missions] dit630    rbf rand_gmm_20    rep0:    9.0 s (1.79 s/round)  E_truth=6.94
+    [rbf/dit630/rand_gmm_20] round 0: kappa=1.000  path_len=6.35  n_obs=64
+    [rbf/dit630/rand_gmm_20] round 1: kappa=0.762  path_len=5.86  n_obs=128
+    [rbf/dit630/rand_gmm_20] round 2: kappa=0.525  path_len=6.26  n_obs=192
+    [rbf/dit630/rand_gmm_20] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/dit630/rand_gmm_20] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [missions] dit630    rbf rand_gmm_20    rep1:    9.0 s (1.80 s/round)  E_truth=5.96
+    [rbf/dit630/organic_20] round 0: kappa=1.000  path_len=5.94  n_obs=64
+    [rbf/dit630/organic_20] round 1: kappa=0.762  path_len=5.53  n_obs=128
+    [rbf/dit630/organic_20] round 2: kappa=0.525  path_len=6.76  n_obs=192
+    [rbf/dit630/organic_20] round 3: kappa=0.288  path_len=5.45  n_obs=256
+    [rbf/dit630/organic_20] round 4: kappa=0.050  path_len=5.05  n_obs=320
+  [missions] dit630    rbf organic_20     rep0:    9.0 s (1.79 s/round)  E_truth=7.95
+    [rbf/dit630/organic_20] round 0: kappa=1.000  path_len=6.36  n_obs=64
+    [rbf/dit630/organic_20] round 1: kappa=0.762  path_len=6.15  n_obs=128
+    [rbf/dit630/organic_20] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [rbf/dit630/organic_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/dit630/organic_20] round 4: kappa=0.050  path_len=5.01  n_obs=320
+  [missions] dit630    rbf organic_20     rep1:    9.0 s (1.79 s/round)  E_truth=8.21
+    [ak/dit630/A] round 0: kappa=1.000  path_len=5.93  n_obs=64
+    [ak/dit630/A] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [ak/dit630/A] round 2: kappa=0.525  path_len=6.27  n_obs=192
+    [ak/dit630/A] round 3: kappa=0.288  path_len=6.85  n_obs=256
+    [ak/dit630/A] round 4: kappa=0.050  path_len=5.64  n_obs=320
+  [missions] dit630    ak  A              rep0:   12.7 s (2.55 s/round)  E_truth=8.43
+    [ak/dit630/A] round 0: kappa=1.000  path_len=6.37  n_obs=64
+    [ak/dit630/A] round 1: kappa=0.762  path_len=6.74  n_obs=128
+    [ak/dit630/A] round 2: kappa=0.525  path_len=6.16  n_obs=192
+    [ak/dit630/A] round 3: kappa=0.288  path_len=4.93  n_obs=256
+    [ak/dit630/A] round 4: kappa=0.050  path_len=5.25  n_obs=320
+  [missions] dit630    ak  A              rep1:   12.7 s (2.54 s/round)  E_truth=7.22
+    [ak/dit630/rand_gmm_20] round 0: kappa=1.000  path_len=6.27  n_obs=64
+    [ak/dit630/rand_gmm_20] round 1: kappa=0.762  path_len=5.55  n_obs=128
+    [ak/dit630/rand_gmm_20] round 2: kappa=0.525  path_len=6.32  n_obs=192
+    [ak/dit630/rand_gmm_20] round 3: kappa=0.288  path_len=6.24  n_obs=256
+    [ak/dit630/rand_gmm_20] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [missions] dit630    ak  rand_gmm_20    rep0:   12.7 s (2.53 s/round)  E_truth=4.86
+    [ak/dit630/rand_gmm_20] round 0: kappa=1.000  path_len=6.35  n_obs=64
+    [ak/dit630/rand_gmm_20] round 1: kappa=0.762  path_len=5.33  n_obs=128
+    [ak/dit630/rand_gmm_20] round 2: kappa=0.525  path_len=5.94  n_obs=192
+    [ak/dit630/rand_gmm_20] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/dit630/rand_gmm_20] round 4: kappa=0.050  path_len=6.03  n_obs=320
+  [missions] dit630    ak  rand_gmm_20    rep1:   12.7 s (2.55 s/round)  E_truth=4.67
+    [ak/dit630/organic_20] round 0: kappa=1.000  path_len=5.94  n_obs=64
+    [ak/dit630/organic_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/dit630/organic_20] round 2: kappa=0.525  path_len=6.22  n_obs=192
+    [ak/dit630/organic_20] round 3: kappa=0.288  path_len=5.91  n_obs=256
+    [ak/dit630/organic_20] round 4: kappa=0.050  path_len=5.28  n_obs=320
+  [missions] dit630    ak  organic_20     rep0:   12.8 s (2.55 s/round)  E_truth=4.91
+    [ak/dit630/organic_20] round 0: kappa=1.000  path_len=6.36  n_obs=64
+    [ak/dit630/organic_20] round 1: kappa=0.762  path_len=5.87  n_obs=128
+    [ak/dit630/organic_20] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [ak/dit630/organic_20] round 3: kappa=0.288  path_len=5.48  n_obs=256
+    [ak/dit630/organic_20] round 4: kappa=0.050  path_len=4.57  n_obs=320
+  [missions] dit630    ak  organic_20     rep1:   12.8 s (2.55 s/round)  E_truth=5.74
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [missions] rw        rbf A              rep0:    1.2 s (0.25 s/round)  E_truth=25.58
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [missions] rw        rbf A              rep1:    1.4 s (0.29 s/round)  E_truth=36.73
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [missions] rw        rbf rand_gmm_20    rep0:    1.2 s (0.25 s/round)  E_truth=40.72
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [missions] rw        rbf rand_gmm_20    rep1:    1.2 s (0.25 s/round)  E_truth=12.02
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.86  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [missions] rw        rbf organic_20     rep0:    1.2 s (0.25 s/round)  E_truth=11.45
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [missions] rw        rbf organic_20     rep1:    1.2 s (0.25 s/round)  E_truth=63.38
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [missions] rw        ak  A              rep0:    5.2 s (1.04 s/round)  E_truth=25.58
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [missions] rw        ak  A              rep1:    5.0 s (1.00 s/round)  E_truth=36.73
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [missions] rw        ak  rand_gmm_20    rep0:    5.0 s (1.00 s/round)  E_truth=40.72
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [missions] rw        ak  rand_gmm_20    rep1:    5.0 s (1.01 s/round)  E_truth=12.02
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.86  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [missions] rw        ak  organic_20     rep0:    5.2 s (1.04 s/round)  E_truth=11.45
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [missions] rw        ak  organic_20     rep1:    5.0 s (1.01 s/round)  E_truth=63.38
+    [rbf/lawn/A] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/lawn/A] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/lawn/A] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [rbf/lawn/A] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [rbf/lawn/A] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [rbf/lawn/A] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      rbf A              rep0:    0.0 s (0.01 s/round)  E_truth=18.91
+    [rbf/lawn/A] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/lawn/A] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [rbf/lawn/A] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [rbf/lawn/A] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [rbf/lawn/A] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      rbf A              rep1:    0.0 s (0.01 s/round)  E_truth=18.91
+    [rbf/lawn/rand_gmm_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/lawn/rand_gmm_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [rbf/lawn/rand_gmm_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [rbf/lawn/rand_gmm_20] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [rbf/lawn/rand_gmm_20] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      rbf rand_gmm_20    rep0:    0.0 s (0.01 s/round)  E_truth=10.98
+    [rbf/lawn/rand_gmm_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/lawn/rand_gmm_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [rbf/lawn/rand_gmm_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [rbf/lawn/rand_gmm_20] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [rbf/lawn/rand_gmm_20] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      rbf rand_gmm_20    rep1:    0.0 s (0.01 s/round)  E_truth=10.98
+    [rbf/lawn/organic_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/lawn/organic_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [rbf/lawn/organic_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [rbf/lawn/organic_20] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [rbf/lawn/organic_20] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      rbf organic_20     rep0:    0.0 s (0.01 s/round)  E_truth=10.81
+    [rbf/lawn/organic_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/lawn/organic_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [rbf/lawn/organic_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [rbf/lawn/organic_20] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [rbf/lawn/organic_20] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      rbf organic_20     rep1:    0.0 s (0.01 s/round)  E_truth=10.81
+    [ak/lawn/A] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/lawn/A] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [ak/lawn/A] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [ak/lawn/A] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [ak/lawn/A] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      ak  A              rep0:    3.8 s (0.77 s/round)  E_truth=18.91
+    [ak/lawn/A] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/lawn/A] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [ak/lawn/A] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [ak/lawn/A] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [ak/lawn/A] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      ak  A              rep1:    3.8 s (0.76 s/round)  E_truth=18.91
+    [ak/lawn/rand_gmm_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/lawn/rand_gmm_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [ak/lawn/rand_gmm_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [ak/lawn/rand_gmm_20] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [ak/lawn/rand_gmm_20] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      ak  rand_gmm_20    rep0:    3.8 s (0.77 s/round)  E_truth=10.98
+    [ak/lawn/rand_gmm_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/lawn/rand_gmm_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [ak/lawn/rand_gmm_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [ak/lawn/rand_gmm_20] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [ak/lawn/rand_gmm_20] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      ak  rand_gmm_20    rep1:    3.8 s (0.77 s/round)  E_truth=10.98
+    [ak/lawn/organic_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/lawn/organic_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [ak/lawn/organic_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [ak/lawn/organic_20] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [ak/lawn/organic_20] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      ak  organic_20     rep0:    3.9 s (0.77 s/round)  E_truth=10.81
+    [ak/lawn/organic_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/lawn/organic_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [ak/lawn/organic_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [ak/lawn/organic_20] round 3: kappa=0.288  path_len=6.05  n_obs=256
+    [ak/lawn/organic_20] round 4: kappa=0.050  path_len=6.06  n_obs=320
+  [missions] lawn      ak  organic_20     rep1:    3.9 s (0.78 s/round)  E_truth=10.81
+    [rbf/linadam/A] round 0: kappa=1.000  path_len=4.80  n_obs=64
+    [rbf/linadam/A] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/A] round 1: kappa=0.762  path_len=5.48  n_obs=128
+    [rbf/linadam/A] round 2: kappa=0.525  path_len=5.25  n_obs=192
+    [rbf/linadam/A] round 3: kappa=0.288  path_len=5.37  n_obs=256
+    [rbf/linadam/A] round 4: kappa=0.050  path_len=4.67  n_obs=320
+  [missions] linadam   rbf A              rep0:    3.7 s (0.75 s/round)  E_truth=11.21
+    [rbf/linadam/A] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/A] round 1: kappa=0.762  path_len=5.33  n_obs=128
+    [rbf/linadam/A] round 2: kappa=0.525  path_len=5.30  n_obs=192
+    [rbf/linadam/A] round 3: kappa=0.288  path_len=5.01  n_obs=256
+    [rbf/linadam/A] round 4: kappa=0.050  path_len=4.70  n_obs=320
+  [missions] linadam   rbf A              rep1:    3.7 s (0.74 s/round)  E_truth=10.42
+    [rbf/linadam/rand_gmm_20] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/rand_gmm_20] round 1: kappa=0.762  path_len=5.58  n_obs=128
+    [rbf/linadam/rand_gmm_20] round 2: kappa=0.525  path_len=5.40  n_obs=192
+    [rbf/linadam/rand_gmm_20] round 3: kappa=0.288  path_len=5.41  n_obs=256
+    [rbf/linadam/rand_gmm_20] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [missions] linadam   rbf rand_gmm_20    rep0:    3.7 s (0.74 s/round)  E_truth=6.08
+    [rbf/linadam/rand_gmm_20] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/rand_gmm_20] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/linadam/rand_gmm_20] round 2: kappa=0.525  path_len=5.21  n_obs=192
+    [rbf/linadam/rand_gmm_20] round 3: kappa=0.288  path_len=4.88  n_obs=256
+    [rbf/linadam/rand_gmm_20] round 4: kappa=0.050  path_len=4.88  n_obs=320
+  [missions] linadam   rbf rand_gmm_20    rep1:    3.7 s (0.75 s/round)  E_truth=5.94
+    [rbf/linadam/organic_20] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/organic_20] round 1: kappa=0.762  path_len=5.17  n_obs=128
+    [rbf/linadam/organic_20] round 2: kappa=0.525  path_len=5.16  n_obs=192
+    [rbf/linadam/organic_20] round 3: kappa=0.288  path_len=4.82  n_obs=256
+    [rbf/linadam/organic_20] round 4: kappa=0.050  path_len=4.92  n_obs=320
+  [missions] linadam   rbf organic_20     rep0:    3.7 s (0.75 s/round)  E_truth=6.39
+    [rbf/linadam/organic_20] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/organic_20] round 1: kappa=0.762  path_len=5.12  n_obs=128
+    [rbf/linadam/organic_20] round 2: kappa=0.525  path_len=5.60  n_obs=192
+    [rbf/linadam/organic_20] round 3: kappa=0.288  path_len=5.43  n_obs=256
+    [rbf/linadam/organic_20] round 4: kappa=0.050  path_len=4.71  n_obs=320
+  [missions] linadam   rbf organic_20     rep1:    3.7 s (0.75 s/round)  E_truth=6.70
+    [ak/linadam/A] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/A] round 1: kappa=0.762  path_len=5.17  n_obs=128
+    [ak/linadam/A] round 2: kappa=0.525  path_len=4.93  n_obs=192
+    [ak/linadam/A] round 3: kappa=0.288  path_len=4.96  n_obs=256
+    [ak/linadam/A] round 4: kappa=0.050  path_len=4.46  n_obs=320
+  [missions] linadam   ak  A              rep0:    7.5 s (1.50 s/round)  E_truth=6.46
+    [ak/linadam/A] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/A] round 1: kappa=0.762  path_len=5.48  n_obs=128
+    [ak/linadam/A] round 2: kappa=0.525  path_len=4.63  n_obs=192
+    [ak/linadam/A] round 3: kappa=0.288  path_len=4.81  n_obs=256
+    [ak/linadam/A] round 4: kappa=0.050  path_len=4.43  n_obs=320
+  [missions] linadam   ak  A              rep1:    7.5 s (1.50 s/round)  E_truth=7.53
+    [ak/linadam/rand_gmm_20] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/rand_gmm_20] round 1: kappa=0.762  path_len=5.26  n_obs=128
+    [ak/linadam/rand_gmm_20] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/linadam/rand_gmm_20] round 3: kappa=0.288  path_len=5.41  n_obs=256
+    [ak/linadam/rand_gmm_20] round 4: kappa=0.050  path_len=5.02  n_obs=320
+  [missions] linadam   ak  rand_gmm_20    rep0:    7.5 s (1.50 s/round)  E_truth=3.71
+    [ak/linadam/rand_gmm_20] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/rand_gmm_20] round 1: kappa=0.762  path_len=5.07  n_obs=128
+    [ak/linadam/rand_gmm_20] round 2: kappa=0.525  path_len=4.82  n_obs=192
+    [ak/linadam/rand_gmm_20] round 3: kappa=0.288  path_len=4.52  n_obs=256
+    [ak/linadam/rand_gmm_20] round 4: kappa=0.050  path_len=5.33  n_obs=320
+  [missions] linadam   ak  rand_gmm_20    rep1:    7.5 s (1.51 s/round)  E_truth=3.61
+    [ak/linadam/organic_20] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/organic_20] round 1: kappa=0.762  path_len=5.16  n_obs=128
+    [ak/linadam/organic_20] round 2: kappa=0.525  path_len=4.45  n_obs=192
+    [ak/linadam/organic_20] round 3: kappa=0.288  path_len=4.55  n_obs=256
+    [ak/linadam/organic_20] round 4: kappa=0.050  path_len=4.68  n_obs=320
+  [missions] linadam   ak  organic_20     rep0:    7.6 s (1.51 s/round)  E_truth=3.04
+    [ak/linadam/organic_20] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/organic_20] round 1: kappa=0.762  path_len=5.37  n_obs=128
+    [ak/linadam/organic_20] round 2: kappa=0.525  path_len=4.54  n_obs=192
+    [ak/linadam/organic_20] round 3: kappa=0.288  path_len=5.16  n_obs=256
+    [ak/linadam/organic_20] round 4: kappa=0.050  path_len=4.42  n_obs=320
+  [missions] linadam   ak  organic_20     rep1:    7.5 s (1.51 s/round)  E_truth=3.87
+    [rbf/selfsup/A] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/selfsup/A] round 0: kappa=1.000  path_len=6.12  n_obs=64
+    [rbf/selfsup/A] round 1: kappa=0.762  path_len=7.14  n_obs=128
+    [rbf/selfsup/A] round 2: kappa=0.525  path_len=5.23  n_obs=192
+    [rbf/selfsup/A] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [rbf/selfsup/A] round 4: kappa=0.050  path_len=5.59  n_obs=320
+  [missions] selfsup   rbf A              rep0:    4.3 s (0.86 s/round)  E_truth=9.51
+    [rbf/selfsup/A] round 0: kappa=1.000  path_len=6.47  n_obs=64
+    [rbf/selfsup/A] round 1: kappa=0.762  path_len=5.63  n_obs=128
+    [rbf/selfsup/A] round 2: kappa=0.525  path_len=6.28  n_obs=192
+    [rbf/selfsup/A] round 3: kappa=0.288  path_len=6.44  n_obs=256
+    [rbf/selfsup/A] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [missions] selfsup   rbf A              rep1:    4.3 s (0.86 s/round)  E_truth=11.35
+    [rbf/selfsup/rand_gmm_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [rbf/selfsup/rand_gmm_20] round 1: kappa=0.762  path_len=6.22  n_obs=128
+    [rbf/selfsup/rand_gmm_20] round 2: kappa=0.525  path_len=6.40  n_obs=192
+    [rbf/selfsup/rand_gmm_20] round 3: kappa=0.288  path_len=5.48  n_obs=256
+    [rbf/selfsup/rand_gmm_20] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [missions] selfsup   rbf rand_gmm_20    rep0:    4.3 s (0.86 s/round)  E_truth=6.83
+    [rbf/selfsup/rand_gmm_20] round 0: kappa=1.000  path_len=6.01  n_obs=64
+    [rbf/selfsup/rand_gmm_20] round 1: kappa=0.762  path_len=6.21  n_obs=128
+    [rbf/selfsup/rand_gmm_20] round 2: kappa=0.525  path_len=6.90  n_obs=192
+    [rbf/selfsup/rand_gmm_20] round 3: kappa=0.288  path_len=5.67  n_obs=256
+    [rbf/selfsup/rand_gmm_20] round 4: kappa=0.050  path_len=4.70  n_obs=320
+  [missions] selfsup   rbf rand_gmm_20    rep1:    4.3 s (0.86 s/round)  E_truth=6.13
+    [rbf/selfsup/organic_20] round 0: kappa=1.000  path_len=6.20  n_obs=64
+    [rbf/selfsup/organic_20] round 1: kappa=0.762  path_len=6.25  n_obs=128
+    [rbf/selfsup/organic_20] round 2: kappa=0.525  path_len=6.16  n_obs=192
+    [rbf/selfsup/organic_20] round 3: kappa=0.288  path_len=6.16  n_obs=256
+    [rbf/selfsup/organic_20] round 4: kappa=0.050  path_len=5.98  n_obs=320
+  [missions] selfsup   rbf organic_20     rep0:    4.3 s (0.86 s/round)  E_truth=7.73
+    [rbf/selfsup/organic_20] round 0: kappa=1.000  path_len=5.30  n_obs=64
+    [rbf/selfsup/organic_20] round 1: kappa=0.762  path_len=5.97  n_obs=128
+    [rbf/selfsup/organic_20] round 2: kappa=0.525  path_len=6.22  n_obs=192
+    [rbf/selfsup/organic_20] round 3: kappa=0.288  path_len=6.92  n_obs=256
+    [rbf/selfsup/organic_20] round 4: kappa=0.050  path_len=5.83  n_obs=320
+  [missions] selfsup   rbf organic_20     rep1:    4.3 s (0.86 s/round)  E_truth=6.42
+    [ak/selfsup/A] round 0: kappa=1.000  path_len=6.12  n_obs=64
+    [ak/selfsup/A] round 1: kappa=0.762  path_len=5.87  n_obs=128
+    [ak/selfsup/A] round 2: kappa=0.525  path_len=6.02  n_obs=192
+    [ak/selfsup/A] round 3: kappa=0.288  path_len=5.63  n_obs=256
+    [ak/selfsup/A] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [missions] selfsup   ak  A              rep0:    8.1 s (1.63 s/round)  E_truth=7.05
+    [ak/selfsup/A] round 0: kappa=1.000  path_len=6.47  n_obs=64
+    [ak/selfsup/A] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/selfsup/A] round 2: kappa=0.525  path_len=5.35  n_obs=192
+    [ak/selfsup/A] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/selfsup/A] round 4: kappa=0.050  path_len=4.70  n_obs=320
+  [missions] selfsup   ak  A              rep1:    8.1 s (1.61 s/round)  E_truth=8.09
+    [ak/selfsup/rand_gmm_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [ak/selfsup/rand_gmm_20] round 1: kappa=0.762  path_len=5.33  n_obs=128
+    [ak/selfsup/rand_gmm_20] round 2: kappa=0.525  path_len=6.20  n_obs=192
+    [ak/selfsup/rand_gmm_20] round 3: kappa=0.288  path_len=6.15  n_obs=256
+    [ak/selfsup/rand_gmm_20] round 4: kappa=0.050  path_len=5.34  n_obs=320
+  [missions] selfsup   ak  rand_gmm_20    rep0:    8.1 s (1.61 s/round)  E_truth=6.58
+    [ak/selfsup/rand_gmm_20] round 0: kappa=1.000  path_len=6.01  n_obs=64
+    [ak/selfsup/rand_gmm_20] round 1: kappa=0.762  path_len=6.31  n_obs=128
+    [ak/selfsup/rand_gmm_20] round 2: kappa=0.525  path_len=5.62  n_obs=192
+    [ak/selfsup/rand_gmm_20] round 3: kappa=0.288  path_len=5.57  n_obs=256
+    [ak/selfsup/rand_gmm_20] round 4: kappa=0.050  path_len=5.66  n_obs=320
+  [missions] selfsup   ak  rand_gmm_20    rep1:    8.0 s (1.61 s/round)  E_truth=3.18
+    [ak/selfsup/organic_20] round 0: kappa=1.000  path_len=6.20  n_obs=64
+    [ak/selfsup/organic_20] round 1: kappa=0.762  path_len=6.16  n_obs=128
+    [ak/selfsup/organic_20] round 2: kappa=0.525  path_len=6.31  n_obs=192
+    [ak/selfsup/organic_20] round 3: kappa=0.288  path_len=5.34  n_obs=256
+    [ak/selfsup/organic_20] round 4: kappa=0.050  path_len=4.62  n_obs=320
+  [missions] selfsup   ak  organic_20     rep0:    8.1 s (1.61 s/round)  E_truth=4.21
+    [ak/selfsup/organic_20] round 0: kappa=1.000  path_len=5.30  n_obs=64
+    [ak/selfsup/organic_20] round 1: kappa=0.762  path_len=6.26  n_obs=128
+    [ak/selfsup/organic_20] round 2: kappa=0.525  path_len=5.23  n_obs=192
+    [ak/selfsup/organic_20] round 3: kappa=0.288  path_len=6.61  n_obs=256
+    [ak/selfsup/organic_20] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [missions] selfsup   ak  organic_20     rep1:    8.1 s (1.61 s/round)  E_truth=3.66
+    [rbf/old500/A] round 0: kappa=1.000  path_len=5.05  n_obs=64
+    [rbf/old500/A] round 0: kappa=1.000  path_len=6.78  n_obs=64
+    [rbf/old500/A] round 1: kappa=0.762  path_len=5.27  n_obs=128
+    [rbf/old500/A] round 2: kappa=0.525  path_len=6.32  n_obs=192
+    [rbf/old500/A] round 3: kappa=0.288  path_len=6.07  n_obs=256
+    [rbf/old500/A] round 4: kappa=0.050  path_len=5.49  n_obs=320
+  [missions] old500    rbf A              rep0:   11.4 s (2.28 s/round)  E_truth=9.73
+    [rbf/old500/A] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [rbf/old500/A] round 1: kappa=0.762  path_len=6.10  n_obs=128
+    [rbf/old500/A] round 2: kappa=0.525  path_len=6.10  n_obs=192
+    [rbf/old500/A] round 3: kappa=0.288  path_len=6.01  n_obs=256
+    [rbf/old500/A] round 4: kappa=0.050  path_len=5.29  n_obs=320
+  [missions] old500    rbf A              rep1:   11.5 s (2.29 s/round)  E_truth=9.90
+    [rbf/old500/rand_gmm_20] round 0: kappa=1.000  path_len=6.11  n_obs=64
+    [rbf/old500/rand_gmm_20] round 1: kappa=0.762  path_len=5.46  n_obs=128
+    [rbf/old500/rand_gmm_20] round 2: kappa=0.525  path_len=5.65  n_obs=192
+    [rbf/old500/rand_gmm_20] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/old500/rand_gmm_20] round 4: kappa=0.050  path_len=5.08  n_obs=320
+  [missions] old500    rbf rand_gmm_20    rep0:   11.5 s (2.29 s/round)  E_truth=5.69
+    [rbf/old500/rand_gmm_20] round 0: kappa=1.000  path_len=6.15  n_obs=64
+    [rbf/old500/rand_gmm_20] round 1: kappa=0.762  path_len=6.09  n_obs=128
+    [rbf/old500/rand_gmm_20] round 2: kappa=0.525  path_len=5.34  n_obs=192
+    [rbf/old500/rand_gmm_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/old500/rand_gmm_20] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [missions] old500    rbf rand_gmm_20    rep1:   11.5 s (2.30 s/round)  E_truth=7.54
+    [rbf/old500/organic_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/old500/organic_20] round 1: kappa=0.762  path_len=6.27  n_obs=128
+    [rbf/old500/organic_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [rbf/old500/organic_20] round 3: kappa=0.288  path_len=5.53  n_obs=256
+    [rbf/old500/organic_20] round 4: kappa=0.050  path_len=5.44  n_obs=320
+  [missions] old500    rbf organic_20     rep0:   11.5 s (2.30 s/round)  E_truth=7.49
+    [rbf/old500/organic_20] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [rbf/old500/organic_20] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [rbf/old500/organic_20] round 2: kappa=0.525  path_len=6.59  n_obs=192
+    [rbf/old500/organic_20] round 3: kappa=0.288  path_len=5.53  n_obs=256
+    [rbf/old500/organic_20] round 4: kappa=0.050  path_len=5.50  n_obs=320
+  [missions] old500    rbf organic_20     rep1:   11.5 s (2.30 s/round)  E_truth=8.28
+    [ak/old500/A] round 0: kappa=1.000  path_len=6.78  n_obs=64
+    [ak/old500/A] round 1: kappa=0.762  path_len=5.61  n_obs=128
+    [ak/old500/A] round 2: kappa=0.525  path_len=6.02  n_obs=192
+    [ak/old500/A] round 3: kappa=0.288  path_len=5.04  n_obs=256
+    [ak/old500/A] round 4: kappa=0.050  path_len=4.81  n_obs=320
+  [missions] old500    ak  A              rep0:   15.3 s (3.06 s/round)  E_truth=6.56
+    [ak/old500/A] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [ak/old500/A] round 1: kappa=0.762  path_len=6.03  n_obs=128
+    [ak/old500/A] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/old500/A] round 3: kappa=0.288  path_len=5.19  n_obs=256
+    [ak/old500/A] round 4: kappa=0.050  path_len=5.41  n_obs=320
+  [missions] old500    ak  A              rep1:   15.4 s (3.07 s/round)  E_truth=7.72
+    [ak/old500/rand_gmm_20] round 0: kappa=1.000  path_len=6.11  n_obs=64
+    [ak/old500/rand_gmm_20] round 1: kappa=0.762  path_len=5.09  n_obs=128
+    [ak/old500/rand_gmm_20] round 2: kappa=0.525  path_len=6.32  n_obs=192
+    [ak/old500/rand_gmm_20] round 3: kappa=0.288  path_len=5.97  n_obs=256
+    [ak/old500/rand_gmm_20] round 4: kappa=0.050  path_len=5.58  n_obs=320
+  [missions] old500    ak  rand_gmm_20    rep0:   15.3 s (3.07 s/round)  E_truth=6.03
+    [ak/old500/rand_gmm_20] round 0: kappa=1.000  path_len=6.15  n_obs=64
+    [ak/old500/rand_gmm_20] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [ak/old500/rand_gmm_20] round 2: kappa=0.525  path_len=5.66  n_obs=192
+    [ak/old500/rand_gmm_20] round 3: kappa=0.288  path_len=5.66  n_obs=256
+    [ak/old500/rand_gmm_20] round 4: kappa=0.050  path_len=5.39  n_obs=320
+  [missions] old500    ak  rand_gmm_20    rep1:   15.4 s (3.08 s/round)  E_truth=3.61
+    [ak/old500/organic_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [ak/old500/organic_20] round 1: kappa=0.762  path_len=6.05  n_obs=128
+    [ak/old500/organic_20] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/old500/organic_20] round 3: kappa=0.288  path_len=5.35  n_obs=256
+    [ak/old500/organic_20] round 4: kappa=0.050  path_len=5.40  n_obs=320
+  [missions] old500    ak  organic_20     rep0:   15.4 s (3.07 s/round)  E_truth=5.38
+    [ak/old500/organic_20] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [ak/old500/organic_20] round 1: kappa=0.762  path_len=5.92  n_obs=128
+    [ak/old500/organic_20] round 2: kappa=0.525  path_len=5.01  n_obs=192
+    [ak/old500/organic_20] round 3: kappa=0.288  path_len=5.53  n_obs=256
+    [ak/old500/organic_20] round 4: kappa=0.050  path_len=4.53  n_obs=320
+  [missions] old500    ak  organic_20     rep1:   15.3 s (3.06 s/round)  E_truth=5.65
+  [missions] unet0: skipped (no checkpoint for 'unet0' (pattern 'LAMERG0_final') under /home/stud_schonfeld/Master_thesis/transfer)
+  [missions] unet1890: skipped (no checkpoint for 'unet1890' (pattern 'LAMERG75') under /home/stud_schonfeld/Master_thesis/transfer)
+  [missions] lm1300: skipped (no checkpoint for 'lm1300' (pattern 'LMTEACHER|netz2d_startpunkt_lm_inpaint') under /home/stud_schonfeld/Master_thesis/transfer)
+    [rbf/lintsvec/A] round 0: kappa=1.000  path_len=5.12  n_obs=64
+    [rbf/lintsvec/A] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [rbf/lintsvec/A] round 1: kappa=0.762  path_len=7.52  n_obs=128
+    [rbf/lintsvec/A] round 2: kappa=0.525  path_len=7.93  n_obs=192
+    [rbf/lintsvec/A] round 3: kappa=0.288  path_len=6.66  n_obs=256
+    [rbf/lintsvec/A] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [missions] lintsvec  rbf A              rep0:    4.2 s (0.85 s/round)  E_truth=9.45
+    [rbf/lintsvec/A] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [rbf/lintsvec/A] round 1: kappa=0.762  path_len=7.95  n_obs=128
+    [rbf/lintsvec/A] round 2: kappa=0.525  path_len=6.39  n_obs=192
+    [rbf/lintsvec/A] round 3: kappa=0.288  path_len=6.74  n_obs=256
+    [rbf/lintsvec/A] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [missions] lintsvec  rbf A              rep1:    4.2 s (0.85 s/round)  E_truth=8.99
+    [rbf/lintsvec/rand_gmm_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [rbf/lintsvec/rand_gmm_20] round 1: kappa=0.762  path_len=7.26  n_obs=128
+    [rbf/lintsvec/rand_gmm_20] round 2: kappa=0.525  path_len=7.00  n_obs=192
+    [rbf/lintsvec/rand_gmm_20] round 3: kappa=0.288  path_len=6.83  n_obs=256
+    [rbf/lintsvec/rand_gmm_20] round 4: kappa=0.050  path_len=6.44  n_obs=320
+  [missions] lintsvec  rbf rand_gmm_20    rep0:    4.2 s (0.85 s/round)  E_truth=6.13
+    [rbf/lintsvec/rand_gmm_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [rbf/lintsvec/rand_gmm_20] round 1: kappa=0.762  path_len=8.00  n_obs=128
+    [rbf/lintsvec/rand_gmm_20] round 2: kappa=0.525  path_len=6.83  n_obs=192
+    [rbf/lintsvec/rand_gmm_20] round 3: kappa=0.288  path_len=7.20  n_obs=256
+    [rbf/lintsvec/rand_gmm_20] round 4: kappa=0.050  path_len=5.64  n_obs=320
+  [missions] lintsvec  rbf rand_gmm_20    rep1:    4.2 s (0.85 s/round)  E_truth=7.95
+    [rbf/lintsvec/organic_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [rbf/lintsvec/organic_20] round 1: kappa=0.762  path_len=7.81  n_obs=128
+    [rbf/lintsvec/organic_20] round 2: kappa=0.525  path_len=7.22  n_obs=192
+    [rbf/lintsvec/organic_20] round 3: kappa=0.288  path_len=5.40  n_obs=256
+    [rbf/lintsvec/organic_20] round 4: kappa=0.050  path_len=6.32  n_obs=320
+  [missions] lintsvec  rbf organic_20     rep0:    4.2 s (0.85 s/round)  E_truth=6.43
+    [rbf/lintsvec/organic_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [rbf/lintsvec/organic_20] round 1: kappa=0.762  path_len=7.41  n_obs=128
+    [rbf/lintsvec/organic_20] round 2: kappa=0.525  path_len=7.81  n_obs=192
+    [rbf/lintsvec/organic_20] round 3: kappa=0.288  path_len=7.85  n_obs=256
+    [rbf/lintsvec/organic_20] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [missions] lintsvec  rbf organic_20     rep1:    4.2 s (0.85 s/round)  E_truth=6.43
+    [ak/lintsvec/A] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [ak/lintsvec/A] round 1: kappa=0.762  path_len=7.74  n_obs=128
+    [ak/lintsvec/A] round 2: kappa=0.525  path_len=6.20  n_obs=192
+    [ak/lintsvec/A] round 3: kappa=0.288  path_len=6.27  n_obs=256
+    [ak/lintsvec/A] round 4: kappa=0.050  path_len=5.64  n_obs=320
+  [missions] lintsvec  ak  A              rep0:    8.0 s (1.61 s/round)  E_truth=5.39
+    [ak/lintsvec/A] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [ak/lintsvec/A] round 1: kappa=0.762  path_len=7.33  n_obs=128
+    [ak/lintsvec/A] round 2: kappa=0.525  path_len=6.78  n_obs=192
+    [ak/lintsvec/A] round 3: kappa=0.288  path_len=7.11  n_obs=256
+    [ak/lintsvec/A] round 4: kappa=0.050  path_len=6.33  n_obs=320
+  [missions] lintsvec  ak  A              rep1:    8.1 s (1.61 s/round)  E_truth=6.51
+    [ak/lintsvec/rand_gmm_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [ak/lintsvec/rand_gmm_20] round 1: kappa=0.762  path_len=6.46  n_obs=128
+    [ak/lintsvec/rand_gmm_20] round 2: kappa=0.525  path_len=5.87  n_obs=192
+    [ak/lintsvec/rand_gmm_20] round 3: kappa=0.288  path_len=5.49  n_obs=256
+    [ak/lintsvec/rand_gmm_20] round 4: kappa=0.050  path_len=4.87  n_obs=320
+  [missions] lintsvec  ak  rand_gmm_20    rep0:    8.1 s (1.61 s/round)  E_truth=4.63
+    [ak/lintsvec/rand_gmm_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [ak/lintsvec/rand_gmm_20] round 1: kappa=0.762  path_len=6.91  n_obs=128
+    [ak/lintsvec/rand_gmm_20] round 2: kappa=0.525  path_len=6.87  n_obs=192
+    [ak/lintsvec/rand_gmm_20] round 3: kappa=0.288  path_len=7.13  n_obs=256
+    [ak/lintsvec/rand_gmm_20] round 4: kappa=0.050  path_len=7.45  n_obs=320
+  [missions] lintsvec  ak  rand_gmm_20    rep1:    8.1 s (1.61 s/round)  E_truth=3.23
+    [ak/lintsvec/organic_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [ak/lintsvec/organic_20] round 1: kappa=0.762  path_len=6.85  n_obs=128
+    [ak/lintsvec/organic_20] round 2: kappa=0.525  path_len=6.16  n_obs=192
+    [ak/lintsvec/organic_20] round 3: kappa=0.288  path_len=5.57  n_obs=256
+    [ak/lintsvec/organic_20] round 4: kappa=0.050  path_len=4.58  n_obs=320
+  [missions] lintsvec  ak  organic_20     rep0:    8.0 s (1.61 s/round)  E_truth=5.92
+    [ak/lintsvec/organic_20] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [ak/lintsvec/organic_20] round 1: kappa=0.762  path_len=7.30  n_obs=128
+    [ak/lintsvec/organic_20] round 2: kappa=0.525  path_len=6.45  n_obs=192
+    [ak/lintsvec/organic_20] round 3: kappa=0.288  path_len=5.25  n_obs=256
+    [ak/lintsvec/organic_20] round 4: kappa=0.050  path_len=5.06  n_obs=320
+  [missions] lintsvec  ak  organic_20     rep1:    8.0 s (1.61 s/round)  E_truth=5.17
+    [rbf/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64
+    [rbf/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64
+    [rbf/gpgoal/A] round 1: kappa=0.762  path_len=5.95  n_obs=128
+    [rbf/gpgoal/A] round 2: kappa=0.525  path_len=5.97  n_obs=192
+    [rbf/gpgoal/A] round 3: kappa=0.288  path_len=5.97  n_obs=256
+    [rbf/gpgoal/A] round 4: kappa=0.050  path_len=5.98  n_obs=320
+  [missions] gpgoal    rbf A              rep0:    0.0 s (0.01 s/round)  E_truth=4.42
+    [rbf/gpgoal/A] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/gpgoal/A] round 1: kappa=0.762  path_len=5.94  n_obs=128
+    [rbf/gpgoal/A] round 2: kappa=0.525  path_len=5.97  n_obs=192
+    [rbf/gpgoal/A] round 3: kappa=0.288  path_len=5.92  n_obs=256
+    [rbf/gpgoal/A] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [missions] gpgoal    rbf A              rep1:    0.0 s (0.01 s/round)  E_truth=2.00
+    [rbf/gpgoal/rand_gmm_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/gpgoal/rand_gmm_20] round 1: kappa=0.762  path_len=5.89  n_obs=128
+    [rbf/gpgoal/rand_gmm_20] round 2: kappa=0.525  path_len=5.99  n_obs=192
+    [rbf/gpgoal/rand_gmm_20] round 3: kappa=0.288  path_len=5.93  n_obs=256
+    [rbf/gpgoal/rand_gmm_20] round 4: kappa=0.050  path_len=5.94  n_obs=320
+  [missions] gpgoal    rbf rand_gmm_20    rep0:    0.1 s (0.01 s/round)  E_truth=2.59
+    [rbf/gpgoal/rand_gmm_20] round 0: kappa=1.000  path_len=6.01  n_obs=64
+    [rbf/gpgoal/rand_gmm_20] round 1: kappa=0.762  path_len=5.93  n_obs=128
+    [rbf/gpgoal/rand_gmm_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [rbf/gpgoal/rand_gmm_20] round 3: kappa=0.288  path_len=5.94  n_obs=256
+    [rbf/gpgoal/rand_gmm_20] round 4: kappa=0.050  path_len=5.94  n_obs=320
+  [missions] gpgoal    rbf rand_gmm_20    rep1:    0.0 s (0.01 s/round)  E_truth=5.01
+    [rbf/gpgoal/organic_20] round 0: kappa=1.000  path_len=6.03  n_obs=64
+    [rbf/gpgoal/organic_20] round 1: kappa=0.762  path_len=5.89  n_obs=128
+    [rbf/gpgoal/organic_20] round 2: kappa=0.525  path_len=5.90  n_obs=192
+    [rbf/gpgoal/organic_20] round 3: kappa=0.288  path_len=5.95  n_obs=256
+    [rbf/gpgoal/organic_20] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [missions] gpgoal    rbf organic_20     rep0:    0.0 s (0.01 s/round)  E_truth=1.76
+    [rbf/gpgoal/organic_20] round 0: kappa=1.000  path_len=5.99  n_obs=64
+    [rbf/gpgoal/organic_20] round 1: kappa=0.762  path_len=5.97  n_obs=128
+    [rbf/gpgoal/organic_20] round 2: kappa=0.525  path_len=5.93  n_obs=192
+    [rbf/gpgoal/organic_20] round 3: kappa=0.288  path_len=5.96  n_obs=256
+    [rbf/gpgoal/organic_20] round 4: kappa=0.050  path_len=5.92  n_obs=320
+  [missions] gpgoal    rbf organic_20     rep1:    0.1 s (0.01 s/round)  E_truth=8.11
+    [ak/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64
+    [ak/gpgoal/A] round 1: kappa=0.762  path_len=5.92  n_obs=128
+    [ak/gpgoal/A] round 2: kappa=0.525  path_len=5.93  n_obs=192
+    [ak/gpgoal/A] round 3: kappa=0.288  path_len=5.97  n_obs=256
+    [ak/gpgoal/A] round 4: kappa=0.050  path_len=5.93  n_obs=320
+  [missions] gpgoal    ak  A              rep0:    3.9 s (0.77 s/round)  E_truth=4.76
+    [ak/gpgoal/A] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/gpgoal/A] round 1: kappa=0.762  path_len=6.02  n_obs=128
+    [ak/gpgoal/A] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [ak/gpgoal/A] round 3: kappa=0.288  path_len=5.93  n_obs=256
+    [ak/gpgoal/A] round 4: kappa=0.050  path_len=5.92  n_obs=320
+  [missions] gpgoal    ak  A              rep1:    3.9 s (0.77 s/round)  E_truth=2.28
+    [ak/gpgoal/rand_gmm_20] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/gpgoal/rand_gmm_20] round 1: kappa=0.762  path_len=5.95  n_obs=128
+    [ak/gpgoal/rand_gmm_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [ak/gpgoal/rand_gmm_20] round 3: kappa=0.288  path_len=5.88  n_obs=256
+    [ak/gpgoal/rand_gmm_20] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [missions] gpgoal    ak  rand_gmm_20    rep0:    3.9 s (0.77 s/round)  E_truth=1.48
+    [ak/gpgoal/rand_gmm_20] round 0: kappa=1.000  path_len=6.01  n_obs=64
+    [ak/gpgoal/rand_gmm_20] round 1: kappa=0.762  path_len=5.96  n_obs=128
+    [ak/gpgoal/rand_gmm_20] round 2: kappa=0.525  path_len=6.01  n_obs=192
+    [ak/gpgoal/rand_gmm_20] round 3: kappa=0.288  path_len=5.92  n_obs=256
+    [ak/gpgoal/rand_gmm_20] round 4: kappa=0.050  path_len=5.97  n_obs=320
+  [missions] gpgoal    ak  rand_gmm_20    rep1:    3.9 s (0.78 s/round)  E_truth=5.45
+    [ak/gpgoal/organic_20] round 0: kappa=1.000  path_len=6.03  n_obs=64
+    [ak/gpgoal/organic_20] round 1: kappa=0.762  path_len=5.94  n_obs=128
+    [ak/gpgoal/organic_20] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [ak/gpgoal/organic_20] round 3: kappa=0.288  path_len=5.94  n_obs=256
+    [ak/gpgoal/organic_20] round 4: kappa=0.050  path_len=5.94  n_obs=320
+  [missions] gpgoal    ak  organic_20     rep0:    3.9 s (0.78 s/round)  E_truth=2.10
+    [ak/gpgoal/organic_20] round 0: kappa=1.000  path_len=5.99  n_obs=64
+    [ak/gpgoal/organic_20] round 1: kappa=0.762  path_len=5.93  n_obs=128
+    [ak/gpgoal/organic_20] round 2: kappa=0.525  path_len=5.94  n_obs=192
+    [ak/gpgoal/organic_20] round 3: kappa=0.288  path_len=5.90  n_obs=256
+    [ak/gpgoal/organic_20] round 4: kappa=0.050  path_len=5.95  n_obs=320
+  [missions] gpgoal    ak  organic_20     rep1:    3.9 s (0.78 s/round)  E_truth=1.82
+    [rbf/linray/A] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/linray/A] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/linray/A] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [rbf/linray/A] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [rbf/linray/A] round 3: kappa=0.288  path_len=6.03  n_obs=256
+    [rbf/linray/A] round 4: kappa=0.050  path_len=6.03  n_obs=320
+  [missions] linray    rbf A              rep0:    0.0 s (0.01 s/round)  E_truth=13.36
+    [rbf/linray/A] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/linray/A] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [rbf/linray/A] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [rbf/linray/A] round 3: kappa=0.288  path_len=5.96  n_obs=256
+    [rbf/linray/A] round 4: kappa=0.050  path_len=6.00  n_obs=320
+  [missions] linray    rbf A              rep1:    0.0 s (0.01 s/round)  E_truth=11.86
+    [rbf/linray/rand_gmm_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/linray/rand_gmm_20] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [rbf/linray/rand_gmm_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [rbf/linray/rand_gmm_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [rbf/linray/rand_gmm_20] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [missions] linray    rbf rand_gmm_20    rep0:    0.0 s (0.01 s/round)  E_truth=9.50
+    [rbf/linray/rand_gmm_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/linray/rand_gmm_20] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [rbf/linray/rand_gmm_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [rbf/linray/rand_gmm_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [rbf/linray/rand_gmm_20] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [missions] linray    rbf rand_gmm_20    rep1:    0.0 s (0.01 s/round)  E_truth=9.99
+    [rbf/linray/organic_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/linray/organic_20] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [rbf/linray/organic_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [rbf/linray/organic_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [rbf/linray/organic_20] round 4: kappa=0.050  path_len=6.00  n_obs=320
+  [missions] linray    rbf organic_20     rep0:    0.0 s (0.01 s/round)  E_truth=12.87
+    [rbf/linray/organic_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/linray/organic_20] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [rbf/linray/organic_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [rbf/linray/organic_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [rbf/linray/organic_20] round 4: kappa=0.050  path_len=6.00  n_obs=320
+  [missions] linray    rbf organic_20     rep1:    0.0 s (0.01 s/round)  E_truth=12.87
+    [ak/linray/A] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [ak/linray/A] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [ak/linray/A] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [ak/linray/A] round 3: kappa=0.288  path_len=5.96  n_obs=256
+    [ak/linray/A] round 4: kappa=0.050  path_len=6.00  n_obs=320
+  [missions] linray    ak  A              rep0:    3.9 s (0.78 s/round)  E_truth=11.86
+    [ak/linray/A] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [ak/linray/A] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [ak/linray/A] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [ak/linray/A] round 3: kappa=0.288  path_len=5.96  n_obs=256
+    [ak/linray/A] round 4: kappa=0.050  path_len=6.00  n_obs=320
+  [missions] linray    ak  A              rep1:    3.9 s (0.78 s/round)  E_truth=11.86
+    [ak/linray/rand_gmm_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [ak/linray/rand_gmm_20] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [ak/linray/rand_gmm_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [ak/linray/rand_gmm_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [ak/linray/rand_gmm_20] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [missions] linray    ak  rand_gmm_20    rep0:    3.9 s (0.77 s/round)  E_truth=9.50
+    [ak/linray/rand_gmm_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [ak/linray/rand_gmm_20] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [ak/linray/rand_gmm_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [ak/linray/rand_gmm_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [ak/linray/rand_gmm_20] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [missions] linray    ak  rand_gmm_20    rep1:    3.8 s (0.76 s/round)  E_truth=9.99
+    [ak/linray/organic_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [ak/linray/organic_20] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [ak/linray/organic_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [ak/linray/organic_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [ak/linray/organic_20] round 4: kappa=0.050  path_len=6.00  n_obs=320
+  [missions] linray    ak  organic_20     rep0:    3.8 s (0.76 s/round)  E_truth=12.87
+    [ak/linray/organic_20] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [ak/linray/organic_20] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [ak/linray/organic_20] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [ak/linray/organic_20] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [ak/linray/organic_20] round 4: kappa=0.050  path_len=6.00  n_obs=320
+  [missions] linray    ak  organic_20     rep1:    3.9 s (0.77 s/round)  E_truth=12.87
+  figure: /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/timing_tests_cluster_rtx3090/timing_overview.png
+
+done in 45.4 min -> /home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/results/timing_tests_cluster_rtx3090
+[job] Fri Nov 13 16:33:43 CET 2026 finished

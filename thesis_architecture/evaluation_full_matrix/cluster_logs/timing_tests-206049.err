@@ -1,0 +1,26 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+WARNING:2026-11-13 06:25:56,996:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Traceback (most recent call last):
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_timing_tests.py", line 554, in <module>
+    main()
+    ~~~~^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_timing_tests.py", line 535, in main
+    part_planner(wr, a, ctx, truth, device)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_timing_tests.py", line 169, in part_planner
+    times = time_call(call, device, a.reps, a.warmup)
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_timing_tests.py", line 86, in time_call
+    fn()
+    ~~^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_timing_tests.py", line 165, in call
+    cps = planner.plan(parts, n_candidates=n_init, start=start)
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/exploration/apply_cfm_belief.py", line 271, in plan
+    out = self._gen(self.model, particles.to(self.device),
+                    num_samples=n_candidates, nxi=self.nxi,
+    ...<2 lines>...
+                    obstacle_weight=obstacle_weight,
+                    obstacle_t_start=obstacle_t_start, **kw)
+  File "/home/stud_schonfeld/miniconda3/envs/thesis/lib/python3.13/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+TypeError: generate_particle_trajectories() got an unexpected keyword argument 'inpaint_start'
+srun: error: gn05: task 0: Exited with exit code 1

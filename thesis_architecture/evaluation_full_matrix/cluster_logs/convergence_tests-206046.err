@@ -1,0 +1,33 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+WARNING:2026-11-13 01:57:07,018:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+Traceback (most recent call last):
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_convergence_tests.py", line 780, in <module>
+    main()
+    ~~~~^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_convergence_tests.py", line 762, in main
+    part_sweep(a, ctx, device, db, a.main_db)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_convergence_tests.py", line 150, in part_sweep
+    res = rec.run_one(method, k, n, truths[i].detach().cpu(), planner, bs, ctx.B32, ctx.ee,
+                      ctx.base_args, cfg, kappas, device, i * 100 + v)
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/run_exploration_comparison.py", line 401, in run_one
+    segments, phis, _ = sam.run_mission(
+                        ~~~~~~~~~~~~~~~^
+        f'{kernel}/{method}/{shape}', truth, planner, bs, ee, B32, args, device, a.n_rounds,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        a.n_init, a.n_iters, kappas, start_pos, seed,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        cutoff=CUTOFF if method in NETWORK_METHODS else 0.0, on_round=on_round, **kw)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/sample_annealed_mission.py", line 252, in run_mission
+    cps = planner.plan(parts, n_candidates=n_init, start=start)
+  File "/home/stud_schonfeld/Master_thesis/thesis_architecture/exploration/apply_cfm_belief.py", line 271, in plan
+    out = self._gen(self.model, particles.to(self.device),
+                    num_samples=n_candidates, nxi=self.nxi,
+    ...<2 lines>...
+                    obstacle_weight=obstacle_weight,
+                    obstacle_t_start=obstacle_t_start, **kw)
+  File "/home/stud_schonfeld/miniconda3/envs/thesis/lib/python3.13/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+TypeError: generate_particle_trajectories() got an unexpected keyword argument 'inpaint_start'
+srun: error: dgx-station: task 0: Exited with exit code 1

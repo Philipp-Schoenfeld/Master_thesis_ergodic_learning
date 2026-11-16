@@ -1,0 +1,11 @@
+kernel,method,E_at_max_iters,max_iters,tol,iters_to_within_tol
+ak,lintsvec,5.518,1000,0.05,25
+ak,lintsvec,5.518,1000,0.1,25
+ak,old500,6.054,1000,0.05,0
+ak,old500,6.054,1000,0.1,0
+ak,dit630,6.606,1000,0.05,0
+ak,dit630,6.606,1000,0.1,0
+ak,selfsup,6.364,1000,0.05,0
+ak,selfsup,6.364,1000,0.1,0
+ak,linadam,6.460,1000,0.05,50
+ak,linadam,6.460,1000,0.1,50
