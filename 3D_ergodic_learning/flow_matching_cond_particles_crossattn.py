@@ -27,6 +27,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from obstacle_cond import ObstacleEmbedding, ObstacleCondMixin
+
 ND = 3
 
 
@@ -312,7 +314,7 @@ def _adopt_inpaint_flag(module, state_dict, prefix, *args):
         module.register_buffer('start_inpaint_flag', torch.ones((), device=dev))
 
 
-class ParticleCrossAttnFlowNetwork(nn.Module):
+class ParticleCrossAttnFlowNetwork(ObstacleCondMixin, nn.Module):
     """Flow-matching network over positions, optionally over orientation too.
 
     With `predict_orientation=False` (the default) this is byte-identical to the
@@ -336,13 +338,20 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
     def __init__(self, nxi: int = 25, nd: int = ND, D: int = 128,
                  n_heads: int = 8, kernel_size: int = 3,
                  predict_orientation: bool = False,
-                 start_cond: bool = False, start_inpaint: bool = False):
+                 start_cond: bool = False, start_inpaint: bool = False,
+                 obstacle_cond: bool = False):
         super().__init__()
         self.nxi = nxi
         self.nd  = nd
         self.D   = D
         self.predict_orientation = predict_orientation
         self.start_cond = start_cond
+        self.obstacle_cond = obstacle_cond
+        if obstacle_cond:
+            # Opt-in: sphere (centre, radius) added to the time conditioning, last
+            # layer zero-initialised; "no obstacle" is a learned null token.
+            self.obstacle_emb = ObstacleEmbedding(D=D)
+            self.null_obstacle_token = nn.Parameter(torch.zeros(1, D))
         if start_inpaint:
             self.register_buffer('start_inpaint_flag', torch.ones(()))
         self._register_load_state_dict_pre_hook(_adopt_inpaint_flag, with_module=True)
@@ -382,8 +391,13 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
                 particles: torch.Tensor,
                 cond_drop_mask: torch.Tensor = None,
                 start: torch.Tensor = None,
-                start_drop_mask: torch.Tensor = None):
+                start_drop_mask: torch.Tensor = None,
+                obstacle: torch.Tensor = None,
+                obstacle_present: torch.Tensor = None):
         """x: (B, nxi, in_dim). Returns (v_pos, v_rot) with v_rot None if off.
+
+        `obstacle` (B, 4) = (cx, cy, cz, r) and `obstacle_present` (B,) bool, only
+        used with `obstacle_cond=True`; absent obstacles get the null token.
 
         `start` (B, nd) wird ueber FiLM zur Zeitkonditionierung addiert —
         dieselbe Stelle wie in der 2D-Fassung. Bei `start_cond=True` und
@@ -405,6 +419,10 @@ class ParticleCrossAttnFlowNetwork(nn.Module):
             else:
                 start_e = self.null_start_token.expand(time_cond.shape[0], -1)
             time_cond = time_cond + start_e
+
+        if self.obstacle_cond:
+            time_cond = time_cond + self._obstacle_vector(
+                time_cond, obstacle, obstacle_present)
 
         particle_tokens = self.particle_tokenizer(particles)
 
@@ -434,6 +452,9 @@ def compute_particle_cfm_loss(
     orientation=None,
     w_cfm_rot: float = 1.0,
     p_drop_start: float = 0.0,
+    obstacle=None,
+    obstacle_present=None,
+    obstacle_loss=None,
 ) -> tuple:
     """Conditional flow-matching loss, optionally with an ergodic coverage term.
 
@@ -468,8 +489,11 @@ def compute_particle_cfm_loss(
         xt = xt.clone()
         xt[:, 0, :nd] = x1_batch[:, 0, :nd]
 
+    obs_kw = {}
+    if getattr(model, 'obstacle_cond', False):
+        obs_kw = dict(obstacle=obstacle, obstacle_present=obstacle_present)
     v_pos, v_rot = model(xt, t, particle_batch, cond_drop_mask=cond_drop_mask,
-                         start=start, start_drop_mask=start_drop)
+                         start=start, start_drop_mask=start_drop, **obs_kw)
     v_t = v_pos if v_rot is None else torch.cat([v_pos, v_rot], dim=-1)
 
     # Position and orientation are reported separately: they live on different
@@ -492,8 +516,10 @@ def compute_particle_cfm_loss(
 
     want_erg = ergodic is not None and ergodic.weight > 0.0
     want_ori = orientation is not None and orientation.weight > 0.0
+    want_obs = (obstacle_loss is not None and obstacle is not None
+                and obstacle_loss.weight > 0.0)
 
-    if want_erg or want_ori:
+    if want_erg or want_ori or want_obs:
         # Flow matching predicts a velocity, so the endpoint has to be estimated
         # before a trajectory-level objective can be applied to it.
         x1_hat = xt + (1.0 - t_exp) * v_t
@@ -504,8 +530,8 @@ def compute_particle_cfm_loss(
         # One surface for both terms: building it is a cdist over the particle
         # cloud, and the two objectives query the same geometry.
         surf = None
-        if want_ori or (want_erg and getattr(ergodic, 'ergodic_on', 'position')
-                        == 'footprint'):
+        if want_ori or want_obs or (want_erg and getattr(
+                ergodic, 'ergodic_on', 'position') == 'footprint'):
             from orientation_energy import ParticleSurface
             thresh = getattr(orientation, 'mu_thresh', None)
             if thresh is None:
@@ -527,6 +553,19 @@ def compute_particle_cfm_loss(
             total = total + orientation.weight * loss_ori
             parts['ori'] = loss_ori.detach()
             parts.update({f'ori_{k}': v for k, v in ori_parts.items()})
+
+        if want_obs:
+            # Obstacle term on the very curve the ergodic term scores: the sphere
+            # (where one is given) and the target surface (always) are both
+            # obstacles for the same trajectory.
+            if obstacle_present is None:
+                obstacle_present = torch.ones(B, dtype=torch.bool, device=device)
+            loss_obs, obs_parts = obstacle_loss(x1_hat, particle_batch, t,
+                                                obstacle, obstacle_present,
+                                                surface=surf)
+            total = total + loss_obs
+            parts['obs'] = loss_obs.detach()
+            parts.update(obs_parts)
 
     return total, parts
 
@@ -556,6 +595,7 @@ def generate_particle_trajectories(
     force_max: float = None,
     force_polish_steps: int = 0,
     force_polish_lr: float = 1.0,
+    obs_cond: torch.Tensor = None,
 ) -> tuple:
     """Integrate the flow ODE, optionally repelling the curve from an obstacle.
 
@@ -573,6 +613,11 @@ def generate_particle_trajectories(
     same value is used in both branches of the particle-CFG split, since the
     training plan keeps CFG on the particles only, not on the start point.
     Leaving it at the default `None` runs the null-start-token ablation.
+
+    `obs_cond` (4,) or (B, 4) = (cx, cy, cz, r), only for models with
+    `obstacle_cond`: the sphere the network is conditioned on (distinct from the
+    inference-time guidance object `obstacle` above). `None` = null token, i.e.
+    "no obstacle". Like the start, it is identical in both CFG halves.
     """
     model.eval()
     if particles.ndim == 2:
@@ -590,6 +635,12 @@ def generate_particle_trajectories(
         start_b = torch.as_tensor(start).to(device).reshape(-1, nd).float()
         if start_b.shape[0] == 1 and num_samples > 1:
             start_b = start_b.expand(num_samples, -1).contiguous()
+
+    obs_b = None
+    if obs_cond is not None and getattr(model, 'obstacle_cond', False):
+        obs_b = torch.as_tensor(obs_cond).to(device).reshape(-1, 4).float()
+        if obs_b.shape[0] == 1 and num_samples > 1:
+            obs_b = obs_b.expand(num_samples, -1).contiguous()
 
     state_dim = getattr(model, 'in_dim', nd)
     x  = torch.randn(num_samples, nxi, state_dim, device=device, generator=generator)
@@ -629,10 +680,13 @@ def generate_particle_trajectories(
         x_batch = torch.cat([x, x], dim=0)
         start_batch = None if start_b is None else torch.cat([start_b, start_b], dim=0)
 
+        obs_kw = {}
+        if getattr(model, 'obstacle_cond', False):
+            obs_kw = dict(obstacle=None if obs_b is None else torch.cat([obs_b, obs_b], 0))
         v_pos, v_rot = model(x_batch, t_batch, particle_batch,
                              cond_drop_mask=mask_batch,
                              start=start_batch,
-                             start_drop_mask=start_drop_batch)
+                             start_drop_mask=start_drop_batch, **obs_kw)
         v_batch = v_pos if v_rot is None else torch.cat([v_pos, v_rot], dim=-1)
         v_cond, v_null = v_batch.chunk(2, dim=0)
         v = v_null + cfg_weight * (v_cond - v_null)

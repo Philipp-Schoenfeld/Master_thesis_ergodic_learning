@@ -52,6 +52,7 @@ from flow_matching_cond_particles_crossattn import (  # noqa: F401  (re-exported
     ND, ParticleTokenizer, StartEmbedding, _adopt_inpaint_flag,
     compute_particle_cfm_loss, generate_particle_trajectories,
 )
+from obstacle_cond import ObstacleEmbedding, ObstacleCondMixin
 
 
 def modulate(x, shift, scale):
@@ -172,15 +173,19 @@ class FinalLayer(nn.Module):
         return self.linear(modulate(self.norm_final(x), shift, scale))
 
 
-class ParticleDiTFlowNetwork(nn.Module):
+class ParticleDiTFlowNetwork(ObstacleCondMixin, nn.Module):
     """Drop-in replacement for the 3D `ParticleCrossAttnFlowNetwork` (see module docstring)."""
 
     def __init__(self, nxi: int = 25, nd: int = ND, D: int = 384, depth: int = 12,
                  n_heads: int = 6, mlp_ratio: float = 4.0, kernel_size: int = 3,
                  predict_orientation: bool = False, start_cond: bool = False,
-                 start_inpaint: bool = False):
+                 start_inpaint: bool = False, obstacle_cond: bool = False):
         super().__init__()
         self.nxi, self.nd, self.D = nxi, nd, D
+        self.obstacle_cond = obstacle_cond
+        if obstacle_cond:
+            self.obstacle_emb = ObstacleEmbedding(D=D)
+            self.null_obstacle_token = nn.Parameter(torch.zeros(1, D))
         self.depth, self.n_heads, self.mlp_ratio = depth, n_heads, mlp_ratio
         self.predict_orientation = predict_orientation
         self.start_cond = start_cond
@@ -234,6 +239,12 @@ class ParticleDiTFlowNetwork(nn.Module):
         nn.init.constant_(self.final_layer.linear.weight, 0)
         nn.init.constant_(self.final_layer.linear.bias, 0)
 
+        if self.obstacle_cond:
+            # `_basic_init` above re-initialised every Linear, including the last
+            # layer of the obstacle embedding that must start at zero.
+            nn.init.zeros_(self.obstacle_emb.net[-1].weight)
+            nn.init.zeros_(self.obstacle_emb.net[-1].bias)
+
     @property
     def start_inpaint(self) -> bool:
         return 'start_inpaint_flag' in self._buffers
@@ -242,7 +253,9 @@ class ParticleDiTFlowNetwork(nn.Module):
                 particles: torch.Tensor,
                 cond_drop_mask: torch.Tensor = None,
                 start: torch.Tensor = None,
-                start_drop_mask: torch.Tensor = None):
+                start_drop_mask: torch.Tensor = None,
+                obstacle: torch.Tensor = None,
+                obstacle_present: torch.Tensor = None):
         """x: (B, nxi, in_dim). Returns (v_pos, v_rot) with v_rot None if off."""
         h = self.x_embedder(x.permute(0, 2, 1)).permute(0, 2, 1) + self.pos_embed
         c = self.t_embedder(1000.0 * t.view(-1))
@@ -255,6 +268,8 @@ class ParticleDiTFlowNetwork(nn.Module):
             else:
                 start_e = self.null_start_token.expand(c.shape[0], -1)
             c = c + start_e
+        if self.obstacle_cond:
+            c = c + self._obstacle_vector(c, obstacle, obstacle_present)
 
         particle_tokens = self.particle_tokenizer(particles)
         if cond_drop_mask is not None:

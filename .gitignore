@@ -86,3 +86,11 @@ Meeting 22_10.pptx
 thesis_architecture/evaluation_full_matrix/plots/exploration_comparison/exploration_comparison.db*
 Anmeldung_Masterthesis*.pdf
 Master_Thesis_Registration_*.pdf
+
+# Active-Sensing-Auswertung: grosse DBs/Traces liegen unter transfer/2026-11-16_active_sensing_results/
+thesis_architecture/evaluation_full_matrix/plots/exploration_comparison_extra_*/
+thesis_architecture/evaluation_full_matrix/results/convergence_tests_main_*/
+thesis_architecture/evaluation_full_matrix/results/convergence_tests_main/sweep.db
+thesis_architecture/evaluation_full_matrix/results/convergence_tests_main/trace/
+*.db-wal
+*.db-shm

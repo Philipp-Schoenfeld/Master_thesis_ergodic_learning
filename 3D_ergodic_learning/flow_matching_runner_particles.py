@@ -49,6 +49,8 @@ from orientation_energy import (W_POINT, W_STANDOFF, W_ANGSMOOTH,
 from orientation import (SurfaceField, frames_for_curve, matrix_to_rot6d,
                          rot6d_to_matrix)
 import viz_3d
+from obstacle_cond import (sample_training_obstacles, repel_targets, ObstacleLoss,
+                           deterministic_obstacle, evaluate_compliance)
 from checkpoint_rotation import nach_zwischenstand, nach_endstand
 
 
@@ -119,7 +121,14 @@ def _save_checkpoint(model, optimizer, scheduler, epoch, loss, args):
         'target_cps': getattr(args, 'target_cps', False),
         'start_inpaint': getattr(args, 'start_inpaint', False),
         'p_drop': args.p_drop,
+        'obstacle_cond': getattr(args, 'obstacle_cond', False),
     }
+    if getattr(args, 'obstacle_cond', False):
+        ckpt.update(p_obstacle=args.p_obstacle, lambda_obs=args.lambda_obs,
+                    lambda_surf=args.lambda_surf, obs_margin=args.obs_margin,
+                    surf_clearance=args.surf_clearance,
+                    obs_radius=[args.obs_r_min, args.obs_r_max],
+                    obs_hit_frac=args.obs_hit_frac)
     # Backbone keys only for DiT runs, so U-Net checkpoints keep their old dict.
     if getattr(args, 'backbone', 'unet') == 'dit':
         ckpt.update(backbone='dit', dit_depth=args.dit_depth,
@@ -183,10 +192,20 @@ def visualise_set(model, labels, trajectories, particles_map, volumes_map,
     for lbl in labels:
         cond = particles_map[lbl]
         start = start_map.get(lbl) if getattr(model, 'start_cond', False) else None
+        obs_vec = obs_draw = None
+        if getattr(model, 'obstacle_cond', False) and len(panels) % 2 == 1:
+            # Every second panel carries a sphere on the stored path, so one plot
+            # shows both regimes (with / without obstacle).
+            from obstacles import SphereObstacle
+            obs_vec = deterministic_obstacle(
+                torch.as_tensor(trajectories[lbl], dtype=torch.float32, device=device),
+                viz_basis)
+            obs_draw = SphereObstacle(center=obs_vec[:3].tolist(),
+                                      radius=float(obs_vec[3]), margin=0.0)
         gen, rot6d = generate_particle_trajectories(
             model, cond, num_samples=args.n_gen, nxi=args.nxi, nd=args.nd,
             steps=args.steps, device=str(device), cfg_weight=args.cfg_weight,
-            start=start,
+            start=start, obs_cond=obs_vec,
         )
         gen_R = None
         if rot6d is not None:
@@ -197,10 +216,11 @@ def visualise_set(model, labels, trajectories, particles_map, volumes_map,
             gen_cps=gen.cpu().numpy(),
             particles=cond.cpu().numpy(),
             volume=volumes_map.get(lbl),
-            title=f"'{lbl}'",
+            title=f"'{lbl}'" + (" + obstacle" if obs_draw is not None else ""),
             bspline_pts=args.bspline_pts,
             bspline_deg=args.bspline_deg,
             gen_R=gen_R,
+            obstacle=obs_draw,
             start=(None if start is None
                    else np.asarray(start.detach().cpu()).reshape(-1)[:3]),
         ))
@@ -272,7 +292,8 @@ def _warmstart(model, pfad, device):
                          f"'model_state_dict'.")
     ergebnis = model.load_state_dict(ckpt['model_state_dict'], strict=False)
     erlaubt = [k for k in ergebnis.missing_keys
-               if k.startswith('start_emb.') or k == 'null_start_token']
+               if k.startswith(('start_emb.', 'obstacle_emb.'))
+               or k in ('null_start_token', 'null_obstacle_token')]
     unerwartet = [k for k in ergebnis.missing_keys if k not in erlaubt]
     if unerwartet or ergebnis.unexpected_keys:
         raise SystemExit(
@@ -281,7 +302,7 @@ def _warmstart(model, pfad, device):
             f"{' …' if len(unerwartet) > 8 else ''}\n"
             f"  unerwartet im Checkpoint:     {ergebnis.unexpected_keys[:8]}"
             f"{' …' if len(ergebnis.unexpected_keys) > 8 else ''}\n"
-            "  Erlaubt fehlen duerfen nur start_emb.* und null_start_token —\n"
+            "  Erlaubt fehlen duerfen nur start_emb.*, obstacle_emb.* und die Null-Token —\n"
             "  alles andere hiesse, dass ein Teil des Netzes zufaellig bliebe.")
     print(f"  Warmstart aus {os.path.basename(pfad)} "
           f"(Epoche {ckpt.get('epoch', '?')}, Verlust {ckpt.get('loss', float('nan')):.5f})")
@@ -351,6 +372,21 @@ def train(model, x1_clean, shape_indices, volumes, loss_fn, args,
                 "  the target plane and the coverage term pulls it back, so the\n"
                 "  two fight to a draw. Pass --erg_on footprint, or set\n"
                 "  --w_standoff 0 if you deliberately want an on-surface run.")
+
+    obstacle_loss = obs_basis = None
+    if getattr(args, 'obstacle_cond', False):
+        from obstacles import basis_torch
+        obstacle_loss = ObstacleLoss(
+            nxi=args.nxi, pts=args.erg_pts, deg=args.bspline_deg,
+            lambda_obs=args.lambda_obs, lambda_surf=args.lambda_surf,
+            margin=args.obs_margin, surf_clearance=args.surf_clearance,
+            t_power=args.erg_t_power, mu_thresh=args.mu_thresh,
+        ).to(x1_clean.device)
+        obs_basis = basis_torch(args.nxi, args.erg_pts, args.bspline_deg,
+                                x1_clean.device)
+        print(f"  Obstacle loss term active: {obstacle_loss.extra_repr()}")
+        print(f"  Obstacle sampling: p={args.p_obstacle} "
+              f"r in [{args.obs_r_min}, {args.obs_r_max}] hit_frac={args.obs_hit_frac}")
 
     use_cuda = x1_clean.device.type == 'cuda'
     N = x1_clean.shape[0]
@@ -432,6 +468,23 @@ def train(model, x1_clean, shape_indices, volumes, loss_fn, args,
                     rot_full=args.rot_full,
                 )
 
+                obs_kw = {}
+                if obstacle_loss is not None:
+                    # Sampled AFTER the augmentation: the sphere sits on the
+                    # rotated/scaled path the network actually has to produce.
+                    obs, obs_present = sample_training_obstacles(
+                        batch_aug, obs_basis, p_obstacle=args.p_obstacle,
+                        r_min=args.obs_r_min, r_max=args.obs_r_max,
+                        hit_frac=args.obs_hit_frac, margin=args.obs_margin,
+                        start=batch_aug[:, 0, :3])
+                    # The stored teacher knows no obstacle: push it out of the
+                    # sphere so the CFM target does not contradict the
+                    # obstacle loss.
+                    batch_aug = repel_targets(batch_aug, obs, obs_present,
+                                              obs_basis, margin=args.obs_margin)
+                    obs_kw = dict(obstacle=obs, obstacle_present=obs_present,
+                                  obstacle_loss=obstacle_loss)
+
                 opt.zero_grad(set_to_none=True)
                 with torch.autocast(device_type='cuda' if use_cuda else 'cpu',
                                     dtype=torch.bfloat16):
@@ -440,7 +493,8 @@ def train(model, x1_clean, shape_indices, volumes, loss_fn, args,
                                           orientation=orientation_loss,
                                           w_cfm_rot=args.w_cfm_rot,
                                           p_drop_start=getattr(
-                                              args, 'p_drop_start', 0.0))
+                                              args, 'p_drop_start', 0.0),
+                                          **obs_kw)
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
                 opt.step()
@@ -466,6 +520,9 @@ def train(model, x1_clean, shape_indices, volumes, loss_fn, args,
                     # hides which of the two is still moving.
                     post['pt'] = f"{avg_parts['ori_point']:.2f}"
                     post['so'] = f"{avg_parts['ori_standoff']:.2f}"
+                if 'obs_sphere' in avg_parts:
+                    post['sph'] = f"{avg_parts['obs_sphere']:.1e}"
+                    post['srf'] = f"{avg_parts['obs_surface']:.1e}"
                 pbar.set_postfix(**post)
 
             if args.use_wandb and _WANDB_OK:
@@ -477,6 +534,8 @@ def train(model, x1_clean, shape_indices, volumes, loss_fn, args,
                 if 'ori' in avg_parts:
                     log['train/ori_weighted'] = (orientation_loss.weight
                                                  * avg_parts['ori'])
+                if 'obs' in avg_parts:
+                    log['train/obs_weighted'] = avg_parts['obs']
                 wandb.log(log)
 
             if args.save_every > 0 and (ep + 1) % args.save_every == 0:
@@ -521,6 +580,9 @@ def run_surfaces(args, device):
 
     from data_surfaces import ziehgewichte, mix_parsen, ALLE_SPLITS
 
+    if args.obstacle_cond and not args.start_cond:
+        raise SystemExit("--obstacle_cond needs --start_cond (the sphere-free "
+                         "start point is part of the sampling).")
     if args.start_inpaint and not args.start_cond:
         raise SystemExit("--start_inpaint needs --start_cond: the held control "
                          "point is the start point, and the sampler only knows "
@@ -661,16 +723,19 @@ def run_surfaces(args, device):
             nxi=args.nxi, nd=args.nd, D=args.D, depth=args.dit_depth,
             n_heads=args.dit_heads, mlp_ratio=args.dit_mlp_ratio,
             predict_orientation=True, start_cond=args.start_cond,
-            start_inpaint=args.start_inpaint).to(device)
+            start_inpaint=args.start_inpaint,
+            obstacle_cond=args.obstacle_cond).to(device)
     else:
         model = ParticleCrossAttnFlowNetwork(
             nxi=args.nxi, nd=args.nd, D=args.D, predict_orientation=True,
             start_cond=args.start_cond,
-            start_inpaint=args.start_inpaint).to(device)
+            start_inpaint=args.start_inpaint,
+            obstacle_cond=args.obstacle_cond).to(device)
     print(f"  Modellparameter: {sum(p.numel() for p in model.parameters()):,}"
           f"  (backbone={args.backbone})"
           f"{'  (mit Startpunkt-Konditionierung)' if args.start_cond else ''}"
-          f"{'  (start inpainting)' if args.start_inpaint else ''}\n")
+          f"{'  (start inpainting)' if args.start_inpaint else ''}"
+          f"{'  (obstacle conditioning)' if args.obstacle_cond else ''}\n")
 
     if args.init_model:
         if args.resume:
@@ -699,7 +764,7 @@ def run_surfaces(args, device):
                                        weights_only=True).get('wandb_id')
             except Exception:
                 pass
-        wandb.init(project="flow3d-surfaces", name=args.run_name or args.run_str,
+        wandb.init(project="flow3d-surfaces", name=args.run_name or getattr(args, 'run_full', args.run_str),
                    config={k: v for k, v in vars(args).items()
                            if not k.startswith('_')},
                    id=resume_id, resume="allow" if resume_id else None)
@@ -713,6 +778,21 @@ def run_surfaces(args, device):
                   "Holdout - Oberflaechen", os.path.join(
                       _here, 'viz', f"{args.run_str}_holdout.png"),
                   args, device)
+    if args.obstacle_cond:
+        model.eval()
+        step = max(len(hold_e) // args.obs_eval_items, 1)
+        items = [dict(x1=torch.tensor(e['x1']), parts=torch.tensor(e['parts']),
+                      start=torch.tensor(e['start']))
+                 for e in hold_e[::step][:args.obs_eval_items]]
+        res = evaluate_compliance(model, items, device, nxi=args.nxi, nd=args.nd,
+                                  steps=args.steps, cfg_weight=args.cfg_weight,
+                                  surf_clearance=args.surf_clearance,
+                                  bspline_deg=args.bspline_deg)
+        print("  Obstacle compliance on holdout (sphere on the stored path):")
+        for k, v in res.items():
+            print(f"    {k:<16} {v:.4f}")
+        if args.use_wandb and _WANDB_OK and wandb.run is not None:
+            wandb.log({f'obs_eval/{k}': v for k, v in res.items()})
     print("\nFertig.")
 
 
@@ -739,6 +819,9 @@ def run(args):
         args.run_str += "_CPS"
     if getattr(args, 'start_inpaint', False):
         args.run_str += "_INPAINT"
+    if getattr(args, 'obstacle_cond', False):
+        args.run_str += (f"_OBS-p{args.p_obstacle:g}-wo{args.lambda_obs:g}"
+                         f"-ws{args.lambda_surf:g}")
     if getattr(args, 'backbone', 'unet') == 'dit':
         args.run_str += f"_DIT-d{args.dit_depth}-h{args.dit_heads}"
     if getattr(args, 'mix', None):
@@ -761,6 +844,17 @@ def run(args):
         args.run_str += (f"_ORILOSS-w{args.lambda_ori:g}"
                          f"-pt{args.w_point:g}-so{args.standoff_target:g}"
                          f"-cfmrot{args.w_cfm_rot:g}")
+
+    # File systems cap file names at 255 bytes. Checkpoint / plot names embed
+    # run_str, so shorten overly long ones deterministically (prefix + hash).
+    # The full string stays available for W&B via args.run_full.
+    args.run_full = args.run_str
+    if len(args.run_str) > 200:
+        import hashlib
+        digest = hashlib.md5(args.run_str.encode()).hexdigest()[:8]
+        args.run_str = f"{args.run_str[:180]}_{digest}"
+        print(f"  [i] run_str shortened to {len(args.run_str)} chars for file names "
+              f"(full name kept for W&B)")
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if device.type == 'cuda':
@@ -844,7 +938,7 @@ def run(args):
                 except Exception:
                     pass
             wandb.init(project=args.wandb_project,
-                       name=args.run_name or args.run_str,
+                       name=args.run_name or getattr(args, 'run_full', args.run_str),
                        config=vars(args), id=resume_id,
                        resume="allow" if resume_id else None)
 
@@ -1014,6 +1108,35 @@ def parse_args():
     p.add_argument('--dit_depth', type=int, default=12)
     p.add_argument('--dit_heads', type=int, default=6)
     p.add_argument('--dit_mlp_ratio', type=float, default=4.0)
+
+    # ── Obstacle conditioning (opt-in; without the flag nothing changes) ─────
+    p.add_argument('--obstacle_cond', action='store_true', default=False,
+                   help='Condition on one spherical obstacle (or none) per '
+                        'sample: (centre, radius) is added to the time '
+                        'conditioning (zero-init), "none" is a null token. '
+                        'Adds the obstacle loss on x1_hat (sphere + surface '
+                        'clearance) and repairs colliding teacher paths. '
+                        'Needs --db3d and --start_cond.')
+    p.add_argument('--p_obstacle', type=float, default=0.5,
+                   help='Probability that a training sample has an obstacle.')
+    p.add_argument('--obs_r_min', type=float, default=0.04)
+    p.add_argument('--obs_r_max', type=float, default=0.10)
+    p.add_argument('--obs_hit_frac', type=float, default=0.7,
+                   help='Fraction of the obstacles placed on the stored path '
+                        '(rest: near the path, not touching it).')
+    p.add_argument('--obs_margin', type=float, default=0.02,
+                   help='Clearance added to the sphere radius in the loss and '
+                        'in the teacher repair.')
+    p.add_argument('--lambda_obs', type=float, default=10000.0,
+                   help='Weight of the sphere penetration term (0 = off).')
+    p.add_argument('--lambda_surf', type=float, default=10000.0,
+                   help='Weight of the surface clearance term (0 = off); active '
+                        'for every sample, with or without a sphere.')
+    p.add_argument('--surf_clearance', type=float, default=0.07,
+                   help='Minimum distance of the curve to the target surface '
+                        '(domain widths); below the standoff band (0.12 +- 0.03).')
+    p.add_argument('--obs_eval_items', type=int, default=16,
+                   help='Holdout items for the final obstacle-compliance check.')
 
     # ── Stufe 3: orientation as an objective rather than an imitation target ──
     p.add_argument('--lambda_ori', type=float, default=0.0,

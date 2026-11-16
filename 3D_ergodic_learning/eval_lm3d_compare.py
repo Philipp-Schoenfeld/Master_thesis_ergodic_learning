@@ -65,7 +65,8 @@ def load_model(path, device):
     ck = torch.load(path, map_location='cpu', weights_only=False)
     kw = dict(nxi=ck.get('nxi', 25), nd=3, D=ck.get('D', 384),
               predict_orientation=bool(ck.get('orientation', True)),
-              start_cond=bool(ck.get('start_cond', False)))
+              start_cond=bool(ck.get('start_cond', False)),
+              obstacle_cond=bool(ck.get('obstacle_cond', False)))
     if ck.get('backbone', 'unet') == 'dit':
         model = ParticleDiTFlowNetwork(**kw, **dit_kwargs(ck))
     else:
