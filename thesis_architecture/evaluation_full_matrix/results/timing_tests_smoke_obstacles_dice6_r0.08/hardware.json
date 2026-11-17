@@ -1,0 +1,84 @@
+{
+ "hardware": {
+  "date": "2026-11-16 17:35:33",
+  "host": "philipp-Swift-SF314-43",
+  "platform": "Linux-6.8.1-1058-realtime-x86_64-with-glibc2.39",
+  "processor": "x86_64",
+  "cpu_count": 12,
+  "python": "3.12.3",
+  "torch": "2.12.0+cu130",
+  "numpy": "1.26.4",
+  "device": "cpu",
+  "git_rev": "50c47f11"
+ },
+ "args": {
+  "parts": [
+   "planner",
+   "init",
+   "refiner",
+   "belief",
+   "missions"
+  ],
+  "tag": "smoke_obstacles_dice6_r0.08",
+  "out_dir": null,
+  "shapes": [
+   "A"
+  ],
+  "net_methods": [
+   "selfsup"
+  ],
+  "methods": [
+   "lintsvec",
+   "linray",
+   "lawn",
+   "gpgoal",
+   "rw"
+  ],
+  "kernels": [
+   "rbf"
+  ],
+  "belief_kernels": [
+   "rbf",
+   "ak",
+   "np"
+  ],
+  "refiners": [
+   "tsvec_svgd",
+   "adam_svgd"
+  ],
+  "n_init_sweep": [
+   1,
+   4
+  ],
+  "iters_sweep": [
+   5
+  ],
+  "nobs_sweep": [
+   0,
+   64
+  ],
+  "reps": 2,
+  "warmup": 1,
+  "reps_slow": 1,
+  "warmup_slow": 0,
+  "mission_reps": 1,
+  "n_rounds": 2,
+  "n_init": 2,
+  "n_iters": 10,
+  "kappa0": 1.0,
+  "kappa1": 0.05,
+  "walk_len": 6.1,
+  "ak_fit_iters": 20,
+  "selfsup_ckpt": null,
+  "np_ckpt": null,
+  "gp_goal_source": "mean",
+  "smoke": true,
+  "dry_run": false,
+  "device": "cpu",
+  "obstacles": "dice6",
+  "obstacle_radius": 0.08,
+  "obstacle_margin": 0.01,
+  "w_obstacle": 1000.0,
+  "obstacle_guidance": 20.0
+ }
+}

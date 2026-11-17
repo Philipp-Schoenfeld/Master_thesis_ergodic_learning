@@ -88,6 +88,8 @@ from common.metrics import path_length                                      # no
 from ergodic_energy_torch import coeffs_from_points                         # noqa: E402,F401
 from init_baselines import linear_ray_path                                  # noqa: E402
 import mission_baselines as mb                                              # noqa: E402
+import workspace_obstacles as wo                                            # noqa: E402
+from common.metrics import trim_to_length                                   # noqa: E402
 from metrics_explore_exploit import (ExploreExploitErgodic, smoothness_energy,   # noqa: E402
                                      steps_to_full_coverage)
 from run_ideal_matrix import PLANNER_BUILDERS                               # noqa: E402
@@ -134,6 +136,8 @@ GROUPS = {'baseline': ('rw', 'lawn', 'gpgoal', 'linray', 'linadam'),
           'search_no_prior': ('lintsvec',),
           'search_with_prior': ('unet630', 'dit630', 'selfsup', 'old500')}
 CUTOFF = ov.CUT_MID
+#: weight of the obstacle hinge term in the SVGD energy of the obstacle benchmark (opt-in)
+W_OBSTACLE_SVGD = 1000.0
 
 GT_SUPPORT = 0.05            # path point counts as "outside the GT" below this GT value
 HI_LEVELS = (0.5, 0.75)      # "dense GT region" thresholds
@@ -149,6 +153,13 @@ METRIC_COLS = [
     'revisit_frac',
     'E_init_best', 'E_init_med', 'E_ref_best', 'E_ref_med',
     't_target', 't_init', 't_refine', 't_belief', 't_round',
+    # obstacle benchmark only (`--obstacles`), NULL otherwise: penetration of the driven path into
+    # the PHYSICAL obstacles (whole path / this round's segment), share of points / of the segment
+    # length inside, the selected SVGD candidate's violation (inflated radius) before the final
+    # clearance step, 1 if that step needed the geometric detour fallback, and E / swept mass
+    # against the ground truth outside the obstacles
+    'obs_pen_max', 'obs_in_frac', 'seg_obs_pen_max', 'seg_obs_len_in_frac', 'obs_viol_ref',
+    'obs_fallback', 'E_truth_free', 'swept06_free',
 ]
 # aliases the overview table / plot code expects
 ALIASES = {'swept': 'swept06', 'belief_corr': 'belief_corr'}
@@ -262,11 +273,11 @@ class RefAdamSvgdBatch:
     shared target (one shape per call), the start is hard-pinned, the target is the K=10 Fourier
     coefficient vector (same as TSVEC). `seeds` is unused (no stochastic element)."""
 
-    def __init__(self, B, device):
+    def __init__(self, B, device, obstacles=None, w_obstacle=0.0):
         self.B = np.asarray(B, dtype=np.float32)
         self.T, self.nxi = self.B.shape
         self.solver = AdamSvgd(B=self.B, K=ADAM_K, device=device, w_smooth=W_SMOOTH,
-                               beta=ADAM_BETA, lr=ADAM_LR)
+                               beta=ADAM_BETA, lr=ADAM_LR, obstacles=obstacles, w_obstacle=w_obstacle)
 
     def run(self, init_curves, phi_k, start, seeds, n_iters, record=False):
         curves = np.asarray(init_curves, dtype=np.float64)
@@ -290,8 +301,9 @@ class RefAdamSvgdBatch:
 class Evaluator:
     """Per-shape metric machinery: ground-truth masks and grid distances are built once."""
 
-    def __init__(self, truth, ee, device):
+    def __init__(self, truth, ee, device, obstacles=None):
         self.truth, self.ee, self.device = truth.float().cpu(), ee, device
+        self.obst = obstacles
         self.R = truth.shape[-1]
         ys, xs = torch.meshgrid(torch.linspace(0, 1, self.R), torch.linspace(0, 1, self.R),
                                 indexing='ij')
@@ -300,6 +312,10 @@ class Evaluator:
         self.w_sum = float(self.w.sum().clamp(min=1e-12))
         self.hi = {lv: (self.truth.reshape(-1) >= lv) for lv in HI_LEVELS}
         self.phi_k_truth = ee.target_coeffs(self.truth)
+        if obstacles is not None:
+            free = wo.free_mask(obstacles, self.R, inflated=False).float()
+            self.w_free = self.w * free.reshape(-1)
+            self.phi_k_free = ee.target_coeffs(self.truth * free)
 
     def truth_at(self, pts):
         idx = (pts.cpu().clamp(0, 1) * (self.R - 1)).round().long()
@@ -352,8 +368,37 @@ class Evaluator:
                    revisit_frac=(float((torch.cdist(seg, earlier).min(dim=1).values
                                         <= REVISIT_RADIUS).float().mean())
                                  if earlier is not None else 0.0))
+        if self.obst is not None:
+            whole, part = wo.path_stats(driven, self.obst), wo.path_stats(seg, self.obst)
+            d = torch.cdist(self.cells, driven.cpu().float()).min(dim=1).values
+            row.update(obs_pen_max=whole['pen_max'], obs_in_frac=whole['in_frac'],
+                       seg_obs_pen_max=part['pen_max'], seg_obs_len_in_frac=part['len_in_frac'],
+                       E_truth_free=self.ee.score(driven, self.phi_k_free)['E_ergodic_total'],
+                       swept06_free=float(((d <= 0.06).float() * self.w_free).sum()
+                                          / self.w_free.sum().clamp(min=1e-12)))
         row.update(diag)
         return row, mu, sd
+
+
+def _obstacle_sources(method, a, ee, seed, obst):
+    """path_fn / init_fn of the obstacle benchmark (`workspace_obstacles.py`): the same sources as
+    without obstacles, each with its own obstacle avoidance."""
+    if method == 'rw':
+        def fn(r, start, phi):
+            walk = wo.random_walk_path(obst, n_points=2048, seed=seed * 1000 + r,
+                                       start=start.detach().cpu())
+            return trim_to_length(walk, a.walk_len)
+        return dict(path_fn=fn)
+    if method == 'lawn':
+        return dict(path_fn=wo.lawnmower_round_fn(a.walk_len, a.n_rounds, obst))
+    if method == 'gpgoal':
+        return dict(path_fn=wo.gp_goal_path_fn(a.walk_len, seed, obst,
+                                               source=getattr(a, 'gp_goal_source', 'mean')))
+    if method == 'linray':
+        return dict(path_fn=wo.best_ray_path_fn(ee, a.n_init, a.walk_len, rsc.N_POINTS, obst))
+    if method in RAY_METHODS:
+        return dict(init_fn=wo.ray_init_fn(a.n_init, a.walk_len, rsc.N_POINTS, obst))
+    return {}
 
 
 def turning_per_length(seg):
@@ -371,7 +416,8 @@ def run_one(method, kernel, shape, truth, planner, bs, B32, ee, base_args, a, ka
     setup = ov.SETUPS[setup_key(kernel, method)]
     args = types.SimpleNamespace(**vars(base_args))
     args.belief_kernel, args.ak_fit_iters, args.np_ckpt = kernel, a.ak_fit_iters, None
-    evl = Evaluator(truth, ee, device)
+    obst = getattr(a, 'obst', None)
+    evl = Evaluator(truth, ee, device, obst)
     rows, mus, sds, convs = [], [], [], []
 
     def on_round(r, belief, segments, diag):
@@ -384,13 +430,16 @@ def run_one(method, kernel, shape, truth, planner, bs, B32, ee, base_args, a, ka
         sds.append(sd.cpu().numpy())
 
     kw = {}
-    if method in ('rw', 'lawn'):
+    if obst is not None:
+        kw.update(obstacles=obst, obstacle_guidance=a.obstacle_guidance)
+        kw.update(_obstacle_sources(method, a, ee, seed, obst))
+    elif method in ('rw', 'lawn'):
         kw['path_fn'] = ov.baseline_path_fn(setup, a, seed)
     elif method == 'gpgoal':
         kw['path_fn'] = mb.gp_goal_path_fn(a.walk_len, seed, source=getattr(a, 'gp_goal_source', 'mean'))
     elif method == 'linray':
         kw['path_fn'] = mb.best_ray_path_fn(ee, a.n_init, a.walk_len, rsc.N_POINTS)
-    elif method in RAY_METHODS:
+    elif method in RAY_METHODS and obst is None:
         kw['init_fn'] = lambda r, start, phi: torch.stack(
             [linear_ray_path(start.detach().cpu().numpy(), 360.0 * i / a.n_init, a.walk_len, rsc.N_POINTS)
              for i in range(a.n_init)])
@@ -422,15 +471,17 @@ def run_one(method, kernel, shape, truth, planner, bs, B32, ee, base_args, a, ka
 # Plots / tables from the DB
 # ===========================================================================
 
-def make_context(device):
+def make_context(device, obstacles=None, w_obstacle=0.0):
     """Everything a mission needs besides the shape: strategy arguments, ergodic metric, B-spline
-    basis and the two SVGD backends. Shared by the comparison, convergence and timing runners."""
+    basis and the two SVGD backends. Shared by the comparison, convergence and timing runners.
+    `obstacles` / `w_obstacle` (opt-in): both SVGD backends get the obstacle hinge term."""
     base_args, _, _ = vr.build_strategy_args(sam.STRATEGY_NAME, device)
     B_np = rsc.basis_matrix(rsc.NXI, rsc.N_POINTS, rsc.DEGREE)
     ctx = types.SimpleNamespace(
         base_args=base_args, ee=ExploreExploitErgodic(device=device), B_np=B_np,
         B32=torch.as_tensor(B_np, dtype=torch.float32, device=device),
-        bs_tsvec=BatchedTsvecSvgdTorch(B_np, device), bs_adam=RefAdamSvgdBatch(B_np, device))
+        bs_tsvec=BatchedTsvecSvgdTorch(B_np, device, obstacles=obstacles, w_obstacle=w_obstacle),
+        bs_adam=RefAdamSvgdBatch(B_np, device, obstacles=obstacles, w_obstacle=w_obstacle))
     ctx.refiner_for = lambda method: ctx.bs_adam if method == 'linadam' else ctx.bs_tsvec
     return ctx
 
@@ -456,7 +507,7 @@ def setup_key(kernel, method):
     return f'{kernel}_{method}_mid'
 
 
-def plot_shape(db, shape, kernel, methods, out_dir):
+def plot_shape(db, shape, kernel, methods, out_dir, obstacles=None):
     """Round-by-round overview of variant 0 (one row per method)."""
     results = []
     truth = db.load_truth(shape)
@@ -467,11 +518,12 @@ def plot_shape(db, shape, kernel, methods, out_dir):
         res.update(setup=setup_key(kernel, m), truth=truth)
         results.append(res)
     kern = {'rbf': 'RBF', 'ak': 'Attentive-Kernel'}[kernel]
-    ov.plot_rows(results, f'Exploration comparison: {kern} belief (cloud cutoff {CUTOFF:g})',
-                 os.path.join(out_dir, kernel, f'{shape}.png'), shape)
+    obs_txt = '' if obstacles is None else f', {len(obstacles.obstacles)} obstacles'
+    ov.plot_rows(results, f'Exploration comparison: {kern} belief (cloud cutoff {CUTOFF:g}){obs_txt}',
+                 os.path.join(out_dir, kernel, f'{shape}.png'), shape, obstacles=obstacles)
 
 
-def plot_variants(db, shape, kernel, methods, out_dir):
+def plot_variants(db, shape, kernel, methods, out_dir, obstacles=None):
     """All variants of every method on the ground truth: one row per method, one panel per
     variant (all rounds overlaid), so the spread between the random restarts is visible."""
     n_var = db.conn.execute('SELECT MAX(variant)+1 FROM runs WHERE shape=? AND kernel=?',
@@ -490,7 +542,8 @@ def plot_variants(db, shape, kernel, methods, out_dir):
                 ax.axis('off')
                 continue
             sam.plot_summary(ax, truth, [torch.as_tensor(s) for s in res['segments']],
-                             sam.round_colors(len(res['segments'])), res['kappas'], cmap=cmap)
+                             sam.round_colors(len(res['segments'])), res['kappas'], cmap=cmap,
+                             obstacles=obstacles)
             ax.get_legend().remove()
             fin = res['rows'][-1]
             ax.set_title(f'E={fin["E_truth"]:.1f}  swept {fin["swept06"]:.0%}', fontsize=8,
@@ -698,12 +751,28 @@ def main():
     p.add_argument('--out_dir', type=str, default=None)
     p.add_argument('--plot_only', action='store_true')
     p.add_argument('--smoke', action='store_true', help='2 shapes, 2 rounds, tiny budget, separate DB/folder.')
+    p.add_argument('--obstacles', type=str, default='none', choices=['none'] + sorted(wo.LAYOUTS),
+                   help="Opt-in obstacle benchmark: 'dice6' = six circles like the pips of a die "
+                        "(workspace_obstacles.py). Own DB / folder (suffix obstacles_<layout>_r<radius>), "
+                        "obstacle avoidance in every method, extra collision metrics. Default 'none' = "
+                        'the previous benchmark, unchanged.')
+    p.add_argument('--obstacle_radius', type=float, default=wo.DEFAULT_RADIUS)
+    p.add_argument('--obstacle_margin', type=float, default=wo.DEFAULT_MARGIN,
+                   help='Clearance the planners keep around every obstacle (not counted as a violation).')
+    p.add_argument('--w_obstacle', type=float, default=W_OBSTACLE_SVGD,
+                   help='Weight of the obstacle hinge term in the TSVEC / Adam SVGD energy.')
+    p.add_argument('--obstacle_guidance', type=float, default=20.0,
+                   help='Repulsion weight of the obstacle guidance during the CFM flow integration.')
     p.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu')
     a = p.parse_args()
     if a.smoke:
         a.n_rounds, a.n_init, a.n_iters, a.n_variants = 2, 2, 20, 2
         a.n_shapes = a.n_shapes or 2
-    tag = 'exploration_comparison' + ('_smoke' if a.smoke else '')
+    a.obst = (wo.make_obstacles(a.obstacles, a.obstacle_radius, a.obstacle_margin)
+              if a.obstacles != 'none' else None)
+    tag = ('exploration_comparison'
+           + (f'_{wo.tag(a.obstacles, a.obstacle_radius)}' if a.obst is not None else '')
+           + ('_smoke' if a.smoke else ''))
     base_dir = a.out_dir or os.path.join(_here, 'plots', tag)
     db_path = a.db or os.path.join(base_dir, f'{tag}.db')
     methods, kernels = a.methods.split(','), a.kernels.split(',')
@@ -724,12 +793,16 @@ def main():
 
     if not a.plot_only:
         kappas = [kappa_schedule(r, a.n_rounds, a.kappa0, a.kappa1) for r in range(a.n_rounds)]
-        ctx = make_context(device)
+        ctx = make_context(device, a.obst, a.w_obstacle if a.obst is not None else 0.0)
         base_args, ee, B32 = ctx.base_args, ctx.ee, ctx.B32
         meta = dict(n_variants=a.n_variants, n_rounds=a.n_rounds, n_init=a.n_init, n_iters=a.n_iters, kappa0=a.kappa0,
                     kappa1=a.kappa1, walk_len=a.walk_len, cutoff=CUTOFF, gt_support=GT_SUPPORT,
                     hi_levels=list(HI_LEVELS), adam_k=ADAM_K, adam_beta=ADAM_BETA,
-                    adam_lr=ADAM_LR)
+                    adam_lr=ADAM_LR, obstacles=a.obstacles)
+        if a.obst is not None:
+            meta.update(obstacle_radius=a.obstacle_radius, obstacle_margin=a.obstacle_margin,
+                        obstacle_centers=[list(o.center) for o in a.obst.obstacles],
+                        w_obstacle=a.w_obstacle, obstacle_guidance=a.obstacle_guidance)
         if not a.dry_run:
             for k, v in meta.items():
                 db.conn.execute('INSERT OR REPLACE INTO meta VALUES (?,?)', (k, str(v)))
@@ -773,8 +846,8 @@ def main():
     for n in names:
         if n in done:
             for k in kernels:
-                plot_shape(db, n, k, methods, out_dir)
-                plot_variants(db, n, k, methods, out_dir)
+                plot_shape(db, n, k, methods, out_dir, a.obst)
+                plot_variants(db, n, k, methods, out_dir, a.obst)
     aggregate(db, out_dir, methods)
 
 

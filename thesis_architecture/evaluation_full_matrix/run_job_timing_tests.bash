@@ -25,5 +25,7 @@ conda activate thesis
 cd ~/Master_thesis/thesis_architecture/evaluation_full_matrix
 
 echo "[job] $(date) node=$(hostname) gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader)"
-srun --unbuffered python -u run_timing_tests.py --tag cluster_rtx3090 --refiners tsvec_svgd,adam_svgd || exit 1
+# OBST=dice6: the pipeline of the obstacle benchmark (results/timing_tests_cluster_rtx3090_obstacles_dice6_r0.08/).
+srun --unbuffered python -u run_timing_tests.py --tag cluster_rtx3090 --refiners tsvec_svgd,adam_svgd \
+    ${OBST:+--obstacles ${OBST}} || exit 1
 echo "[job] $(date) finished"

@@ -1,0 +1,9 @@
+/bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+WARNING:2026-11-16 19:31:14,053:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+WARNING:2026-11-16 19:32:53,796:jax._src.xla_bridge:864: An NVIDIA GPU may be present on this machine, but a CUDA-enabled jaxlib is not installed. Falling back to cpu.
+/home/stud_schonfeld/Master_thesis/thesis_architecture/exploration/common/tsvec_svgd.py:424: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at /pytorch/torch/csrc/utils/tensor_numpy.cpp:203.)
+  return torch.as_tensor(np.asarray(a), dtype=self.dtype, device=self.device)
+/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/check_obstacle_runs.py:80: RuntimeWarning: Mean of empty slice
+  f'{np.mean(s["len"]):10.2f}{np.nanmean(vref):9.4f}/{np.nanmax(vref):.3f}'
+/home/stud_schonfeld/Master_thesis/thesis_architecture/evaluation_full_matrix/check_obstacle_runs.py:80: RuntimeWarning: All-NaN slice encountered
+  f'{np.mean(s["len"]):10.2f}{np.nanmean(vref):9.4f}/{np.nanmax(vref):.3f}'

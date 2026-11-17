@@ -1,0 +1,548 @@
+[job] Mon Nov 16 19:30:59 CET 2026 node=gn09 gpu=NVIDIA RTX A5000
+  ok  test_adam_run_reduces_violation
+  ok  test_clear_obstacles_keeps_start
+  ok  test_clearance_smooth_candidates
+  ok  test_detour_through_centre_and_tangent
+  ok  test_gp_goal
+  ok  test_guarantee_clear_pathological
+  ok  test_lawnmower
+  ok  test_layout
+  ok  test_random_walk
+  ok  test_reflect_rays
+  ok  test_svgd_obstacle_term
+  ok  test_tsvec_run_reduces_violation
+12 tests passed
+3 heldout shapes, methods=['unet630', 'dit630', 'rw', 'lawn', 'linadam', 'selfsup', 'old500', 'unet0', 'unet1890', 'lm1300', 'lintsvec', 'gpgoal', 'linray'], kernels=['rbf', 'ak'], db=plots/exploration_comparison_obstacles_dice6_r0.08_preflight_3/exploration_comparison.db
+
+=== unet630: 6 missions ===
+    [rbf/unet630/A] round 0: kappa=1.000  path_len=5.31  n_obs=64
+    [rbf/unet630/A] round 1: kappa=0.762  path_len=5.88  n_obs=128
+    [rbf/unet630/A] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/unet630/A] round 3: kappa=0.288  path_len=6.56  n_obs=256
+    [rbf/unet630/A] round 4: kappa=0.050  path_len=4.54  n_obs=320
+  [rbf/unet630] A v0: 23s  E_truth=7.03  swept=97%  path=28.0
+    [ak/unet630/A] round 0: kappa=1.000  path_len=5.31  n_obs=64
+    [ak/unet630/A] round 1: kappa=0.762  path_len=5.56  n_obs=128
+    [ak/unet630/A] round 2: kappa=0.525  path_len=6.33  n_obs=192
+    [ak/unet630/A] round 3: kappa=0.288  path_len=5.63  n_obs=256
+    [ak/unet630/A] round 4: kappa=0.050  path_len=3.98  n_obs=320
+  [ak/unet630] A v0: 32s  E_truth=4.60  swept=97%  path=26.8
+    [rbf/unet630/greek_upper_0] round 0: kappa=1.000  path_len=5.94  n_obs=64
+    [rbf/unet630/greek_upper_0] round 1: kappa=0.762  path_len=5.85  n_obs=128
+    [rbf/unet630/greek_upper_0] round 2: kappa=0.525  path_len=7.22  n_obs=192
+    [rbf/unet630/greek_upper_0] round 3: kappa=0.288  path_len=5.92  n_obs=256
+    [rbf/unet630/greek_upper_0] round 4: kappa=0.050  path_len=4.75  n_obs=320
+  [rbf/unet630] greek_upper_0 v0: 20s  E_truth=10.12  swept=96%  path=29.7
+    [ak/unet630/greek_upper_0] round 0: kappa=1.000  path_len=5.94  n_obs=64
+    [ak/unet630/greek_upper_0] round 1: kappa=0.762  path_len=4.98  n_obs=128
+    [ak/unet630/greek_upper_0] round 2: kappa=0.525  path_len=6.37  n_obs=192
+    [ak/unet630/greek_upper_0] round 3: kappa=0.288  path_len=5.50  n_obs=256
+    [ak/unet630/greek_upper_0] round 4: kappa=0.050  path_len=5.09  n_obs=320
+  [ak/unet630] greek_upper_0 v0: 24s  E_truth=5.52  swept=96%  path=27.9
+    [rbf/unet630/korean_5] round 0: kappa=1.000  path_len=6.33  n_obs=64
+    [rbf/unet630/korean_5] round 1: kappa=0.762  path_len=7.00  n_obs=128
+    [rbf/unet630/korean_5] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [rbf/unet630/korean_5] round 3: kappa=0.288  path_len=5.29  n_obs=256
+    [rbf/unet630/korean_5] round 4: kappa=0.050  path_len=5.45  n_obs=320
+  [rbf/unet630] korean_5 v0: 20s  E_truth=6.44  swept=97%  path=29.9
+    [ak/unet630/korean_5] round 0: kappa=1.000  path_len=6.33  n_obs=64
+    [ak/unet630/korean_5] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/unet630/korean_5] round 2: kappa=0.525  path_len=5.89  n_obs=192
+    [ak/unet630/korean_5] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [ak/unet630/korean_5] round 4: kappa=0.050  path_len=5.40  n_obs=320
+  [ak/unet630] korean_5 v0: 24s  E_truth=3.54  swept=96%  path=29.7
+
+=== dit630: 6 missions ===
+    [rbf/dit630/A] round 0: kappa=1.000  path_len=5.28  n_obs=64
+    [rbf/dit630/A] round 1: kappa=0.762  path_len=5.85  n_obs=128
+    [rbf/dit630/A] round 2: kappa=0.525  path_len=5.67  n_obs=192
+    [rbf/dit630/A] round 3: kappa=0.288  path_len=5.88  n_obs=256
+    [rbf/dit630/A] round 4: kappa=0.050  path_len=5.61  n_obs=320
+  [rbf/dit630] A v0: 16s  E_truth=10.21  swept=95%  path=28.3
+    [ak/dit630/A] round 0: kappa=1.000  path_len=5.28  n_obs=64
+    [ak/dit630/A] round 1: kappa=0.762  path_len=6.36  n_obs=128
+    [ak/dit630/A] round 2: kappa=0.525  path_len=5.47  n_obs=192
+    [ak/dit630/A] round 3: kappa=0.288  path_len=4.47  n_obs=256
+    [ak/dit630/A] round 4: kappa=0.050  path_len=4.67  n_obs=320
+  [ak/dit630] A v0: 20s  E_truth=6.73  swept=94%  path=26.2
+    [rbf/dit630/greek_upper_0] round 0: kappa=1.000  path_len=6.28  n_obs=64
+    [rbf/dit630/greek_upper_0] round 1: kappa=0.762  path_len=6.04  n_obs=128
+    [rbf/dit630/greek_upper_0] round 2: kappa=0.525  path_len=6.23  n_obs=192
+    [rbf/dit630/greek_upper_0] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [rbf/dit630/greek_upper_0] round 4: kappa=0.050  path_len=4.90  n_obs=320
+  [rbf/dit630] greek_upper_0 v0: 16s  E_truth=9.76  swept=97%  path=29.3
+    [ak/dit630/greek_upper_0] round 0: kappa=1.000  path_len=6.28  n_obs=64
+    [ak/dit630/greek_upper_0] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/dit630/greek_upper_0] round 2: kappa=0.525  path_len=5.53  n_obs=192
+    [ak/dit630/greek_upper_0] round 3: kappa=0.288  path_len=5.97  n_obs=256
+    [ak/dit630/greek_upper_0] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/dit630] greek_upper_0 v0: 21s  E_truth=4.81  swept=97%  path=29.4
+    [rbf/dit630/korean_5] round 0: kappa=1.000  path_len=7.13  n_obs=64
+    [rbf/dit630/korean_5] round 1: kappa=0.762  path_len=5.98  n_obs=128
+    [rbf/dit630/korean_5] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/dit630/korean_5] round 3: kappa=0.288  path_len=6.14  n_obs=256
+    [rbf/dit630/korean_5] round 4: kappa=0.050  path_len=4.83  n_obs=320
+  [rbf/dit630] korean_5 v0: 16s  E_truth=11.41  swept=94%  path=29.8
+    [ak/dit630/korean_5] round 0: kappa=1.000  path_len=7.13  n_obs=64
+    [ak/dit630/korean_5] round 1: kappa=0.762  path_len=6.19  n_obs=128
+    [ak/dit630/korean_5] round 2: kappa=0.525  path_len=6.39  n_obs=192
+    [ak/dit630/korean_5] round 3: kappa=0.288  path_len=5.25  n_obs=256
+    [ak/dit630/korean_5] round 4: kappa=0.050  path_len=5.63  n_obs=320
+  [ak/dit630] korean_5 v0: 20s  E_truth=6.03  swept=94%  path=30.6
+
+=== rw: 6 missions ===
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] A v0: 3s  E_truth=27.18  swept=90%  path=28.8
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] A v0: 7s  E_truth=27.18  swept=90%  path=28.8
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] greek_upper_0 v0: 3s  E_truth=38.73  swept=62%  path=28.8
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] greek_upper_0 v0: 7s  E_truth=38.73  swept=62%  path=28.8
+    [rbf/rw/korean_5] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/korean_5] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/korean_5] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [rbf/rw/korean_5] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [rbf/rw/korean_5] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] korean_5 v0: 3s  E_truth=66.84  swept=63%  path=28.9
+    [ak/rw/korean_5] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/korean_5] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/korean_5] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [ak/rw/korean_5] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [ak/rw/korean_5] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] korean_5 v0: 7s  E_truth=66.84  swept=63%  path=28.9
+
+=== lawn: 6 missions ===
+    [rbf/lawn/A] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [rbf/lawn/A] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [rbf/lawn/A] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [rbf/lawn/A] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [rbf/lawn/A] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [rbf/lawn] A v0: 0s  E_truth=17.97  swept=97%  path=31.6
+    [ak/lawn/A] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [ak/lawn/A] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [ak/lawn/A] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [ak/lawn/A] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [ak/lawn/A] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [ak/lawn] A v0: 5s  E_truth=17.97  swept=97%  path=31.6
+    [rbf/lawn/greek_upper_0] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [rbf/lawn/greek_upper_0] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [rbf/lawn/greek_upper_0] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [rbf/lawn/greek_upper_0] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [rbf/lawn/greek_upper_0] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [rbf/lawn] greek_upper_0 v0: 0s  E_truth=17.97  swept=97%  path=31.6
+    [ak/lawn/greek_upper_0] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [ak/lawn/greek_upper_0] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [ak/lawn/greek_upper_0] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [ak/lawn/greek_upper_0] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [ak/lawn/greek_upper_0] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [ak/lawn] greek_upper_0 v0: 5s  E_truth=17.97  swept=97%  path=31.6
+    [rbf/lawn/korean_5] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [rbf/lawn/korean_5] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [rbf/lawn/korean_5] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [rbf/lawn/korean_5] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [rbf/lawn/korean_5] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [rbf/lawn] korean_5 v0: 0s  E_truth=18.05  swept=96%  path=31.6
+    [ak/lawn/korean_5] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [ak/lawn/korean_5] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [ak/lawn/korean_5] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [ak/lawn/korean_5] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [ak/lawn/korean_5] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [ak/lawn] korean_5 v0: 4s  E_truth=18.05  swept=96%  path=31.6
+
+=== linadam: 6 missions ===
+    [rbf/linadam/A] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/A] round 1: kappa=0.762  path_len=5.90  n_obs=128
+    [rbf/linadam/A] round 2: kappa=0.525  path_len=6.56  n_obs=192
+    [rbf/linadam/A] round 3: kappa=0.288  path_len=6.48  n_obs=256
+    [rbf/linadam/A] round 4: kappa=0.050  path_len=6.05  n_obs=320
+  [rbf/linadam] A v0: 5s  E_truth=7.98  swept=95%  path=30.6
+    [ak/linadam/A] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/A] round 1: kappa=0.762  path_len=5.63  n_obs=128
+    [ak/linadam/A] round 2: kappa=0.525  path_len=6.97  n_obs=192
+    [ak/linadam/A] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [ak/linadam/A] round 4: kappa=0.050  path_len=5.42  n_obs=320
+  [ak/linadam] A v0: 10s  E_truth=5.96  swept=96%  path=29.5
+    [rbf/linadam/greek_upper_0] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/greek_upper_0] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/linadam/greek_upper_0] round 2: kappa=0.525  path_len=6.49  n_obs=192
+    [rbf/linadam/greek_upper_0] round 3: kappa=0.288  path_len=6.00  n_obs=256
+    [rbf/linadam/greek_upper_0] round 4: kappa=0.050  path_len=5.65  n_obs=320
+  [rbf/linadam] greek_upper_0 v0: 5s  E_truth=7.42  swept=96%  path=29.6
+    [ak/linadam/greek_upper_0] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/greek_upper_0] round 1: kappa=0.762  path_len=5.10  n_obs=128
+    [ak/linadam/greek_upper_0] round 2: kappa=0.525  path_len=5.91  n_obs=192
+    [ak/linadam/greek_upper_0] round 3: kappa=0.288  path_len=4.86  n_obs=256
+    [ak/linadam/greek_upper_0] round 4: kappa=0.050  path_len=6.32  n_obs=320
+  [ak/linadam] greek_upper_0 v0: 10s  E_truth=7.04  swept=96%  path=27.8
+    [rbf/linadam/korean_5] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [rbf/linadam/korean_5] round 1: kappa=0.762  path_len=5.55  n_obs=128
+    [rbf/linadam/korean_5] round 2: kappa=0.525  path_len=5.61  n_obs=192
+    [rbf/linadam/korean_5] round 3: kappa=0.288  path_len=7.02  n_obs=256
+    [rbf/linadam/korean_5] round 4: kappa=0.050  path_len=5.15  n_obs=320
+  [rbf/linadam] korean_5 v0: 5s  E_truth=8.50  swept=97%  path=28.9
+    [ak/linadam/korean_5] round 0: kappa=1.000  path_len=5.62  n_obs=64
+    [ak/linadam/korean_5] round 1: kappa=0.762  path_len=5.91  n_obs=128
+    [ak/linadam/korean_5] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/linadam/korean_5] round 3: kappa=0.288  path_len=5.41  n_obs=256
+    [ak/linadam/korean_5] round 4: kappa=0.050  path_len=5.08  n_obs=320
+  [ak/linadam] korean_5 v0: 10s  E_truth=5.24  swept=94%  path=27.8
+
+=== selfsup: 6 missions ===
+    [rbf/selfsup/A] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [rbf/selfsup/A] round 1: kappa=0.762  path_len=4.92  n_obs=128
+    [rbf/selfsup/A] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [rbf/selfsup/A] round 3: kappa=0.288  path_len=5.42  n_obs=256
+    [rbf/selfsup/A] round 4: kappa=0.050  path_len=5.29  n_obs=320
+  [rbf/selfsup] A v0: 9s  E_truth=8.73  swept=95%  path=27.4
+    [ak/selfsup/A] round 0: kappa=1.000  path_len=6.06  n_obs=64
+    [ak/selfsup/A] round 1: kappa=0.762  path_len=5.06  n_obs=128
+    [ak/selfsup/A] round 2: kappa=0.525  path_len=5.23  n_obs=192
+    [ak/selfsup/A] round 3: kappa=0.288  path_len=5.03  n_obs=256
+    [ak/selfsup/A] round 4: kappa=0.050  path_len=3.91  n_obs=320
+  [ak/selfsup] A v0: 13s  E_truth=7.77  swept=93%  path=25.3
+    [rbf/selfsup/greek_upper_0] round 0: kappa=1.000  path_len=6.02  n_obs=64
+    [rbf/selfsup/greek_upper_0] round 1: kappa=0.762  path_len=4.78  n_obs=128
+    [rbf/selfsup/greek_upper_0] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [rbf/selfsup/greek_upper_0] round 3: kappa=0.288  path_len=5.11  n_obs=256
+    [rbf/selfsup/greek_upper_0] round 4: kappa=0.050  path_len=4.85  n_obs=320
+  [rbf/selfsup] greek_upper_0 v0: 9s  E_truth=10.17  swept=90%  path=26.6
+    [ak/selfsup/greek_upper_0] round 0: kappa=1.000  path_len=6.02  n_obs=64
+    [ak/selfsup/greek_upper_0] round 1: kappa=0.762  path_len=4.84  n_obs=128
+    [ak/selfsup/greek_upper_0] round 2: kappa=0.525  path_len=5.51  n_obs=192
+    [ak/selfsup/greek_upper_0] round 3: kappa=0.288  path_len=4.74  n_obs=256
+    [ak/selfsup/greek_upper_0] round 4: kappa=0.050  path_len=4.91  n_obs=320
+  [ak/selfsup] greek_upper_0 v0: 13s  E_truth=9.19  swept=94%  path=26.0
+    [rbf/selfsup/korean_5] round 0: kappa=1.000  path_len=6.02  n_obs=64
+    [rbf/selfsup/korean_5] round 1: kappa=0.762  path_len=5.70  n_obs=128
+    [rbf/selfsup/korean_5] round 2: kappa=0.525  path_len=5.95  n_obs=192
+    [rbf/selfsup/korean_5] round 3: kappa=0.288  path_len=5.87  n_obs=256
+    [rbf/selfsup/korean_5] round 4: kappa=0.050  path_len=4.87  n_obs=320
+  [rbf/selfsup] korean_5 v0: 9s  E_truth=9.21  swept=93%  path=28.4
+    [ak/selfsup/korean_5] round 0: kappa=1.000  path_len=6.02  n_obs=64
+    [ak/selfsup/korean_5] round 1: kappa=0.762  path_len=5.61  n_obs=128
+    [ak/selfsup/korean_5] round 2: kappa=0.525  path_len=5.01  n_obs=192
+    [ak/selfsup/korean_5] round 3: kappa=0.288  path_len=5.07  n_obs=256
+    [ak/selfsup/korean_5] round 4: kappa=0.050  path_len=4.78  n_obs=320
+  [ak/selfsup] korean_5 v0: 14s  E_truth=5.06  swept=94%  path=26.5
+
+=== old500: 6 missions ===
+    [rbf/old500/A] round 0: kappa=1.000  path_len=6.45  n_obs=64
+    [rbf/old500/A] round 1: kappa=0.762  path_len=5.05  n_obs=128
+    [rbf/old500/A] round 2: kappa=0.525  path_len=6.33  n_obs=192
+    [rbf/old500/A] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [rbf/old500/A] round 4: kappa=0.050  path_len=5.23  n_obs=320
+  [rbf/old500] A v0: 19s  E_truth=9.23  swept=94%  path=28.8
+    [ak/old500/A] round 0: kappa=1.000  path_len=6.45  n_obs=64
+    [ak/old500/A] round 1: kappa=0.762  path_len=6.13  n_obs=128
+    [ak/old500/A] round 2: kappa=0.525  path_len=4.55  n_obs=192
+    [ak/old500/A] round 3: kappa=0.288  path_len=5.32  n_obs=256
+    [ak/old500/A] round 4: kappa=0.050  path_len=5.19  n_obs=320
+  [ak/old500] A v0: 23s  E_truth=5.49  swept=95%  path=27.6
+    [rbf/old500/greek_upper_0] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [rbf/old500/greek_upper_0] round 1: kappa=0.762  path_len=6.10  n_obs=128
+    [rbf/old500/greek_upper_0] round 2: kappa=0.525  path_len=5.09  n_obs=192
+    [rbf/old500/greek_upper_0] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/old500/greek_upper_0] round 4: kappa=0.050  path_len=5.25  n_obs=320
+  [rbf/old500] greek_upper_0 v0: 19s  E_truth=12.46  swept=97%  path=28.0
+    [ak/old500/greek_upper_0] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [ak/old500/greek_upper_0] round 1: kappa=0.762  path_len=4.87  n_obs=128
+    [ak/old500/greek_upper_0] round 2: kappa=0.525  path_len=6.03  n_obs=192
+    [ak/old500/greek_upper_0] round 3: kappa=0.288  path_len=6.20  n_obs=256
+    [ak/old500/greek_upper_0] round 4: kappa=0.050  path_len=4.73  n_obs=320
+  [ak/old500] greek_upper_0 v0: 23s  E_truth=7.46  swept=96%  path=27.7
+    [rbf/old500/korean_5] round 0: kappa=1.000  path_len=6.18  n_obs=64
+    [rbf/old500/korean_5] round 1: kappa=0.762  path_len=5.64  n_obs=128
+    [rbf/old500/korean_5] round 2: kappa=0.525  path_len=6.15  n_obs=192
+    [rbf/old500/korean_5] round 3: kappa=0.288  path_len=6.01  n_obs=256
+    [rbf/old500/korean_5] round 4: kappa=0.050  path_len=5.34  n_obs=320
+  [rbf/old500] korean_5 v0: 19s  E_truth=11.93  swept=94%  path=29.3
+    [ak/old500/korean_5] round 0: kappa=1.000  path_len=6.18  n_obs=64
+    [ak/old500/korean_5] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [ak/old500/korean_5] round 2: kappa=0.525  path_len=6.34  n_obs=192
+    [ak/old500/korean_5] round 3: kappa=0.288  path_len=5.07  n_obs=256
+    [ak/old500/korean_5] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/old500] korean_5 v0: 24s  E_truth=3.04  swept=90%  path=29.5
+
+=== unet0: 6 missions ===
+    [rbf/unet0/A] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/unet0/A] round 1: kappa=0.762  path_len=5.51  n_obs=128
+    [rbf/unet0/A] round 2: kappa=0.525  path_len=6.64  n_obs=192
+    [rbf/unet0/A] round 3: kappa=0.288  path_len=6.20  n_obs=256
+    [rbf/unet0/A] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [rbf/unet0] A v0: 20s  E_truth=10.80  swept=97%  path=30.1
+    [ak/unet0/A] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/unet0/A] round 1: kappa=0.762  path_len=5.41  n_obs=128
+    [ak/unet0/A] round 2: kappa=0.525  path_len=5.64  n_obs=192
+    [ak/unet0/A] round 3: kappa=0.288  path_len=5.51  n_obs=256
+    [ak/unet0/A] round 4: kappa=0.050  path_len=5.49  n_obs=320
+  [ak/unet0] A v0: 25s  E_truth=9.40  swept=95%  path=27.9
+    [rbf/unet0/greek_upper_0] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/unet0/greek_upper_0] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/unet0/greek_upper_0] round 2: kappa=0.525  path_len=5.97  n_obs=192
+    [rbf/unet0/greek_upper_0] round 3: kappa=0.288  path_len=6.16  n_obs=256
+    [rbf/unet0/greek_upper_0] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/unet0] greek_upper_0 v0: 20s  E_truth=10.14  swept=96%  path=29.7
+    [ak/unet0/greek_upper_0] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/unet0/greek_upper_0] round 1: kappa=0.762  path_len=5.22  n_obs=128
+    [ak/unet0/greek_upper_0] round 2: kappa=0.525  path_len=5.49  n_obs=192
+    [ak/unet0/greek_upper_0] round 3: kappa=0.288  path_len=5.31  n_obs=256
+    [ak/unet0/greek_upper_0] round 4: kappa=0.050  path_len=5.13  n_obs=320
+  [ak/unet0] greek_upper_0 v0: 25s  E_truth=6.32  swept=95%  path=27.1
+    [rbf/unet0/korean_5] round 0: kappa=1.000  path_len=6.87  n_obs=64
+    [rbf/unet0/korean_5] round 1: kappa=0.762  path_len=5.21  n_obs=128
+    [rbf/unet0/korean_5] round 2: kappa=0.525  path_len=6.67  n_obs=192
+    [rbf/unet0/korean_5] round 3: kappa=0.288  path_len=6.04  n_obs=256
+    [rbf/unet0/korean_5] round 4: kappa=0.050  path_len=5.43  n_obs=320
+  [rbf/unet0] korean_5 v0: 20s  E_truth=7.91  swept=94%  path=30.2
+    [ak/unet0/korean_5] round 0: kappa=1.000  path_len=6.87  n_obs=64
+    [ak/unet0/korean_5] round 1: kappa=0.762  path_len=5.49  n_obs=128
+    [ak/unet0/korean_5] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/unet0/korean_5] round 3: kappa=0.288  path_len=5.33  n_obs=256
+    [ak/unet0/korean_5] round 4: kappa=0.050  path_len=4.90  n_obs=320
+  [ak/unet0] korean_5 v0: 24s  E_truth=5.71  swept=94%  path=28.4
+
+=== unet1890: 6 missions ===
+    [rbf/unet1890/A] round 0: kappa=1.000  path_len=7.70  n_obs=64
+    [rbf/unet1890/A] round 1: kappa=0.762  path_len=6.68  n_obs=128
+    [rbf/unet1890/A] round 2: kappa=0.525  path_len=6.89  n_obs=192
+    [rbf/unet1890/A] round 3: kappa=0.288  path_len=6.23  n_obs=256
+    [rbf/unet1890/A] round 4: kappa=0.050  path_len=5.28  n_obs=320
+  [rbf/unet1890] A v0: 20s  E_truth=7.89  swept=96%  path=32.8
+    [ak/unet1890/A] round 0: kappa=1.000  path_len=7.70  n_obs=64
+    [ak/unet1890/A] round 1: kappa=0.762  path_len=6.81  n_obs=128
+    [ak/unet1890/A] round 2: kappa=0.525  path_len=7.16  n_obs=192
+    [ak/unet1890/A] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/unet1890/A] round 4: kappa=0.050  path_len=5.56  n_obs=320
+  [ak/unet1890] A v0: 24s  E_truth=5.67  swept=97%  path=33.0
+    [rbf/unet1890/greek_upper_0] round 0: kappa=1.000  path_len=6.03  n_obs=64
+    [rbf/unet1890/greek_upper_0] round 1: kappa=0.762  path_len=7.22  n_obs=128
+    [rbf/unet1890/greek_upper_0] round 2: kappa=0.525  path_len=6.36  n_obs=192
+    [rbf/unet1890/greek_upper_0] round 3: kappa=0.288  path_len=6.75  n_obs=256
+    [rbf/unet1890/greek_upper_0] round 4: kappa=0.050  path_len=5.36  n_obs=320
+  [rbf/unet1890] greek_upper_0 v0: 20s  E_truth=8.37  swept=97%  path=31.7
+    [ak/unet1890/greek_upper_0] round 0: kappa=1.000  path_len=6.03  n_obs=64
+    [ak/unet1890/greek_upper_0] round 1: kappa=0.762  path_len=6.28  n_obs=128
+    [ak/unet1890/greek_upper_0] round 2: kappa=0.525  path_len=6.10  n_obs=192
+    [ak/unet1890/greek_upper_0] round 3: kappa=0.288  path_len=6.34  n_obs=256
+    [ak/unet1890/greek_upper_0] round 4: kappa=0.050  path_len=4.59  n_obs=320
+  [ak/unet1890] greek_upper_0 v0: 24s  E_truth=4.44  swept=95%  path=29.3
+    [rbf/unet1890/korean_5] round 0: kappa=1.000  path_len=7.26  n_obs=64
+    [rbf/unet1890/korean_5] round 1: kappa=0.762  path_len=7.82  n_obs=128
+    [rbf/unet1890/korean_5] round 2: kappa=0.525  path_len=7.31  n_obs=192
+    [rbf/unet1890/korean_5] round 3: kappa=0.288  path_len=6.69  n_obs=256
+    [rbf/unet1890/korean_5] round 4: kappa=0.050  path_len=6.24  n_obs=320
+  [rbf/unet1890] korean_5 v0: 20s  E_truth=7.65  swept=96%  path=35.3
+    [ak/unet1890/korean_5] round 0: kappa=1.000  path_len=7.26  n_obs=64
+    [ak/unet1890/korean_5] round 1: kappa=0.762  path_len=5.91  n_obs=128
+    [ak/unet1890/korean_5] round 2: kappa=0.525  path_len=5.31  n_obs=192
+    [ak/unet1890/korean_5] round 3: kappa=0.288  path_len=6.32  n_obs=256
+    [ak/unet1890/korean_5] round 4: kappa=0.050  path_len=5.56  n_obs=320
+  [ak/unet1890] korean_5 v0: 24s  E_truth=4.24  swept=97%  path=30.4
+
+=== lm1300: 6 missions ===
+    [rbf/lm1300/A] round 0: kappa=1.000  path_len=6.16  n_obs=64
+    [rbf/lm1300/A] round 1: kappa=0.762  path_len=6.04  n_obs=128
+    [rbf/lm1300/A] round 2: kappa=0.525  path_len=6.52  n_obs=192
+    [rbf/lm1300/A] round 3: kappa=0.288  path_len=6.51  n_obs=256
+    [rbf/lm1300/A] round 4: kappa=0.050  path_len=5.84  n_obs=320
+  [rbf/lm1300] A v0: 20s  E_truth=7.05  swept=96%  path=31.1
+    [ak/lm1300/A] round 0: kappa=1.000  path_len=6.16  n_obs=64
+    [ak/lm1300/A] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/lm1300/A] round 2: kappa=0.525  path_len=5.87  n_obs=192
+    [ak/lm1300/A] round 3: kappa=0.288  path_len=5.35  n_obs=256
+    [ak/lm1300/A] round 4: kappa=0.050  path_len=4.40  n_obs=320
+  [ak/lm1300] A v0: 24s  E_truth=5.21  swept=96%  path=27.6
+    [rbf/lm1300/greek_upper_0] round 0: kappa=1.000  path_len=7.21  n_obs=64
+    [rbf/lm1300/greek_upper_0] round 1: kappa=0.762  path_len=5.96  n_obs=128
+    [rbf/lm1300/greek_upper_0] round 2: kappa=0.525  path_len=6.15  n_obs=192
+    [rbf/lm1300/greek_upper_0] round 3: kappa=0.288  path_len=5.61  n_obs=256
+    [rbf/lm1300/greek_upper_0] round 4: kappa=0.050  path_len=5.41  n_obs=320
+  [rbf/lm1300] greek_upper_0 v0: 20s  E_truth=9.98  swept=95%  path=30.3
+    [ak/lm1300/greek_upper_0] round 0: kappa=1.000  path_len=7.21  n_obs=64
+    [ak/lm1300/greek_upper_0] round 1: kappa=0.762  path_len=5.54  n_obs=128
+    [ak/lm1300/greek_upper_0] round 2: kappa=0.525  path_len=6.48  n_obs=192
+    [ak/lm1300/greek_upper_0] round 3: kappa=0.288  path_len=6.35  n_obs=256
+    [ak/lm1300/greek_upper_0] round 4: kappa=0.050  path_len=5.21  n_obs=320
+  [ak/lm1300] greek_upper_0 v0: 24s  E_truth=4.46  swept=96%  path=30.8
+    [rbf/lm1300/korean_5] round 0: kappa=1.000  path_len=6.21  n_obs=64
+    [rbf/lm1300/korean_5] round 1: kappa=0.762  path_len=6.94  n_obs=128
+    [rbf/lm1300/korean_5] round 2: kappa=0.525  path_len=6.16  n_obs=192
+    [rbf/lm1300/korean_5] round 3: kappa=0.288  path_len=5.44  n_obs=256
+    [rbf/lm1300/korean_5] round 4: kappa=0.050  path_len=5.28  n_obs=320
+  [rbf/lm1300] korean_5 v0: 20s  E_truth=7.39  swept=95%  path=30.0
+    [ak/lm1300/korean_5] round 0: kappa=1.000  path_len=6.21  n_obs=64
+    [ak/lm1300/korean_5] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/lm1300/korean_5] round 2: kappa=0.525  path_len=7.41  n_obs=192
+    [ak/lm1300/korean_5] round 3: kappa=0.288  path_len=5.99  n_obs=256
+    [ak/lm1300/korean_5] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/lm1300] korean_5 v0: 24s  E_truth=4.84  swept=97%  path=31.2
+
+=== lintsvec: 6 missions ===
+    [rbf/lintsvec/A] round 0: kappa=1.000  path_len=7.08  n_obs=64
+    [rbf/lintsvec/A] round 1: kappa=0.762  path_len=7.09  n_obs=128
+    [rbf/lintsvec/A] round 2: kappa=0.525  path_len=6.97  n_obs=192
+    [rbf/lintsvec/A] round 3: kappa=0.288  path_len=7.02  n_obs=256
+    [rbf/lintsvec/A] round 4: kappa=0.050  path_len=7.59  n_obs=320
+  [rbf/lintsvec] A v0: 6s  E_truth=7.15  swept=97%  path=35.8
+    [ak/lintsvec/A] round 0: kappa=1.000  path_len=7.08  n_obs=64
+    [ak/lintsvec/A] round 1: kappa=0.762  path_len=6.56  n_obs=128
+    [ak/lintsvec/A] round 2: kappa=0.525  path_len=6.68  n_obs=192
+    [ak/lintsvec/A] round 3: kappa=0.288  path_len=6.02  n_obs=256
+    [ak/lintsvec/A] round 4: kappa=0.050  path_len=7.14  n_obs=320
+  [ak/lintsvec] A v0: 10s  E_truth=3.59  swept=97%  path=33.5
+    [rbf/lintsvec/greek_upper_0] round 0: kappa=1.000  path_len=7.08  n_obs=64
+    [rbf/lintsvec/greek_upper_0] round 1: kappa=0.762  path_len=6.88  n_obs=128
+    [rbf/lintsvec/greek_upper_0] round 2: kappa=0.525  path_len=7.65  n_obs=192
+    [rbf/lintsvec/greek_upper_0] round 3: kappa=0.288  path_len=7.71  n_obs=256
+    [rbf/lintsvec/greek_upper_0] round 4: kappa=0.050  path_len=6.60  n_obs=320
+  [rbf/lintsvec] greek_upper_0 v0: 6s  E_truth=6.68  swept=96%  path=35.9
+    [ak/lintsvec/greek_upper_0] round 0: kappa=1.000  path_len=7.08  n_obs=64
+    [ak/lintsvec/greek_upper_0] round 1: kappa=0.762  path_len=7.42  n_obs=128
+    [ak/lintsvec/greek_upper_0] round 2: kappa=0.525  path_len=7.54  n_obs=192
+    [ak/lintsvec/greek_upper_0] round 3: kappa=0.288  path_len=6.08  n_obs=256
+    [ak/lintsvec/greek_upper_0] round 4: kappa=0.050  path_len=6.65  n_obs=320
+  [ak/lintsvec] greek_upper_0 v0: 11s  E_truth=5.14  swept=97%  path=34.8
+    [rbf/lintsvec/korean_5] round 0: kappa=1.000  path_len=7.08  n_obs=64
+    [rbf/lintsvec/korean_5] round 1: kappa=0.762  path_len=6.80  n_obs=128
+    [rbf/lintsvec/korean_5] round 2: kappa=0.525  path_len=6.87  n_obs=192
+    [rbf/lintsvec/korean_5] round 3: kappa=0.288  path_len=7.20  n_obs=256
+    [rbf/lintsvec/korean_5] round 4: kappa=0.050  path_len=5.88  n_obs=320
+  [rbf/lintsvec] korean_5 v0: 6s  E_truth=6.93  swept=97%  path=33.8
+    [ak/lintsvec/korean_5] round 0: kappa=1.000  path_len=7.08  n_obs=64
+    [ak/lintsvec/korean_5] round 1: kappa=0.762  path_len=7.09  n_obs=128
+    [ak/lintsvec/korean_5] round 2: kappa=0.525  path_len=7.28  n_obs=192
+    [ak/lintsvec/korean_5] round 3: kappa=0.288  path_len=7.14  n_obs=256
+    [ak/lintsvec/korean_5] round 4: kappa=0.050  path_len=7.12  n_obs=320
+  [ak/lintsvec] korean_5 v0: 11s  E_truth=4.77  swept=97%  path=35.7
+
+=== gpgoal: 6 missions ===
+    [rbf/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64
+    [rbf/gpgoal/A] round 1: kappa=0.762  path_len=5.93  n_obs=128
+    [rbf/gpgoal/A] round 2: kappa=0.525  path_len=5.91  n_obs=192
+    [rbf/gpgoal/A] round 3: kappa=0.288  path_len=5.88  n_obs=256
+    [rbf/gpgoal/A] round 4: kappa=0.050  path_len=5.98  n_obs=320
+  [rbf/gpgoal] A v0: 0s  E_truth=21.81  swept=74%  path=29.7
+    [ak/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64
+    [ak/gpgoal/A] round 1: kappa=0.762  path_len=5.93  n_obs=128
+    [ak/gpgoal/A] round 2: kappa=0.525  path_len=5.95  n_obs=192
+    [ak/gpgoal/A] round 3: kappa=0.288  path_len=5.95  n_obs=256
+    [ak/gpgoal/A] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [ak/gpgoal] A v0: 5s  E_truth=2.73  swept=97%  path=29.8
+    [rbf/gpgoal/greek_upper_0] round 0: kappa=1.000  path_len=5.93  n_obs=64
+    [rbf/gpgoal/greek_upper_0] round 1: kappa=0.762  path_len=5.90  n_obs=128
+    [rbf/gpgoal/greek_upper_0] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [rbf/gpgoal/greek_upper_0] round 3: kappa=0.288  path_len=5.92  n_obs=256
+    [rbf/gpgoal/greek_upper_0] round 4: kappa=0.050  path_len=5.97  n_obs=320
+  [rbf/gpgoal] greek_upper_0 v0: 0s  E_truth=5.14  swept=96%  path=29.7
+    [ak/gpgoal/greek_upper_0] round 0: kappa=1.000  path_len=5.93  n_obs=64
+    [ak/gpgoal/greek_upper_0] round 1: kappa=0.762  path_len=5.96  n_obs=128
+    [ak/gpgoal/greek_upper_0] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [ak/gpgoal/greek_upper_0] round 3: kappa=0.288  path_len=5.91  n_obs=256
+    [ak/gpgoal/greek_upper_0] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [ak/gpgoal] greek_upper_0 v0: 5s  E_truth=8.86  swept=95%  path=29.7
+    [rbf/gpgoal/korean_5] round 0: kappa=1.000  path_len=5.95  n_obs=64
+    [rbf/gpgoal/korean_5] round 1: kappa=0.762  path_len=5.94  n_obs=128
+    [rbf/gpgoal/korean_5] round 2: kappa=0.525  path_len=5.95  n_obs=192
+    [rbf/gpgoal/korean_5] round 3: kappa=0.288  path_len=5.93  n_obs=256
+    [rbf/gpgoal/korean_5] round 4: kappa=0.050  path_len=5.95  n_obs=320
+  [rbf/gpgoal] korean_5 v0: 0s  E_truth=4.85  swept=89%  path=29.7
+    [ak/gpgoal/korean_5] round 0: kappa=1.000  path_len=5.95  n_obs=64
+    [ak/gpgoal/korean_5] round 1: kappa=0.762  path_len=5.88  n_obs=128
+    [ak/gpgoal/korean_5] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [ak/gpgoal/korean_5] round 3: kappa=0.288  path_len=5.92  n_obs=256
+    [ak/gpgoal/korean_5] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [ak/gpgoal] korean_5 v0: 5s  E_truth=5.05  swept=94%  path=29.7
+
+=== linray: 6 missions ===
+    [rbf/linray/A] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [rbf/linray/A] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/linray/A] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [rbf/linray/A] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/linray/A] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [rbf/linray] A v0: 0s  E_truth=6.61  swept=95%  path=29.0
+    [ak/linray/A] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [ak/linray/A] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/linray/A] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [ak/linray/A] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [ak/linray/A] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [ak/linray] A v0: 5s  E_truth=6.61  swept=95%  path=29.0
+    [rbf/linray/greek_upper_0] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [rbf/linray/greek_upper_0] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/linray/greek_upper_0] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [rbf/linray/greek_upper_0] round 3: kappa=0.288  path_len=5.66  n_obs=256
+    [rbf/linray/greek_upper_0] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [rbf/linray] greek_upper_0 v0: 0s  E_truth=8.35  swept=96%  path=28.8
+    [ak/linray/greek_upper_0] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [ak/linray/greek_upper_0] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/linray/greek_upper_0] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [ak/linray/greek_upper_0] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/linray/greek_upper_0] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/linray] greek_upper_0 v0: 5s  E_truth=7.72  swept=95%  path=28.9
+    [rbf/linray/korean_5] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [rbf/linray/korean_5] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/linray/korean_5] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [rbf/linray/korean_5] round 3: kappa=0.288  path_len=5.66  n_obs=256
+    [rbf/linray/korean_5] round 4: kappa=0.050  path_len=5.67  n_obs=320
+  [rbf/linray] korean_5 v0: 0s  E_truth=7.76  swept=95%  path=28.6
+    [ak/linray/korean_5] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [ak/linray/korean_5] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/linray/korean_5] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [ak/linray/korean_5] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/linray/korean_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/linray] korean_5 v0: 5s  E_truth=8.57  swept=95%  path=28.8
+
+=== plots + tables ===
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight_3/extended/rbf/A.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight_3/extended/ak/A.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight_3/extended/rbf/greek_upper_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight_3/extended/ak/greek_upper_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight_3/extended/rbf/korean_5.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight_3/extended/ak/korean_5.png
+  tables + aggregate plots in plots/exploration_comparison_obstacles_dice6_r0.08_preflight_3/extended
+6 obstacles, radius 0.08, margin 0.01, w_obstacle 1000.0
+method        kern  runs  max pen runs hit s/mission len/round viol pre-clear  E_truth  E_free
+dit630        ak       3   0.0000        0      20.2      5.75   0.0087/0.028     5.86    6.11
+dit630        rbf      3   0.0000        0      16.2      5.83   0.0099/0.030    10.46   11.19
+gpgoal        ak       3   0.0000        0       4.9      5.94      nan/nan     5.54    6.30
+gpgoal        rbf      3   0.0000        0       0.4      5.94      nan/nan    10.60   12.88
+lawn          ak       3   0.0000        0       4.5      6.33      nan/nan    18.00   19.90
+lawn          rbf      3   0.0000        0       0.3      6.33      nan/nan    18.00   19.90
+linadam       ak       3   0.0000        0       9.7      5.67   0.0029/0.006     6.08    6.91
+linadam       rbf      3   0.0000        0       5.3      5.94   0.0041/0.012     7.97    8.66
+linray        ak       3   0.0000        0       4.8      5.78      nan/nan     7.63    8.63
+linray        rbf      3   0.0000        0       0.3      5.76      nan/nan     7.57    8.39
+lintsvec      ak       3   0.0000        0      10.5      6.93   0.0212/0.043     4.50    5.16
+lintsvec      rbf      3   0.0000        0       6.1      7.03   0.0230/0.041     6.92    7.66
+lm1300        ak       3   0.0000        0      24.3      5.97   0.0111/0.038     4.84    5.09
+lm1300        rbf      3   0.0000        0      20.3      6.10   0.0126/0.027     8.14    8.95
+old500        ak       3   0.0000        0      23.5      5.66   0.0080/0.014     5.33    5.76
+old500        rbf      3   0.0000        0      19.4      5.74   0.0109/0.037    11.21   12.01
+rw            ak       3   0.0000        0       7.1      5.77      nan/nan    44.25   43.53
+rw            rbf      3   0.0000        0       2.7      5.77      nan/nan    44.25   43.53
+selfsup       ak       3   0.0000        0      13.1      5.19   0.0069/0.043     7.34    7.85
+selfsup       rbf      3   0.0000        0       8.8      5.49   0.0030/0.009     9.37    9.98
+unet0         ak       3   0.0000        0      24.5      5.56   0.0112/0.040     7.15    7.77
+unet0         rbf      3   0.0000        0      19.9      6.00   0.0107/0.031     9.62   10.21
+unet1890      ak       3   0.0000        0      24.0      6.18   0.0108/0.026     4.78    5.27
+unet1890      rbf      3   0.0000        0      20.0      6.65   0.0132/0.026     7.97    8.77
+unet630       ak       3   0.0000        0      26.7      5.62   0.0066/0.016     4.55    4.88
+unet630       rbf      3   0.0000        0      21.1      5.84   0.0084/0.021     7.86    8.71
+COLLISION-FREE
+[job] Mon Nov 16 20:17:06 CET 2026 finished

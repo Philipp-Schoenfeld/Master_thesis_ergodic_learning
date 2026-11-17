@@ -94,3 +94,9 @@ thesis_architecture/evaluation_full_matrix/results/convergence_tests_main/sweep.
 thesis_architecture/evaluation_full_matrix/results/convergence_tests_main/trace/
 *.db-wal
 *.db-shm
+
+# Hindernis-Benchmark (2026-11-17): DBs, Job-/Preflight-/Smoke-Ordner liegen unter transfer/2026-11-17_obstacle_benchmark/
+thesis_architecture/evaluation_full_matrix/plots/exploration_comparison_obstacles_*/*.db
+thesis_architecture/evaluation_full_matrix/plots/exploration_comparison_obstacles_dice6_r0.08_*/
+thesis_architecture/evaluation_full_matrix/results/*obstacles*/sweep.db
+thesis_architecture/evaluation_full_matrix/results/*obstacles*/trace/

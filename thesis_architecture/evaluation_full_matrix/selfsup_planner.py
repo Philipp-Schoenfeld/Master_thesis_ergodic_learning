@@ -87,12 +87,19 @@ class SelfsupPlanner:
     def render(self, cps):
         return torch.einsum('pi,kid->kpd', self.B, cps.float().to(self.device))
 
-    def plan(self, particles, n_candidates=1, start=None, **_ignored):
-        """`start` and any other CFM-only kwargs (length, obstacle, ...) are
-        accepted and ignored -- see module docstring."""
+    def plan(self, particles, n_candidates=1, start=None, obstacle=None, polish_steps=250,
+             **_ignored):
+        """`start` and any other CFM-only kwargs (length, ...) are accepted and ignored -- see
+        module docstring. `obstacle` (opt-in): the generator is a single forward pass, so there
+        is no flow to guide; its candidates get the same polish step the CFM generator applies
+        after its guided integration (`obstacles.polish_out_of_obstacle`, descent on the
+        obstacle penalty of the rendered curve)."""
         t0 = time.perf_counter()
         with torch.no_grad():
             cps = self.model.generate(particles.to(self.device),
                                       num_samples=n_candidates, device=str(self.device))
+            if obstacle is not None and polish_steps > 0:
+                from obstacles import polish_out_of_obstacle
+                cps = polish_out_of_obstacle(cps.float(), obstacle, self.B, max_iters=polish_steps)
         self.last_wallclock = time.perf_counter() - t0
         return cps.detach()

@@ -326,7 +326,7 @@ def metrics_table(ax, res):
     ax.set_title('Metrics per round (last = final)', fontsize=10, color=TEXT)
 
 
-def plot_rows(results, title, out, shape):
+def plot_rows(results, title, out, shape, obstacles=None):
     n_rows, n_rounds = len(results), len(results[0]['segments'])
     cmap = sam.white_inferno()
     colors = sam.round_colors(n_rounds)
@@ -339,9 +339,11 @@ def plot_rows(results, title, out, shape):
         for r in range(n_rounds):
             sam.plot_round(axes[i, r], res['phis'][r], res['segments'][r], res['kappas'][r],
                            colors[r], row_label=s.label if r == 0 else None,
-                           col_title=f'Round {r}' if i == 0 else None, cmap=cmap)
+                           col_title=f'Round {r}' if i == 0 else None, cmap=cmap,
+                           obstacles=obstacles)
         sam.plot_summary(axes[i, n_rounds], truth, res['segments'], colors, res['kappas'],
-                         col_title='All rounds (ground truth)' if i == 0 else None, cmap=cmap)
+                         col_title='All rounds (ground truth)' if i == 0 else None, cmap=cmap,
+                         obstacles=obstacles)
         metrics_table(axes[i, n_rounds + 1], res)
     kap = results[0]['kappas']
     kap_txt = (f'constant κ = {kap[0]:g}' if len(set(kap)) == 1 else

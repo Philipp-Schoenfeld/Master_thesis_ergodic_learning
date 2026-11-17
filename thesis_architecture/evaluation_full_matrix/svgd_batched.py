@@ -496,7 +496,9 @@ class BatchedTsvecSvgdTorch:
     `np.repeat`/grouping assumption above) `start` through.
     """
 
-    def __init__(self, B, device='cuda', K=10, w_smooth=None):
+    def __init__(self, B, device='cuda', K=10, w_smooth=None, obstacles=None, w_obstacle=0.0):
+        """`obstacles` / `w_obstacle`: opt-in obstacle hinge term in the TSVEC energy (see
+        `TsvecSvgd.__init__`); default off = the previous behaviour."""
         import torch
         self.torch = torch
         self.dev = torch.device(device)
@@ -507,6 +509,7 @@ class BatchedTsvecSvgdTorch:
             from ergodic_energy_torch import W_SMOOTH
             w_smooth = W_SMOOTH
         self.w_smooth = w_smooth
+        self.obstacles, self.w_obstacle = obstacles, float(w_obstacle)
 
     def run(self, init_curves, phi_k, start, seeds, n_iters, record=True):
         """Same contract as `BatchedSvgdTorch.run`: `init_curves` (C, T, 2)
@@ -541,7 +544,8 @@ class BatchedTsvecSvgdTorch:
         log = torch.empty((C, n_iters + 1, self.nxi, 2), dtype=torch.float32,
                           device=self.dev) if record else None
         final_cps = np.empty((C, self.nxi, 2), dtype=np.float32)
-        solver = TsvecSvgd(B=self.B_np, K=self.K, device=self.dev, w_smooth=self.w_smooth)
+        solver = TsvecSvgd(B=self.B_np, K=self.K, device=self.dev, w_smooth=self.w_smooth,
+                           obstacles=self.obstacles, w_obstacle=self.w_obstacle)
         for idx in groups:
             curves_g = curves_np[idx].astype(np.float64)
             rhs = curves_g.transpose(1, 0, 2).reshape(self.T, len(idx) * 2)

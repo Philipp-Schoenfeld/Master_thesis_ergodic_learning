@@ -1,0 +1,111 @@
+[job] Mon Nov 16 18:43:19 CET 2026 node=dgx-station gpu=Tesla V100-DGXS-32GB
+Tesla V100-DGXS-32GB
+  ok  test_adam_run_reduces_violation
+  ok  test_clear_obstacles_keeps_start
+  ok  test_clearance_smooth_candidates
+  ok  test_detour_through_centre_and_tangent
+  ok  test_gp_goal
+  ok  test_guarantee_clear_pathological
+  ok  test_lawnmower
+  ok  test_layout
+  ok  test_random_walk
+  ok  test_reflect_rays
+  ok  test_svgd_obstacle_term
+  ok  test_tsvec_run_reduces_violation
+12 tests passed
+4 heldout shapes, methods=['unet630', 'dit630', 'rw', 'lawn', 'linadam', 'selfsup', 'old500', 'unet0', 'unet1890', 'lm1300', 'lintsvec', 'gpgoal', 'linray'], kernels=['rbf', 'ak'], db=plots/exploration_comparison_obstacles_dice6_r0.08_preflight_2/exploration_comparison.db
+
+=== unet630: 16 missions ===
+    [rbf/unet630/A] round 0: kappa=1.000  path_len=5.42  n_obs=64
+    [rbf/unet630/A] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [rbf/unet630/A] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/unet630/A] round 3: kappa=0.288  path_len=6.23  n_obs=256
+    [rbf/unet630/A] round 4: kappa=0.050  path_len=6.19  n_obs=320
+  [rbf/unet630] A v0: 225s  E_truth=8.29  swept=97%  path=29.6
+    [ak/unet630/A] round 0: kappa=1.000  path_len=5.42  n_obs=64
+    [ak/unet630/A] round 1: kappa=0.762  path_len=6.08  n_obs=128
+    [ak/unet630/A] round 2: kappa=0.525  path_len=5.05  n_obs=192
+    [ak/unet630/A] round 3: kappa=0.288  path_len=5.46  n_obs=256
+    [ak/unet630/A] round 4: kappa=0.050  path_len=5.21  n_obs=320
+  [ak/unet630] A v0: 251s  E_truth=4.58  swept=96%  path=27.2
+    [rbf/unet630/greek_upper_0] round 0: kappa=1.000  path_len=5.95  n_obs=64
+    [rbf/unet630/greek_upper_0] round 1: kappa=0.762  path_len=6.42  n_obs=128
+    [rbf/unet630/greek_upper_0] round 2: kappa=0.525  path_len=6.32  n_obs=192
+    [rbf/unet630/greek_upper_0] round 3: kappa=0.288  path_len=6.20  n_obs=256
+    [rbf/unet630/greek_upper_0] round 4: kappa=0.050  path_len=5.62  n_obs=320
+  [rbf/unet630] greek_upper_0 v0: 237s  E_truth=8.83  swept=97%  path=30.5
+    [ak/unet630/greek_upper_0] round 0: kappa=1.000  path_len=5.95  n_obs=64
+    [ak/unet630/greek_upper_0] round 1: kappa=0.762  path_len=5.42  n_obs=128
+    [ak/unet630/greek_upper_0] round 2: kappa=0.525  path_len=5.45  n_obs=192
+    [ak/unet630/greek_upper_0] round 3: kappa=0.288  path_len=5.97  n_obs=256
+    [ak/unet630/greek_upper_0] round 4: kappa=0.050  path_len=4.74  n_obs=320
+  [ak/unet630] greek_upper_0 v0: 260s  E_truth=5.18  swept=96%  path=27.5
+    [rbf/unet630/korean_5] round 0: kappa=1.000  path_len=6.03  n_obs=64
+    [rbf/unet630/korean_5] round 1: kappa=0.762  path_len=5.60  n_obs=128
+    [rbf/unet630/korean_5] round 2: kappa=0.525  path_len=6.47  n_obs=192
+    [rbf/unet630/korean_5] round 3: kappa=0.288  path_len=6.27  n_obs=256
+    [rbf/unet630/korean_5] round 4: kappa=0.050  path_len=5.61  n_obs=320
+  [rbf/unet630] korean_5 v0: 249s  E_truth=7.85  swept=96%  path=30.0
+    [ak/unet630/korean_5] round 0: kappa=1.000  path_len=6.03  n_obs=64
+    [ak/unet630/korean_5] round 1: kappa=0.762  path_len=5.18  n_obs=128
+    [ak/unet630/korean_5] round 2: kappa=0.525  path_len=6.47  n_obs=192
+    [ak/unet630/korean_5] round 3: kappa=0.288  path_len=5.34  n_obs=256
+    [ak/unet630/korean_5] round 4: kappa=0.050  path_len=5.02  n_obs=320
+  [ak/unet630] korean_5 v0: 236s  E_truth=7.10  swept=95%  path=28.0
+    [rbf/unet630/digit_5] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/unet630/digit_5] round 1: kappa=0.762  path_len=6.20  n_obs=128
+    [rbf/unet630/digit_5] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [rbf/unet630/digit_5] round 3: kappa=0.288  path_len=6.38  n_obs=256
+    [rbf/unet630/digit_5] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [rbf/unet630] digit_5 v0: 128s  E_truth=13.82  swept=96%  path=30.0
+    [ak/unet630/digit_5] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/unet630/digit_5] round 1: kappa=0.762  path_len=7.52  n_obs=128
+    [ak/unet630/digit_5] round 2: kappa=0.525  path_len=5.98  n_obs=192
+    [ak/unet630/digit_5] round 3: kappa=0.288  path_len=5.13  n_obs=256
+    [ak/unet630/digit_5] round 4: kappa=0.050  path_len=5.01  n_obs=320
+  [ak/unet630] digit_5 v0: 131s  E_truth=5.39  swept=96%  path=29.4
+    [rbf/unet630/A] round 0: kappa=1.000  path_len=5.99  n_obs=64
+    [rbf/unet630/A] round 1: kappa=0.762  path_len=7.29  n_obs=128
+    [rbf/unet630/A] round 2: kappa=0.525  path_len=5.98  n_obs=192
+    [rbf/unet630/A] round 3: kappa=0.288  path_len=6.13  n_obs=256
+    [rbf/unet630/A] round 4: kappa=0.050  path_len=5.01  n_obs=320
+  [rbf/unet630] A v1: 122s  E_truth=10.28  swept=97%  path=30.4
+    [ak/unet630/A] round 0: kappa=1.000  path_len=5.99  n_obs=64
+    [ak/unet630/A] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/unet630/A] round 2: kappa=0.525  path_len=5.50  n_obs=192
+    [ak/unet630/A] round 3: kappa=0.288  path_len=6.10  n_obs=256
+    [ak/unet630/A] round 4: kappa=0.050  path_len=3.83  n_obs=320
+  [ak/unet630] A v1: 128s  E_truth=6.76  swept=97%  path=27.2
+    [rbf/unet630/greek_upper_0] round 0: kappa=1.000  path_len=6.01  n_obs=64
+    [rbf/unet630/greek_upper_0] round 1: kappa=0.762  path_len=6.18  n_obs=128
+    [rbf/unet630/greek_upper_0] round 2: kappa=0.525  path_len=5.59  n_obs=192
+    [rbf/unet630/greek_upper_0] round 3: kappa=0.288  path_len=5.39  n_obs=256
+    [rbf/unet630/greek_upper_0] round 4: kappa=0.050  path_len=5.13  n_obs=320
+  [rbf/unet630] greek_upper_0 v1: 118s  E_truth=7.04  swept=97%  path=28.3
+    [ak/unet630/greek_upper_0] round 0: kappa=1.000  path_len=6.01  n_obs=64
+    [ak/unet630/greek_upper_0] round 1: kappa=0.762  path_len=5.41  n_obs=128
+    [ak/unet630/greek_upper_0] round 2: kappa=0.525  path_len=6.09  n_obs=192
+    [ak/unet630/greek_upper_0] round 3: kappa=0.288  path_len=5.92  n_obs=256
+    [ak/unet630/greek_upper_0] round 4: kappa=0.050  path_len=4.20  n_obs=320
+  [ak/unet630] greek_upper_0 v1: 113s  E_truth=4.22  swept=95%  path=27.6
+    [rbf/unet630/korean_5] round 0: kappa=1.000  path_len=6.20  n_obs=64
+    [rbf/unet630/korean_5] round 1: kappa=0.762  path_len=6.41  n_obs=128
+    [rbf/unet630/korean_5] round 2: kappa=0.525  path_len=6.34  n_obs=192
+    [rbf/unet630/korean_5] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/unet630/korean_5] round 4: kappa=0.050  path_len=6.38  n_obs=320
+  [rbf/unet630] korean_5 v1: 112s  E_truth=6.76  swept=96%  path=31.1
+    [ak/unet630/korean_5] round 0: kappa=1.000  path_len=6.20  n_obs=64
+    [ak/unet630/korean_5] round 1: kappa=0.762  path_len=6.44  n_obs=128
+    [ak/unet630/korean_5] round 2: kappa=0.525  path_len=5.03  n_obs=192
+    [ak/unet630/korean_5] round 3: kappa=0.288  path_len=5.15  n_obs=256
+    [ak/unet630/korean_5] round 4: kappa=0.050  path_len=5.27  n_obs=320
+  [ak/unet630] korean_5 v1: 119s  E_truth=3.65  swept=97%  path=28.1
+    [rbf/unet630/digit_5] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/unet630/digit_5] round 1: kappa=0.762  path_len=5.65  n_obs=128
+    [rbf/unet630/digit_5] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/unet630/digit_5] round 3: kappa=0.288  path_len=6.10  n_obs=256
+    [rbf/unet630/digit_5] round 4: kappa=0.050  path_len=5.18  n_obs=320
+  [rbf/unet630] digit_5 v1: 111s  E_truth=7.66  swept=96%  path=28.7
+    [ak/unet630/digit_5] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/unet630/digit_5] round 1: kappa=0.762  path_len=6.42  n_obs=128
+    [ak/unet630/digit_5] round 2: kappa=0.525  path_len=6.21  n_obs=192

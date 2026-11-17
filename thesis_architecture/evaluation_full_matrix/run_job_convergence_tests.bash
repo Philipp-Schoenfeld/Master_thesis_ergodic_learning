@@ -30,6 +30,7 @@
 # main_<method>) and the results are merged afterwards (see Kontext/2026-11-12_active_sensing_eval_cluster.md,
 # section 7). Jobs run with --no_tables: tables/figures need all methods together and are made once after merging.
 
+# OBST=dice6: the same tests in the obstacle benchmark (results/convergence_tests_<OUT_TAG>_obstacles_dice6_r0.08/).
 PARTS=${PARTS:-sweep,trace}
 METHODS=${METHODS:-lintsvec}
 MAX_MIN=${MAX_MIN:-690}
@@ -42,5 +43,5 @@ cd ~/Master_thesis/thesis_architecture/evaluation_full_matrix
 echo "[job] $(date) node=$(hostname) gpu=$(nvidia-smi --query-gpu=name --format=csv,noheader) parts=${PARTS} methods=${METHODS} tag=${OUT_TAG}"
 srun --unbuffered python -u run_convergence_tests.py \
     --parts ${PARTS} --methods ${METHODS} --tag ${OUT_TAG} \
-    --max_minutes ${MAX_MIN} --no_tables || exit 1
+    --max_minutes ${MAX_MIN} --no_tables ${OBST:+--obstacles ${OBST}} || exit 1
 echo "[job] $(date) finished"

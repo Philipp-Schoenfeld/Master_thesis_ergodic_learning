@@ -1,0 +1,388 @@
+[job] Mon Nov 16 17:47:34 CET 2026 node=gn04 gpu=NVIDIA GeForce RTX 3090
+  ok  test_adam_run_reduces_violation
+  ok  test_clear_obstacles_keeps_start
+  ok  test_detour_through_centre_and_tangent
+  ok  test_gp_goal
+  ok  test_lawnmower
+  ok  test_layout
+  ok  test_random_walk
+  ok  test_reflect_rays
+  ok  test_svgd_obstacle_term
+  ok  test_tsvec_run_reduces_violation
+10 tests passed
+2 heldout shapes, methods=['unet630', 'dit630', 'rw', 'lawn', 'linadam', 'selfsup', 'old500', 'unet0', 'unet1890', 'lm1300', 'lintsvec', 'gpgoal', 'linray'], kernels=['rbf', 'ak'], db=plots/exploration_comparison_obstacles_dice6_r0.08_preflight/exploration_comparison.db
+
+=== unet630: 4 missions ===
+    [rbf/unet630/A] round 0: kappa=1.000  path_len=5.68  n_obs=64
+    [rbf/unet630/A] round 1: kappa=0.762  path_len=6.14  n_obs=128
+    [rbf/unet630/A] round 2: kappa=0.525  path_len=6.14  n_obs=192
+    [rbf/unet630/A] round 3: kappa=0.288  path_len=6.18  n_obs=256
+    [rbf/unet630/A] round 4: kappa=0.050  path_len=4.90  n_obs=320
+  [rbf/unet630] A v0: 22s  E_truth=7.76  swept=97%  path=29.0
+    [ak/unet630/A] round 0: kappa=1.000  path_len=5.68  n_obs=64
+    [ak/unet630/A] round 1: kappa=0.762  path_len=6.77  n_obs=128
+    [ak/unet630/A] round 2: kappa=0.525  path_len=6.75  n_obs=192
+    [ak/unet630/A] round 3: kappa=0.288  path_len=6.56  n_obs=256
+    [ak/unet630/A] round 4: kappa=0.050  path_len=3.94  n_obs=320
+  [ak/unet630] A v0: 31s  E_truth=5.06  swept=97%  path=29.7
+    [rbf/unet630/greek_upper_0] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [rbf/unet630/greek_upper_0] round 1: kappa=0.762  path_len=4.98  n_obs=128
+    [rbf/unet630/greek_upper_0] round 2: kappa=0.525  path_len=5.58  n_obs=192
+    [rbf/unet630/greek_upper_0] round 3: kappa=0.288  path_len=6.18  n_obs=256
+    [rbf/unet630/greek_upper_0] round 4: kappa=0.050  path_len=5.84  n_obs=320
+  [rbf/unet630] greek_upper_0 v0: 19s  E_truth=6.99  swept=95%  path=28.5
+    [ak/unet630/greek_upper_0] round 0: kappa=1.000  path_len=5.92  n_obs=64
+    [ak/unet630/greek_upper_0] round 1: kappa=0.762  path_len=5.30  n_obs=128
+    [ak/unet630/greek_upper_0] round 2: kappa=0.525  path_len=5.53  n_obs=192
+    [ak/unet630/greek_upper_0] round 3: kappa=0.288  path_len=4.77  n_obs=256
+    [ak/unet630/greek_upper_0] round 4: kappa=0.050  path_len=4.14  n_obs=320
+  [ak/unet630] greek_upper_0 v0: 22s  E_truth=6.02  swept=96%  path=25.6
+
+=== dit630: 4 missions ===
+    [rbf/dit630/A] round 0: kappa=1.000  path_len=5.24  n_obs=64
+    [rbf/dit630/A] round 1: kappa=0.762  path_len=5.96  n_obs=128
+    [rbf/dit630/A] round 2: kappa=0.525  path_len=5.67  n_obs=192
+    [rbf/dit630/A] round 3: kappa=0.288  path_len=6.34  n_obs=256
+    [rbf/dit630/A] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/dit630] A v0: 17s  E_truth=10.53  swept=96%  path=29.0
+    [ak/dit630/A] round 0: kappa=1.000  path_len=5.24  n_obs=64
+    [ak/dit630/A] round 1: kappa=0.762  path_len=6.10  n_obs=128
+    [ak/dit630/A] round 2: kappa=0.525  path_len=5.32  n_obs=192
+    [ak/dit630/A] round 3: kappa=0.288  path_len=4.97  n_obs=256
+    [ak/dit630/A] round 4: kappa=0.050  path_len=4.64  n_obs=320
+  [ak/dit630] A v0: 21s  E_truth=5.17  swept=96%  path=26.3
+    [rbf/dit630/greek_upper_0] round 0: kappa=1.000  path_len=6.27  n_obs=64
+    [rbf/dit630/greek_upper_0] round 1: kappa=0.762  path_len=6.32  n_obs=128
+    [rbf/dit630/greek_upper_0] round 2: kappa=0.525  path_len=6.59  n_obs=192
+    [rbf/dit630/greek_upper_0] round 3: kappa=0.288  path_len=5.84  n_obs=256
+    [rbf/dit630/greek_upper_0] round 4: kappa=0.050  path_len=4.63  n_obs=320
+  [rbf/dit630] greek_upper_0 v0: 16s  E_truth=9.16  swept=95%  path=29.6
+    [ak/dit630/greek_upper_0] round 0: kappa=1.000  path_len=6.27  n_obs=64
+    [ak/dit630/greek_upper_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/dit630/greek_upper_0] round 2: kappa=0.525  path_len=5.86  n_obs=192
+    [ak/dit630/greek_upper_0] round 3: kappa=0.288  path_len=6.01  n_obs=256
+    [ak/dit630/greek_upper_0] round 4: kappa=0.050  path_len=5.13  n_obs=320
+  [ak/dit630] greek_upper_0 v0: 21s  E_truth=5.87  swept=97%  path=29.1
+
+=== rw: 4 missions ===
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] A v0: 2s  E_truth=27.18  swept=90%  path=28.8
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] A v0: 6s  E_truth=27.18  swept=90%  path=28.8
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] greek_upper_0 v0: 2s  E_truth=38.73  swept=62%  path=28.8
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] greek_upper_0 v0: 6s  E_truth=38.73  swept=62%  path=28.8
+
+=== lawn: 4 missions ===
+    [rbf/lawn/A] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [rbf/lawn/A] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [rbf/lawn/A] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [rbf/lawn/A] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [rbf/lawn/A] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [rbf/lawn] A v0: 0s  E_truth=17.97  swept=97%  path=31.6
+    [ak/lawn/A] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [ak/lawn/A] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [ak/lawn/A] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [ak/lawn/A] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [ak/lawn/A] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [ak/lawn] A v0: 4s  E_truth=17.97  swept=97%  path=31.6
+    [rbf/lawn/greek_upper_0] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [rbf/lawn/greek_upper_0] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [rbf/lawn/greek_upper_0] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [rbf/lawn/greek_upper_0] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [rbf/lawn/greek_upper_0] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [rbf/lawn] greek_upper_0 v0: 0s  E_truth=17.97  swept=97%  path=31.6
+    [ak/lawn/greek_upper_0] round 0: kappa=1.000  path_len=6.53  n_obs=64
+    [ak/lawn/greek_upper_0] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [ak/lawn/greek_upper_0] round 2: kappa=0.525  path_len=6.25  n_obs=192
+    [ak/lawn/greek_upper_0] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [ak/lawn/greek_upper_0] round 4: kappa=0.050  path_len=6.45  n_obs=320
+  [ak/lawn] greek_upper_0 v0: 4s  E_truth=17.97  swept=97%  path=31.6
+
+=== linadam: 4 missions ===
+    [rbf/linadam/A] round 0: kappa=1.000  path_len=5.55  n_obs=64
+    [rbf/linadam/A] round 1: kappa=0.762  path_len=6.69  n_obs=128
+    [rbf/linadam/A] round 2: kappa=0.525  path_len=5.60  n_obs=192
+    [rbf/linadam/A] round 3: kappa=0.288  path_len=6.72  n_obs=256
+    [rbf/linadam/A] round 4: kappa=0.050  path_len=5.27  n_obs=320
+  [rbf/linadam] A v0: 7s  E_truth=9.89  swept=96%  path=29.8
+    [ak/linadam/A] round 0: kappa=1.000  path_len=5.55  n_obs=64
+    [ak/linadam/A] round 1: kappa=0.762  path_len=5.52  n_obs=128
+    [ak/linadam/A] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [ak/linadam/A] round 3: kappa=0.288  path_len=6.46  n_obs=256
+    [ak/linadam/A] round 4: kappa=0.050  path_len=4.69  n_obs=320
+  [ak/linadam] A v0: 11s  E_truth=5.59  swept=96%  path=28.1
+    [rbf/linadam/greek_upper_0] round 0: kappa=1.000  path_len=5.55  n_obs=64
+    [rbf/linadam/greek_upper_0] round 1: kappa=0.762  path_len=6.00  n_obs=128
+    [rbf/linadam/greek_upper_0] round 2: kappa=0.525  path_len=5.24  n_obs=192
+    [rbf/linadam/greek_upper_0] round 3: kappa=0.288  path_len=5.92  n_obs=256
+    [rbf/linadam/greek_upper_0] round 4: kappa=0.050  path_len=4.73  n_obs=320
+  [rbf/linadam] greek_upper_0 v0: 7s  E_truth=11.23  swept=96%  path=27.4
+    [ak/linadam/greek_upper_0] round 0: kappa=1.000  path_len=5.55  n_obs=64
+    [ak/linadam/greek_upper_0] round 1: kappa=0.762  path_len=5.70  n_obs=128
+    [ak/linadam/greek_upper_0] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/linadam/greek_upper_0] round 3: kappa=0.288  path_len=5.46  n_obs=256
+    [ak/linadam/greek_upper_0] round 4: kappa=0.050  path_len=4.86  n_obs=320
+  [ak/linadam] greek_upper_0 v0: 10s  E_truth=5.04  swept=97%  path=27.3
+
+=== selfsup: 4 missions ===
+    [rbf/selfsup/A] round 0: kappa=1.000  path_len=6.50  n_obs=64
+    [rbf/selfsup/A] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/selfsup/A] round 2: kappa=0.525  path_len=5.18  n_obs=192
+    [rbf/selfsup/A] round 3: kappa=0.288  path_len=4.56  n_obs=256
+    [rbf/selfsup/A] round 4: kappa=0.050  path_len=4.61  n_obs=320
+  [rbf/selfsup] A v0: 10s  E_truth=13.59  swept=95%  path=26.6
+    [ak/selfsup/A] round 0: kappa=1.000  path_len=6.50  n_obs=64
+    [ak/selfsup/A] round 1: kappa=0.762  path_len=5.62  n_obs=128
+    [ak/selfsup/A] round 2: kappa=0.525  path_len=4.18  n_obs=192
+    [ak/selfsup/A] round 3: kappa=0.288  path_len=4.69  n_obs=256
+    [ak/selfsup/A] round 4: kappa=0.050  path_len=3.52  n_obs=320
+  [ak/selfsup] A v0: 12s  E_truth=9.02  swept=94%  path=24.5
+    [rbf/selfsup/greek_upper_0] round 0: kappa=1.000  path_len=6.01  n_obs=64
+    [rbf/selfsup/greek_upper_0] round 1: kappa=0.762  path_len=6.14  n_obs=128
+    [rbf/selfsup/greek_upper_0] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/selfsup/greek_upper_0] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/selfsup/greek_upper_0] round 4: kappa=0.050  path_len=4.48  n_obs=320
+  [rbf/selfsup] greek_upper_0 v0: 9s  E_truth=11.55  swept=94%  path=28.1
+    [ak/selfsup/greek_upper_0] round 0: kappa=1.000  path_len=6.01  n_obs=64
+    [ak/selfsup/greek_upper_0] round 1: kappa=0.762  path_len=5.37  n_obs=128
+    [ak/selfsup/greek_upper_0] round 2: kappa=0.525  path_len=5.26  n_obs=192
+    [ak/selfsup/greek_upper_0] round 3: kappa=0.288  path_len=4.75  n_obs=256
+    [ak/selfsup/greek_upper_0] round 4: kappa=0.050  path_len=4.37  n_obs=320
+  [ak/selfsup] greek_upper_0 v0: 13s  E_truth=6.34  swept=96%  path=25.8
+
+=== old500: 4 missions ===
+    [rbf/old500/A] round 0: kappa=1.000  path_len=5.84  n_obs=64
+    [rbf/old500/A] round 1: kappa=0.762  path_len=5.96  n_obs=128
+    [rbf/old500/A] round 2: kappa=0.525  path_len=6.93  n_obs=192
+    [rbf/old500/A] round 3: kappa=0.288  path_len=5.37  n_obs=256
+    [rbf/old500/A] round 4: kappa=0.050  path_len=5.07  n_obs=320
+  [rbf/old500] A v0: 18s  E_truth=11.42  swept=97%  path=29.2
+    [ak/old500/A] round 0: kappa=1.000  path_len=5.84  n_obs=64
+    [ak/old500/A] round 1: kappa=0.762  path_len=4.91  n_obs=128
+    [ak/old500/A] round 2: kappa=0.525  path_len=5.43  n_obs=192
+    [ak/old500/A] round 3: kappa=0.288  path_len=5.62  n_obs=256
+    [ak/old500/A] round 4: kappa=0.050  path_len=4.99  n_obs=320
+  [ak/old500] A v0: 22s  E_truth=7.42  swept=97%  path=26.8
+    [rbf/old500/greek_upper_0] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [rbf/old500/greek_upper_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/old500/greek_upper_0] round 2: kappa=0.525  path_len=5.37  n_obs=192
+    [rbf/old500/greek_upper_0] round 3: kappa=0.288  path_len=6.67  n_obs=256
+    [rbf/old500/greek_upper_0] round 4: kappa=0.050  path_len=5.83  n_obs=320
+  [rbf/old500] greek_upper_0 v0: 19s  E_truth=8.19  swept=96%  path=29.6
+    [ak/old500/greek_upper_0] round 0: kappa=1.000  path_len=5.90  n_obs=64
+    [ak/old500/greek_upper_0] round 1: kappa=0.762  path_len=5.96  n_obs=128
+    [ak/old500/greek_upper_0] round 2: kappa=0.525  path_len=4.63  n_obs=192
+    [ak/old500/greek_upper_0] round 3: kappa=0.288  path_len=5.48  n_obs=256
+    [ak/old500/greek_upper_0] round 4: kappa=0.050  path_len=4.96  n_obs=320
+  [ak/old500] greek_upper_0 v0: 22s  E_truth=8.43  swept=96%  path=26.9
+
+=== unet0: 4 missions ===
+    [rbf/unet0/A] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/unet0/A] round 1: kappa=0.762  path_len=6.12  n_obs=128
+    [rbf/unet0/A] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/unet0/A] round 3: kappa=0.288  path_len=6.87  n_obs=256
+    [rbf/unet0/A] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/unet0] A v0: 20s  E_truth=10.13  swept=96%  path=30.3
+    [ak/unet0/A] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/unet0/A] round 1: kappa=0.762  path_len=5.46  n_obs=128
+    [ak/unet0/A] round 2: kappa=0.525  path_len=5.93  n_obs=192
+    [ak/unet0/A] round 3: kappa=0.288  path_len=5.95  n_obs=256
+    [ak/unet0/A] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [ak/unet0] A v0: 23s  E_truth=7.30  swept=93%  path=28.9
+    [rbf/unet0/greek_upper_0] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [rbf/unet0/greek_upper_0] round 1: kappa=0.762  path_len=6.09  n_obs=128
+    [rbf/unet0/greek_upper_0] round 2: kappa=0.525  path_len=6.20  n_obs=192
+    [rbf/unet0/greek_upper_0] round 3: kappa=0.288  path_len=5.53  n_obs=256
+    [rbf/unet0/greek_upper_0] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [rbf/unet0] greek_upper_0 v0: 19s  E_truth=10.26  swept=95%  path=29.5
+    [ak/unet0/greek_upper_0] round 0: kappa=1.000  path_len=5.98  n_obs=64
+    [ak/unet0/greek_upper_0] round 1: kappa=0.762  path_len=6.08  n_obs=128
+    [ak/unet0/greek_upper_0] round 2: kappa=0.525  path_len=5.07  n_obs=192
+    [ak/unet0/greek_upper_0] round 3: kappa=0.288  path_len=4.84  n_obs=256
+    [ak/unet0/greek_upper_0] round 4: kappa=0.050  path_len=4.67  n_obs=320
+  [ak/unet0] greek_upper_0 v0: 22s  E_truth=7.16  swept=96%  path=26.6
+
+=== unet1890: 4 missions ===
+    [rbf/unet1890/A] round 0: kappa=1.000  path_len=6.69  n_obs=64
+    [rbf/unet1890/A] round 1: kappa=0.762  path_len=6.61  n_obs=128
+    [rbf/unet1890/A] round 2: kappa=0.525  path_len=6.29  n_obs=192
+    [rbf/unet1890/A] round 3: kappa=0.288  path_len=6.28  n_obs=256
+    [rbf/unet1890/A] round 4: kappa=0.050  path_len=5.92  n_obs=320
+  [rbf/unet1890] A v0: 19s  E_truth=8.27  swept=95%  path=31.8
+    [ak/unet1890/A] round 0: kappa=1.000  path_len=6.69  n_obs=64
+    [ak/unet1890/A] round 1: kappa=0.762  path_len=6.34  n_obs=128
+    [ak/unet1890/A] round 2: kappa=0.525  path_len=6.28  n_obs=192
+    [ak/unet1890/A] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/unet1890/A] round 4: kappa=0.050  path_len=6.34  n_obs=320
+  [ak/unet1890] A v0: 23s  E_truth=4.98  swept=97%  path=31.3
+    [rbf/unet1890/greek_upper_0] round 0: kappa=1.000  path_len=5.93  n_obs=64
+    [rbf/unet1890/greek_upper_0] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/unet1890/greek_upper_0] round 2: kappa=0.525  path_len=6.00  n_obs=192
+    [rbf/unet1890/greek_upper_0] round 3: kappa=0.288  path_len=6.10  n_obs=256
+    [rbf/unet1890/greek_upper_0] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [rbf/unet1890] greek_upper_0 v0: 19s  E_truth=9.00  swept=96%  path=29.6
+    [ak/unet1890/greek_upper_0] round 0: kappa=1.000  path_len=5.93  n_obs=64
+    [ak/unet1890/greek_upper_0] round 1: kappa=0.762  path_len=5.96  n_obs=128
+    [ak/unet1890/greek_upper_0] round 2: kappa=0.525  path_len=6.17  n_obs=192
+    [ak/unet1890/greek_upper_0] round 3: kappa=0.288  path_len=5.58  n_obs=256
+    [ak/unet1890/greek_upper_0] round 4: kappa=0.050  path_len=5.12  n_obs=320
+  [ak/unet1890] greek_upper_0 v0: 23s  E_truth=4.75  swept=97%  path=28.8
+
+=== lm1300: 4 missions ===
+    [rbf/lm1300/A] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [rbf/lm1300/A] round 1: kappa=0.762  path_len=6.23  n_obs=128
+    [rbf/lm1300/A] round 2: kappa=0.525  path_len=6.56  n_obs=192
+    [rbf/lm1300/A] round 3: kappa=0.288  path_len=6.15  n_obs=256
+    [rbf/lm1300/A] round 4: kappa=0.050  path_len=4.76  n_obs=320
+  [rbf/lm1300] A v0: 20s  E_truth=9.79  swept=96%  path=29.4
+    [ak/lm1300/A] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [ak/lm1300/A] round 1: kappa=0.762  path_len=5.51  n_obs=128
+    [ak/lm1300/A] round 2: kappa=0.525  path_len=6.26  n_obs=192
+    [ak/lm1300/A] round 3: kappa=0.288  path_len=5.31  n_obs=256
+    [ak/lm1300/A] round 4: kappa=0.050  path_len=4.06  n_obs=320
+  [ak/lm1300] A v0: 23s  E_truth=4.93  swept=96%  path=26.8
+    [rbf/lm1300/greek_upper_0] round 0: kappa=1.000  path_len=6.44  n_obs=64
+    [rbf/lm1300/greek_upper_0] round 1: kappa=0.762  path_len=7.01  n_obs=128
+    [rbf/lm1300/greek_upper_0] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [rbf/lm1300/greek_upper_0] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/lm1300/greek_upper_0] round 4: kappa=0.050  path_len=6.36  n_obs=320
+  [rbf/lm1300] greek_upper_0 v0: 21s  E_truth=7.37  swept=97%  path=31.3
+    [ak/lm1300/greek_upper_0] round 0: kappa=1.000  path_len=6.44  n_obs=64
+    [ak/lm1300/greek_upper_0] round 1: kappa=0.762  path_len=6.48  n_obs=128
+    [ak/lm1300/greek_upper_0] round 2: kappa=0.525  path_len=5.95  n_obs=192
+    [ak/lm1300/greek_upper_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/lm1300/greek_upper_0] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/lm1300] greek_upper_0 v0: 24s  E_truth=3.95  swept=97%  path=30.5
+
+=== lintsvec: 4 missions ===
+    [rbf/lintsvec/A] round 0: kappa=1.000  path_len=7.06  n_obs=64
+    [rbf/lintsvec/A] round 1: kappa=0.762  path_len=8.25  n_obs=128
+    [rbf/lintsvec/A] round 2: kappa=0.525  path_len=6.50  n_obs=192
+    [rbf/lintsvec/A] round 3: kappa=0.288  path_len=6.95  n_obs=256
+    [rbf/lintsvec/A] round 4: kappa=0.050  path_len=5.99  n_obs=320
+  [rbf/lintsvec] A v0: 8s  E_truth=8.23  swept=97%  path=34.8
+    [ak/lintsvec/A] round 0: kappa=1.000  path_len=7.06  n_obs=64
+    [ak/lintsvec/A] round 1: kappa=0.762  path_len=7.67  n_obs=128
+    [ak/lintsvec/A] round 2: kappa=0.525  path_len=7.49  n_obs=192
+    [ak/lintsvec/A] round 3: kappa=0.288  path_len=6.61  n_obs=256
+    [ak/lintsvec/A] round 4: kappa=0.050  path_len=6.33  n_obs=320
+  [ak/lintsvec] A v0: 12s  E_truth=4.89  swept=97%  path=35.2
+    [rbf/lintsvec/greek_upper_0] round 0: kappa=1.000  path_len=7.06  n_obs=64
+    [rbf/lintsvec/greek_upper_0] round 1: kappa=0.762  path_len=7.41  n_obs=128
+    [rbf/lintsvec/greek_upper_0] round 2: kappa=0.525  path_len=6.99  n_obs=192
+    [rbf/lintsvec/greek_upper_0] round 3: kappa=0.288  path_len=6.65  n_obs=256
+    [rbf/lintsvec/greek_upper_0] round 4: kappa=0.050  path_len=7.22  n_obs=320
+  [rbf/lintsvec] greek_upper_0 v0: 8s  E_truth=7.01  swept=97%  path=35.3
+    [ak/lintsvec/greek_upper_0] round 0: kappa=1.000  path_len=7.06  n_obs=64
+    [ak/lintsvec/greek_upper_0] round 1: kappa=0.762  path_len=7.19  n_obs=128
+    [ak/lintsvec/greek_upper_0] round 2: kappa=0.525  path_len=7.15  n_obs=192
+    [ak/lintsvec/greek_upper_0] round 3: kappa=0.288  path_len=5.55  n_obs=256
+    [ak/lintsvec/greek_upper_0] round 4: kappa=0.050  path_len=7.90  n_obs=320
+  [ak/lintsvec] greek_upper_0 v0: 12s  E_truth=5.01  swept=97%  path=34.9
+
+=== gpgoal: 4 missions ===
+    [rbf/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64
+    [rbf/gpgoal/A] round 1: kappa=0.762  path_len=5.93  n_obs=128
+    [rbf/gpgoal/A] round 2: kappa=0.525  path_len=5.91  n_obs=192
+    [rbf/gpgoal/A] round 3: kappa=0.288  path_len=5.88  n_obs=256
+    [rbf/gpgoal/A] round 4: kappa=0.050  path_len=5.98  n_obs=320
+  [rbf/gpgoal] A v0: 0s  E_truth=21.81  swept=74%  path=29.7
+    [ak/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64
+    [ak/gpgoal/A] round 1: kappa=0.762  path_len=5.93  n_obs=128
+    [ak/gpgoal/A] round 2: kappa=0.525  path_len=5.95  n_obs=192
+    [ak/gpgoal/A] round 3: kappa=0.288  path_len=5.95  n_obs=256
+    [ak/gpgoal/A] round 4: kappa=0.050  path_len=5.96  n_obs=320
+  [ak/gpgoal] A v0: 4s  E_truth=2.73  swept=97%  path=29.8
+    [rbf/gpgoal/greek_upper_0] round 0: kappa=1.000  path_len=5.93  n_obs=64
+    [rbf/gpgoal/greek_upper_0] round 1: kappa=0.762  path_len=5.90  n_obs=128
+    [rbf/gpgoal/greek_upper_0] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [rbf/gpgoal/greek_upper_0] round 3: kappa=0.288  path_len=5.92  n_obs=256
+    [rbf/gpgoal/greek_upper_0] round 4: kappa=0.050  path_len=5.97  n_obs=320
+  [rbf/gpgoal] greek_upper_0 v0: 0s  E_truth=5.14  swept=96%  path=29.7
+    [ak/gpgoal/greek_upper_0] round 0: kappa=1.000  path_len=5.93  n_obs=64
+    [ak/gpgoal/greek_upper_0] round 1: kappa=0.762  path_len=5.96  n_obs=128
+    [ak/gpgoal/greek_upper_0] round 2: kappa=0.525  path_len=5.96  n_obs=192
+    [ak/gpgoal/greek_upper_0] round 3: kappa=0.288  path_len=5.91  n_obs=256
+    [ak/gpgoal/greek_upper_0] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [ak/gpgoal] greek_upper_0 v0: 4s  E_truth=8.86  swept=95%  path=29.7
+
+=== linray: 4 missions ===
+    [rbf/linray/A] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [rbf/linray/A] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/linray/A] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [rbf/linray/A] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/linray/A] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [rbf/linray] A v0: 0s  E_truth=6.61  swept=95%  path=29.0
+    [ak/linray/A] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [ak/linray/A] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/linray/A] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [ak/linray/A] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [ak/linray/A] round 4: kappa=0.050  path_len=5.91  n_obs=320
+  [ak/linray] A v0: 4s  E_truth=6.61  swept=95%  path=29.0
+    [rbf/linray/greek_upper_0] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [rbf/linray/greek_upper_0] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/linray/greek_upper_0] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [rbf/linray/greek_upper_0] round 3: kappa=0.288  path_len=5.66  n_obs=256
+    [rbf/linray/greek_upper_0] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [rbf/linray] greek_upper_0 v0: 1s  E_truth=8.35  swept=96%  path=28.8
+    [ak/linray/greek_upper_0] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [ak/linray/greek_upper_0] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/linray/greek_upper_0] round 2: kappa=0.525  path_len=5.88  n_obs=192
+    [ak/linray/greek_upper_0] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/linray/greek_upper_0] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/linray] greek_upper_0 v0: 4s  E_truth=7.72  swept=95%  path=28.9
+
+=== plots + tables ===
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight/extended/rbf/A.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight/extended/ak/A.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight/extended/rbf/greek_upper_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_preflight/extended/ak/greek_upper_0.png
+  tables + aggregate plots in plots/exploration_comparison_obstacles_dice6_r0.08_preflight/extended
+6 obstacles, radius 0.08, margin 0.01, w_obstacle 1000.0
+method        kern  runs  max pen runs hit s/mission len/round viol pre-clear  E_truth  E_free
+dit630        ak       2   0.0000        0      20.6      5.54   0.0084/0.028     5.52    6.44
+dit630        rbf      2   0.0000        0      16.8      5.87   0.0079/0.021     9.85   11.00
+gpgoal        ak       2   0.0000        0       4.3      5.94      nan/nan     5.79    7.73
+gpgoal        rbf      2   0.0000        0       0.4      5.94      nan/nan    13.48   16.22
+lawn          ak       2   0.0000        0       4.0      6.33      nan/nan    17.97   20.62
+lawn          rbf      2   0.0000        0       0.3      6.33      nan/nan    17.97   20.62
+linadam       ak       2   0.0000        0      10.5      5.54   0.0027/0.004     5.32    6.23
+linadam       rbf      2   0.0000        0       6.8      5.73   0.0033/0.006    10.56   12.20
+linray        ak       2   0.0000        0       4.2      5.79      nan/nan     7.16    8.61
+linray        rbf      2   0.0000        0       0.5      5.78      nan/nan     7.48    8.84
+lintsvec      ak       2   0.0015        1      12.1      7.00   0.0218/0.037     4.95    5.93
+lintsvec      rbf      2   0.0000        0       8.1      7.01   0.0287/0.051     7.62    8.74
+lm1300        ak       2   0.0000        0      23.4      5.73   0.0125/0.026     4.44    4.96
+lm1300        rbf      2   0.0000        0      20.4      6.07   0.0097/0.026     8.58    9.68
+old500        ak       2   0.0000        0      22.4      5.37   0.0084/0.017     7.93    8.75
+old500        rbf      2   0.0142        1      18.5      5.87   0.0061/0.013     9.80   10.86
+rw            ak       2   0.0000        0       6.2      5.76      nan/nan    32.95   33.09
+rw            rbf      2   0.0000        0       2.4      5.76      nan/nan    32.95   33.09
+selfsup       ak       2   0.0000        0      12.6      5.03   0.0038/0.023     7.68    8.86
+selfsup       rbf      2   0.0000        0       9.3      5.47   0.0023/0.005    12.57   14.10
+unet0         ak       2   0.0000        0      22.6      5.55   0.0096/0.030     7.23    8.06
+unet0         rbf      2   0.0000        0      19.6      5.98   0.0108/0.018    10.19   11.42
+unet1890      ak       2   0.0000        0      23.1      6.01   0.0074/0.017     4.86    5.61
+unet1890      rbf      2   0.0000        0      19.1      6.14   0.0086/0.020     8.63    9.60
+unet630       ak       2   0.0000        0      26.7      5.53   0.0068/0.018     5.54    6.14
+unet630       rbf      2   0.0000        0      20.7      5.75   0.0095/0.026     7.38    8.37
+COLLISIONS FOUND
+[job] Mon Nov 16 18:07:08 CET 2026 finished

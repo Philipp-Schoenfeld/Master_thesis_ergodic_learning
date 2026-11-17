@@ -244,7 +244,7 @@ class TsvecSvgd:
     def __init__(self, B, K=10, device='cpu', dtype=torch.float32,
                 w_smooth=W_SMOOTH, w_ergodic=W_ERGODIC,
                 w_boundary=W_BOUNDARY, damping=LM_DAMPING, margin=BOUNDARY_MARGIN, beta=1.0,
-                smooth_order=2):
+                smooth_order=2, obstacles=None, w_obstacle=0.0):
         """`B`: (T, nxi) numpy/torch render matrix for B-spline control
         points, or None for raw waypoints (particles ARE the T dense points).
         `w_smooth=0.0` reproduces the "no smoothness force" variant.
@@ -252,7 +252,13 @@ class TsvecSvgd:
         (1 velocity, 2 acceleration = the paper's term and the default, 3 jerk);
         see `_diff_matrix` for the scaling.
         `beta`: temperature -- all three energy weights are multiplied by it (target
-        p ~ exp(-beta V), see "Temperature" in the module docstring)."""
+        p ~ exp(-beta V), see "Temperature" in the module docstring).
+        `obstacles` / `w_obstacle` (opt-in, default off = the previous behaviour bit for bit):
+        circular no-go zones as an `obstacles.CircleObstacle` / `CompositeObstacle` (or any
+        object with `.center`, `.effective_radius`, or `.obstacles` of such). Adds the
+        hinge residual sqrt(w_obstacle) * max(R_eff - |X_t - c|, 0) per curve point and
+        obstacle, i.e. the same hinge-squared penalty as `obstacles.CircleObstacle.penalty`,
+        to the Gauss-Newton system (also scaled by `beta`)."""
         self.device = torch.device(device)
         self.dtype = dtype
         self.B = None if B is None else (
@@ -268,6 +274,16 @@ class TsvecSvgd:
         self.damping = damping
         self.margin = margin
         self.smooth_order = smooth_order
+        self.obs_c = self.obs_r = None
+        self.w_obstacle = 0.0
+        if obstacles is not None and w_obstacle > 0.0:
+            parts = getattr(obstacles, 'obstacles', None)
+            parts = list(parts) if parts is not None else [obstacles]
+            if parts:
+                self.obs_c = torch.as_tensor([o.center for o in parts], dtype=dtype, device=self.device)
+                self.obs_r = torch.as_tensor([o.effective_radius for o in parts], dtype=dtype,
+                                             device=self.device)
+                self.w_obstacle = float(w_obstacle) * self.beta
 
     def render(self, P):
         """(N, nxi_or_T, 2) -> (N, T, 2) dense points."""
@@ -327,7 +343,28 @@ class TsvecSvgd:
 
         r = torch.cat([r_s, r_e, r_lo, r_hi], dim=1)
         dr_dX = torch.cat([dr_s_dX, dr_e_dX, dr_lo_dX, dr_hi_dX], dim=1)
+        if self.obs_c is not None:
+            r_o, dr_o_dX = self._obstacle_residual(X)
+            r = torch.cat([r, r_o], dim=1)
+            dr_dX = torch.cat([dr_dX, dr_o_dX], dim=1)
         return r, dr_dX
+
+    def _obstacle_residual(self, X):
+        """Hinge residual of the circular obstacles (opt-in, see `__init__`).
+        X: (N, T, 2) -> r (N, T*M), dr/dX (N, T*M, T*2); row t*M + m = point t vs. obstacle m.
+        d r / d X_t = -sqrt(w) * (X_t - c) / |X_t - c| where the point is inside R_eff, else 0."""
+        N, T, _ = X.shape
+        M = self.obs_c.shape[0]
+        sw = self.w_obstacle ** 0.5
+        delta = X.unsqueeze(2) - self.obs_c.view(1, 1, M, 2)                 # (N, T, M, 2)
+        dist = delta.norm(dim=-1).clamp(min=1e-12)                           # (N, T, M)
+        pen = torch.clamp(self.obs_r.view(1, 1, M) - dist, min=0.0)
+        active = (pen > 0).to(X.dtype)
+        r_o = sw * pen.reshape(N, T * M)
+        g = (-sw) * (active / dist).unsqueeze(-1) * delta                    # (N, T, M, 2)
+        eye_t = torch.eye(T, device=X.device, dtype=X.dtype)
+        dr = g.unsqueeze(3) * eye_t.view(1, T, 1, T, 1)                      # (N, T, M, T, 2)
+        return r_o, dr.reshape(N, T * M, T * 2)
 
     def step(self, P, phi_k, tau, start=None):
         """One preconditioned SVGD update. P: (N, nxi_or_T, 2) -> P' (same
@@ -421,5 +458,10 @@ class TsvecSvgd:
             P = P_flat.reshape(-1, 2)
             X = (B @ P) if B is not None else P
             A = _diff_matrix(X.shape[0], self.smooth_order, device=X.device, dtype=X.dtype)
-            return _residual(X, k_idx, Lambda, phi_k, w_s, w_e, w_b, margin, A=A)
+            r = _residual(X, k_idx, Lambda, phi_k, w_s, w_e, w_b, margin, A=A)
+            if self.obs_c is not None:
+                dist = (X.unsqueeze(1) - self.obs_c.unsqueeze(0)).norm(dim=-1)      # (T, M)
+                r_o = (self.w_obstacle ** 0.5) * torch.clamp(self.obs_r.unsqueeze(0) - dist, min=0.0)
+                r = torch.cat([r, r_o.reshape(-1)])
+            return r
         return f

@@ -37,10 +37,13 @@ ADAM_B1, ADAM_B2, ADAM_EPS = 0.9, 0.999, 1e-8
 
 class AdamSvgd:
     def __init__(self, B, K=10, device='cpu', dtype=torch.float32, w_smooth=None, beta=1.0,
-                 lr=ADAM_LR, use_kernel=True, smooth_order=2):
+                 lr=ADAM_LR, use_kernel=True, smooth_order=2, obstacles=None, w_obstacle=0.0):
+        """`obstacles` / `w_obstacle`: opt-in obstacle hinge term of the shared energy (see
+        `TsvecSvgd.__init__`); default off = the previous behaviour."""
         kw = {} if w_smooth is None else dict(w_smooth=w_smooth)
         self.energy = TsvecSvgd(B=B, K=K, device=device, dtype=dtype, beta=beta,
-                                smooth_order=smooth_order, **kw)
+                                smooth_order=smooth_order, obstacles=obstacles,
+                                w_obstacle=w_obstacle, **kw)
         self.device, self.dtype = self.energy.device, dtype
         self.lr = lr
         self.use_kernel = use_kernel

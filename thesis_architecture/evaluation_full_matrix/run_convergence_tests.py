@@ -57,6 +57,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt   # noqa: E402
 
 import run_exploration_comparison as rec                                    # noqa: E402
+import workspace_obstacles as wo                                            # noqa: E402
 import run_svgd_convergence as rsc                                          # noqa: E402
 import sample_annealed_mission as sam                                       # noqa: E402
 from common.acquisition import kappa_schedule                               # noqa: E402
@@ -726,11 +727,27 @@ def main():
                         'results cannot be analysed alone; analyse once after merging).')
     p.add_argument('--dry_run', action='store_true')
     p.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu')
+    p.add_argument('--obstacles', type=str, default='none', choices=['none'] + sorted(wo.LAYOUTS),
+                   help="Opt-in: the same tests in the obstacle benchmark (run_exploration_comparison.py "
+                        "--obstacles); the tag gets the suffix _obstacles_<layout>_r<radius> and --main_db "
+                        "defaults to that benchmark's DB.")
+    p.add_argument('--obstacle_radius', type=float, default=wo.DEFAULT_RADIUS)
+    p.add_argument('--obstacle_margin', type=float, default=wo.DEFAULT_MARGIN)
+    p.add_argument('--w_obstacle', type=float, default=rec.W_OBSTACLE_SVGD)
+    p.add_argument('--obstacle_guidance', type=float, default=20.0)
     a = p.parse_args()
+    a.obst = (wo.make_obstacles(a.obstacles, a.obstacle_radius, a.obstacle_margin)
+              if a.obstacles != 'none' else None)
     if a.smoke:
         a.tag, a.iters, a.trace_iters, a.n_shapes, a.n_variants = 'smoke', '0,5,10', 20, 2, 2
         a.n_rounds, a.n_init, a.ak_fit_iters, a.main_iters = 2, 2, 20, 10
         a.methods = a.methods or 'lintsvec,linadam'
+    if a.obst is not None:
+        otag = wo.tag(a.obstacles, a.obstacle_radius)
+        a.tag = f'{a.tag}_{otag}'
+        if a.main_db == MAIN_DB:
+            a.main_db = os.path.join(_here, 'plots', f'exploration_comparison_{otag}',
+                                     f'exploration_comparison_{otag}.db')
     a.methods = (a.methods.split(',') if a.methods else default_methods())
     for m in a.methods + [a.ref_method]:
         if m not in rec.METHODS:
@@ -757,7 +774,7 @@ def main():
     db_path = os.path.join(out_dir, 'sweep.db')
     db = rec.ResultDB(db_path)
     if {'sweep', 'trace'} & set(a.parts):
-        ctx = rec.make_context(device)
+        ctx = rec.make_context(device, a.obst, a.w_obstacle if a.obst is not None else 0.0)
     if 'sweep' in a.parts:
         part_sweep(a, ctx, device, db, a.main_db)
     if 'trace' in a.parts:

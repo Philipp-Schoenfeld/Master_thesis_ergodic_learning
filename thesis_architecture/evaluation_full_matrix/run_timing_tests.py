@@ -56,6 +56,7 @@ import sample_annealed_mission as sam                                       # no
 import sample_annealed_mission_overview as ov                               # noqa: E402
 import apply_cfm_belief as acb                                              # noqa: E402
 import run_exploration_comparison as rec                                    # noqa: E402
+import workspace_obstacles as wo                                            # noqa: E402
 import run_svgd_convergence as rsc                                          # noqa: E402
 import variant_runner as vr                                                 # noqa: E402
 import mission_baselines as mb                                              # noqa: E402
@@ -159,10 +160,12 @@ def part_planner(wr, a, ctx, truth, device):
         parts = acb.phi_particles(phi, args.n_particles, mode=args.phi_mode,
                                   quantile=args.phi_quantile, device=device)
         planner.cfg_weight = 2.0
+        obs_kw = ({} if getattr(a, 'obst', None) is None else
+                  dict(obstacle=a.obst, obstacle_weight=a.obstacle_guidance))
         for n_init in a.n_init_sweep:
             def call():
                 with torch.no_grad():
-                    cps = planner.plan(parts, n_candidates=n_init, start=start)
+                    cps = planner.plan(parts, n_candidates=n_init, start=start, **obs_kw)
                     planner.render(cps)
             if device.startswith('cuda'):
                 torch.cuda.reset_peak_memory_stats()
@@ -486,7 +489,18 @@ def main():
     p.add_argument('--smoke', action='store_true', help='Tiny sizes, separate folder (mechanics only).')
     p.add_argument('--dry_run', action='store_true')
     p.add_argument('--device', type=str, default='cuda' if torch.cuda.is_available() else 'cpu')
+    p.add_argument('--obstacles', type=str, default='none', choices=['none'] + sorted(wo.LAYOUTS),
+                   help="Opt-in: time the obstacle benchmark's pipeline (run_exploration_comparison.py "
+                        "--obstacles): guided network sampling, SVGD with the obstacle term, obstacle-aware "
+                        "baselines in the mission part and the SVGD part. The init part keeps timing the "
+                        "obstacle-free sources. The tag gets the suffix _obstacles_<layout>_r<radius>.")
+    p.add_argument('--obstacle_radius', type=float, default=wo.DEFAULT_RADIUS)
+    p.add_argument('--obstacle_margin', type=float, default=wo.DEFAULT_MARGIN)
+    p.add_argument('--w_obstacle', type=float, default=rec.W_OBSTACLE_SVGD)
+    p.add_argument('--obstacle_guidance', type=float, default=20.0)
     a = p.parse_args()
+    a.obst = (wo.make_obstacles(a.obstacles, a.obstacle_radius, a.obstacle_margin)
+              if a.obstacles != 'none' else None)
     if a.smoke:
         a.parts = 'planner,init,refiner,belief,missions'
         a.n_init_sweep, a.iters_sweep, a.nobs_sweep = '1,4', '5', '0,64'
@@ -506,6 +520,8 @@ def main():
         if m not in rec.METHODS:
             raise SystemExit(f'unknown method {m}; known: {rec.METHODS}')
     a_global = a
+    if a.obst is not None:
+        a.tag = f'{a.tag}_{wo.tag(a.obstacles, a.obstacle_radius)}'
     out_dir = a.out_dir or os.path.join(_here, 'results', f'timing_tests_{a.tag}')
     device = a.device
 
@@ -520,13 +536,13 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     hw = hardware_info(device)
     with open(os.path.join(out_dir, 'hardware.json'), 'w', encoding='utf-8') as f:
-        json.dump(dict(hardware=hw, args={k: v for k, v in vars(a).items()}), f, indent=1)
+        json.dump(dict(hardware=hw, args={k: v for k, v in vars(a).items() if k != 'obst'}), f, indent=1)
     if device.startswith('cuda'):
         torch.backends.cudnn.benchmark = False      # fixed algorithm choice, comparable timings
 
     names, truths = load_truth(labels=a.shapes[:1], n=1, split='val', resolution=rsc.TRUTH_RES, device=device)
     truth = truths[0].detach().cpu()
-    ctx = rec.make_context(device)
+    ctx = rec.make_context(device, a.obst, a.w_obstacle if a.obst is not None else 0.0)
     wr = Writer(os.path.join(out_dir, 'timing_components.csv'))
     mission_rows = []
     t0 = time.time()

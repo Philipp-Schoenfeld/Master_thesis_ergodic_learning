@@ -174,7 +174,8 @@ def info_gain_cutoff(belief, seg, unc0, threshold):
 def run_mission(name, truth, planner, bs, ee, B32, args, device,
                 n_rounds, n_init, n_iters, kappas, start_pos, seed,
                 ig_threshold=None, cutoff=0.0, on_round=None, path_fn=None,
-                init_fn=None, target_fn=None, conv_iters=None):
+                init_fn=None, target_fn=None, conv_iters=None, obstacles=None,
+                obstacle_guidance=20.0):
     """`cutoff` narrows the particle cloud the network is conditioned on (same rule
     as the GUI's "Cloud Cutoff": particles only where Phi >= cutoff * max(Phi);
     the refiner's target stays the full Phi). 0 = unchanged behaviour.
@@ -205,7 +206,22 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
     Timings: `diag` also holds wall-clock seconds (GPU-synchronised) of the round's stages:
     `t_target` (belief posterior + target density), `t_init` (network forward / ray generation /
     baseline path), `t_refine` (SVGD refinement + candidate selection; 0 without refiner),
-    `t_belief` (measurement + belief update, incl. the AK kernel fit) and `t_round` (their sum)."""
+    `t_belief` (measurement + belief update, incl. the AK kernel fit) and `t_round` (their sum).
+
+    `obstacles` (opt-in, default None = the previous behaviour): an `obstacles.CompositeObstacle`
+    (see `workspace_obstacles.py`). Then the round's target density is 0 inside the (inflated)
+    obstacles, the network sample is repelled from them during the flow integration (inference
+    guidance with weight `obstacle_guidance` plus the generator's own polish step; the
+    self-supervised generator gets the polish step), the refiner `bs` is expected to carry the
+    obstacle term itself (built with `obstacles=`), the winner is the best candidate among the
+    collision-free ones, and a final clearance step (descent on the obstacle penalty, start held)
+    removes what is left of a violation. `path_fn` / `init_fn` sources must avoid the obstacles
+    themselves. `diag['obs_viol_ref']` is the selected candidate's violation (inflated radius)
+    BEFORE that clearance step (NaN for `path_fn` baselines); `diag['obs_fallback']` is 1 if the
+    clearance step did not converge and the geometric detour (`workspace_obstacles.guarantee_clear`)
+    had to route the driven curve around the obstacles, else 0."""
+    if obstacles is not None:
+        import workspace_obstacles as wo
     belief = vr.build_belief(CONDITION, truth, seed=seed, device=device,
                              gp_noise=args.gp_noise, gp_lengthscale=0.08,
                              dtype=torch.float64, kernel=args.belief_kernel,
@@ -225,10 +241,15 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
         args.kappa = kap
         phi, _ = acb.debt_density(mu, sd, visit, kap, args)
         phi = phi.float()
+        if obstacles is not None:
+            phi = wo.mask_density(phi, obstacles)
         if float(phi.max()) < 1e-6:
             phi = torch.ones_like(phi)
+            if obstacles is not None:
+                phi = wo.mask_density(phi, obstacles)
 
         conv_E = None
+        obs_viol_ref = obs_fallback = float('nan')
         t_1 = _now(device)
         if path_fn is not None:
             # model-free baseline (random walk, lawnmower, ...): no network, no refinement
@@ -248,8 +269,10 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
                 parts = acb.phi_particles(phi_cloud, args.n_particles, mode=args.phi_mode,
                                           quantile=args.phi_quantile, device=device)
                 planner.cfg_weight = 2.0
+                obs_kw = ({} if obstacles is None else
+                          dict(obstacle=obstacles, obstacle_weight=obstacle_guidance))
                 with torch.no_grad():
-                    cps = planner.plan(parts, n_candidates=n_init, start=start)
+                    cps = planner.plan(parts, n_candidates=n_init, start=start, **obs_kw)
                     curves = planner.render(cps).detach()               # (n_init, T, 2)
 
             # -- TSVEC-SVGD refinement (common/tsvec_svgd.py via its batched
@@ -290,7 +313,20 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
             #    the ground truth).
             c = coeffs_from_points(final_curves, ee.k_idx)
             E = (ee.w * 0.5 * ee.Lambda * (c - phi_k10.unsqueeze(0)) ** 2).sum(-1)
-            sel = int(torch.argmin(E))
+            if obstacles is None:
+                sel = int(torch.argmin(E))
+            else:
+                # best collision-free candidate, then the final clearance step (start held)
+                viol = wo.curve_violation(final_curves, obstacles)
+                sel = wo.select_feasible(E, viol)
+                obs_viol_ref = float(viol[sel])
+                cps_sel = wo.clear_obstacles(final_cps[sel:sel + 1], obstacles, B32, start)
+                # driven on the dense rendering (see `workspace_obstacles.DENSE_PTS`)
+                Bd = wo.dense_basis(cps_sel.shape[1], cps_sel.device, cps_sel.dtype)
+                dense = torch.einsum('pi,id->pd', Bd, cps_sel[0])
+                dense, obs_fallback = wo.guarantee_clear(dense, obstacles)
+                final_curves = [None] * final_curves.shape[0]
+                final_curves[sel] = dense
             winner = final_curves[sel].clone()
             winner[0] = start                                             # hard snap, as `execute()`
             winner = winner.clamp(0.0, 1.0)
@@ -322,7 +358,9 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
                      dict(E_init_best=float(E_init.min()), E_init_med=float(E_init.median()),
                           E_ref_best=float(E.min()), E_ref_med=float(E.median()),
                           t_target=t_1 - t_0, t_init=t_2 - t_1, t_refine=t_3 - t_2,
-                          t_belief=t_4 - t_3, t_round=t_4 - t_0, conv_E=conv_E))
+                          t_belief=t_4 - t_3, t_round=t_4 - t_0, conv_E=conv_E,
+                          **({} if obstacles is None else dict(obs_viol_ref=obs_viol_ref,
+                                                               obs_fallback=obs_fallback))))
         start = seg[-1].detach()
         extra = (f"  dH={ig_gain:.3f} (target {ig_threshold:.3f}, "
                 f"{seg.shape[0]}/{n_pts} pts driven)" if ig_gain is not None else "")
@@ -337,9 +375,11 @@ def run_mission(name, truth, planner, bs, ee, B32, args, device,
 # ===========================================================================
 
 def plot_round(ax, phi, seg, kap, col, row_label=None, col_title=None, cmap=None,
-               info=None):
+               info=None, obstacles=None):
     ax.imshow(phi.numpy(), origin='lower', extent=[0, 1, 0, 1], cmap=cmap,
              vmin=0, vmax=1.0, alpha=0.55, zorder=1)
+    if obstacles is not None:
+        obstacles.draw(ax, zorder=2.5)
     pts = seg.numpy()
     ax.plot(pts[:, 0], pts[:, 1], color=col, lw=2.2, alpha=0.95, zorder=3)
     ax.plot(pts[0, 0], pts[0, 1], 'o', color=col, ms=5, zorder=4)
@@ -359,12 +399,14 @@ def plot_round(ax, phi, seg, kap, col, row_label=None, col_title=None, cmap=None
 
 
 def plot_summary(ax, truth, segments, colors, kappas, row_label=None, col_title=None,
-                 cmap=None):
+                 cmap=None, obstacles=None):
     """All rounds of one mission overlaid on the GROUND TRUTH density (not a
     round's belief-based Phi) -- the final-result view, driven path vs. what
     was actually there, which the mission itself never got to see."""
     ax.imshow(truth.numpy(), origin='lower', extent=[0, 1, 0, 1], cmap=cmap,
              vmin=0, vmax=float(truth.max()) or 1.0, alpha=0.55, zorder=1)
+    if obstacles is not None:
+        obstacles.draw(ax, zorder=2.5)
     all_pts = torch.cat(segments, dim=0)
     for r, (seg, col, kap) in enumerate(zip(segments, colors, kappas)):
         pts = seg.numpy()

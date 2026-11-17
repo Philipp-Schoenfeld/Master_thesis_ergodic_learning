@@ -1,0 +1,2158 @@
+[job] Tue Nov 17 11:39:10 CET 2026 node=gn04 gpu=NVIDIA GeForce RTX 3090 methods=rw tag=f
+25 heldout shapes, methods=['rw'], kernels=['rbf', 'ak'], db=plots/exploration_comparison_obstacles_dice6_r0.08_f/exploration_comparison.db
+
+=== rw: 350 missions ===
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] A v0: 4s  E_truth=27.18  swept=90%  path=28.8
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] A v0: 15s  E_truth=27.18  swept=90%  path=28.8
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] greek_upper_0 v0: 3s  E_truth=38.73  swept=62%  path=28.8
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] greek_upper_0 v0: 7s  E_truth=38.73  swept=62%  path=28.8
+    [rbf/rw/korean_5] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/korean_5] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/korean_5] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [rbf/rw/korean_5] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/korean_5] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] korean_5 v0: 3s  E_truth=65.11  swept=73%  path=28.9
+    [ak/rw/korean_5] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/korean_5] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/korean_5] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [ak/rw/korean_5] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/korean_5] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] korean_5 v0: 7s  E_truth=65.11  swept=73%  path=28.9
+    [rbf/rw/digit_5] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/digit_5] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/digit_5] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/digit_5] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [rbf/rw/digit_5] round 4: kappa=0.050  path_len=5.86  n_obs=320
+  [rbf/rw] digit_5 v0: 3s  E_truth=36.32  swept=84%  path=28.9
+    [ak/rw/digit_5] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/digit_5] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/digit_5] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/digit_5] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [ak/rw/digit_5] round 4: kappa=0.050  path_len=5.86  n_obs=320
+  [ak/rw] digit_5 v0: 7s  E_truth=36.32  swept=84%  path=28.9
+    [rbf/rw/a_lc] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/a_lc] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [rbf/rw/a_lc] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/a_lc] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/a_lc] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [rbf/rw] a_lc v0: 3s  E_truth=58.19  swept=62%  path=29.0
+    [ak/rw/a_lc] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/a_lc] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [ak/rw/a_lc] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/a_lc] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/a_lc] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [ak/rw] a_lc v0: 7s  E_truth=58.19  swept=62%  path=29.0
+    [rbf/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.67  n_obs=128
+    [rbf/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [rbf/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] rand_gmm_10 v0: 3s  E_truth=12.21  swept=76%  path=28.8
+    [ak/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.67  n_obs=128
+    [ak/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [ak/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] rand_gmm_10 v0: 7s  E_truth=12.21  swept=76%  path=28.8
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] rand_gmm_20 v0: 3s  E_truth=48.82  swept=55%  path=28.9
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] rand_gmm_20 v0: 7s  E_truth=48.82  swept=55%  path=28.9
+    [rbf/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.64  n_obs=192
+    [rbf/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [rbf/rw] rand_ana_poly_10 v0: 3s  E_truth=90.65  swept=78%  path=28.7
+    [ak/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.64  n_obs=192
+    [ak/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [ak/rw] rand_ana_poly_10 v0: 7s  E_truth=90.65  swept=78%  path=28.7
+    [rbf/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.65  n_obs=320
+  [rbf/rw] rand_ana_poly_20 v0: 3s  E_truth=50.22  swept=79%  path=28.7
+    [ak/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.65  n_obs=320
+  [ak/rw] rand_ana_poly_20 v0: 7s  E_truth=50.22  swept=79%  path=28.7
+    [rbf/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.69  n_obs=128
+    [rbf/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [rbf/rw] rand_ana_poly_30 v0: 3s  E_truth=14.76  swept=95%  path=28.7
+    [ak/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.69  n_obs=128
+    [ak/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [ak/rw] rand_ana_poly_30 v0: 7s  E_truth=14.76  swept=95%  path=28.7
+    [rbf/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] rand_gmm_complex_0 v0: 3s  E_truth=37.67  swept=70%  path=28.9
+    [ak/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] rand_gmm_complex_0 v0: 7s  E_truth=37.67  swept=70%  path=28.9
+    [rbf/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.87  n_obs=192
+    [rbf/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [rbf/rw] rand_gmm_complex_10 v0: 3s  E_truth=67.26  swept=73%  path=29.0
+    [ak/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.87  n_obs=192
+    [ak/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [ak/rw] rand_gmm_complex_10 v0: 7s  E_truth=67.26  swept=73%  path=29.0
+    [rbf/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [rbf/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.83  n_obs=320
+  [rbf/rw] rand_gmm_complex_20 v0: 3s  E_truth=51.50  swept=59%  path=28.8
+    [ak/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.83  n_obs=320
+  [ak/rw] rand_gmm_complex_20 v0: 7s  E_truth=51.50  swept=59%  path=28.8
+    [rbf/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.85  n_obs=64
+    [rbf/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [rbf/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [rbf/rw] rand_gmm_complex_30 v0: 3s  E_truth=5.36  swept=83%  path=28.9
+    [ak/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.85  n_obs=64
+    [ak/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [ak/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [ak/rw] rand_gmm_complex_30 v0: 7s  E_truth=5.36  swept=83%  path=28.9
+    [rbf/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_0 v0: 3s  E_truth=62.27  swept=71%  path=28.6
+    [ak/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [ak/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [ak/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] rand_ana_poly_complex_0 v0: 7s  E_truth=62.27  swept=71%  path=28.6
+    [rbf/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_10 v0: 3s  E_truth=33.37  swept=67%  path=28.7
+    [ak/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] rand_ana_poly_complex_10 v0: 7s  E_truth=33.37  swept=67%  path=28.7
+    [rbf/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_20 v0: 3s  E_truth=60.97  swept=63%  path=28.8
+    [ak/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] rand_ana_poly_complex_20 v0: 7s  E_truth=60.97  swept=63%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_30 v0: 3s  E_truth=40.59  swept=76%  path=28.8
+    [ak/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [ak/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] rand_ana_poly_complex_30 v0: 7s  E_truth=40.59  swept=76%  path=28.8
+    [rbf/rw/organic_0] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/rw/organic_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/organic_0] round 2: kappa=0.525  path_len=5.66  n_obs=192
+    [rbf/rw/organic_0] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/organic_0] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] organic_0 v0: 3s  E_truth=58.72  swept=68%  path=28.8
+    [ak/rw/organic_0] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/rw/organic_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/organic_0] round 2: kappa=0.525  path_len=5.66  n_obs=192
+    [ak/rw/organic_0] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/organic_0] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] organic_0 v0: 7s  E_truth=58.72  swept=68%  path=28.8
+    [rbf/rw/organic_10] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/organic_10] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/organic_10] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [rbf/rw/organic_10] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/organic_10] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] organic_10 v0: 3s  E_truth=29.64  swept=79%  path=29.0
+    [ak/rw/organic_10] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/organic_10] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/organic_10] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [ak/rw/organic_10] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/organic_10] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] organic_10 v0: 7s  E_truth=29.64  swept=79%  path=29.0
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.86  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] organic_20 v0: 3s  E_truth=45.28  swept=84%  path=29.0
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.86  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] organic_20 v0: 7s  E_truth=45.28  swept=84%  path=29.0
+    [rbf/rw/organic_30] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/organic_30] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/organic_30] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/organic_30] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/organic_30] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [rbf/rw] organic_30 v0: 3s  E_truth=24.33  swept=96%  path=28.8
+    [ak/rw/organic_30] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/organic_30] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/organic_30] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/organic_30] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/organic_30] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [ak/rw] organic_30 v0: 7s  E_truth=24.33  swept=96%  path=28.8
+    [rbf/rw/cjk_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/cjk_0] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/cjk_0] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/cjk_0] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/rw/cjk_0] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] cjk_0 v0: 3s  E_truth=35.87  swept=76%  path=28.8
+    [ak/rw/cjk_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/cjk_0] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/cjk_0] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/cjk_0] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [ak/rw/cjk_0] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] cjk_0 v0: 7s  E_truth=35.87  swept=76%  path=28.8
+    [rbf/rw/cjk_10] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/cjk_10] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/cjk_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/cjk_10] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/cjk_10] round 4: kappa=0.050  path_len=5.66  n_obs=320
+  [rbf/rw] cjk_10 v0: 3s  E_truth=42.07  swept=47%  path=28.8
+    [ak/rw/cjk_10] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/cjk_10] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/cjk_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/cjk_10] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/cjk_10] round 4: kappa=0.050  path_len=5.66  n_obs=320
+  [ak/rw] cjk_10 v0: 7s  E_truth=42.07  swept=47%  path=28.8
+    [rbf/rw/cjk_20] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/cjk_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/cjk_20] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [rbf/rw/cjk_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/cjk_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] cjk_20 v0: 3s  E_truth=26.97  swept=87%  path=28.8
+    [ak/rw/cjk_20] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/cjk_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/cjk_20] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [ak/rw/cjk_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/cjk_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] cjk_20 v0: 7s  E_truth=26.97  swept=87%  path=28.8
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [rbf/rw] A v1: 3s  E_truth=23.96  swept=88%  path=28.7
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/rw] A v1: 7s  E_truth=23.96  swept=88%  path=28.7
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] greek_upper_0 v1: 3s  E_truth=15.84  swept=88%  path=28.8
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] greek_upper_0 v1: 7s  E_truth=15.84  swept=88%  path=28.8
+    [rbf/rw/korean_5] round 0: kappa=1.000  path_len=5.89  n_obs=64
+    [rbf/rw/korean_5] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/korean_5] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [rbf/rw/korean_5] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/korean_5] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] korean_5 v1: 3s  E_truth=59.56  swept=76%  path=29.1
+    [ak/rw/korean_5] round 0: kappa=1.000  path_len=5.89  n_obs=64
+    [ak/rw/korean_5] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/korean_5] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [ak/rw/korean_5] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/korean_5] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] korean_5 v1: 7s  E_truth=59.56  swept=76%  path=29.1
+    [rbf/rw/digit_5] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/digit_5] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/rw/digit_5] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/digit_5] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/digit_5] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] digit_5 v1: 3s  E_truth=117.43  swept=47%  path=28.8
+    [ak/rw/digit_5] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/digit_5] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/rw/digit_5] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/digit_5] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/digit_5] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] digit_5 v1: 7s  E_truth=117.43  swept=47%  path=28.8
+    [rbf/rw/a_lc] round 0: kappa=1.000  path_len=5.84  n_obs=64
+    [rbf/rw/a_lc] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/a_lc] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [rbf/rw/a_lc] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/a_lc] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] a_lc v1: 3s  E_truth=10.99  swept=84%  path=29.0
+    [ak/rw/a_lc] round 0: kappa=1.000  path_len=5.84  n_obs=64
+    [ak/rw/a_lc] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/a_lc] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [ak/rw/a_lc] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/a_lc] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] a_lc v1: 7s  E_truth=10.99  swept=84%  path=29.0
+    [rbf/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [rbf/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.66  n_obs=192
+    [rbf/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.84  n_obs=320
+  [rbf/rw] rand_gmm_10 v1: 3s  E_truth=46.87  swept=73%  path=28.8
+    [ak/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [ak/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.66  n_obs=192
+    [ak/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.84  n_obs=320
+  [ak/rw] rand_gmm_10 v1: 7s  E_truth=46.87  swept=73%  path=28.8
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] rand_gmm_20 v1: 3s  E_truth=65.71  swept=55%  path=28.8
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] rand_gmm_20 v1: 7s  E_truth=65.71  swept=55%  path=28.8
+    [rbf/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.67  n_obs=256
+    [rbf/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] rand_ana_poly_10 v1: 3s  E_truth=105.63  swept=79%  path=28.8
+    [ak/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.67  n_obs=256
+    [ak/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] rand_ana_poly_10 v1: 7s  E_truth=105.63  swept=79%  path=28.8
+    [rbf/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [rbf/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] rand_ana_poly_20 v1: 3s  E_truth=87.16  swept=67%  path=28.7
+    [ak/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [ak/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] rand_ana_poly_20 v1: 7s  E_truth=87.16  swept=67%  path=28.7
+    [rbf/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.84  n_obs=64
+    [rbf/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] rand_ana_poly_30 v1: 3s  E_truth=35.77  swept=87%  path=28.9
+    [ak/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.84  n_obs=64
+    [ak/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] rand_ana_poly_30 v1: 7s  E_truth=35.77  swept=87%  path=28.9
+    [rbf/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] rand_gmm_complex_0 v1: 3s  E_truth=61.15  swept=61%  path=28.7
+    [ak/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] rand_gmm_complex_0 v1: 7s  E_truth=61.15  swept=61%  path=28.7
+    [rbf/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [rbf/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] rand_gmm_complex_10 v1: 3s  E_truth=40.72  swept=69%  path=28.7
+    [ak/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] rand_gmm_complex_10 v1: 7s  E_truth=40.72  swept=69%  path=28.7
+    [rbf/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_gmm_complex_20 v1: 3s  E_truth=59.48  swept=53%  path=28.8
+    [ak/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_gmm_complex_20 v1: 7s  E_truth=59.48  swept=53%  path=28.8
+    [rbf/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [rbf/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_gmm_complex_30 v1: 3s  E_truth=16.86  swept=80%  path=28.7
+    [ak/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [ak/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_gmm_complex_30 v1: 8s  E_truth=16.86  swept=80%  path=28.7
+    [rbf/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.86  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.67  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_0 v1: 3s  E_truth=57.37  swept=74%  path=28.8
+    [ak/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.86  n_obs=64
+    [ak/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.67  n_obs=256
+    [ak/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] rand_ana_poly_complex_0 v1: 9s  E_truth=57.37  swept=74%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_10 v1: 3s  E_truth=21.02  swept=82%  path=28.8
+    [ak/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_ana_poly_complex_10 v1: 8s  E_truth=21.02  swept=82%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.84  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_20 v1: 3s  E_truth=42.79  swept=83%  path=28.9
+    [ak/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [ak/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.84  n_obs=256
+    [ak/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_ana_poly_complex_20 v1: 7s  E_truth=42.79  swept=83%  path=28.9
+    [rbf/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_30 v1: 3s  E_truth=44.56  swept=71%  path=28.7
+    [ak/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [ak/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_ana_poly_complex_30 v1: 7s  E_truth=44.56  swept=71%  path=28.7
+    [rbf/rw/organic_0] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/organic_0] round 1: kappa=0.762  path_len=5.64  n_obs=128
+    [rbf/rw/organic_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/organic_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/organic_0] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] organic_0 v1: 3s  E_truth=14.18  swept=84%  path=28.7
+    [ak/rw/organic_0] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/organic_0] round 1: kappa=0.762  path_len=5.64  n_obs=128
+    [ak/rw/organic_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/organic_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/organic_0] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] organic_0 v1: 7s  E_truth=14.18  swept=84%  path=28.7
+    [rbf/rw/organic_10] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/organic_10] round 1: kappa=0.762  path_len=5.69  n_obs=128
+    [rbf/rw/organic_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/organic_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/organic_10] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] organic_10 v1: 3s  E_truth=25.46  swept=70%  path=28.7
+    [ak/rw/organic_10] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/organic_10] round 1: kappa=0.762  path_len=5.69  n_obs=128
+    [ak/rw/organic_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/organic_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/organic_10] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] organic_10 v1: 7s  E_truth=25.46  swept=70%  path=28.7
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.66  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] organic_20 v1: 3s  E_truth=50.76  swept=84%  path=28.7
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.66  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] organic_20 v1: 7s  E_truth=50.76  swept=84%  path=28.7
+    [rbf/rw/organic_30] round 0: kappa=1.000  path_len=5.68  n_obs=64
+    [rbf/rw/organic_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/organic_30] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [rbf/rw/organic_30] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/organic_30] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] organic_30 v1: 3s  E_truth=72.12  swept=87%  path=28.7
+    [ak/rw/organic_30] round 0: kappa=1.000  path_len=5.68  n_obs=64
+    [ak/rw/organic_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/organic_30] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [ak/rw/organic_30] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/organic_30] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] organic_30 v1: 7s  E_truth=72.12  swept=87%  path=28.7
+    [rbf/rw/cjk_0] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/cjk_0] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/cjk_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/cjk_0] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/cjk_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] cjk_0 v1: 3s  E_truth=69.37  swept=48%  path=28.7
+    [ak/rw/cjk_0] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/cjk_0] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/cjk_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/cjk_0] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/cjk_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] cjk_0 v1: 9s  E_truth=69.37  swept=48%  path=28.7
+    [rbf/rw/cjk_10] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/cjk_10] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/cjk_10] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/cjk_10] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/cjk_10] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] cjk_10 v1: 3s  E_truth=36.96  swept=60%  path=28.8
+    [ak/rw/cjk_10] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/cjk_10] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/cjk_10] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/cjk_10] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/cjk_10] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] cjk_10 v1: 8s  E_truth=36.96  swept=60%  path=28.8
+    [rbf/rw/cjk_20] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/rw/cjk_20] round 1: kappa=0.762  path_len=5.86  n_obs=128
+    [rbf/rw/cjk_20] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [rbf/rw/cjk_20] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/cjk_20] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] cjk_20 v1: 3s  E_truth=17.48  swept=86%  path=28.9
+    [ak/rw/cjk_20] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/rw/cjk_20] round 1: kappa=0.762  path_len=5.86  n_obs=128
+    [ak/rw/cjk_20] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [ak/rw/cjk_20] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/cjk_20] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] cjk_20 v1: 7s  E_truth=17.48  swept=86%  path=28.9
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.70  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] A v2: 3s  E_truth=28.03  swept=82%  path=28.7
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.70  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] A v2: 7s  E_truth=28.03  swept=82%  path=28.7
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.84  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] greek_upper_0 v2: 3s  E_truth=41.79  swept=93%  path=28.9
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.84  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] greek_upper_0 v2: 7s  E_truth=41.79  swept=93%  path=28.9
+    [rbf/rw/korean_5] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/korean_5] round 1: kappa=0.762  path_len=5.65  n_obs=128
+    [rbf/rw/korean_5] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/korean_5] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/korean_5] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] korean_5 v2: 3s  E_truth=40.81  swept=74%  path=28.7
+    [ak/rw/korean_5] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/korean_5] round 1: kappa=0.762  path_len=5.65  n_obs=128
+    [ak/rw/korean_5] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/korean_5] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/korean_5] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] korean_5 v2: 7s  E_truth=40.81  swept=74%  path=28.7
+    [rbf/rw/digit_5] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/digit_5] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/rw/digit_5] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/digit_5] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/digit_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] digit_5 v2: 3s  E_truth=88.42  swept=57%  path=28.9
+    [ak/rw/digit_5] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/digit_5] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/rw/digit_5] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/digit_5] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/digit_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] digit_5 v2: 7s  E_truth=88.42  swept=57%  path=28.9
+    [rbf/rw/a_lc] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/a_lc] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [rbf/rw/a_lc] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/a_lc] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/a_lc] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] a_lc v2: 3s  E_truth=84.49  swept=57%  path=28.7
+    [ak/rw/a_lc] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/a_lc] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [ak/rw/a_lc] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/a_lc] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/a_lc] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] a_lc v2: 8s  E_truth=84.49  swept=57%  path=28.7
+    [rbf/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [rbf/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] rand_gmm_10 v2: 3s  E_truth=88.42  swept=39%  path=28.7
+    [ak/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] rand_gmm_10 v2: 7s  E_truth=88.42  swept=39%  path=28.7
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_gmm_20 v2: 3s  E_truth=15.29  swept=79%  path=28.8
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_gmm_20 v2: 7s  E_truth=15.29  swept=79%  path=28.8
+    [rbf/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [rbf/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [rbf/rw] rand_ana_poly_10 v2: 3s  E_truth=125.64  swept=39%  path=28.7
+    [ak/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [ak/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [ak/rw] rand_ana_poly_10 v2: 7s  E_truth=125.64  swept=39%  path=28.7
+    [rbf/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_ana_poly_20 v2: 3s  E_truth=50.45  swept=85%  path=28.9
+    [ak/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_ana_poly_20 v2: 7s  E_truth=50.45  swept=85%  path=28.9
+    [rbf/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.83  n_obs=320
+  [rbf/rw] rand_ana_poly_30 v2: 3s  E_truth=80.64  swept=65%  path=28.9
+    [ak/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.83  n_obs=320
+  [ak/rw] rand_ana_poly_30 v2: 7s  E_truth=80.64  swept=65%  path=28.9
+    [rbf/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.67  n_obs=320
+  [rbf/rw] rand_gmm_complex_0 v2: 3s  E_truth=39.05  swept=72%  path=28.7
+    [ak/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.67  n_obs=320
+  [ak/rw] rand_gmm_complex_0 v2: 7s  E_truth=39.05  swept=72%  path=28.7
+    [rbf/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.66  n_obs=320
+  [rbf/rw] rand_gmm_complex_10 v2: 3s  E_truth=25.99  swept=77%  path=28.7
+    [ak/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.66  n_obs=320
+  [ak/rw] rand_gmm_complex_10 v2: 7s  E_truth=25.99  swept=77%  path=28.7
+    [rbf/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [rbf/rw] rand_gmm_complex_20 v2: 3s  E_truth=74.70  swept=43%  path=28.8
+    [ak/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [ak/rw] rand_gmm_complex_20 v2: 7s  E_truth=74.70  swept=43%  path=28.8
+    [rbf/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [rbf/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] rand_gmm_complex_30 v2: 3s  E_truth=57.02  swept=68%  path=28.8
+    [ak/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [ak/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] rand_gmm_complex_30 v2: 7s  E_truth=57.02  swept=68%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.86  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_0 v2: 3s  E_truth=30.75  swept=80%  path=28.8
+    [ak/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [ak/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.86  n_obs=320
+  [ak/rw] rand_ana_poly_complex_0 v2: 7s  E_truth=30.75  swept=80%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_10 v2: 3s  E_truth=53.13  swept=74%  path=28.8
+    [ak/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [ak/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] rand_ana_poly_complex_10 v2: 7s  E_truth=53.13  swept=74%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.64  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_20 v2: 3s  E_truth=147.66  swept=52%  path=28.6
+    [ak/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [ak/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.64  n_obs=192
+    [ak/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] rand_ana_poly_complex_20 v2: 7s  E_truth=147.66  swept=52%  path=28.6
+    [rbf/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.67  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.84  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_30 v2: 3s  E_truth=14.56  swept=77%  path=28.8
+    [ak/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.67  n_obs=128
+    [ak/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.84  n_obs=320
+  [ak/rw] rand_ana_poly_complex_30 v2: 7s  E_truth=14.56  swept=77%  path=28.8
+    [rbf/rw/organic_0] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [rbf/rw/organic_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/organic_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/organic_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/organic_0] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] organic_0 v2: 3s  E_truth=9.65  swept=78%  path=28.8
+    [ak/rw/organic_0] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [ak/rw/organic_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/organic_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/organic_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/organic_0] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] organic_0 v2: 7s  E_truth=9.65  swept=78%  path=28.8
+    [rbf/rw/organic_10] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/organic_10] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/organic_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/organic_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/organic_10] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] organic_10 v2: 3s  E_truth=32.42  swept=78%  path=28.7
+    [ak/rw/organic_10] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/organic_10] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/organic_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/organic_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/organic_10] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] organic_10 v2: 7s  E_truth=32.42  swept=78%  path=28.7
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] organic_20 v2: 3s  E_truth=31.76  swept=74%  path=28.8
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] organic_20 v2: 7s  E_truth=31.76  swept=74%  path=28.8
+    [rbf/rw/organic_30] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/organic_30] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/organic_30] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/organic_30] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/organic_30] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] organic_30 v2: 3s  E_truth=89.10  swept=86%  path=28.8
+    [ak/rw/organic_30] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/organic_30] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/organic_30] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/organic_30] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/organic_30] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] organic_30 v2: 7s  E_truth=89.10  swept=86%  path=28.8
+    [rbf/rw/cjk_0] round 0: kappa=1.000  path_len=5.86  n_obs=64
+    [rbf/rw/cjk_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/cjk_0] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/cjk_0] round 3: kappa=0.288  path_len=5.84  n_obs=256
+    [rbf/rw/cjk_0] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] cjk_0 v2: 3s  E_truth=10.66  swept=84%  path=28.9
+    [ak/rw/cjk_0] round 0: kappa=1.000  path_len=5.86  n_obs=64
+    [ak/rw/cjk_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/cjk_0] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/cjk_0] round 3: kappa=0.288  path_len=5.84  n_obs=256
+    [ak/rw/cjk_0] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] cjk_0 v2: 7s  E_truth=10.66  swept=84%  path=28.9
+    [rbf/rw/cjk_10] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/cjk_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/cjk_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/cjk_10] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/cjk_10] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] cjk_10 v2: 3s  E_truth=25.61  swept=55%  path=28.6
+    [ak/rw/cjk_10] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/cjk_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/cjk_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/cjk_10] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/cjk_10] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] cjk_10 v2: 7s  E_truth=25.61  swept=55%  path=28.6
+    [rbf/rw/cjk_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/cjk_20] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/cjk_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/cjk_20] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [rbf/rw/cjk_20] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [rbf/rw] cjk_20 v2: 3s  E_truth=64.78  swept=77%  path=28.7
+    [ak/rw/cjk_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/cjk_20] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/cjk_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/cjk_20] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/rw/cjk_20] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [ak/rw] cjk_20 v2: 7s  E_truth=64.78  swept=77%  path=28.7
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] A v3: 3s  E_truth=36.93  swept=60%  path=28.8
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] A v3: 7s  E_truth=36.93  swept=60%  path=28.8
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.68  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.70  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] greek_upper_0 v3: 3s  E_truth=50.31  swept=49%  path=28.6
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.68  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.70  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] greek_upper_0 v3: 7s  E_truth=50.31  swept=49%  path=28.6
+    [rbf/rw/korean_5] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/korean_5] round 1: kappa=0.762  path_len=5.67  n_obs=128
+    [rbf/rw/korean_5] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/korean_5] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/korean_5] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [rbf/rw] korean_5 v3: 3s  E_truth=40.91  swept=65%  path=28.6
+    [ak/rw/korean_5] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/korean_5] round 1: kappa=0.762  path_len=5.67  n_obs=128
+    [ak/rw/korean_5] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/korean_5] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/korean_5] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [ak/rw] korean_5 v3: 7s  E_truth=40.91  swept=65%  path=28.6
+    [rbf/rw/digit_5] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/digit_5] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/digit_5] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [rbf/rw/digit_5] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/digit_5] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] digit_5 v3: 3s  E_truth=54.34  swept=82%  path=28.9
+    [ak/rw/digit_5] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/digit_5] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/digit_5] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [ak/rw/digit_5] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/digit_5] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] digit_5 v3: 7s  E_truth=54.34  swept=82%  path=28.9
+    [rbf/rw/a_lc] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/a_lc] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/a_lc] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/a_lc] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/a_lc] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] a_lc v3: 3s  E_truth=50.86  swept=75%  path=28.9
+    [ak/rw/a_lc] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/a_lc] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/a_lc] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/a_lc] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/a_lc] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] a_lc v3: 7s  E_truth=50.86  swept=75%  path=28.9
+    [rbf/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.71  n_obs=128
+    [rbf/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] rand_gmm_10 v3: 3s  E_truth=19.03  swept=67%  path=28.7
+    [ak/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.71  n_obs=128
+    [ak/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] rand_gmm_10 v3: 7s  E_truth=19.03  swept=67%  path=28.7
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.66  n_obs=320
+  [rbf/rw] rand_gmm_20 v3: 3s  E_truth=53.36  swept=75%  path=28.7
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.66  n_obs=320
+  [ak/rw] rand_gmm_20 v3: 7s  E_truth=53.36  swept=75%  path=28.7
+    [rbf/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_ana_poly_10 v3: 3s  E_truth=118.03  swept=50%  path=28.8
+    [ak/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_ana_poly_10 v3: 7s  E_truth=118.03  swept=50%  path=28.8
+    [rbf/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] rand_ana_poly_20 v3: 3s  E_truth=40.05  swept=72%  path=28.8
+    [ak/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] rand_ana_poly_20 v3: 7s  E_truth=40.05  swept=72%  path=28.8
+    [rbf/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.66  n_obs=192
+    [rbf/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] rand_ana_poly_30 v3: 3s  E_truth=64.07  swept=64%  path=28.7
+    [ak/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.66  n_obs=192
+    [ak/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] rand_ana_poly_30 v3: 7s  E_truth=64.07  swept=64%  path=28.7
+    [rbf/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [rbf/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.68  n_obs=320
+  [rbf/rw] rand_gmm_complex_0 v3: 3s  E_truth=16.82  swept=77%  path=28.7
+    [ak/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [ak/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.68  n_obs=320
+  [ak/rw] rand_gmm_complex_0 v3: 7s  E_truth=16.82  swept=77%  path=28.7
+    [rbf/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.87  n_obs=64
+    [rbf/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.85  n_obs=256
+    [rbf/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] rand_gmm_complex_10 v3: 3s  E_truth=45.38  swept=68%  path=29.0
+    [ak/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.87  n_obs=64
+    [ak/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.85  n_obs=256
+    [ak/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] rand_gmm_complex_10 v3: 7s  E_truth=45.38  swept=68%  path=29.0
+    [rbf/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_gmm_complex_20 v3: 3s  E_truth=13.87  swept=73%  path=28.8
+    [ak/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_gmm_complex_20 v3: 7s  E_truth=13.87  swept=73%  path=28.8
+    [rbf/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [rbf/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [rbf/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_gmm_complex_30 v3: 3s  E_truth=34.16  swept=68%  path=28.8
+    [ak/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [ak/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_gmm_complex_30 v3: 7s  E_truth=34.16  swept=68%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_0 v3: 3s  E_truth=30.48  swept=87%  path=28.8
+    [ak/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [ak/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_ana_poly_complex_0 v3: 7s  E_truth=30.48  swept=87%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_10 v3: 3s  E_truth=48.78  swept=56%  path=28.8
+    [ak/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [ak/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] rand_ana_poly_complex_10 v3: 7s  E_truth=48.78  swept=56%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_20 v3: 3s  E_truth=34.43  swept=85%  path=28.9
+    [ak/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_ana_poly_complex_20 v3: 7s  E_truth=34.43  swept=85%  path=28.9
+    [rbf/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.67  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_30 v3: 3s  E_truth=89.04  swept=70%  path=28.8
+    [ak/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.67  n_obs=256
+    [ak/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] rand_ana_poly_complex_30 v3: 7s  E_truth=89.04  swept=70%  path=28.8
+    [rbf/rw/organic_0] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/rw/organic_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/organic_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/organic_0] round 3: kappa=0.288  path_len=5.84  n_obs=256
+    [rbf/rw/organic_0] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] organic_0 v3: 3s  E_truth=24.21  swept=72%  path=29.0
+    [ak/rw/organic_0] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/rw/organic_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/organic_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/organic_0] round 3: kappa=0.288  path_len=5.84  n_obs=256
+    [ak/rw/organic_0] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] organic_0 v3: 7s  E_truth=24.21  swept=72%  path=29.0
+    [rbf/rw/organic_10] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/organic_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/organic_10] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/organic_10] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/organic_10] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] organic_10 v3: 3s  E_truth=45.59  swept=84%  path=28.8
+    [ak/rw/organic_10] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/organic_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/organic_10] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/organic_10] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/organic_10] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] organic_10 v3: 7s  E_truth=45.59  swept=84%  path=28.8
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [rbf/rw] organic_20 v3: 3s  E_truth=30.56  swept=81%  path=28.8
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/rw] organic_20 v3: 7s  E_truth=30.56  swept=81%  path=28.8
+    [rbf/rw/organic_30] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/organic_30] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/organic_30] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/organic_30] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/organic_30] round 4: kappa=0.050  path_len=5.84  n_obs=320
+  [rbf/rw] organic_30 v3: 3s  E_truth=104.65  swept=82%  path=28.9
+    [ak/rw/organic_30] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/organic_30] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/organic_30] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/organic_30] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/organic_30] round 4: kappa=0.050  path_len=5.84  n_obs=320
+  [ak/rw] organic_30 v3: 8s  E_truth=104.65  swept=82%  path=28.9
+    [rbf/rw/cjk_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/cjk_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/cjk_0] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/cjk_0] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/cjk_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] cjk_0 v3: 3s  E_truth=12.43  swept=73%  path=28.7
+    [ak/rw/cjk_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/cjk_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/cjk_0] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/cjk_0] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/cjk_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] cjk_0 v3: 7s  E_truth=12.43  swept=73%  path=28.7
+    [rbf/rw/cjk_10] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/cjk_10] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/cjk_10] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/cjk_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/cjk_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] cjk_10 v3: 3s  E_truth=45.87  swept=58%  path=28.9
+    [ak/rw/cjk_10] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/cjk_10] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/cjk_10] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/cjk_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/cjk_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] cjk_10 v3: 7s  E_truth=45.87  swept=58%  path=28.9
+    [rbf/rw/cjk_20] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/cjk_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/cjk_20] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/cjk_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/cjk_20] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] cjk_20 v3: 3s  E_truth=27.06  swept=94%  path=28.7
+    [ak/rw/cjk_20] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/cjk_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/cjk_20] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/cjk_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/cjk_20] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] cjk_20 v3: 7s  E_truth=27.06  swept=94%  path=28.7
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.86  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] A v4: 3s  E_truth=78.76  swept=70%  path=28.9
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.86  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] A v4: 9s  E_truth=78.76  swept=70%  path=28.9
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] greek_upper_0 v4: 3s  E_truth=32.58  swept=90%  path=28.9
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] greek_upper_0 v4: 7s  E_truth=32.58  swept=90%  path=28.9
+    [rbf/rw/korean_5] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/korean_5] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/korean_5] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/korean_5] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/korean_5] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [rbf/rw] korean_5 v4: 3s  E_truth=74.82  swept=66%  path=28.8
+    [ak/rw/korean_5] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/korean_5] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/korean_5] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/korean_5] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/korean_5] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/rw] korean_5 v4: 8s  E_truth=74.82  swept=66%  path=28.8
+    [rbf/rw/digit_5] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/digit_5] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/digit_5] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/digit_5] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [rbf/rw/digit_5] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] digit_5 v4: 3s  E_truth=15.31  swept=91%  path=28.8
+    [ak/rw/digit_5] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/digit_5] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/digit_5] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/digit_5] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [ak/rw/digit_5] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] digit_5 v4: 8s  E_truth=15.31  swept=91%  path=28.8
+    [rbf/rw/a_lc] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/a_lc] round 1: kappa=0.762  path_len=5.69  n_obs=128
+    [rbf/rw/a_lc] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/a_lc] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/a_lc] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] a_lc v4: 3s  E_truth=46.82  swept=92%  path=28.7
+    [ak/rw/a_lc] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/a_lc] round 1: kappa=0.762  path_len=5.69  n_obs=128
+    [ak/rw/a_lc] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/a_lc] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/a_lc] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] a_lc v4: 7s  E_truth=46.82  swept=92%  path=28.7
+    [rbf/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] rand_gmm_10 v4: 3s  E_truth=44.28  swept=77%  path=28.9
+    [ak/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] rand_gmm_10 v4: 7s  E_truth=44.28  swept=77%  path=28.9
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [rbf/rw] rand_gmm_20 v4: 3s  E_truth=44.95  swept=77%  path=28.9
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/rw] rand_gmm_20 v4: 7s  E_truth=44.95  swept=77%  path=28.9
+    [rbf/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.66  n_obs=128
+    [rbf/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [rbf/rw] rand_ana_poly_10 v4: 3s  E_truth=220.85  swept=26%  path=28.6
+    [ak/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.66  n_obs=128
+    [ak/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [ak/rw] rand_ana_poly_10 v4: 7s  E_truth=220.85  swept=26%  path=28.6
+    [rbf/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_ana_poly_20 v4: 3s  E_truth=91.57  swept=75%  path=28.8
+    [ak/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_ana_poly_20 v4: 7s  E_truth=91.57  swept=75%  path=28.8
+    [rbf/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] rand_ana_poly_30 v4: 3s  E_truth=54.61  swept=70%  path=28.8
+    [ak/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] rand_ana_poly_30 v4: 7s  E_truth=54.61  swept=70%  path=28.8
+    [rbf/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [rbf/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_gmm_complex_0 v4: 3s  E_truth=48.45  swept=47%  path=28.8
+    [ak/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [ak/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_gmm_complex_0 v4: 7s  E_truth=48.45  swept=47%  path=28.8
+    [rbf/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [rbf/rw] rand_gmm_complex_10 v4: 3s  E_truth=8.07  swept=86%  path=28.9
+    [ak/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [ak/rw] rand_gmm_complex_10 v4: 8s  E_truth=8.07  swept=86%  path=28.9
+    [rbf/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [rbf/rw] rand_gmm_complex_20 v4: 3s  E_truth=17.04  swept=79%  path=28.8
+    [ak/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/rw] rand_gmm_complex_20 v4: 9s  E_truth=17.04  swept=79%  path=28.8
+    [rbf/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.86  n_obs=192
+    [rbf/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_gmm_complex_30 v4: 3s  E_truth=32.33  swept=71%  path=28.9
+    [ak/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.86  n_obs=192
+    [ak/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_gmm_complex_30 v4: 9s  E_truth=32.33  swept=71%  path=28.9
+    [rbf/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.85  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_0 v4: 3s  E_truth=43.65  swept=70%  path=28.9
+    [ak/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.85  n_obs=128
+    [ak/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_ana_poly_complex_0 v4: 8s  E_truth=43.65  swept=70%  path=28.9
+    [rbf/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.85  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_10 v4: 3s  E_truth=23.28  swept=83%  path=28.9
+    [ak/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.85  n_obs=256
+    [ak/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [ak/rw] rand_ana_poly_complex_10 v4: 7s  E_truth=23.28  swept=83%  path=28.9
+    [rbf/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_20 v4: 3s  E_truth=30.45  swept=90%  path=28.7
+    [ak/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.70  n_obs=256
+    [ak/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] rand_ana_poly_complex_20 v4: 8s  E_truth=30.45  swept=90%  path=28.7
+    [rbf/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.88  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_30 v4: 4s  E_truth=64.97  swept=66%  path=28.9
+    [ak/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.88  n_obs=256
+    [ak/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] rand_ana_poly_complex_30 v4: 7s  E_truth=64.97  swept=66%  path=28.9
+    [rbf/rw/organic_0] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/organic_0] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/organic_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/organic_0] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [rbf/rw/organic_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] organic_0 v4: 3s  E_truth=37.80  swept=67%  path=28.8
+    [ak/rw/organic_0] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/organic_0] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/organic_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/organic_0] round 3: kappa=0.288  path_len=5.82  n_obs=256
+    [ak/rw/organic_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] organic_0 v4: 7s  E_truth=37.80  swept=67%  path=28.8
+    [rbf/rw/organic_10] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/organic_10] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/organic_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/organic_10] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/organic_10] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [rbf/rw] organic_10 v4: 3s  E_truth=6.56  swept=93%  path=28.9
+    [ak/rw/organic_10] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/organic_10] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/organic_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/organic_10] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/organic_10] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/rw] organic_10 v4: 7s  E_truth=6.56  swept=93%  path=28.9
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] organic_20 v4: 3s  E_truth=21.55  swept=81%  path=28.7
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] organic_20 v4: 7s  E_truth=21.55  swept=81%  path=28.7
+    [rbf/rw/organic_30] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/organic_30] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/organic_30] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/organic_30] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/organic_30] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] organic_30 v4: 3s  E_truth=63.22  swept=79%  path=28.8
+    [ak/rw/organic_30] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/organic_30] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/organic_30] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/organic_30] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/organic_30] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] organic_30 v4: 7s  E_truth=63.22  swept=79%  path=28.8
+    [rbf/rw/cjk_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/cjk_0] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [rbf/rw/cjk_0] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [rbf/rw/cjk_0] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/cjk_0] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [rbf/rw] cjk_0 v4: 4s  E_truth=8.07  swept=77%  path=28.7
+    [ak/rw/cjk_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/cjk_0] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [ak/rw/cjk_0] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [ak/rw/cjk_0] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/cjk_0] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/rw] cjk_0 v4: 7s  E_truth=8.07  swept=77%  path=28.7
+    [rbf/rw/cjk_10] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/cjk_10] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/cjk_10] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [rbf/rw/cjk_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/cjk_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] cjk_10 v4: 3s  E_truth=10.93  swept=67%  path=29.0
+    [ak/rw/cjk_10] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/cjk_10] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/cjk_10] round 2: kappa=0.525  path_len=5.85  n_obs=192
+    [ak/rw/cjk_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/cjk_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] cjk_10 v4: 7s  E_truth=10.93  swept=67%  path=29.0
+    [rbf/rw/cjk_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/cjk_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/cjk_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/cjk_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/cjk_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] cjk_20 v4: 3s  E_truth=41.34  swept=84%  path=28.9
+    [ak/rw/cjk_20] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/cjk_20] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/cjk_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/cjk_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/cjk_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] cjk_20 v4: 7s  E_truth=41.34  swept=84%  path=28.9
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [rbf/rw] A v5: 3s  E_truth=63.23  swept=80%  path=28.8
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [ak/rw] A v5: 7s  E_truth=63.23  swept=80%  path=28.8
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.70  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] greek_upper_0 v5: 3s  E_truth=96.79  swept=61%  path=28.8
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.70  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] greek_upper_0 v5: 7s  E_truth=96.79  swept=61%  path=28.8
+    [rbf/rw/korean_5] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/korean_5] round 1: kappa=0.762  path_len=5.69  n_obs=128
+    [rbf/rw/korean_5] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/korean_5] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/korean_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] korean_5 v5: 3s  E_truth=139.41  swept=53%  path=28.6
+    [ak/rw/korean_5] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/korean_5] round 1: kappa=0.762  path_len=5.69  n_obs=128
+    [ak/rw/korean_5] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/korean_5] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/korean_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] korean_5 v5: 8s  E_truth=139.41  swept=53%  path=28.6
+    [rbf/rw/digit_5] round 0: kappa=1.000  path_len=5.87  n_obs=64
+    [rbf/rw/digit_5] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/digit_5] round 2: kappa=0.525  path_len=5.65  n_obs=192
+    [rbf/rw/digit_5] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/digit_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] digit_5 v5: 3s  E_truth=92.71  swept=62%  path=28.7
+    [ak/rw/digit_5] round 0: kappa=1.000  path_len=5.87  n_obs=64
+    [ak/rw/digit_5] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/digit_5] round 2: kappa=0.525  path_len=5.65  n_obs=192
+    [ak/rw/digit_5] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/digit_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] digit_5 v5: 8s  E_truth=92.71  swept=62%  path=28.7
+    [rbf/rw/a_lc] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/rw/a_lc] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/a_lc] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/a_lc] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [rbf/rw/a_lc] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] a_lc v5: 3s  E_truth=28.35  swept=89%  path=28.8
+    [ak/rw/a_lc] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/rw/a_lc] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/a_lc] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/a_lc] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/rw/a_lc] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] a_lc v5: 7s  E_truth=28.35  swept=89%  path=28.8
+    [rbf/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [rbf/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [rbf/rw] rand_gmm_10 v5: 3s  E_truth=20.54  swept=73%  path=28.8
+    [ak/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [ak/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.82  n_obs=320
+  [ak/rw] rand_gmm_10 v5: 8s  E_truth=20.54  swept=73%  path=28.8
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] rand_gmm_20 v5: 3s  E_truth=20.29  swept=85%  path=28.9
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] rand_gmm_20 v5: 7s  E_truth=20.29  swept=85%  path=28.9
+    [rbf/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.66  n_obs=64
+    [rbf/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [rbf/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [rbf/rw] rand_ana_poly_10 v5: 3s  E_truth=107.71  swept=46%  path=28.8
+    [ak/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.66  n_obs=64
+    [ak/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.84  n_obs=192
+    [ak/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [ak/rw] rand_ana_poly_10 v5: 8s  E_truth=107.71  swept=46%  path=28.8
+    [rbf/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [rbf/rw] rand_ana_poly_20 v5: 3s  E_truth=32.47  swept=88%  path=28.8
+    [ak/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.73  n_obs=320
+  [ak/rw] rand_ana_poly_20 v5: 8s  E_truth=32.47  swept=88%  path=28.8
+    [rbf/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [rbf/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_ana_poly_30 v5: 3s  E_truth=49.81  swept=62%  path=28.8
+    [ak/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.81  n_obs=128
+    [ak/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_ana_poly_30 v5: 8s  E_truth=49.81  swept=62%  path=28.8
+    [rbf/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_gmm_complex_0 v5: 3s  E_truth=35.81  swept=75%  path=28.8
+    [ak/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_gmm_complex_0 v5: 7s  E_truth=35.81  swept=75%  path=28.8
+    [rbf/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [rbf/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [rbf/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [rbf/rw] rand_gmm_complex_10 v5: 3s  E_truth=56.40  swept=70%  path=28.8
+    [ak/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [ak/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.80  n_obs=192
+    [ak/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [ak/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.69  n_obs=320
+  [ak/rw] rand_gmm_complex_10 v5: 7s  E_truth=56.40  swept=70%  path=28.8
+    [rbf/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [rbf/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [rbf/rw] rand_gmm_complex_20 v5: 3s  E_truth=94.51  swept=55%  path=28.7
+    [ak/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [ak/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [ak/rw] rand_gmm_complex_20 v5: 7s  E_truth=94.51  swept=55%  path=28.7
+    [rbf/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.71  n_obs=128
+    [rbf/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [rbf/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] rand_gmm_complex_30 v5: 3s  E_truth=12.56  swept=85%  path=28.9
+    [ak/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.71  n_obs=128
+    [ak/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [ak/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] rand_gmm_complex_30 v5: 7s  E_truth=12.56  swept=85%  path=28.9
+    [rbf/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_0 v5: 3s  E_truth=25.42  swept=87%  path=28.7
+    [ak/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.76  n_obs=128
+    [ak/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] rand_ana_poly_complex_0 v5: 7s  E_truth=25.42  swept=87%  path=28.7
+    [rbf/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.71  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.68  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_10 v5: 3s  E_truth=57.93  swept=63%  path=28.7
+    [ak/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [ak/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.71  n_obs=128
+    [ak/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [ak/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.68  n_obs=320
+  [ak/rw] rand_ana_poly_complex_10 v5: 8s  E_truth=57.93  swept=63%  path=28.7
+    [rbf/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.65  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_20 v5: 3s  E_truth=45.99  swept=87%  path=28.7
+    [ak/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.80  n_obs=64
+    [ak/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.65  n_obs=192
+    [ak/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] rand_ana_poly_complex_20 v5: 9s  E_truth=45.99  swept=87%  path=28.7
+    [rbf/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_30 v5: 3s  E_truth=20.96  swept=73%  path=28.8
+    [ak/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [ak/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] rand_ana_poly_complex_30 v5: 9s  E_truth=20.96  swept=73%  path=28.8
+    [rbf/rw/organic_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/organic_0] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/organic_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/organic_0] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [rbf/rw/organic_0] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] organic_0 v5: 3s  E_truth=15.90  swept=80%  path=28.8
+    [ak/rw/organic_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/organic_0] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/organic_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/organic_0] round 3: kappa=0.288  path_len=5.77  n_obs=256
+    [ak/rw/organic_0] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] organic_0 v5: 8s  E_truth=15.90  swept=80%  path=28.8
+    [rbf/rw/organic_10] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/organic_10] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/organic_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/organic_10] round 3: kappa=0.288  path_len=5.87  n_obs=256
+    [rbf/rw/organic_10] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] organic_10 v5: 3s  E_truth=15.10  swept=81%  path=28.9
+    [ak/rw/organic_10] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/organic_10] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/organic_10] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/organic_10] round 3: kappa=0.288  path_len=5.87  n_obs=256
+    [ak/rw/organic_10] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] organic_10 v5: 8s  E_truth=15.10  swept=81%  path=28.9
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] organic_20 v5: 3s  E_truth=88.30  swept=69%  path=28.7
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] organic_20 v5: 8s  E_truth=88.30  swept=69%  path=28.7
+    [rbf/rw/organic_30] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/organic_30] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/organic_30] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [rbf/rw/organic_30] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/organic_30] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] organic_30 v5: 3s  E_truth=100.96  swept=94%  path=28.7
+    [ak/rw/organic_30] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/organic_30] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/organic_30] round 2: kappa=0.525  path_len=5.69  n_obs=192
+    [ak/rw/organic_30] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/organic_30] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] organic_30 v5: 7s  E_truth=100.96  swept=94%  path=28.7
+    [rbf/rw/cjk_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/cjk_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/cjk_0] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [rbf/rw/cjk_0] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/cjk_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] cjk_0 v5: 3s  E_truth=25.04  swept=69%  path=28.7
+    [ak/rw/cjk_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/cjk_0] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/cjk_0] round 2: kappa=0.525  path_len=5.75  n_obs=192
+    [ak/rw/cjk_0] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/cjk_0] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] cjk_0 v5: 7s  E_truth=25.04  swept=69%  path=28.7
+    [rbf/rw/cjk_10] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/rw/cjk_10] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [rbf/rw/cjk_10] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/cjk_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/cjk_10] round 4: kappa=0.050  path_len=5.83  n_obs=320
+  [rbf/rw] cjk_10 v5: 3s  E_truth=60.07  swept=53%  path=29.0
+    [ak/rw/cjk_10] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/rw/cjk_10] round 1: kappa=0.762  path_len=5.83  n_obs=128
+    [ak/rw/cjk_10] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/cjk_10] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/cjk_10] round 4: kappa=0.050  path_len=5.83  n_obs=320
+  [ak/rw] cjk_10 v5: 7s  E_truth=60.07  swept=53%  path=29.0
+    [rbf/rw/cjk_20] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [rbf/rw/cjk_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/cjk_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [rbf/rw/cjk_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/cjk_20] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] cjk_20 v5: 3s  E_truth=71.72  swept=76%  path=28.8
+    [ak/rw/cjk_20] round 0: kappa=1.000  path_len=5.73  n_obs=64
+    [ak/rw/cjk_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/cjk_20] round 2: kappa=0.525  path_len=5.79  n_obs=192
+    [ak/rw/cjk_20] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/cjk_20] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] cjk_20 v5: 7s  E_truth=71.72  swept=76%  path=28.8
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.70  n_obs=192
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] A v6: 3s  E_truth=30.10  swept=75%  path=28.9
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.70  n_obs=192
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] A v6: 7s  E_truth=30.10  swept=75%  path=28.9
+    [rbf/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [rbf/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.65  n_obs=192
+    [rbf/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.68  n_obs=320
+  [rbf/rw] greek_upper_0 v6: 3s  E_truth=45.43  swept=71%  path=28.6
+    [ak/rw/greek_upper_0] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/greek_upper_0] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [ak/rw/greek_upper_0] round 2: kappa=0.525  path_len=5.65  n_obs=192
+    [ak/rw/greek_upper_0] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/greek_upper_0] round 4: kappa=0.050  path_len=5.68  n_obs=320
+  [ak/rw] greek_upper_0 v6: 7s  E_truth=45.43  swept=71%  path=28.6
+    [rbf/rw/korean_5] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [rbf/rw/korean_5] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/korean_5] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/korean_5] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/rw/korean_5] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] korean_5 v6: 3s  E_truth=126.23  swept=32%  path=28.9
+    [ak/rw/korean_5] round 0: kappa=1.000  path_len=5.82  n_obs=64
+    [ak/rw/korean_5] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/korean_5] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/korean_5] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [ak/rw/korean_5] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] korean_5 v6: 7s  E_truth=126.23  swept=32%  path=28.9
+    [rbf/rw/digit_5] round 0: kappa=1.000  path_len=5.85  n_obs=64
+    [rbf/rw/digit_5] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/digit_5] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [rbf/rw/digit_5] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/digit_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] digit_5 v6: 3s  E_truth=92.09  swept=39%  path=28.9
+    [ak/rw/digit_5] round 0: kappa=1.000  path_len=5.85  n_obs=64
+    [ak/rw/digit_5] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/digit_5] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [ak/rw/digit_5] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/digit_5] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] digit_5 v6: 7s  E_truth=92.09  swept=39%  path=28.9
+    [rbf/rw/a_lc] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [rbf/rw/a_lc] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/a_lc] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [rbf/rw/a_lc] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/a_lc] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] a_lc v6: 3s  E_truth=29.19  swept=85%  path=28.8
+    [ak/rw/a_lc] round 0: kappa=1.000  path_len=5.69  n_obs=64
+    [ak/rw/a_lc] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/a_lc] round 2: kappa=0.525  path_len=5.81  n_obs=192
+    [ak/rw/a_lc] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/a_lc] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] a_lc v6: 8s  E_truth=29.19  swept=85%  path=28.8
+    [rbf/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [rbf/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] rand_gmm_10 v6: 3s  E_truth=49.63  swept=57%  path=28.8
+    [ak/rw/rand_gmm_10] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/rand_gmm_10] round 1: kappa=0.762  path_len=5.73  n_obs=128
+    [ak/rw/rand_gmm_10] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_gmm_10] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_gmm_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] rand_gmm_10 v6: 9s  E_truth=49.63  swept=57%  path=28.8
+    [rbf/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [rbf/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [rbf/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] rand_gmm_20 v6: 3s  E_truth=24.37  swept=63%  path=28.7
+    [ak/rw/rand_gmm_20] round 0: kappa=1.000  path_len=5.74  n_obs=64
+    [ak/rw/rand_gmm_20] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/rand_gmm_20] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/rand_gmm_20] round 3: kappa=0.288  path_len=5.69  n_obs=256
+    [ak/rw/rand_gmm_20] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] rand_gmm_20 v6: 9s  E_truth=24.37  swept=63%  path=28.7
+    [rbf/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [rbf/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [rbf/rw] rand_ana_poly_10 v6: 3s  E_truth=76.40  swept=69%  path=28.9
+    [ak/rw/rand_ana_poly_10] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/rw/rand_ana_poly_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_ana_poly_10] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [ak/rw/rand_ana_poly_10] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_ana_poly_10] round 4: kappa=0.050  path_len=5.71  n_obs=320
+  [ak/rw] rand_ana_poly_10 v6: 7s  E_truth=76.40  swept=69%  path=28.9
+    [rbf/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.71  n_obs=128
+    [rbf/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [rbf/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [rbf/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.87  n_obs=320
+  [rbf/rw] rand_ana_poly_20 v6: 3s  E_truth=36.90  swept=84%  path=28.8
+    [ak/rw/rand_ana_poly_20] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/rand_ana_poly_20] round 1: kappa=0.762  path_len=5.71  n_obs=128
+    [ak/rw/rand_ana_poly_20] round 2: kappa=0.525  path_len=5.72  n_obs=192
+    [ak/rw/rand_ana_poly_20] round 3: kappa=0.288  path_len=5.73  n_obs=256
+    [ak/rw/rand_ana_poly_20] round 4: kappa=0.050  path_len=5.87  n_obs=320
+  [ak/rw] rand_ana_poly_20 v6: 7s  E_truth=36.90  swept=84%  path=28.8
+    [rbf/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [rbf/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [rbf/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [rbf/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_ana_poly_30 v6: 3s  E_truth=110.78  swept=51%  path=28.6
+    [ak/rw/rand_ana_poly_30] round 0: kappa=1.000  path_len=5.71  n_obs=64
+    [ak/rw/rand_ana_poly_30] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_ana_poly_30] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [ak/rw/rand_ana_poly_30] round 3: kappa=0.288  path_len=5.74  n_obs=256
+    [ak/rw/rand_ana_poly_30] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_ana_poly_30 v6: 7s  E_truth=110.78  swept=51%  path=28.6
+    [rbf/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [rbf/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [rbf/rw] rand_gmm_complex_0 v6: 3s  E_truth=26.31  swept=74%  path=28.8
+    [ak/rw/rand_gmm_complex_0] round 0: kappa=1.000  path_len=5.75  n_obs=64
+    [ak/rw/rand_gmm_complex_0] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_gmm_complex_0] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/rand_gmm_complex_0] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_gmm_complex_0] round 4: kappa=0.050  path_len=5.76  n_obs=320
+  [ak/rw] rand_gmm_complex_0 v6: 7s  E_truth=26.31  swept=74%  path=28.8
+    [rbf/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [rbf/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [rbf/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [rbf/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [rbf/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [rbf/rw] rand_gmm_complex_10 v6: 3s  E_truth=21.59  swept=76%  path=28.9
+    [ak/rw/rand_gmm_complex_10] round 0: kappa=1.000  path_len=5.76  n_obs=64
+    [ak/rw/rand_gmm_complex_10] round 1: kappa=0.762  path_len=5.68  n_obs=128
+    [ak/rw/rand_gmm_complex_10] round 2: kappa=0.525  path_len=5.82  n_obs=192
+    [ak/rw/rand_gmm_complex_10] round 3: kappa=0.288  path_len=5.75  n_obs=256
+    [ak/rw/rand_gmm_complex_10] round 4: kappa=0.050  path_len=5.85  n_obs=320
+  [ak/rw] rand_gmm_complex_10 v6: 8s  E_truth=21.59  swept=76%  path=28.9
+    [rbf/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [rbf/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_gmm_complex_20 v6: 3s  E_truth=60.40  swept=67%  path=28.9
+    [ak/rw/rand_gmm_complex_20] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/rand_gmm_complex_20] round 1: kappa=0.762  path_len=5.82  n_obs=128
+    [ak/rw/rand_gmm_complex_20] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/rand_gmm_complex_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/rand_gmm_complex_20] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_gmm_complex_20 v6: 7s  E_truth=60.40  swept=67%  path=28.9
+    [rbf/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [rbf/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [rbf/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [rbf/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] rand_gmm_complex_30 v6: 3s  E_truth=17.48  swept=81%  path=28.9
+    [ak/rw/rand_gmm_complex_30] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_gmm_complex_30] round 1: kappa=0.762  path_len=5.80  n_obs=128
+    [ak/rw/rand_gmm_complex_30] round 2: kappa=0.525  path_len=5.83  n_obs=192
+    [ak/rw/rand_gmm_complex_30] round 3: kappa=0.288  path_len=5.68  n_obs=256
+    [ak/rw/rand_gmm_complex_30] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] rand_gmm_complex_30 v6: 7s  E_truth=17.48  swept=81%  path=28.9
+    [rbf/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_0 v6: 3s  E_truth=27.21  swept=86%  path=28.7
+    [ak/rw/rand_ana_poly_complex_0] round 0: kappa=1.000  path_len=5.70  n_obs=64
+    [ak/rw/rand_ana_poly_complex_0] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/rand_ana_poly_complex_0] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/rand_ana_poly_complex_0] round 3: kappa=0.288  path_len=5.78  n_obs=256
+    [ak/rw/rand_ana_poly_complex_0] round 4: kappa=0.050  path_len=5.74  n_obs=320
+  [ak/rw] rand_ana_poly_complex_0 v6: 8s  E_truth=27.21  swept=86%  path=28.7
+    [rbf/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_10 v6: 3s  E_truth=84.28  swept=68%  path=28.8
+    [ak/rw/rand_ana_poly_complex_10] round 0: kappa=1.000  path_len=5.81  n_obs=64
+    [ak/rw/rand_ana_poly_complex_10] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_ana_poly_complex_10] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/rand_ana_poly_complex_10] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/rand_ana_poly_complex_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] rand_ana_poly_complex_10 v6: 7s  E_truth=84.28  swept=68%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_20 v6: 3s  E_truth=24.86  swept=87%  path=28.8
+    [ak/rw/rand_ana_poly_complex_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/rand_ana_poly_complex_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/rand_ana_poly_complex_20] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/rand_ana_poly_complex_20] round 3: kappa=0.288  path_len=5.76  n_obs=256
+    [ak/rw/rand_ana_poly_complex_20] round 4: kappa=0.050  path_len=5.75  n_obs=320
+  [ak/rw] rand_ana_poly_complex_20 v6: 7s  E_truth=24.86  swept=87%  path=28.8
+    [rbf/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [rbf/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [rbf/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [rbf/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.87  n_obs=256
+    [rbf/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [rbf/rw] rand_ana_poly_complex_30 v6: 3s  E_truth=8.02  swept=85%  path=28.9
+    [ak/rw/rand_ana_poly_complex_30] round 0: kappa=1.000  path_len=5.77  n_obs=64
+    [ak/rw/rand_ana_poly_complex_30] round 1: kappa=0.762  path_len=5.79  n_obs=128
+    [ak/rw/rand_ana_poly_complex_30] round 2: kappa=0.525  path_len=5.71  n_obs=192
+    [ak/rw/rand_ana_poly_complex_30] round 3: kappa=0.288  path_len=5.87  n_obs=256
+    [ak/rw/rand_ana_poly_complex_30] round 4: kappa=0.050  path_len=5.80  n_obs=320
+  [ak/rw] rand_ana_poly_complex_30 v6: 7s  E_truth=8.02  swept=85%  path=28.9
+    [rbf/rw/organic_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [rbf/rw/organic_0] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [rbf/rw/organic_0] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [rbf/rw/organic_0] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [rbf/rw/organic_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [rbf/rw] organic_0 v6: 3s  E_truth=24.39  swept=64%  path=28.8
+    [ak/rw/organic_0] round 0: kappa=1.000  path_len=5.78  n_obs=64
+    [ak/rw/organic_0] round 1: kappa=0.762  path_len=5.72  n_obs=128
+    [ak/rw/organic_0] round 2: kappa=0.525  path_len=5.76  n_obs=192
+    [ak/rw/organic_0] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [ak/rw/organic_0] round 4: kappa=0.050  path_len=5.70  n_obs=320
+  [ak/rw] organic_0 v6: 7s  E_truth=24.39  swept=64%  path=28.8
+    [rbf/rw/organic_10] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/organic_10] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [rbf/rw/organic_10] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/organic_10] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [rbf/rw/organic_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [rbf/rw] organic_10 v6: 3s  E_truth=25.16  swept=81%  path=28.9
+    [ak/rw/organic_10] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/organic_10] round 1: kappa=0.762  path_len=5.77  n_obs=128
+    [ak/rw/organic_10] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/organic_10] round 3: kappa=0.288  path_len=5.83  n_obs=256
+    [ak/rw/organic_10] round 4: kappa=0.050  path_len=5.79  n_obs=320
+  [ak/rw] organic_10 v6: 8s  E_truth=25.16  swept=81%  path=28.9
+    [rbf/rw/organic_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/organic_20] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [rbf/rw/organic_20] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [rbf/rw/organic_20] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [rbf/rw/organic_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [rbf/rw] organic_20 v6: 3s  E_truth=12.93  swept=88%  path=28.8
+    [ak/rw/organic_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/organic_20] round 1: kappa=0.762  path_len=5.74  n_obs=128
+    [ak/rw/organic_20] round 2: kappa=0.525  path_len=5.68  n_obs=192
+    [ak/rw/organic_20] round 3: kappa=0.288  path_len=5.79  n_obs=256
+    [ak/rw/organic_20] round 4: kappa=0.050  path_len=5.81  n_obs=320
+  [ak/rw] organic_20 v6: 9s  E_truth=12.93  swept=88%  path=28.8
+    [rbf/rw/organic_30] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [rbf/rw/organic_30] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [rbf/rw/organic_30] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [rbf/rw/organic_30] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [rbf/rw/organic_30] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [rbf/rw] organic_30 v6: 3s  E_truth=80.28  swept=77%  path=28.8
+    [ak/rw/organic_30] round 0: kappa=1.000  path_len=5.83  n_obs=64
+    [ak/rw/organic_30] round 1: kappa=0.762  path_len=5.78  n_obs=128
+    [ak/rw/organic_30] round 2: kappa=0.525  path_len=5.77  n_obs=192
+    [ak/rw/organic_30] round 3: kappa=0.288  path_len=5.71  n_obs=256
+    [ak/rw/organic_30] round 4: kappa=0.050  path_len=5.72  n_obs=320
+  [ak/rw] organic_30 v6: 9s  E_truth=80.28  swept=77%  path=28.8
+    [rbf/rw/cjk_0] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [rbf/rw/cjk_0] round 1: kappa=0.762  path_len=5.84  n_obs=128
+    [rbf/rw/cjk_0] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [rbf/rw/cjk_0] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [rbf/rw/cjk_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [rbf/rw] cjk_0 v6: 3s  E_truth=64.05  swept=57%  path=28.7
+    [ak/rw/cjk_0] round 0: kappa=1.000  path_len=5.67  n_obs=64
+    [ak/rw/cjk_0] round 1: kappa=0.762  path_len=5.84  n_obs=128
+    [ak/rw/cjk_0] round 2: kappa=0.525  path_len=5.73  n_obs=192
+    [ak/rw/cjk_0] round 3: kappa=0.288  path_len=5.72  n_obs=256
+    [ak/rw/cjk_0] round 4: kappa=0.050  path_len=5.78  n_obs=320
+  [ak/rw] cjk_0 v6: 9s  E_truth=64.05  swept=57%  path=28.7
+    [rbf/rw/cjk_10] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [rbf/rw/cjk_10] round 1: kappa=0.762  path_len=5.67  n_obs=128
+    [rbf/rw/cjk_10] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [rbf/rw/cjk_10] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [rbf/rw/cjk_10] round 4: kappa=0.050  path_len=5.65  n_obs=320
+  [rbf/rw] cjk_10 v6: 3s  E_truth=29.11  swept=54%  path=28.6
+    [ak/rw/cjk_10] round 0: kappa=1.000  path_len=5.72  n_obs=64
+    [ak/rw/cjk_10] round 1: kappa=0.762  path_len=5.67  n_obs=128
+    [ak/rw/cjk_10] round 2: kappa=0.525  path_len=5.78  n_obs=192
+    [ak/rw/cjk_10] round 3: kappa=0.288  path_len=5.81  n_obs=256
+    [ak/rw/cjk_10] round 4: kappa=0.050  path_len=5.65  n_obs=320
+  [ak/rw] cjk_10 v6: 8s  E_truth=29.11  swept=54%  path=28.6
+    [rbf/rw/cjk_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [rbf/rw/cjk_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [rbf/rw/cjk_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [rbf/rw/cjk_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [rbf/rw/cjk_20] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [rbf/rw] cjk_20 v6: 3s  E_truth=42.30  swept=84%  path=28.9
+    [ak/rw/cjk_20] round 0: kappa=1.000  path_len=5.79  n_obs=64
+    [ak/rw/cjk_20] round 1: kappa=0.762  path_len=5.75  n_obs=128
+    [ak/rw/cjk_20] round 2: kappa=0.525  path_len=5.74  n_obs=192
+    [ak/rw/cjk_20] round 3: kappa=0.288  path_len=5.80  n_obs=256
+    [ak/rw/cjk_20] round 4: kappa=0.050  path_len=5.77  n_obs=320
+  [ak/rw] cjk_20 v6: 8s  E_truth=42.30  swept=84%  path=28.9
+
+=== plots + tables ===
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/A.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/A.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/greek_upper_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/greek_upper_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/korean_5.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/korean_5.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/digit_5.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/digit_5.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/a_lc.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/a_lc.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_gmm_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_gmm_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_gmm_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_gmm_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_ana_poly_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_ana_poly_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_ana_poly_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_ana_poly_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_ana_poly_30.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_ana_poly_30.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_gmm_complex_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_gmm_complex_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_gmm_complex_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_gmm_complex_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_gmm_complex_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_gmm_complex_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_gmm_complex_30.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_gmm_complex_30.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_ana_poly_complex_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_ana_poly_complex_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_ana_poly_complex_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_ana_poly_complex_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_ana_poly_complex_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_ana_poly_complex_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/rand_ana_poly_complex_30.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/rand_ana_poly_complex_30.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/organic_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/organic_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/organic_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/organic_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/organic_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/organic_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/organic_30.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/organic_30.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/cjk_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/cjk_0.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/cjk_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/cjk_10.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/rbf/cjk_20.png
+  Saved: plots/exploration_comparison_obstacles_dice6_r0.08_f/ak/cjk_20.png
+  tables + aggregate plots in plots/exploration_comparison_obstacles_dice6_r0.08_f
+[job] Tue Nov 17 12:30:18 CET 2026 finished
