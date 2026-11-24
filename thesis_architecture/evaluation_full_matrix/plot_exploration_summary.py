@@ -25,23 +25,28 @@ import numpy as np
 from matplotlib.colors import LinearSegmentedColormap, LogNorm, TwoSlopeNorm
 
 # order = display order of the groups: model-free baselines, search without a prior, search with a prior
-METHODS = ('rw', 'lawn', 'gpgoal', 'linray', 'linadam', 'lintsvec',
-           'unet630', 'old500', 'unet0', 'unet1890', 'lm1300', 'dit630', 'selfsup')
+METHODS = ('rw', 'lawn', 'gpgoal', 'linray', 'tsp', 'tsp_fill', 'linadam', 'lintsvec',
+           'unet630', 'old500', 'unet0', 'unet1890', 'lm1300', 'nooffset200', 'dit630', 'dits_old',
+           'selfsup')
+# 'tsp', 'tsp_fill', 'nooffset200', 'dits_old' only exist in the 3D comparison (run_exploration_comparison_3d.py)
 KERNELS = ('rbf', 'ak')
 LABEL = {'unet630': 'U-Net λ=630', 'dit630': 'DiT λ=630', 'rw': 'Random walk',
          'lawn': 'Lawnmower', 'linadam': 'Linear init + Adam-SVGD',
          'selfsup': 'Self-supervised + TSVEC', 'old500': 'U-Net λ=500 (older)',
          'unet0': 'U-Net, no ErgLoss', 'unet1890': 'U-Net λ=1890', 'lm1300': 'U-Net λ=1300 (600 ep.)',
          'lintsvec': 'Linear init + TSVEC (no prior)', 'gpgoal': 'Line to GP-sampled point',
-         'linray': 'Best straight ray (no search)'}
+         'linray': 'Best straight ray (no search)', 'tsp': 'TSP through GP maxima',
+         'tsp_fill': 'TSP through GP maxima, budget-filled',
+         'nooffset200': 'U-Net D384 Fourier loss (3D)', 'dits_old': 'DiT-S λ=630, old LM DB (3D)'}
 SHORT = {'unet630': 'U-Net 630', 'dit630': 'DiT', 'rw': 'Random walk', 'lawn': 'Lawnmower',
          'linadam': 'Lin+Adam', 'selfsup': 'Self-sup.', 'old500': 'U-Net 500', 'unet0': 'U-Net λ0',
          'unet1890': 'U-Net 1890', 'lm1300': 'U-Net 1300', 'lintsvec': 'Lin+TSVEC',
-         'gpgoal': 'GP-goal line', 'linray': 'Best ray'}
+         'gpgoal': 'GP-goal line', 'linray': 'Best ray', 'tsp': 'TSP maxima', 'tsp_fill': 'TSP filled',
+         'nooffset200': 'U-Net Fourier', 'dits_old': 'DiT-S'}
 COLOR = {'unet630': '#1565C0', 'dit630': '#6A1B9A', 'rw': '#888888', 'lawn': '#E65100',
          'linadam': '#00897B', 'selfsup': '#C62828', 'old500': '#0D47A1', 'unet0': '#42A5F5',
          'unet1890': '#5C6BC0', 'lm1300': '#26C6DA', 'lintsvec': '#2E7D32', 'gpgoal': '#F9A825',
-         'linray': '#8D6E63'}
+         'linray': '#8D6E63', 'tsp': '#D81B60', 'tsp_fill': '#880E4F', 'nooffset200': '#00ACC1', 'dits_old': '#AB47BC'}
 KERNEL_NAME = {'rbf': 'RBF belief', 'ak': 'Attentive-Kernel belief'}
 TEXT, MUTED, SPINE = '#1A1A2E', '#555555', '#CCCCCC'
 

@@ -100,3 +100,8 @@ thesis_architecture/evaluation_full_matrix/plots/exploration_comparison_obstacle
 thesis_architecture/evaluation_full_matrix/plots/exploration_comparison_obstacles_dice6_r0.08_*/
 thesis_architecture/evaluation_full_matrix/results/*obstacles*/sweep.db
 thesis_architecture/evaluation_full_matrix/results/*obstacles*/trace/
+
+# 3D exploration comparison: result DBs (100-600 MB each, every run's segments) are over
+# GitHub's 100 MB limit; copies live in transfer/2026-11-24_exploration_3d/. Regenerate or
+# re-merge with run_exploration_comparison_3d.py --merge_from.
+thesis_architecture/evaluation_full_matrix/plots/exploration_comparison_3d_*/exploration_comparison.db

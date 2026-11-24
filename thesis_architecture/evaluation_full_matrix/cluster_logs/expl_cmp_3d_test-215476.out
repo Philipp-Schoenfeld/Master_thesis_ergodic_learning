@@ -1,0 +1,184 @@
+[job] Wed Nov 18 17:34:37 CET 2026 node=gn08 gpu=NVIDIA RTX A5000
+1 heldout shapes, plane=flat, methods=['rw', 'lawn', 'gpgoal', 'linray', 'tsp', 'linadam', 'lintsvec', 'unet630', 'dit630', 'dits_old', 'nooffset200', 'selfsup'], kernels=['rbf', 'ak'], db=plots/exploration_comparison_3d_flat_timingtest/exploration_comparison.db
+  unet630: /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/checkpoints/lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+  dit630: /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/checkpoints/lm3d_flow3d_particle_ergodic_lm630dit_nxi25_D768_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h12_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt
+  dits_old: /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/checkpoints/dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.pt
+  nooffset200: /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/checkpoints/nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0300.pt
+  selfsup: /home/stud_schonfeld/Master_thesis/3D_ergodic_learning/checkpoints/selfsup_3d_selfsup3d_date_08_18_15h57min_nxi25_D128_N128_R48_K1_div0_ergK6_SE3-footprint-pt0.1-so0.12_final.pt
+
+=== rw: 2 missions ===
+    [rbf/rw/A] round 0: kappa=1.000  path_len=5.77  n_obs=64  plane_dev=0.0e+00
+    [rbf/rw/A] round 1: kappa=0.762  path_len=5.83  n_obs=128  plane_dev=0.0e+00
+    [rbf/rw/A] round 2: kappa=0.525  path_len=5.80  n_obs=192  plane_dev=0.0e+00
+    [rbf/rw/A] round 3: kappa=0.288  path_len=5.77  n_obs=256  plane_dev=0.0e+00
+    [rbf/rw/A] round 4: kappa=0.050  path_len=5.74  n_obs=320  plane_dev=0.0e+00
+  [rbf/rw] A v0: 1s  E_truth=12.39  swept=86%  path=28.9
+    [ak/rw/A] round 0: kappa=1.000  path_len=5.77  n_obs=64  plane_dev=0.0e+00
+    [ak/rw/A] round 1: kappa=0.762  path_len=5.83  n_obs=128  plane_dev=0.0e+00
+    [ak/rw/A] round 2: kappa=0.525  path_len=5.80  n_obs=192  plane_dev=0.0e+00
+    [ak/rw/A] round 3: kappa=0.288  path_len=5.77  n_obs=256  plane_dev=0.0e+00
+    [ak/rw/A] round 4: kappa=0.050  path_len=5.74  n_obs=320  plane_dev=0.0e+00
+  [ak/rw] A v0: 16s  E_truth=12.39  swept=86%  path=28.9
+
+=== lawn: 2 missions ===
+    [rbf/lawn/A] round 0: kappa=1.000  path_len=5.98  n_obs=64  plane_dev=0.0e+00
+    [rbf/lawn/A] round 1: kappa=0.762  path_len=6.05  n_obs=128  plane_dev=0.0e+00
+    [rbf/lawn/A] round 2: kappa=0.525  path_len=6.01  n_obs=192  plane_dev=0.0e+00
+    [rbf/lawn/A] round 3: kappa=0.288  path_len=6.05  n_obs=256  plane_dev=0.0e+00
+    [rbf/lawn/A] round 4: kappa=0.050  path_len=6.06  n_obs=320  plane_dev=0.0e+00
+  [rbf/lawn] A v0: 0s  E_truth=9.07  swept=99%  path=30.1
+    [ak/lawn/A] round 0: kappa=1.000  path_len=5.98  n_obs=64  plane_dev=0.0e+00
+    [ak/lawn/A] round 1: kappa=0.762  path_len=6.05  n_obs=128  plane_dev=0.0e+00
+    [ak/lawn/A] round 2: kappa=0.525  path_len=6.01  n_obs=192  plane_dev=0.0e+00
+    [ak/lawn/A] round 3: kappa=0.288  path_len=6.05  n_obs=256  plane_dev=0.0e+00
+    [ak/lawn/A] round 4: kappa=0.050  path_len=6.06  n_obs=320  plane_dev=0.0e+00
+  [ak/lawn] A v0: 7s  E_truth=9.07  swept=99%  path=30.1
+
+=== gpgoal: 2 missions ===
+    [rbf/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64  plane_dev=0.0e+00
+    [rbf/gpgoal/A] round 1: kappa=0.762  path_len=5.95  n_obs=128  plane_dev=0.0e+00
+    [rbf/gpgoal/A] round 2: kappa=0.525  path_len=5.97  n_obs=192  plane_dev=0.0e+00
+    [rbf/gpgoal/A] round 3: kappa=0.288  path_len=5.97  n_obs=256  plane_dev=0.0e+00
+    [rbf/gpgoal/A] round 4: kappa=0.050  path_len=5.98  n_obs=320  plane_dev=0.0e+00
+  [rbf/gpgoal] A v0: 0s  E_truth=2.14  swept=99%  path=29.8
+    [ak/gpgoal/A] round 0: kappa=1.000  path_len=5.97  n_obs=64  plane_dev=0.0e+00
+    [ak/gpgoal/A] round 1: kappa=0.762  path_len=5.93  n_obs=128  plane_dev=0.0e+00
+    [ak/gpgoal/A] round 2: kappa=0.525  path_len=5.94  n_obs=192  plane_dev=0.0e+00
+    [ak/gpgoal/A] round 3: kappa=0.288  path_len=5.93  n_obs=256  plane_dev=0.0e+00
+    [ak/gpgoal/A] round 4: kappa=0.050  path_len=5.95  n_obs=320  plane_dev=0.0e+00
+  [ak/gpgoal] A v0: 7s  E_truth=3.10  swept=97%  path=29.7
+
+=== linray: 2 missions ===
+    [rbf/linray/A] round 0: kappa=1.000  path_len=5.92  n_obs=64  plane_dev=0.0e+00
+    [rbf/linray/A] round 1: kappa=0.762  path_len=6.00  n_obs=128  plane_dev=0.0e+00
+    [rbf/linray/A] round 2: kappa=0.525  path_len=5.96  n_obs=192  plane_dev=0.0e+00
+    [rbf/linray/A] round 3: kappa=0.288  path_len=5.96  n_obs=256  plane_dev=0.0e+00
+    [rbf/linray/A] round 4: kappa=0.050  path_len=6.00  n_obs=320  plane_dev=0.0e+00
+  [rbf/linray] A v0: 0s  E_truth=5.13  swept=70%  path=29.8
+    [ak/linray/A] round 0: kappa=1.000  path_len=5.92  n_obs=64  plane_dev=0.0e+00
+    [ak/linray/A] round 1: kappa=0.762  path_len=6.00  n_obs=128  plane_dev=0.0e+00
+    [ak/linray/A] round 2: kappa=0.525  path_len=5.96  n_obs=192  plane_dev=0.0e+00
+    [ak/linray/A] round 3: kappa=0.288  path_len=5.96  n_obs=256  plane_dev=0.0e+00
+    [ak/linray/A] round 4: kappa=0.050  path_len=6.00  n_obs=320  plane_dev=0.0e+00
+  [ak/linray] A v0: 7s  E_truth=5.13  swept=70%  path=29.8
+
+=== tsp: 2 missions ===
+    [rbf/tsp/A] round 0: kappa=1.000  path_len=2.96  n_obs=64  plane_dev=0.0e+00
+    [rbf/tsp/A] round 1: kappa=0.762  path_len=1.92  n_obs=128  plane_dev=0.0e+00
+    [rbf/tsp/A] round 2: kappa=0.525  path_len=1.40  n_obs=192  plane_dev=0.0e+00
+    [rbf/tsp/A] round 3: kappa=0.288  path_len=1.72  n_obs=256  plane_dev=0.0e+00
+    [rbf/tsp/A] round 4: kappa=0.050  path_len=1.60  n_obs=320  plane_dev=0.0e+00
+  [rbf/tsp] A v0: 1s  E_truth=1.63  swept=89%  path=9.6
+    [ak/tsp/A] round 0: kappa=1.000  path_len=2.96  n_obs=64  plane_dev=0.0e+00
+    [ak/tsp/A] round 1: kappa=0.762  path_len=1.73  n_obs=128  plane_dev=0.0e+00
+    [ak/tsp/A] round 2: kappa=0.525  path_len=1.35  n_obs=192  plane_dev=0.0e+00
+    [ak/tsp/A] round 3: kappa=0.288  path_len=1.28  n_obs=256  plane_dev=0.0e+00
+    [ak/tsp/A] round 4: kappa=0.050  path_len=1.33  n_obs=320  plane_dev=0.0e+00
+  [ak/tsp] A v0: 7s  E_truth=4.02  swept=70%  path=8.7
+
+=== linadam: 2 missions ===
+    [rbf/linadam/A] round 0: kappa=1.000  path_len=5.35  n_obs=64  plane_dev=1.7e-07
+    [rbf/linadam/A] round 1: kappa=0.762  path_len=5.15  n_obs=128  plane_dev=1.2e-07
+    [rbf/linadam/A] round 2: kappa=0.525  path_len=5.19  n_obs=192  plane_dev=1.7e-07
+    [rbf/linadam/A] round 3: kappa=0.288  path_len=4.91  n_obs=256  plane_dev=3.3e-07
+    [rbf/linadam/A] round 4: kappa=0.050  path_len=4.34  n_obs=320  plane_dev=1.7e-07
+  [rbf/linadam] A v0: 4s  E_truth=5.14  swept=98%  path=24.9
+    [ak/linadam/A] round 0: kappa=1.000  path_len=5.35  n_obs=64  plane_dev=1.7e-07
+    [ak/linadam/A] round 1: kappa=0.762  path_len=5.07  n_obs=128  plane_dev=1.7e-07
+    [ak/linadam/A] round 2: kappa=0.525  path_len=4.99  n_obs=192  plane_dev=1.7e-07
+    [ak/linadam/A] round 3: kappa=0.288  path_len=4.31  n_obs=256  plane_dev=1.2e-07
+    [ak/linadam/A] round 4: kappa=0.050  path_len=4.23  n_obs=320  plane_dev=1.2e-07
+  [ak/linadam] A v0: 10s  E_truth=3.48  swept=100%  path=24.0
+
+=== lintsvec: 2 missions ===
+    [rbf/lintsvec/A] round 0: kappa=1.000  path_len=5.78  n_obs=64  plane_dev=1.7e-07
+    [rbf/lintsvec/A] round 1: kappa=0.762  path_len=5.79  n_obs=128  plane_dev=1.7e-07
+    [rbf/lintsvec/A] round 2: kappa=0.525  path_len=6.06  n_obs=192  plane_dev=1.7e-07
+    [rbf/lintsvec/A] round 3: kappa=0.288  path_len=5.46  n_obs=256  plane_dev=1.7e-07
+    [rbf/lintsvec/A] round 4: kappa=0.050  path_len=4.46  n_obs=320  plane_dev=1.7e-07
+  [rbf/lintsvec] A v0: 5s  E_truth=4.17  swept=100%  path=27.6
+    [ak/lintsvec/A] round 0: kappa=1.000  path_len=5.78  n_obs=64  plane_dev=1.7e-07
+    [ak/lintsvec/A] round 1: kappa=0.762  path_len=5.40  n_obs=128  plane_dev=1.7e-07
+    [ak/lintsvec/A] round 2: kappa=0.525  path_len=4.97  n_obs=192  plane_dev=1.7e-07
+    [ak/lintsvec/A] round 3: kappa=0.288  path_len=4.53  n_obs=256  plane_dev=1.7e-07
+    [ak/lintsvec/A] round 4: kappa=0.050  path_len=4.42  n_obs=320  plane_dev=1.7e-07
+  [ak/lintsvec] A v0: 11s  E_truth=3.32  swept=100%  path=25.1
+  unet630: {'ckpt': 'lm3d_flow3d_particle_ergodic_lm630unet_nxi25_D512_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt', 'epoch': 749, 'backbone': 'unet', 'start_cond': True, 'n_particles': 512}
+
+=== unet630: 2 missions ===
+    [rbf/unet630/A] round 0: kappa=1.000  path_len=5.96  n_obs=64  plane_dev=1.2e-06
+    [rbf/unet630/A] round 1: kappa=0.762  path_len=6.00  n_obs=128  plane_dev=6.2e-04
+    [rbf/unet630/A] round 2: kappa=0.525  path_len=5.33  n_obs=192  plane_dev=9.6e-06
+    [rbf/unet630/A] round 3: kappa=0.288  path_len=5.35  n_obs=256  plane_dev=6.1e-06
+    [rbf/unet630/A] round 4: kappa=0.050  path_len=4.36  n_obs=320  plane_dev=3.0e-04
+  [rbf/unet630] A v0: 26s  E_truth=6.97  swept=100%  path=27.0
+    [ak/unet630/A] round 0: kappa=1.000  path_len=5.96  n_obs=64  plane_dev=1.2e-06
+    [ak/unet630/A] round 1: kappa=0.762  path_len=4.85  n_obs=128  plane_dev=3.9e-05
+    [ak/unet630/A] round 2: kappa=0.525  path_len=5.40  n_obs=192  plane_dev=1.8e-06
+    [ak/unet630/A] round 3: kappa=0.288  path_len=4.65  n_obs=256  plane_dev=6.3e-06
+    [ak/unet630/A] round 4: kappa=0.050  path_len=4.14  n_obs=320  plane_dev=1.1e-06
+  [ak/unet630] A v0: 31s  E_truth=4.15  swept=100%  path=25.0
+  dit630: {'ckpt': 'lm3d_flow3d_particle_ergodic_lm630dit_nxi25_D768_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h12_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0750.pt', 'epoch': 749, 'backbone': 'dit', 'start_cond': True, 'n_particles': 512}
+
+=== dit630: 2 missions ===
+    [rbf/dit630/A] round 0: kappa=1.000  path_len=5.54  n_obs=64  plane_dev=5.8e-03
+    [rbf/dit630/A] round 1: kappa=0.762  path_len=5.60  n_obs=128  plane_dev=2.1e-03
+    [rbf/dit630/A] round 2: kappa=0.525  path_len=5.36  n_obs=192  plane_dev=8.7e-05
+    [rbf/dit630/A] round 3: kappa=0.288  path_len=5.44  n_obs=256  plane_dev=2.5e-03
+    [rbf/dit630/A] round 4: kappa=0.050  path_len=3.77  n_obs=320  plane_dev=2.1e-03
+  [rbf/dit630] A v0: 22s  E_truth=4.51  swept=100%  path=25.7
+    [ak/dit630/A] round 0: kappa=1.000  path_len=5.54  n_obs=64  plane_dev=5.8e-03
+    [ak/dit630/A] round 1: kappa=0.762  path_len=5.46  n_obs=128  plane_dev=4.9e-04
+    [ak/dit630/A] round 2: kappa=0.525  path_len=4.46  n_obs=192  plane_dev=5.9e-03
+    [ak/dit630/A] round 3: kappa=0.288  path_len=4.57  n_obs=256  plane_dev=4.8e-03
+    [ak/dit630/A] round 4: kappa=0.050  path_len=4.11  n_obs=320  plane_dev=1.3e-04
+  [ak/dit630] A v0: 28s  E_truth=2.62  swept=100%  path=24.1
+  dits_old: {'ckpt': 'dbcmp_flow3d_particle_ergodic_dbcmpold_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0_CPS_INPAINT_DIT-d12-h6_SO3_SE3-lookat_ERGLOSS-SINKHORN-w630-blur0.05-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0150.pt', 'epoch': 149, 'backbone': 'dit', 'start_cond': True, 'n_particles': 512}
+
+=== dits_old: 2 missions ===
+    [rbf/dits_old/A] round 0: kappa=1.000  path_len=6.13  n_obs=64  plane_dev=5.8e-07
+    [rbf/dits_old/A] round 1: kappa=0.762  path_len=5.44  n_obs=128  plane_dev=8.3e-07
+    [rbf/dits_old/A] round 2: kappa=0.525  path_len=5.04  n_obs=192  plane_dev=5.0e-07
+    [rbf/dits_old/A] round 3: kappa=0.288  path_len=4.79  n_obs=256  plane_dev=6.6e-07
+    [rbf/dits_old/A] round 4: kappa=0.050  path_len=5.25  n_obs=320  plane_dev=2.4e-06
+  [rbf/dits_old] A v0: 11s  E_truth=5.55  swept=100%  path=26.6
+    [ak/dits_old/A] round 0: kappa=1.000  path_len=6.13  n_obs=64  plane_dev=5.8e-07
+    [ak/dits_old/A] round 1: kappa=0.762  path_len=5.12  n_obs=128  plane_dev=3.3e-06
+    [ak/dits_old/A] round 2: kappa=0.525  path_len=4.83  n_obs=192  plane_dev=5.8e-06
+    [ak/dits_old/A] round 3: kappa=0.288  path_len=4.43  n_obs=256  plane_dev=9.5e-07
+    [ak/dits_old/A] round 4: kappa=0.050  path_len=4.71  n_obs=320  plane_dev=1.3e-05
+  [ak/dits_old] A v0: 18s  E_truth=3.10  swept=100%  path=25.2
+  nooffset200: {'ckpt': 'nooffset200_flow3d_particle_ergodic_nooffset200_nxi25_D384_N512_R64_C1_flip0.0_SURF_START-pd0.1_WU50-lr2e-05_SO3_SE3-lookat_ERGLOSS-w100-K6-tp2-onfootprint_ORILOSS-w0.012-pt0.1-so0.12-cfmrot0.5_ep0300.pt', 'epoch': 299, 'backbone': 'unet', 'start_cond': True, 'n_particles': 512}
+
+=== nooffset200: 2 missions ===
+    [rbf/nooffset200/A] round 0: kappa=1.000  path_len=5.11  n_obs=64  plane_dev=8.0e-06
+    [rbf/nooffset200/A] round 1: kappa=0.762  path_len=4.75  n_obs=128  plane_dev=3.6e-06
+    [rbf/nooffset200/A] round 2: kappa=0.525  path_len=5.11  n_obs=192  plane_dev=8.2e-04
+    [rbf/nooffset200/A] round 3: kappa=0.288  path_len=4.71  n_obs=256  plane_dev=1.8e-04
+    [rbf/nooffset200/A] round 4: kappa=0.050  path_len=3.82  n_obs=320  plane_dev=8.6e-04
+  [rbf/nooffset200] A v0: 18s  E_truth=4.22  swept=99%  path=23.5
+    [ak/nooffset200/A] round 0: kappa=1.000  path_len=5.11  n_obs=64  plane_dev=8.0e-06
+    [ak/nooffset200/A] round 1: kappa=0.762  path_len=4.86  n_obs=128  plane_dev=8.6e-05
+    [ak/nooffset200/A] round 2: kappa=0.525  path_len=4.96  n_obs=192  plane_dev=5.2e-04
+    [ak/nooffset200/A] round 3: kappa=0.288  path_len=4.88  n_obs=256  plane_dev=6.5e-05
+    [ak/nooffset200/A] round 4: kappa=0.050  path_len=3.75  n_obs=320  plane_dev=3.0e-05
+  [ak/nooffset200] A v0: 24s  E_truth=2.77  swept=100%  path=23.6
+  selfsup: {'ckpt': 'selfsup_3d_selfsup3d_date_08_18_15h57min_nxi25_D128_N128_R48_K1_div0_ergK6_SE3-footprint-pt0.1-so0.12_final.pt', 'selfsupervised': True, 'n_particles': 128}
+
+=== selfsup: 2 missions ===
+    [rbf/selfsup/A] round 0: kappa=1.000  path_len=4.31  n_obs=64  plane_dev=2.0e-02
+    [rbf/selfsup/A] round 1: kappa=0.762  path_len=3.86  n_obs=128  plane_dev=1.3e-02
+    [rbf/selfsup/A] round 2: kappa=0.525  path_len=4.70  n_obs=192  plane_dev=1.3e-02
+    [rbf/selfsup/A] round 3: kappa=0.288  path_len=3.46  n_obs=256  plane_dev=3.3e-03
+    [rbf/selfsup/A] round 4: kappa=0.050  path_len=3.74  n_obs=320  plane_dev=6.2e-03
+  [rbf/selfsup] A v0: 5s  E_truth=4.77  swept=96%  path=20.1
+    [ak/selfsup/A] round 0: kappa=1.000  path_len=4.31  n_obs=64  plane_dev=2.0e-02
+    [ak/selfsup/A] round 1: kappa=0.762  path_len=3.13  n_obs=128  plane_dev=8.2e-03
+    [ak/selfsup/A] round 2: kappa=0.525  path_len=4.27  n_obs=192  plane_dev=8.5e-03
+    [ak/selfsup/A] round 3: kappa=0.288  path_len=3.47  n_obs=256  plane_dev=4.1e-03
+    [ak/selfsup/A] round 4: kappa=0.050  path_len=3.29  n_obs=320  plane_dev=6.8e-03
+  [ak/selfsup] A v0: 11s  E_truth=2.49  swept=99%  path=18.5
+
+=== plots + tables ===
+  tables + aggregate plots in plots/exploration_comparison_3d_flat_timingtest
+[job] Wed Nov 18 17:44:40 CET 2026 finished
